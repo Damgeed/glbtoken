@@ -36,7 +36,7 @@
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
           const errData = await resp.json().catch(()=>{});
-          throw new Error((errData&&errData.detail)||'API error');
+          throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
         }
         demoMode = false;
         return await resp.json();
@@ -381,8 +381,8 @@
             <div class="meta">${key.permissions} · ${key.request_count} requests · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
           </div>
           <div class="key-actions">
-            <button class="sort-btn" onclick="toggleKeyStatus(${key.id})">${key.is_active?'Pause':'Activate'}</button>
-            <button class="sort-btn" style="color:var(--destructive)" onclick="deleteKey(${key.id})">Delete</button>
+            <button class="sort-btn" data-key-id="${key.id}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+            <button class="sort-btn" style="color:var(--destructive)" data-key-id="${key.id}" data-action="delete">Delete</button>
           </div>
         </div>
       `).join('');
@@ -574,8 +574,8 @@
             <div class="meta">${key.permissions} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
           </div>
           <div class="key-actions">
-            <button class="sort-btn" onclick="toggleKeyStatus(${key.id})">${key.is_active?'Pause':'Activate'}</button>
-            <button class="sort-btn" style="color:var(--destructive)" onclick="deleteKey(${key.id})">Delete</button>
+            <button class="sort-btn" data-key-id="${key.id}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+            <button class="sort-btn" style="color:var(--destructive)" data-key-id="${key.id}" data-action="delete">Delete</button>
           </div>
         </div>
       `).join('');
@@ -831,5 +831,13 @@
         });
       }
       tmInterval=setInterval(()=>slideTopView(1),5000);
+      // Delegate clicks on key action buttons (avoid inline onclick XSS)
+      document.addEventListener('click',function(e){
+        const btn=e.target.closest('[data-key-id]');
+        if(!btn)return;
+        const id=Number(btn.dataset.keyId);
+        if(btn.dataset.action==='toggle')toggleKeyStatus(id);
+        else if(btn.dataset.action==='delete')deleteKey(id);
+      });
     });
   
