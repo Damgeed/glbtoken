@@ -29,7 +29,7 @@
     .navbar-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
     .nav-logo{font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer}
     .nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--primary),hsl(44 96% 40%));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#0A0B14;letter-spacing:-0.03em}
-    .logo-glb{color:var(--primary)}
+    .logo-glb{color:var(--primary)}.logo-full{display:inline-flex;align-items:center}
     .logo-token{color:var(--text)}
     .nav-center{display:flex;align-items:center;gap:1.75rem}
     .nav-center a{font-size:0.875rem;font-weight:500;color:var(--text-secondary);transition:color 0.2s;cursor:pointer}
@@ -93,7 +93,7 @@
     .hero{min-height:85vh;display:flex;align-items:center;background:var(--hero-grad);position:relative;overflow:hidden}
     .hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 50%,hsla(44 96% 52% / 0.07) 0%,transparent 60%),radial-gradient(ellipse at 70% 30%,hsla(44 96% 52% / 0.04) 0%,transparent 50%);pointer-events:none}
     .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;position:relative;z-index:1}
-    .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:0.375rem 0.875rem;border-radius:999px;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.2);font-size:0.8rem;font-weight:500;color:var(--primary);margin-bottom:1.25rem}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:0.375rem 0.875rem;border-radius:999px;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.25);font-size:0.8rem;font-weight:500;color:var(--primary);margin-bottom:1.25rem}.hero-badge{box-shadow:var(--primary-glow)}@media(max-width:600px){.hero-badge{font-size:0.75rem;padding:0.35rem 0.75rem;gap:4px}}
     .hero h1{font-size:3.25rem;font-weight:800;line-height:1.08;margin-bottom:1rem}
     .hero-text{max-width:580px}
     .hero-text p{font-size:1.075rem;color:var(--text-secondary);max-width:520px;margin-bottom:1.75rem;line-height:1.7}
@@ -313,7 +313,7 @@
     .ai-typing span:nth-child(2){animation-delay:0.2s}
     .ai-typing span:nth-child(3){animation-delay:0.4s}
     @keyframes aiDot{0%,80%,100%{opacity:0.3}40%{opacity:1}}
-    @media(max-width:768px){.ai-chat-inner{grid-template-columns:1fr;min-height:auto}.ai-chat-side{border-right:none;border-bottom:1px solid var(--border);padding:0.75rem 1rem;flex-direction:row;overflow-x:auto;gap:0.5rem}.ai-chat-side h4{display:none}.ai-model-opt{white-space:nowrap;flex-shrink:0;padding:0.5rem 0.75rem;font-size:0.8rem}.ai-model-opt .mo-info .mo-prov{display:none}.ai-chat-main{height:400px}}
+    @media(max-width:768px){.ai-chat-inner{grid-template-columns:1fr;min-height:auto;border-radius:var(--radius)}.ai-chat-side{border-right:none;border-bottom:1px solid var(--border);padding:0.65rem 0.75rem;flex-direction:row;overflow-x:auto;gap:0.35rem}.ai-chat-side h4{display:none}.ai-model-opt{white-space:nowrap;flex-shrink:0;padding:0.45rem 0.65rem;font-size:0.78rem}.ai-model-opt .mo-info .mo-prov{display:none}.ai-chat-main{height:380px}.ai-chat-main .chat-msgs{padding:0.75rem}.ai-chat-main .chat-msg{max-width:95%}.ai-chat-main .chat-msg .bubble{font-size:0.85rem;padding:0.65rem 0.85rem;border-radius:16px}.ai-chat-main .chat-input{padding:0.5rem 0.75rem}.ai-chat-main .chat-input textarea{padding:0.6rem 0.85rem;font-size:0.85rem;border-radius:20px;min-height:40px}.ai-welcome{padding:2rem 1rem}.ai-welcome h3{font-size:1.05rem}}
     .footer{border-top:1px solid var(--border);padding:3rem 0 2rem}
     .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem}
     .footer-brand p{font-size:0.85rem;color:var(--text-muted);margin-top:0.75rem;max-width:300px}
@@ -350,7 +350,7 @@
       .hero h1{font-size:2.5rem}.hero-stats{gap:1.5rem}
       .model-grid{grid-template-columns:repeat(2,1fr)}
       .footer-grid{grid-template-columns:1fr 1fr}
-      .navbar-inner{height:56px}.nav-center{display:none}.hamburger{display:flex}.nav-right .theme-toggle{position:absolute;right:3.5rem;z-index:202;display:flex!important}
+      .navbar-inner{height:56px}.nav-center{display:none}.hamburger{display:flex;z-index:202}.nav-right .theme-toggle{display:none!important}
       .mobile-overlay{display:none}
       .mobile-overlay.open{display:flex}
       .nav-right #navGuest,.nav-right #navUser{display:none!important}
@@ -460,7 +460,7 @@
     <a onclick="showPage('apikeys');closeMobile()" id="mNavApiLink">API / Dev</a>
     <a onclick="showPage('dashboard');closeMobile()" id="mNavDashLink" style="display:none">Dashboard</a>
     <div class="m-section">
-      <!-- Theme toggle removed — redundant with navbar toggle -->
+      <div class="m-theme"><span>Dark Mode</span><button class="toggle-switch" onclick="toggleTheme()"></button></div>
       <div id="mGuest">
         <div class="m-btns">
           <a class="m-outline" onclick="showPage('login');closeMobile()">Login</a>
@@ -853,7 +853,7 @@
   <!-- FOOTER -->
   <footer><div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></div><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
+      <div class="footer-brand"><div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></div><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
       <div class="footer-col"><h4>Product</h4><span onclick="showPage('pricing')">Pricing</span><span onclick="showPage('models')">AI Models</span><span onclick="showPage('apikeys')">API Docs</span></div>
       <div class="footer-col"><h4>Support</h4><span onclick="showPage('faq')">FAQ</span><span onclick="window.location.href='mailto:global@kai.com'">Contact: global@kai.com</span><span onclick="showPage('terms')">Terms</span><span onclick="showPage('privacy')">Privacy</span><span onclick="showPage('refund')">Refund Policy</span></div>
       <div class="footer-col"><h4>Company</h4><span onclick="showPage('about')">About</span><span onclick="showPage('blog')">Blog</span></div>
