@@ -733,7 +733,7 @@
       if(btn)btn.remove();
       // Restore floating support chat
       const fab=document.querySelector('.chat-fab');const win=document.getElementById('chatWindow');
-      if(fab)fab.style.display='';if(win&&!win.classList.contains('open'))win.style.display='';
+      if(fab)fab.style.display='';if(win)win.style.display='';
     }
     // ── Support Chat (floating) ──
     function toggleChat(){document.getElementById('chatWindow').classList.toggle('open')}

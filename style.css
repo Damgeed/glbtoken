@@ -452,7 +452,7 @@
   /* ── Mobile Chat Focused: floating popup like support chat ── */
   @media(max-width:768px){
     .ai-chat-section.chat-focused{
-      position:fixed;inset:0;z-index:100;background:hsla(224 44% 5% / 0.5);backdrop-filter:blur(6px);
+      position:fixed;inset:0;z-index:300;background:hsla(224 44% 5% / 0.5);backdrop-filter:blur(6px);
       display:flex;align-items:center;justify-content:center;padding:1rem;border:none;animation:chatFadeIn 0.2s ease-out
     }
     .ai-chat-section.chat-focused .container{
@@ -462,11 +462,17 @@
     .ai-chat-section.chat-focused .ai-chat-inner{
       border:1px solid var(--border);border-radius:var(--radius-lg);
       background:var(--card);box-shadow:var(--shadow-elevated);
-      min-height:auto;max-height:80vh;overflow:hidden
+      min-height:auto;max-height:70vh;overflow:hidden;height:auto
     }
-    .ai-chat-section.chat-focused .ai-chat-main .chat-msgs{min-height:200px;max-height:50vh}
+    .ai-chat-section.chat-focused .chat-header{flex-shrink:0}
+    .ai-chat-section.chat-focused .ai-chat-main{flex:1;min-height:0;overflow:hidden}
+    .ai-chat-section.chat-focused .ai-chat-main .chat-msgs{flex:1;overflow-y:auto;max-height:none;min-height:0;height:auto}
+    .ai-chat-section.chat-focused .chat-input{flex-shrink:0}
+    /* Hide floating support chat when main chat is active */
+    .ai-chat-section.chat-focused ~ .chat-fab,
+    .ai-chat-section.chat-focused ~ .chat-window{display:none!important}
     .chat-focused-close{
-      position:absolute;top:-8px;right:-8px;z-index:102;
+      position:absolute;top:-8px;right:-8px;z-index:301;
       width:32px;height:32px;border-radius:50%;background:var(--card);
       border:1px solid var(--border);color:var(--text-secondary);
       font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
