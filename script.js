@@ -689,6 +689,7 @@
           this.style.height = 'auto';
           this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
+        ta.addEventListener('focus',openMobileChat);
       }
       // Auto-init for this page
       const pageId = location.pathname.split('/').pop().replace('.html','') || 'home';
@@ -698,44 +699,20 @@
       if(pageId==='history'&&token)loadTx();
       if(pageId==='models')loadModels();
     });
-    // ── Mobile Chat Full-Screen ──
+    // ── Mobile Chat: scroll into view on focus ──
     function openMobileChat(){
       if(window.innerWidth>768)return;
       const section=document.querySelector('.ai-chat-section');
-      const close=document.getElementById('chatExpandClose');
-      if(section){section.classList.add('expanded');if(close)close.classList.add('show')}
-      // Hide floating support chat
-      const fab=document.querySelector('.chat-fab');const win=document.getElementById('chatWindow');
-      if(fab)fab.style.display='none';if(win)win.style.display='none';
-      setTimeout(()=>{
-        const msgs=document.getElementById('aiChatMsgs');
-        if(msgs)msgs.scrollTop=msgs.scrollHeight;
-      },100);
-    }
-    function closeMobileChat(){
-      const section=document.querySelector('.ai-chat-section');
-      const close=document.getElementById('chatExpandClose');
-      const input=document.getElementById('aiChatInput');
-      if(section)section.classList.remove('expanded');
-      if(close)close.classList.remove('show');
-      if(input)input.blur();
-      document.body.style.overflow='';
-      // Restore floating support chat
-      const fab=document.querySelector('.chat-fab');const win=document.getElementById('chatWindow');
-      if(fab)fab.style.display='';if(win&&!win.classList.contains('open'))win.style.display='';
-    }
-    document.addEventListener('DOMContentLoaded',function(){
-      const input=document.getElementById('aiChatInput');
-      if(input){
-        input.addEventListener('focus',openMobileChat);
-        input.addEventListener('blur',function(){setTimeout(()=>{
-          const section=document.querySelector('.ai-chat-section');
-          if(section&&section.classList.contains('expanded')){
-            // Don't close on blur — user might tap send. Backdrop close button handles it.
-          }
-        },200)});
+      if(section){
+        // Scroll the chat section into view so keyboard doesn't cover messages
+        section.scrollIntoView({behavior:'smooth',block:'start'});
+        // After a brief delay, scroll messages to bottom
+        setTimeout(()=>{
+          const msgs=document.getElementById('aiChatMsgs');
+          if(msgs)msgs.scrollTop=msgs.scrollHeight;
+        },400);
       }
-    });
+    }
     // ── Support Chat (floating) ──
     function toggleChat(){document.getElementById('chatWindow').classList.toggle('open')}
     function sendChatMsg(){
