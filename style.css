@@ -266,7 +266,7 @@
     .chat-input input:focus{outline:none;border-color:var(--primary)}
     .chat-input button{padding:0.625rem 1rem;border-radius:var(--radius-sm);background:var(--primary);color:#0A0B14;font-weight:600;font-size:0.85rem;border:none;cursor:pointer}
     .ai-chat-section{background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-    .ai-chat-inner{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);overflow:hidden;min-height:480px;max-height:480px;display:flex;flex-direction:column}
+    .ai-chat-inner{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);overflow:hidden;min-height:560px;max-height:560px;display:flex;flex-direction:column}
     .chat-header{display:flex;align-items:center;gap:0.625rem;padding:0.75rem 1rem;background:var(--bg-alt);border-bottom:1px solid var(--border)}
     .chat-header label{font-size:0.75rem;font-weight:500;color:var(--text-muted);white-space:nowrap;display:flex;align-items:center;gap:6px}
     .chat-header .model-select{flex:1;padding:0.5rem 2rem 0.5rem 0.75rem;border-radius:var(--radius-sm);background:var(--card);border:1px solid var(--border);color:var(--text);font-size:0.85rem;font-family:inherit;font-weight:500;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F4B400' d='M6 8.5L1 3.5h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.625rem center;transition:border 0.2s}
@@ -355,7 +355,7 @@
       .nav-right #navGuest,.nav-right #navUser{display:none!important}
       .topup-grid{grid-template-columns:1fr}
       .chat-window{width:calc(100vw - 2rem);height:60vh;bottom:5rem;right:1rem}
-      .ai-chat-inner{min-height:300px;max-height:300px}
+      .ai-chat-inner{min-height:400px;max-height:400px}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
     }
     @media(max-width:600px){
