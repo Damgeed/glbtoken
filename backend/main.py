@@ -491,7 +491,7 @@ def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_cu
             "amount": amount_kobo,
             "currency": "GHS" if req.currency == "GHS" else "USD",
             "metadata": {"user_id": user.id, "payment_method": "paystack"},
-            "callback_url": "https://damgeed.github.io/unitoken/#dashboard",
+            "callback_url": "https://damgeed.github.io/glbtoken/#dashboard",
         },
         headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}", "Content-Type": "application/json"},
     )
@@ -557,8 +557,8 @@ def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get
         }],
         customer_email=req.email or user.email,
         metadata={"user_id": str(user.id), "tokens": str(tokens)},
-        success_url="https://damgeed.github.io/unitoken/#dashboard?payment=success",
-        cancel_url="https://damgeed.github.io/unitoken/#plans",
+        success_url="https://damgeed.github.io/glbtoken/#dashboard?payment=success",
+        cancel_url="https://damgeed.github.io/glbtoken/#plans",
     )
     tx = Transaction(
         user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
