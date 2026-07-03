@@ -29,6 +29,10 @@ class User(Base):
     email_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_admin = Column(Boolean, default=False)
+    email_otp = Column(String, nullable=True)          # 6-digit verification code
+    email_otp_expiry = Column(DateTime, nullable=True)
+    reset_token = Column(String, nullable=True)         # password reset token
+    reset_token_expiry = Column(DateTime, nullable=True)
     
     api_keys = relationship("ApiKey", back_populates="user", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
@@ -57,6 +61,7 @@ class Transaction(Base):
     payment_method = Column(String, default="")
     tokens = Column(Float, default=0)
     model_used = Column(String, default="")
+    payment_ref = Column(String, nullable=True)  # Paystack/Stripe/Crypto reference
     status = Column(String, default="completed")  # completed, pending, failed
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     

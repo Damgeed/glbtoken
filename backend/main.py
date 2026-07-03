@@ -3,14 +3,16 @@ GlbTOKEN Backend — FastAPI Server
 Run: uvicorn main:app --reload
 """
 
-from fastapi import FastAPI, Depends, HTTPException, status, Query, Body
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from email.mime.text import MIMEText
+import smtplib, secrets, os, json
 
 from database import init_db, get_db, User, ApiKey, Transaction, AIModel
 from auth import (
@@ -77,6 +79,48 @@ class AdminBalanceRequest(BaseModel):
     user_id: int
     tokens: float
     reason: str = "Manual adjustment"
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+class SendVerificationRequest(BaseModel):
+    email: str = ""
+
+class VerifyEmailRequest(BaseModel):
+    otp: str
+
+class InitiatePaymentRequest(BaseModel):
+    amount: float
+    currency: str = "USD"
+    payment_method: str = "stripe"
+    email: str = ""
+
+# ── Email Config ──
+def send_email(to: str, subject: str, body: str):
+    smtp_host = os.getenv("SMTP_HOST", "")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASS", "")
+    from_addr = os.getenv("SMTP_FROM", "noreply@glbtoken.io")
+    if not smtp_host:
+        print(f"📧 SMTP not configured. Would send email to {to}: {subject}")
+        return
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["Subject"] = subject
+    msg["From"] = from_addr
+    msg["To"] = to
+    with smtplib.SMTP(smtp_host, smtp_port) as s:
+        s.starttls()
+        s.login(smtp_user, smtp_pass)
+        s.send_message(msg)
 
 # ── Auth Routes ──
 @app.post("/api/auth/register")
@@ -198,6 +242,71 @@ def get_me(user: User = Depends(get_current_user)):
         "email_verified": user.email_verified,
         "created_at": user.created_at.isoformat() if user.created_at else None,
     }
+
+# ── Email Verification ──
+@app.post("/api/auth/send-verification")
+def send_verification(req: SendVerificationRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    email = req.email or user.email
+    otp = f"{secrets.randbelow(900000) + 100000}"  # 6-digit
+    user.email_otp = otp
+    user.email_otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
+    db.commit()
+    send_email(email, "Verify your GlbTOKEN email",
+        f"Your verification code is: {otp}\n\nIt expires in 10 minutes.\n\n- GlbTOKEN Team")
+    return {"status": "sent", "email": email}
+
+@app.post("/api/auth/verify-email")
+def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    now = datetime.now(timezone.utc)
+    if user.email_otp != req.otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+    if not user.email_otp_expiry or now > user.email_otp_expiry:
+        raise HTTPException(status_code=400, detail="OTP expired")
+    user.email_verified = True
+    user.email_otp = None
+    user.email_otp_expiry = None
+    db.commit()
+    return {"status": "verified"}
+
+# ── Password Management ──
+@app.put("/api/user/password")
+def change_password(req: ChangePasswordRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user.password_hash or not verify_password(req.current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password too short")
+    user.password_hash = hash_password(req.new_password)
+    db.commit()
+    return {"status": "password_updated"}
+
+@app.post("/api/auth/forgot-password")
+def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == req.email).first()
+    if not user:
+        return {"status": "sent"}  # Don't reveal if email exists
+    token = secrets.token_urlsafe(32)
+    user.reset_token = token
+    user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
+    db.commit()
+    send_email(user.email, "Reset your GlbTOKEN password",
+        f"Reset token: {token}\n\nPaste this in the reset password form.\nIt expires in 1 hour.\n\n- GlbTOKEN Team")
+    return {"status": "sent"}
+
+@app.post("/api/auth/reset-password")
+def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.reset_token == req.token).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    now = datetime.now(timezone.utc)
+    if not user.reset_token_expiry or now > user.reset_token_expiry:
+        raise HTTPException(status_code=400, detail="Reset token expired")
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password too short")
+    user.password_hash = hash_password(req.new_password)
+    user.reset_token = None
+    user.reset_token_expiry = None
+    db.commit()
+    return {"status": "password_reset"}
 
 # ── Dashboard Routes ──
 @app.get("/api/dashboard")
@@ -359,6 +468,247 @@ def topup(req: TopupRequest, user: User = Depends(get_current_user), db: Session
         "status": "success",
         "tokens_added": tokens,
         "new_balance": user.token_balance,
+    }
+
+# ── Paystack Payment ──
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "")
+PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY", "")
+
+@app.post("/api/payments/paystack/initialize")
+def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not PAYSTACK_SECRET_KEY:
+        raise HTTPException(status_code=400, detail="Paystack not configured")
+    import httpx
+    amount_kobo = int(req.amount * 100)  # Paystack uses kobo (cents)
+    resp = httpx.post(
+        "https://api.paystack.co/transaction/initialize",
+        json={
+            "email": req.email or user.email,
+            "amount": amount_kobo,
+            "currency": "GHS" if req.currency == "GHS" else "USD",
+            "metadata": {"user_id": user.id, "payment_method": "paystack"},
+            "callback_url": "https://damgeed.github.io/unitoken/#dashboard",
+        },
+        headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}", "Content-Type": "application/json"},
+    )
+    data = resp.json()
+    if not data.get("status"):
+        raise HTTPException(status_code=400, detail=data.get("message", "Paystack init failed"))
+    # Create pending transaction
+    tx = Transaction(
+        user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
+        payment_method="paystack", payment_ref=data["data"]["reference"],
+        tokens=0, status="pending",
+    )
+    db.add(tx); db.commit()
+    return {"authorization_url": data["data"]["authorization_url"], "reference": data["data"]["reference"]}
+
+@app.post("/api/payments/paystack/verify")
+def paystack_verify(reference: str = Body(...), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not PAYSTACK_SECRET_KEY:
+        raise HTTPException(status_code=400, detail="Paystack not configured")
+    import httpx
+    resp = httpx.get(
+        f"https://api.paystack.co/transaction/verify/{reference}",
+        headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"},
+    )
+    data = resp.json()
+    if not data.get("status") or data["data"]["status"] != "success":
+        raise HTTPException(status_code=400, detail="Payment not successful")
+    tx = db.query(Transaction).filter(Transaction.payment_ref == reference).first()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    if tx.status == "completed":
+        return {"status": "already_processed", "tokens_added": tx.tokens}
+    amount = data["data"]["amount"] / 100  # Convert from kobo
+    tokens = int(amount * 1000)
+    tx.status = "completed"
+    tx.tokens = tokens
+    tx.amount = amount
+    user.token_balance += tokens
+    user.total_spent += amount
+    db.commit()
+    return {"status": "success", "tokens_added": tokens, "new_balance": user.token_balance}
+
+# ── Stripe Payment ──
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+
+@app.post("/api/payments/stripe/create-checkout")
+def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=400, detail="Stripe not configured")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    tokens = int(req.amount * 1000)
+    session = stripe_lib.checkout.Session.create(
+        mode="payment",
+        line_items=[{
+            "price_data": {
+                "currency": req.currency.lower(),
+                "product_data": {"name": f"{tokens:,} GlbTOKEN"},
+                "unit_amount": int(req.amount * 100),
+            },
+            "quantity": 1,
+        }],
+        customer_email=req.email or user.email,
+        metadata={"user_id": str(user.id), "tokens": str(tokens)},
+        success_url="https://damgeed.github.io/unitoken/#dashboard?payment=success",
+        cancel_url="https://damgeed.github.io/unitoken/#plans",
+    )
+    tx = Transaction(
+        user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
+        payment_method="stripe", payment_ref=session.id,
+        tokens=0, status="pending",
+    )
+    db.add(tx); db.commit()
+    return {"url": session.url, "session_id": session.id}
+
+@app.post("/api/payments/stripe/webhook")
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    if not STRIPE_WEBHOOK_SECRET:
+        raise HTTPException(status_code=400, detail="Webhook secret not configured")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature", "")
+    try:
+        event = stripe_lib.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        user_id = int(session["metadata"]["user_id"])
+        tokens = int(session["metadata"]["tokens"])
+        amount = session["amount_total"] / 100
+        user = db.query(User).filter(User.id == user_id).first()
+        if user:
+            user.token_balance += tokens
+            user.total_spent += amount
+        tx = db.query(Transaction).filter(Transaction.payment_ref == session["id"]).first()
+        if tx:
+            tx.status = "completed"
+            tx.tokens = tokens
+            tx.amount = amount
+        db.commit()
+    return {"status": "ok"}
+
+# ── Crypto Payment ──
+CRYPTO_WALLET_ADDRESSES = {
+    "USDT_TRC20": os.getenv("CRYPTO_USDT_TRC20", "TXYZ123456789..."),
+    "USDT_ERC20": os.getenv("CRYPTO_USDT_ERC20", "0x0000000000000000000000000000000000000000"),
+    "BTC": os.getenv("CRYPTO_BTC", "bc1q0000000000000000000000000000000000000"),
+    "ETH": os.getenv("CRYPTO_ETH", "0x0000000000000000000000000000000000000000"),
+}
+
+@app.get("/api/payments/crypto/addresses")
+def get_crypto_addresses(user: User = Depends(get_current_user)):
+    return {
+        "addresses": [
+            {"asset": k, "network": k.split("_")[1] if "_" in k else k, "address": v}
+            for k, v in CRYPTO_WALLET_ADDRESSES.items()
+        ]
+    }
+
+@app.post("/api/payments/crypto/create")
+def create_crypto_payment(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    asset = req.payment_method.upper()  # USDT_TRC20, BTC, ETH
+    address = CRYPTO_WALLET_ADDRESSES.get(asset)
+    if not address:
+        raise HTTPException(status_code=400, detail=f"Unsupported crypto: {asset}")
+    ref = f"crypto_{user.id}_{secrets.token_hex(8)}"
+    tokens = int(req.amount * 1000)
+    tx = Transaction(
+        user_id=user.id, type="deposit", amount=req.amount, currency=asset,
+        payment_method=f"crypto_{asset.lower()}", payment_ref=ref,
+        tokens=tokens, status="pending",
+    )
+    db.add(tx); db.commit()
+    rate = {"USDT_TRC20": 1.0, "USDT_ERC20": 1.0, "BTC": 85000, "ETH": 3500}.get(asset, 1.0)
+    crypto_amount = round(req.amount / rate, 6)
+    return {
+        "reference": ref,
+        "address": address,
+        "asset": asset,
+        "crypto_amount": crypto_amount,
+        "usd_amount": req.amount,
+        "tokens": tokens,
+        "instructions": f"Send exactly {crypto_amount} {asset} to the address above. Your tokens will be credited after 1 network confirmation.",
+    }
+
+# ── API Proxy (Chat Completion) ──
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+
+class ProxyChatRequest(BaseModel):
+    model: str
+    messages: list
+    max_tokens: int = 4096
+    temperature: float = 0.7
+
+@app.post("/api/proxy/chat")
+async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not OPENROUTER_API_KEY:
+        raise HTTPException(status_code=400, detail="OpenRouter not configured. Set OPENROUTER_API_KEY")
+    ai_model = db.query(AIModel).filter(AIModel.model_id == req.model).first()
+    if not ai_model:
+        raise HTTPException(status_code=404, detail=f"Unknown model: {req.model}")
+    # Estimate cost: count input tokens roughly (4 chars ≈ 1 token)
+    input_chars = sum(len(m.get("content", "")) for m in req.messages)
+    input_tokens = max(1, input_chars // 4)
+    output_tokens = min(req.max_tokens, 4096)
+    cost = (input_tokens * ai_model.prompt_price) + (output_tokens * ai_model.completion_price)
+    markup = 2.0  # 2x markup
+    cost_tokens = int(cost * markup * 1000)  # Convert to token cost
+    if user.token_balance < cost_tokens:
+        raise HTTPException(status_code=402, detail=f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
+    # Call OpenRouter
+    import httpx
+    async with httpx.AsyncClient(timeout=60) as client:
+        resp = await client.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://glbtoken.io",
+                "X-Title": "GlbTOKEN",
+            },
+            json={
+                "model": req.model,
+                "messages": req.messages,
+                "max_tokens": req.max_tokens,
+                "temperature": req.temperature,
+            },
+        )
+        if resp.status_code != 200:
+            raise HTTPException(status_code=502, detail=f"OpenRouter error: {resp.text}")
+        result = resp.json()
+    # Deduct tokens
+    actual_output = result.get("usage", {}).get("completion_tokens", output_tokens)
+    actual_input = result.get("usage", {}).get("prompt_tokens", input_tokens)
+    actual_cost = (actual_input * ai_model.prompt_price) + (actual_output * ai_model.completion_price)
+    actual_tokens_cost = max(1, int(actual_cost * markup * 1000))
+    user.token_balance -= actual_tokens_cost
+    # Log usage
+    tx = Transaction(
+        user_id=user.id, type="consumption", amount=0,
+        payment_method="api_proxy", model_used=req.model,
+        tokens=actual_tokens_cost, status="completed",
+    )
+    db.add(tx)
+    # Update API key usage if bearer token matches a key
+    auth_header = request.headers.get("authorization", "")
+    if auth_header.startswith("Bearer "):
+        bearer = auth_header[7:]
+        api_key = db.query(ApiKey).filter(ApiKey.key == bearer).first()
+        if api_key:
+            api_key.request_count = (api_key.request_count or 0) + 1
+            api_key.last_used = datetime.now(timezone.utc)
+    db.commit()
+    return {
+        "choices": result["choices"],
+        "usage": {"prompt_tokens": actual_input, "completion_tokens": actual_output, "total_tokens": actual_input + actual_output},
+        "tokens_charged": actual_tokens_cost,
+        "balance_remaining": user.token_balance,
     }
 
 # ── Models Route ──

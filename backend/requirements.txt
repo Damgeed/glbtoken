@@ -8,3 +8,5 @@ httpx
 pydantic
 pydantic-settings
 aiosqlite
+stripe
+paystack-python
