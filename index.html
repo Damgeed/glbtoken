@@ -29,6 +29,8 @@
     .navbar-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
     .nav-logo{font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer}
     .nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--primary),hsl(44 96% 40%));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#0A0B14;letter-spacing:-0.03em}
+    .logo-glb{color:var(--primary)}
+    .logo-token{color:var(--text)}
     .nav-center{display:flex;align-items:center;gap:1.75rem}
     .nav-center a{font-size:0.875rem;font-weight:500;color:var(--text-secondary);transition:color 0.2s;cursor:pointer}
     .nav-center a:hover,.nav-center a.active{color:var(--text)}
@@ -227,6 +229,12 @@
     .payment-opt.selected .pm-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#0A0B14}
     .payment-opt .pm-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;background:var(--bg-alt);border:1px solid var(--border-light);transition:all 0.2s}
     .payment-opt.selected .pm-icon{background:hsl(44 96% 52% / 0.12);border-color:hsla(44 96% 52% / 0.25)}
+    .payment-opt .pm-brand{font-size:0.7rem;font-weight:500;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:2px}
+    .payment-opt .pm-brand.stripe{background:#635bff;color:#fff}
+    .payment-opt .pm-brand.paystack{background:#0ba37f;color:#fff}
+    .payment-opt .pm-brand.crypto{background:var(--primary);color:#0A0B14}
+    .payment-opt .pm-check{display:none;width:20px;height:20px;border-radius:50%;background:var(--primary);color:#0A0B14;font-size:0.7rem;align-items:center;justify-content:center;flex-shrink:0;position:absolute;top:-6px;right:-6px;box-shadow:0 2px 6px hsla(44 96% 52% / 0.4)}
+    .payment-opt.selected .pm-check{display:flex}
     .payment-opt .pm-info{flex:1}
     .payment-opt .pm-info h4{font-size:0.95rem;font-weight:600;margin-bottom:0.15rem}
     .payment-opt .pm-info p{font-size:0.8rem;color:var(--text-muted);margin:0}
@@ -398,13 +406,14 @@
 </head>
 <body>
   <nav class="navbar"><div class="container navbar-inner">
-    <div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span> GlbTOKEN</div>
+    <div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></div>
     <div class="nav-center" id="navCenter">
       <a onclick="showPage('home')" class="active">Home</a>
       <a onclick="showPage('pricing')">Pricing</a>
       <a onclick="showPage('how')">How It Works</a>
       <a onclick="showPage('models')">AI Models</a>
-      <a onclick="showPage('apikeys')">API / Dev</a>
+      <a onclick="showPage('apikeys')" id="navApiLink">API / Dev</a>
+      <a onclick="showPage('dashboard')" id="navDashLink" style="display:none">Dashboard</a>
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
@@ -446,7 +455,8 @@
     <a onclick="showPage('pricing');closeMobile()">Pricing</a>
     <a onclick="showPage('how');closeMobile()">How It Works</a>
     <a onclick="showPage('models');closeMobile()">AI Models</a>
-    <a onclick="showPage('apikeys');closeMobile()">API / Dev</a>
+    <a onclick="showPage('apikeys');closeMobile()" id="mNavApiLink">API / Dev</a>
+    <a onclick="showPage('dashboard');closeMobile()" id="mNavDashLink" style="display:none">Dashboard</a>
     <div class="m-section">
       <!-- Theme toggle removed — redundant with navbar toggle -->
       <div id="mGuest">
@@ -682,6 +692,16 @@
         <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
       </div>
+      <div class="dash-card" style="margin-top:1.25rem">
+        <div class="dash-section-title">🔑 API Keys <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Manage your API access</span></div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
+          <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
+          <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
+          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
+        </div>
+        <div id="dashKeyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
+      </div>
     </div></div>
   </div>
 
@@ -697,9 +717,9 @@
         </div>
         <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:2rem;flex-wrap:wrap"><span style="font-size:0.9rem;color:var(--text-secondary)">Custom:</span><input type="number" id="topupCustom" placeholder="$" min="2" style="padding:0.65rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:1rem;width:100px" oninput="customTopupAmount(this.value)"><span id="topupCustomTokens" style="font-size:0.85rem;color:var(--text-muted)"></span></div>
         <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Payment Method</h3>
-        <div class="payment-opt selected" onclick="selectPayment(this,'stripe')"><span class="pm-radio"></span><span class="pm-icon">💳</span><div class="pm-info"><h4>Stripe (Card)</h4><p>International credit/debit cards · USD</p></div></div>
-        <div class="payment-opt" onclick="selectPayment(this,'paystack')"><span class="pm-radio"></span><span class="pm-icon">🔶</span><div class="pm-info"><h4>Paystack</h4><p>NGN/GHS/KES · Bank transfer, USSD, Mobile Money</p></div></div>
-        <div class="payment-opt" onclick="selectPayment(this,'crypto')"><span class="pm-radio"></span><span class="pm-icon">₿</span><div class="pm-info"><h4>Crypto</h4><p>USDT (TRC-20/ERC-20), BTC, ETH</p></div></div>
+        <div class="payment-opt selected" onclick="selectPayment(this,'stripe')" style="position:relative"><span class="pm-check">✓</span><span class="pm-radio"></span><span class="pm-icon">💳</span><div class="pm-info"><h4>Stripe</h4><p>International credit/debit cards · USD</p><span class="pm-brand stripe">Worldwide</span></div></div>
+        <div class="payment-opt" onclick="selectPayment(this,'paystack')" style="position:relative"><span class="pm-check">✓</span><span class="pm-radio"></span><span class="pm-icon">🔶</span><div class="pm-info"><h4>Paystack</h4><p>NGN/GHS/KES · Bank transfer, USSD, Mobile Money</p><span class="pm-brand paystack">Africa</span></div></div>
+        <div class="payment-opt" onclick="selectPayment(this,'crypto')" style="position:relative"><span class="pm-check">✓</span><span class="pm-radio"></span><span class="pm-icon">₿</span><div class="pm-info"><h4>Crypto</h4><p>USDT (TRC-20/ERC-20), BTC, ETH</p><span class="pm-brand crypto">Global</span></div></div>
         <button class="btn-primary" style="width:100%;padding:1rem;margin-top:1rem;font-size:1.05rem" onclick="processTopup()">Pay Now — <span id="topupTotal">$20.00</span></button>
       </div>
       <div id="topupSuccess" style="display:none"><div class="success-page"><div class="success-icon">✅</div><h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem">Payment Successful!</h2><p id="topupSuccessMsg" style="color:var(--text-secondary);margin-bottom:1.5rem"></p><button class="btn-primary" onclick="showPage('dashboard')">Dashboard</button><button class="btn-secondary" style="margin-left:0.75rem" onclick="showPage('apikeys')">API Keys</button></div></div>
@@ -831,7 +851,7 @@
   <!-- FOOTER -->
   <footer><div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span> GlbTOKEN</div><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
+      <div class="footer-brand"><div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></div><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
       <div class="footer-col"><h4>Product</h4><span onclick="showPage('pricing')">Pricing</span><span onclick="showPage('models')">AI Models</span><span onclick="showPage('apikeys')">API Docs</span></div>
       <div class="footer-col"><h4>Support</h4><span onclick="showPage('faq')">FAQ</span><span onclick="window.location.href='mailto:global@kai.com'">Contact: global@kai.com</span><span onclick="showPage('terms')">Terms</span><span onclick="showPage('privacy')">Privacy</span><span onclick="showPage('refund')">Refund Policy</span></div>
       <div class="footer-col"><h4>Company</h4><span onclick="showPage('about')">About</span><span onclick="showPage('blog')">Blog</span></div>
@@ -1047,7 +1067,7 @@
       const el=document.getElementById('page-'+page);
       if(el) el.classList.add('active');
       document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));
-      const idx={home:0,pricing:1,how:2,models:3,apikeys:4}[page];
+      const idx={home:0,pricing:1,how:2,models:3,apikeys:4,dashboard:5}[page];
       if(idx!==undefined){const links=document.querySelectorAll('.nav-center a');if(links[idx])links[idx].classList.add('active')}
       document.getElementById('navCenter').classList.remove('open');
       window.scrollTo(0,0);
@@ -1112,6 +1132,11 @@
       // Mobile menu sync
       document.getElementById('mGuest').style.display=loggedIn?'none':'block';
       document.getElementById('mUser').style.display=loggedIn?'block':'none';
+      // Toggle Dashboard vs API/Dev in nav
+      document.getElementById('navApiLink').style.display=loggedIn?'none':'inline-block';
+      document.getElementById('navDashLink').style.display=loggedIn?'inline-block':'none';
+      document.getElementById('mNavApiLink').style.display=loggedIn?'none':'block';
+      document.getElementById('mNavDashLink').style.display=loggedIn?'block':'none';
       if(loggedIn&&userData.name){
         document.getElementById('dashUserName').textContent=userData.name||'User';
         const initial=(userData.name||'U')[0].toUpperCase();
@@ -1156,7 +1181,7 @@
       const el=document.getElementById('page-'+page);
       if(el) el.classList.add('active');
       document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));
-      const idx={home:0,pricing:1,how:2,models:3,apikeys:4}[page];
+      const idx={home:0,pricing:1,how:2,models:3,apikeys:4,dashboard:5}[page];
       if(idx!==undefined){const links=document.querySelectorAll('.nav-center a');if(links[idx])links[idx].classList.add('active')}
       document.getElementById('navCenter').classList.remove('open');
       if(page==='dashboard'){loadDashboard();refreshMe()}
@@ -1199,7 +1224,35 @@
         }
         // Transactions
         loadTxTable();
+        // Dashboard API Keys
+        loadDashKeys();
       }catch(e){showToast('Failed to load dashboard','error')}
+    }
+    async function loadDashKeys(){
+      if(!token)return;
+      try{
+        const k=await api('GET','/api/keys');
+        renderDashKeys(k);
+      }catch(e){}
+    }
+    function renderDashKeys(k){
+      const list=document.getElementById('dashKeyList');
+      if(!list)return;
+      if(!k||!k.length){list.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:1.5rem;font-size:0.85rem">No API keys yet. <a onclick="showCreateKeyModal()" style="color:var(--primary);cursor:pointer">Create one</a>.</p>';return}
+      keys=k;
+      list.innerHTML=k.map(key=>`
+        <div class="api-key-card" style="padding:0.75rem 1rem">
+          <div class="key-info">
+            <div class="key-name">${key.name}</div>
+            <div class="key-val">${key.key_prefix}••••••••</div>
+            <div class="meta">${key.permissions} · ${key.request_count} requests · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+          </div>
+          <div class="key-actions">
+            <button class="sort-btn" onclick="toggleKeyStatus(${key.id})">${key.is_active?'Pause':'Activate'}</button>
+            <button class="sort-btn" style="color:var(--destructive)" onclick="deleteKey(${key.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
     }
     async function loadTxTable(){
       try{
@@ -1398,6 +1451,7 @@
         document.getElementById('newKeyValue').textContent=d.key;
         document.getElementById('newKeyResult').style.display='block';
         loadKeys();
+        loadDashKeys();
         showToast('Key created! Copy it now.','success');
       }catch(e){showToast(e.message,'error')}
     }

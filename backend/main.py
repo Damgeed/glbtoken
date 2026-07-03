@@ -36,6 +36,10 @@ app.add_middleware(
 def startup():
     init_db()
     seed_models()
+    try:
+        auto_pull_models()
+    except Exception as e:
+        print(f'⚠️ Auto-pull skipped: {e}')
 
 # ── Pydantic Schemas ──
 class RegisterRequest(BaseModel):
@@ -862,6 +866,67 @@ def provider_status(user: User = Depends(get_current_user), db: Session = Depend
     } for p in providers]
 
 # ── Seeding ──
+def auto_pull_models():
+    """Auto-fetch latest models from OpenRouter API and merge into DB."""
+    from database import SessionLocal
+    import httpx
+    print("🔄 Auto-pulling models from OpenRouter...")
+    try:
+        resp = httpx.get(
+            "https://openrouter.ai/api/v1/models",
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        if resp.status_code != 200:
+            print(f"⚠️ OpenRouter API returned {resp.status_code}")
+            return
+        data = resp.json()
+        if not data.get("data"):
+            print("⚠️ No models data from OpenRouter")
+            return
+        db = SessionLocal()
+        count = 0
+        for m in data["data"]:
+            model_id = m.get("id", "")
+            if not model_id:
+                continue
+            pricing = m.get("pricing", {}) or {}
+            prompt_price = float(pricing.get("prompt", 0)) if pricing.get("prompt") else 0.0
+            completion_price = float(pricing.get("completion", 0)) if pricing.get("completion") else 0.0
+            context_length = int(m.get("context_length", 4096) or 4096)
+            name = m.get("name", model_id.split("/")[-1] if "/" in model_id else model_id)
+            provider = "Other"
+            if "/" in model_id:
+                company = model_id.split("/")[0]
+                provider_map = {
+                    "openai": "OpenAI", "anthropic": "Anthropic", "google": "Google",
+                    "meta-llama": "Meta Llama", "deepseek": "DeepSeek", "mistralai": "Mistral",
+                    "qwen": "Qwen", "cohere": "Cohere", "perplexity": "Perplexity",
+                    "x-ai": "X AI", "amazon": "Amazon", "microsoft": "Microsoft",
+                    "nvidia": "Nvidia", "nousresearch": "NousResearch"
+                }
+                provider = provider_map.get(company, company.title())
+            # Check if model already exists
+            existing = db.query(AIModel).filter(AIModel.model_id == model_id).first()
+            if existing:
+                # Update pricing/context in case they changed
+                existing.prompt_price = prompt_price
+                existing.completion_price = completion_price
+                existing.context_length = context_length
+            else:
+                db.add(AIModel(
+                    model_id=model_id, name=name, provider=provider,
+                    context_length=context_length,
+                    prompt_price=prompt_price, completion_price=completion_price,
+                    version="", category="Auto"
+                ))
+                count += 1
+        db.commit()
+        db.close()
+        print(f"✅ Auto-pull complete: {count} new models added")
+    except Exception as e:
+        print(f"❌ Auto-pull error: {e}")
+
 def seed_models():
     from database import SessionLocal
     db = SessionLocal()
@@ -952,6 +1017,14 @@ def seed_models():
     print(f"✅ Seeded {len(models)} AI models")
 
 # ── Health ──
+# ── Auto-Pull Models (manual trigger) ──
+@app.post("/api/models/pull")
+def trigger_model_pull(api_key: str = ""):
+    if api_key != os.environ.get("GLBTOKEN_SECRET", "demo"):
+        raise HTTPException(status_code=403, detail="Invalid API key")
+    auto_pull_models()
+    return {"status": "ok", "message": "Models refreshed from OpenRouter"}
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "version": "1.0.0", "name": "GlbTOKEN API"}
