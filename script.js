@@ -736,6 +736,8 @@
       const section=document.querySelector('.ai-chat-section');
       if(section){
         section.classList.add('chat-focused');
+        // Force reflow so browser recomputes flex layout inside fixed container
+        void section.offsetHeight;
         // Add close button if not exists
         if(!document.querySelector('.chat-focused-close')){
           const btn=document.createElement('button');
@@ -749,10 +751,11 @@
         // Hide floating support chat
         const fab=document.querySelector('.chat-fab');const win=document.getElementById('chatWindow');
         if(fab)fab.style.display='none';if(win)win.style.display='none';
-        setTimeout(()=>{
+        // RAF: ensures layout is fully committed before scrolling
+        requestAnimationFrame(()=>{
           const msgs=document.getElementById('aiChatMsgs');
           if(msgs)msgs.scrollTop=msgs.scrollHeight;
-        },200);
+        });
       }
     }
     function closeMobileChat(){

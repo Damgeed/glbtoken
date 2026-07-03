@@ -63,10 +63,10 @@
     .mobile-overlay .m-close{display:flex;justify-content:flex-end;padding:0.25rem 0 0.75rem;margin-bottom:0.5rem}
     .mobile-overlay .m-close button{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text-secondary);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
     .mobile-overlay .m-close button:hover{background:var(--card-hover);color:var(--text)}
-    .mobile-overlay a{font-size:0.95rem;padding:0.7rem 0.75rem;border-radius:var(--radius-sm);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.15s}
+    .mobile-overlay a{font-size:0.95rem;padding:0.7rem 0.75rem;border-radius:var(--radius-sm);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.15s}
     .mobile-overlay a:hover,.mobile-overlay a.active{color:var(--text);background:var(--primary-subtle)}
     .mobile-overlay hr{border:none;border-top:1px solid var(--border-light);margin:0.5rem 0}
-    .mobile-overlay .m-section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:0.5rem 0.75rem 0.25rem}
+    .mobile-overlay .m-section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);padding:0.5rem 0.75rem 0.25rem}
     .mobile-overlay .mobile-auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;padding:0 0}
     .mobile-auth-btn{display:flex;align-items:center;justify-content:center;padding:0.65rem 0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:600;text-align:center;transition:all 0.2s}
     .mobile-auth-btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
@@ -350,7 +350,7 @@
       .nav-right #navGuest,.nav-right #navUser{display:none!important}
       .topup-grid{grid-template-columns:1fr}
       .chat-window{width:calc(100vw - 2rem);height:60vh;bottom:5rem;right:1rem}
-      .ai-chat-inner{min-height:auto}
+      .ai-chat-inner{min-height:auto;max-height:300px}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
     }
     @media(max-width:600px){
@@ -481,7 +481,7 @@
   /* ── Hamburger SVG Icons ── */
   .mobile-overlay a svg{flex-shrink:0;opacity:0.6;transition:opacity 0.2s}
   .mobile-overlay a:hover svg{opacity:1}
-  .m-section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:0.5rem 0.75rem 0.25rem}
+  .m-section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);padding:0.5rem 0.75rem 0.25rem}
   /* ── API Docs: code blocks & tables ── */
   .dash-card pre{border-radius:var(--radius-sm);background:var(--bg-alt)!important;margin:0}
   .dash-card code{background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85em}
