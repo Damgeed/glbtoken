@@ -1,9 +1,11 @@
 
     const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'http://localhost:8000' : 'https://glbtoken-api.onrender.com';
+      ? 'http://localhost:8000' : 'https://glbtoken-backend.up.railway.app';
     let token = localStorage.getItem('gt_token') || '';
     let userData = JSON.parse(localStorage.getItem('gt_user') || '{}');
     let keys = JSON.parse(localStorage.getItem('gt_keys') || '[]');
+    let newapiToken = localStorage.getItem('gt_newapi_token') || '';
+    let newapiEndpoint = localStorage.getItem('gt_newapi_endpoint') || '';
     let demoMode = false;
 
     // ── Theme ──
@@ -188,6 +190,13 @@
         const data=await api('POST','/api/auth/register',{name,email,password:pass,country});
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+        // Store New API token if returned
+        if(data.newapi_token){
+          newapiToken=data.newapi_token;
+          newapiEndpoint=data.newapi_endpoint||'';
+          localStorage.setItem('gt_newapi_token',newapiToken);
+          localStorage.setItem('gt_newapi_endpoint',newapiEndpoint);
+        }
         applyAuth();showToast('Account created! Welcome.','success');showPage('dashboard');
       }catch(e){showToast(e.message,'error')}
     }
@@ -449,42 +458,42 @@
       const providerOrder = ['OpenAI','Anthropic','Google','Meta Llama','DeepSeek','Mistral','Qwen','Cohere','Perplexity','X AI','Amazon','Nvidia','NousResearch','Microsoft'];
       providerOrder.forEach(p => {
         if (groups[p]) {
-          html += \`<div class="model-group-header"><span class="arrow">▶</span><span class="name">\${p}</span><span class="count">\${groups[p].length} models</span></div>
-                    <div class="model-group-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1rem">\`;
-          html += groups[p].map(m => \`
+          html += `<div class="model-group-header"><span class="arrow">▶</span><span class="name">${p}</span><span class="count">${groups[p].length} models</span></div>
+                    <div class="model-group-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1rem">`;
+          html += groups[p].map(m => `
             <div class="model-card">
-              <div class="provider">\${m.provider}</div>
-              <h4>\${m.model_id}</h4>
-              \${m.version?\`<span class="version">v\${m.version}</span>\`:''}
-              \${m.description?\`<div class="desc">\${m.description}</div>\`:\`<div class="desc">\${m.name||''}</div>\`}
+              <div class="provider">${m.provider}</div>
+              <h4>${m.model_id}</h4>
+              ${m.version?`<span class="version">v${m.version}</span>`:''}
+              ${m.description?`<div class="desc">${m.description}</div>`:`<div class="desc">${m.name||''}</div>`}
               <div class="meta">
-                <span>📐 \${(m.context_length/1000).toFixed(0)}K ctx</span>
-                <span>🏷️ \${m.category||'General'}</span>
+                <span>📐 ${(m.context_length/1000).toFixed(0)}K ctx</span>
+                <span>🏷️ ${m.category||'General'}</span>
               </div>
-              <div class="price">\$\${(m.prompt_price*1000).toFixed(4)} <span>/1K input · \$\${(m.completion_price*1000).toFixed(4)} /1K output</span></div>
+              <div class="price">\$${(m.prompt_price*1000).toFixed(4)} <span>/1K input · \$${(m.completion_price*1000).toFixed(4)} /1K output</span></div>
             </div>
-          \`).join('');
+          `).join('');
           html += '</div>';
           delete groups[p];
         }
       });
       // Remaining providers
       Object.keys(groups).forEach(p => {
-        html += \`<div class="model-group-header"><span class="arrow">▶</span><span class="name">\${p}</span><span class="count">\${groups[p].length} models</span></div>
-                  <div class="model-group-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1rem">\`;
-        html += groups[p].map(m => \`
+        html += `<div class="model-group-header"><span class="arrow">▶</span><span class="name">${p}</span><span class="count">${groups[p].length} models</span></div>
+                  <div class="model-group-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1rem">`;
+        html += groups[p].map(m => `
           <div class="model-card">
-            <div class="provider">\${m.provider}</div>
-            <h4>\${m.model_id}</h4>
-            \${m.version?\`<span class="version">v\${m.version}</span>\`:''}
-            \${m.description?\`<div class="desc">\${m.description}</div>\`:\`<div class="desc">\${m.name||''}</div>\`}
+            <div class="provider">${m.provider}</div>
+            <h4>${m.model_id}</h4>
+            ${m.version?`<span class="version">v${m.version}</span>`:''}
+            ${m.description?`<div class="desc">${m.description}</div>`:`<div class="desc">${m.name||''}</div>`}
             <div class="meta">
-              <span>📐 \${(m.context_length/1000).toFixed(0)}K ctx</span>
-              <span>🏷️ \${m.category||'General'}</span>
+              <span>📐 ${(m.context_length/1000).toFixed(0)}K ctx</span>
+              <span>🏷️ ${m.category||'General'}</span>
             </div>
-            <div class="price">\$\${(m.prompt_price*1000).toFixed(4)} <span>/1K input · \$\${(m.completion_price*1000).toFixed(4)} /1K output</span></div>
+            <div class="price">\$${(m.prompt_price*1000).toFixed(4)} <span>/1K input · \$${(m.completion_price*1000).toFixed(4)} /1K output</span></div>
           </div>
-        \`).join('');
+        `).join('');
         html += '</div>';
       });
       grid.innerHTML = html;
@@ -596,8 +605,8 @@
     const AI_RESPONSES = {
       'gpt4o-mini': ['Great question! GPT-4o Mini is our lightweight flagship — fast, capable, and cost-effective for everyday tasks.', 'I can help you write code, analyze data, draft emails, explain concepts, and more. What would you like to work on?', 'Here\'s a quick tip: GPT-4o Mini excels at tasks like summarization, code generation, and creative writing while being extremely efficient.'],
       'claude-haiku': ['Claude 3 Haiku is Anthropic\'s fastest model. Perfect for quick analysis, structured outputs, and tasks that need careful reasoning.', 'I take a thoughtful approach to your questions. Let me think this through carefully.', 'Claude Haiku is great for parsing documents, answering questions with citations, and following complex instructions.'],
-'gemini-flash': ['Gemini Flash by Google is designed for speed and efficiency. It handles multimodal tasks and long context windows with ease.', 'Google\'s latest flash model here! I can process up to 1M tokens of context — that\'s like reading entire books at once.', 'With Gemini Flash, you get Google\'s search-grounded knowledge and fast response times.']
-'llama-scout': ['Llama 4 Scout from Meta has a 10M token context window — the largest of any open model. Great for analyzing huge documents.', 'Meta\'s Llama 4 here! I\'m open-source and designed for long-context tasks. Ask me to analyze large codebases or documents.', 'Llama Scout excels at processing enormous amounts of text. It\'s the go-to for document-heavy workflows.']
+'gemini-flash': ['Gemini Flash by Google is designed for speed and efficiency. It handles multimodal tasks and long context windows with ease.', 'Google\'s latest flash model here! I can process up to 1M tokens of context — that\'s like reading entire books at once.', 'With Gemini Flash, you get Google\'s search-grounded knowledge and fast response times.'],
+      'llama-scout': ['Llama 4 Scout from Meta has a 10M token context window — the largest of any open model. Great for analyzing huge documents.', 'Meta\'s Llama 4 here! I\'m open-source and designed for long-context tasks. Ask me to analyze large codebases or documents.', 'Llama Scout excels at processing enormous amounts of text. It\'s the go-to for document-heavy workflows.'],
       'deepseek-flash': ['DeepSeek Flash is engineered for blazing-fast inference with top-tier performance. Best price-performance ratio in the market.', 'I\'m DeepSeek\'s fastest model. Check my math, reason through problems, or get quick code solutions. I\'m optimized for speed.', 'DeepSeek Flash delivers GPT-4 class performance at a fraction of the cost. Perfect for production workloads.'],
       'mistral-small': ['Mistral Small is our efficient model for everyday AI tasks. Fast, reliable, and open-source.', 'Bonjour! Mistral Small is perfect for classification, summarization, and lightweight chat applications.', 'Mistral models are known for their efficiency and strong performance on benchmarks. Small doesn\'t mean weak!'],
       'gpt4o': ['GPT-4o is OpenAI flagship multimodal model. It can analyze images, reason about code, and handle complex tasks with ease.', 'I am GPT-4o — OpenAI most capable model. I can see, read, and reason across text and images seamlessly.', 'GPT-4o delivers top-tier performance across coding, creative writing, and reasoning tasks.'],
@@ -716,5 +725,30 @@
     function closeMobile(){
       document.getElementById('mobileOverlay').classList.remove('open');
       document.getElementById('hamburgerBtn').classList.remove('active');
+    }
+    function switchTopView(view){
+      const models=document.getElementById('tmModelsView');
+      const code=document.getElementById('tmCodeView');
+      const tabs=document.querySelectorAll('.tm-tab');
+      const title=document.getElementById('topModelsTitle');
+      if(view==='code'){
+        models.style.display='none';
+        code.style.display='grid';
+        title.textContent='💻 Quick Start Code';
+      }else{
+        models.style.display='grid';
+        code.style.display='none';
+        title.textContent='🔥 Top Models This Week';
+      }
+      tabs.forEach(t=>{
+        t.style.color='var(--text-muted)';
+        t.style.background='transparent';
+        t.style.boxShadow='none';
+        if(t.dataset.view===view){
+          t.style.color='var(--text)';
+          t.style.background='var(--card)';
+          t.style.boxShadow='0 1px 3px rgba(0,0,0,0.2)';
+        }
+      });
     }
   

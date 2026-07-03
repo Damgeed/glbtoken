@@ -33,6 +33,8 @@ class User(Base):
     email_otp_expiry = Column(DateTime, nullable=True)
     reset_token = Column(String, nullable=True)         # password reset token
     reset_token_expiry = Column(DateTime, nullable=True)
+    newapi_user_id = Column(Integer, nullable=True)    # New API user ID
+    newapi_token = Column(String, nullable=True)       # New API access token
     
     api_keys = relationship("ApiKey", back_populates="user", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")

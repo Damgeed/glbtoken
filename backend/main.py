@@ -20,6 +20,10 @@ from auth import (
     get_current_user, get_optional_user, generate_api_key,
     verify_google_token, verify_github_code, GOOGLE_CLIENT_ID, GITHUB_CLIENT_ID
 )
+from newapi_integration import (
+    create_newapi_user, update_user_quota, add_user_quota,
+    get_usage_today, create_api_token, health_check
+)
 
 app = FastAPI(title="GlbTOKEN API", version="1.0.0")
 
@@ -128,7 +132,7 @@ def send_email(to: str, subject: str, body: str):
 
 # ── Auth Routes ──
 @app.post("/api/auth/register")
-def register(req: RegisterRequest, db: Session = Depends(get_db)):
+async def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == req.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     if len(req.password) < 6:
@@ -144,8 +148,44 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    token = create_access_token({"sub": str(user.id)})
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": token}
+    
+    # ── Sync to New API ──
+    newapi_user = None
+    newapi_token = None
+    try:
+        newapi_user = await create_newapi_user(
+            username=req.email.split("@")[0] + f"_{user.id}",
+            password=req.password,
+            display_name=req.name,
+            email=req.email,
+        )
+        if newapi_user and newapi_user.get("id"):
+            # Create an API token for this user in New API
+            token_resp = await create_api_token(
+                user_id=newapi_user["id"],
+                name=f"GlbTOKEN Key - {user.name}",
+            )
+            if token_resp and token_resp.get("key"):
+                newapi_token = token_resp["key"]
+                # Store the New API token reference in our DB
+                user.newapi_user_id = newapi_user["id"]
+                user.newapi_token = newapi_token
+                db.commit()
+    except Exception as e:
+        print(f"⚠️ New API sync failed on register: {e}")
+        # Don't block registration on New API failure
+    
+    result = {
+        "user": {
+            "id": user.id, "name": user.name, "email": user.email,
+            "token_balance": user.token_balance,
+        },
+        "token": create_access_token({"sub": str(user.id)}),
+    }
+    if newapi_token:
+        result["newapi_token"] = newapi_token
+        result["newapi_endpoint"] = os.getenv("NEW_API_BASE_URL", "")
+    return result
 
 @app.post("/api/auth/login")
 def login(req: LoginRequest, db: Session = Depends(get_db)):
@@ -314,7 +354,7 @@ def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
 
 # ── Dashboard Routes ──
 @app.get("/api/dashboard")
-def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     # Usage by model (last 7 days)
     usage = db.query(Transaction.model_used, func.sum(Transaction.tokens)).filter(
         Transaction.user_id == user.id,
@@ -330,6 +370,14 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
     key_count = db.query(ApiKey).filter(
         ApiKey.user_id == user.id, ApiKey.is_active == True
     ).count()
+    
+    # ── New API usage data ──
+    newapi_usage = {}
+    try:
+        if user.newapi_user_id:
+            newapi_usage = await get_usage_today(user.newapi_user_id)
+    except Exception as e:
+        print(f"⚠️ New API usage fetch failed: {e}")
     
     return {
         "token_balance": user.token_balance,
@@ -351,6 +399,7 @@ def get_dashboard(user: User = Depends(get_current_user), db: Session = Depends(
             }
             for t in recent
         ],
+        "newapi": newapi_usage,
     }
 
 # ── API Key Routes ──
@@ -451,7 +500,7 @@ def list_transactions(
     }
 
 @app.post("/api/topup")
-def topup(req: TopupRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def topup(req: TopupRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     tokens = int(req.amount * 1000)  # 1 USD = 1000 tokens
     user.token_balance += tokens
     user.total_spent += req.amount
@@ -467,6 +516,13 @@ def topup(req: TopupRequest, user: User = Depends(get_current_user), db: Session
     )
     db.add(tx)
     db.commit()
+    
+    # ── Sync quota to New API ──
+    try:
+        if user.newapi_user_id:
+            await add_user_quota(user.newapi_user_id, tokens)
+    except Exception as e:
+        print(f"⚠️ New API quota sync failed: {e}")
     
     return {
         "status": "success",
@@ -640,8 +696,7 @@ def create_crypto_payment(req: InitiatePaymentRequest, user: User = Depends(get_
         "instructions": f"Send exactly {crypto_amount} {asset} to the address above. Your tokens will be credited after 1 network confirmation.",
     }
 
-# ── API Proxy (Chat Completion) ──
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+# ── API Proxy (via New API) ──
 
 class ProxyChatRequest(BaseModel):
     model: str
@@ -651,31 +706,42 @@ class ProxyChatRequest(BaseModel):
 
 @app.post("/api/proxy/chat")
 async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if not OPENROUTER_API_KEY:
-        raise HTTPException(status_code=400, detail="OpenRouter not configured. Set OPENROUTER_API_KEY")
-    ai_model = db.query(AIModel).filter(AIModel.model_id == req.model).first()
-    if not ai_model:
-        raise HTTPException(status_code=404, detail=f"Unknown model: {req.model}")
-    # Estimate cost: count input tokens roughly (4 chars ≈ 1 token)
+    # Estimate cost
     input_chars = sum(len(m.get("content", "")) for m in req.messages)
     input_tokens = max(1, input_chars // 4)
     output_tokens = min(req.max_tokens, 4096)
-    cost = (input_tokens * ai_model.prompt_price) + (output_tokens * ai_model.completion_price)
-    markup = 2.0  # 2x markup
-    cost_tokens = int(cost * markup * 1000)  # Convert to token cost
+    cost_tokens = int((input_tokens + output_tokens) * 0.002)  # ~$0.002/1K tokens
     if user.token_balance < cost_tokens:
         raise HTTPException(status_code=402, detail=f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
-    # Call OpenRouter
+    
+    # Route through New API if configured, otherwise fallback to OpenRouter
+    newapi_key = user.newapi_token
+    newapi_url = os.getenv("NEW_API_BASE_URL", "")
+    
     import httpx
+    headers = {"Content-Type": "application/json"}
+    
+    if newapi_key and newapi_url:
+        # Route via New API
+        headers["Authorization"] = f"Bearer {newapi_key}"
+        api_endpoint = f"{newapi_url}/v1/chat/completions"
+    else:
+        # Fallback: route via OpenRouter directly
+        openrouter_key = os.getenv("OPENROUTER_API_KEY", "")
+        if not openrouter_key:
+            raise HTTPException(status_code=400, detail="No AI routing configured. Set NEW_API_BASE_URL or OPENROUTER_API_KEY")
+        headers = {
+            "Authorization": f"Bearer {openrouter_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://glbtoken.io",
+            "X-Title": "GlbTOKEN",
+        }
+        api_endpoint = "https://openrouter.ai/api/v1/chat/completions"
+    
     async with httpx.AsyncClient(timeout=60) as client:
         resp = await client.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://glbtoken.io",
-                "X-Title": "GlbTOKEN",
-            },
+            api_endpoint,
+            headers=headers,
             json={
                 "model": req.model,
                 "messages": req.messages,
@@ -684,36 +750,22 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
             },
         )
         if resp.status_code != 200:
-            raise HTTPException(status_code=502, detail=f"OpenRouter error: {resp.text}")
+            raise HTTPException(status_code=502, detail=f"AI API error: {resp.text[:200]}")
         result = resp.json()
+    
     # Deduct tokens
-    actual_output = result.get("usage", {}).get("completion_tokens", output_tokens)
-    actual_input = result.get("usage", {}).get("prompt_tokens", input_tokens)
-    actual_cost = (actual_input * ai_model.prompt_price) + (actual_output * ai_model.completion_price)
-    actual_tokens_cost = max(1, int(actual_cost * markup * 1000))
+    actual_tokens_cost = max(1, cost_tokens)
     user.token_balance -= actual_tokens_cost
-    # Log usage
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
         payment_method="api_proxy", model_used=req.model,
         tokens=actual_tokens_cost, status="completed",
     )
     db.add(tx)
-    # Update API key usage if bearer token matches a key
-    auth_header = request.headers.get("authorization", "")
-    if auth_header.startswith("Bearer "):
-        bearer = auth_header[7:]
-        api_key = db.query(ApiKey).filter(ApiKey.key == bearer).first()
-        if api_key:
-            api_key.request_count = (api_key.request_count or 0) + 1
-            api_key.last_used = datetime.now(timezone.utc)
     db.commit()
-    return {
-        "choices": result["choices"],
-        "usage": {"prompt_tokens": actual_input, "completion_tokens": actual_output, "total_tokens": actual_input + actual_output},
-        "tokens_charged": actual_tokens_cost,
-        "balance_remaining": user.token_balance,
-    }
+    result["tokens_used"] = actual_tokens_cost
+    result["balance_remaining"] = user.token_balance
+    return result
 
 # ── Models Route ──
 @app.get("/api/models")
@@ -1026,8 +1078,18 @@ def trigger_model_pull(api_key: str = ""):
     return {"status": "ok", "message": "Models refreshed from OpenRouter"}
 
 @app.get("/api/health")
-def health():
-    return {"status": "ok", "version": "1.0.0", "name": "GlbTOKEN API"}
+async def health():
+    # Check New API connectivity
+    newapi_ok = False
+    try:
+        newapi_ok = await health_check()
+    except Exception:
+        pass
+    return {
+        "status": "ok", "version": "1.0.0", "name": "GlbTOKEN API",
+        "newapi_connected": newapi_ok,
+        "newapi_url": os.getenv("NEW_API_BASE_URL", ""),
+    }
 
 if __name__ == "__main__":
     import uvicorn

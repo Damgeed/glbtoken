@@ -16,7 +16,7 @@
 <nav class="navbar"><div class="container navbar-inner">
     <div class="nav-logo" onclick="window.location='index.html'"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></div>
     <div class="nav-center" id="navCenter">
-      <a href="/" class="active">Home</a>
+      <a href="index.html" class="active">Home</a>
       <a href="pricing.html">Pricing</a>
       <a href="how.html">How It Works</a>
       <a href="models.html">AI Models</a>
@@ -57,7 +57,25 @@
     <a class="theme-toggle-mobile" onclick="toggleTheme()" id="themeBtnMobile" title="Toggle theme">🌙</a>
     <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
-  </div></nav>
+  </div></nav>  </div></nav>
+  <div class="mobile-overlay" id="mobileOverlay">
+    <a href="index.html" onclick="closeMobile()">Home</a>
+    <a href="pricing.html" onclick="closeMobile()">Pricing</a>
+    <a href="how.html" onclick="closeMobile()">How It Works</a>
+    <a href="models.html" onclick="closeMobile()">AI Models</a>
+    <a href="apikeys.html" onclick="closeMobile()">API / Dev</a>
+    <a href="dashboard.html" onclick="closeMobile()" id="mobileDashLink" style="display:none">Dashboard</a>
+    <hr>
+    <div class="mobile-auth-grid">
+      <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
+      <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
+    </div>
+    <div id="mobileUserSection" style="display:none">
+      <a href="dashboard.html" onclick="closeMobile()">Dashboard</a>
+      <a href="topup.html" onclick="closeMobile()">Buy Tokens</a>
+      <a href="#" onclick="logoutUser();closeMobile()">Sign Out</a>
+    </div>
+  </div>
 <div class="dash-page"><div class="container">
       <span class="section-label">Company</span>
       <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1.5rem">Blog & Updates</h2>
