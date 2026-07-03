@@ -383,6 +383,7 @@
       .dash-balance .amount{font-size:2rem}
       .section-title{font-size:1.75rem;text-align:center}
       .section-sub{text-align:center}
+      .section-label{display:flex;justify-content:center;margin:0 auto 0.75rem}
       .vp-card{padding:1.25rem}
       .pricing-card{padding:1.25rem}
       .auth-card{padding:1.5rem 1.25rem;margin:0}.auth-page{padding:1rem 1rem 2rem}.auth-field input,.auth-field select{font-size:1rem;padding:0.85rem 0.75rem}

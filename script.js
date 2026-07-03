@@ -692,7 +692,6 @@
           this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
         ta.addEventListener('focus',openMobileChat);
-        ta.addEventListener('blur',function(){setTimeout(closeMobileChat,200)});
       }
       // Auto-init for this page
       const pageId = location.pathname.split('/').pop().replace('.html','') || 'home';
