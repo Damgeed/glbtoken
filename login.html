@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Login — GlbTOKEN</title>
+  <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
+  <meta name="theme-color" content="#0A0B14" id="metaTheme" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<nav class="navbar"><div class="container navbar-inner">
+    <div class="nav-logo" onclick="window.location='/'"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></div>
+    <div class="nav-center" id="navCenter">
+      <a href="/" class="active">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="how.html">How It Works</a>
+      <a href="models.html">AI Models</a>
+      <a href="apikeys.html" id="navApiLink">API / Dev</a>
+      <a href="dashboard.html" id="navDashLink" style="display:none">Dashboard</a>
+    </div>
+    <div class="nav-right">
+        <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
+        <span class="nav-balance-standalone" id="navBalance">0 Tokens</span>
+        <div id="navGuest">
+          <a class="nav-btn-outline" onclick="showPage('login')">Login</a>
+          <a class="nav-btn" onclick="showPage('register')">Get Started</a>
+        </div>
+        <div id="navUser" style="display:none">
+          <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
+            <div class="dropdown-header">
+              <div class="dd-av" id="ddAvatar">U</div>
+              <div class="dd-info">
+                <div class="dd-name" id="dropName">User</div>
+                <div class="dd-email" id="dropEmail">user@email.com</div>
+              </div>
+            </div>
+            <div class="dd-bal"><span>Token Balance</span><span id="ddBalance">0</span></div>
+            <div class="dd-items">
+              <a href="dashboard.html"><span class="dd-icon">📊</span> Dashboard</a>
+              <a onclick="showPage('topup')"><span class="dd-icon">💰</span> Buy Tokens</a>
+              <a onclick="showPage('history')"><span class="dd-icon">📜</span> History</a>
+              <a href="apikeys.html"><span class="dd-icon">🔑</span> API Keys</a>
+              <a href="models.html"><span class="dd-icon">🤖</span> AI Models</a>
+            </div>
+            <div class="dd-footer">
+              <a onclick="logoutUser()"><span class="dd-icon">🚪</span> Sign Out</a>
+            </div>
+          </div></div>
+        </div>
+    </div>
+    <a class="theme-toggle-mobile" onclick="toggleTheme()" id="themeBtnMobile" title="Toggle theme">🌙</a>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+  </div></nav>
+<div class="auth-page"><div class="auth-card">
+    <h2>Welcome Back</h2><p class="sub">Sign in to your GlbTOKEN account</p>
+    <div class="auth-field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+    <div class="auth-field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+    <div style="text-align:right;margin-bottom:1rem"><a style="font-size:0.85rem;color:var(--primary);cursor:pointer">Forgot Password?</a></div>
+    <button class="btn-primary" style="width:100%" onclick="loginUser()">Sign In</button>
+    <div class="auth-divider">or continue with</div>
+    <div class="auth-oauth">
+      <button class="auth-oauth-btn" onclick="oauthLogin('google')">🌐 Google</button>
+      <button class="auth-oauth-btn" onclick="oauthLogin('github')">🐙 GitHub</button>
+    </div>
+    <div class="auth-switch">Don't have an account? <a onclick="showPage('register')">Create one</a></div>
+  </div></div></div>
+
+  <!-- REGISTER -->
+<footer><div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="nav-logo" onclick="showPage('home')"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></div><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
+      <div class="footer-col"><h4>Product</h4><span onclick="showPage('pricing')">Pricing</span><span onclick="showPage('models')">AI Models</span><span onclick="showPage('apikeys')">API Docs</span></div>
+      <div class="footer-col"><h4>Company</h4><span onclick="showPage('about')">About</span><span onclick="showPage('blog')">Blog</span></div>
+      <div class="footer-col"><h4>Contact</h4><span onclick="showPage('faq')">FAQ</span><span onclick="window.location.href='mailto:global@kai.com'">global@kai.com</span><span onclick="showPage('terms')">Terms</span><span onclick="showPage('privacy')">Privacy</span><span onclick="showPage('refund')">Refund</span></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
+  </div></footer>
+<button class="chat-fab" onclick="toggleChat()">💬</button>
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header"><h3>💬 Support</h3><button onclick="toggleChat()">✕</button></div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div></div>
+
+<script src="script.js"></script>
+</body>
+</html>
