@@ -454,7 +454,7 @@
   @media(max-width:768px){
     .ai-chat-section.chat-focused{
       position:fixed;inset:0;z-index:300;background:hsla(224 44% 5% / 0.5);backdrop-filter:blur(6px);
-      display:flex;align-items:center;justify-content:center;padding:1rem;border:none;animation:chatFadeIn 0.2s ease-out
+      display:flex;align-items:center;justify-content:center;padding:0.5rem;border:none;animation:chatFadeIn 0.2s ease-out
     }
     .ai-chat-section.chat-focused .container{
       width:100%;max-width:400px;margin:0;padding:0
@@ -463,16 +463,17 @@
     .ai-chat-section.chat-focused .ai-chat-inner{
       border:1px solid var(--border);border-radius:var(--radius-lg);
       background:var(--card);box-shadow:var(--shadow-elevated);
-      min-height:auto;max-height:70vh;overflow:hidden;height:70vh
+      min-height:auto;max-height:88vh;overflow:hidden;height:88vh
     }
-    .ai-chat-section.chat-focused .chat-header{flex-shrink:0}
+    .ai-chat-section.chat-focused .chat-header{flex-shrink:0;padding:0.5rem 0.625rem;gap:0.375rem}
+    .ai-chat-section.chat-focused .chat-header .current-badge{display:none}
     .ai-chat-section.chat-focused .ai-chat-main{flex:1;min-height:0;overflow:hidden}
     .ai-chat-section.chat-focused .ai-chat-main .chat-msgs{flex:1;overflow-y:auto;max-height:none;min-height:0;height:auto}
     .ai-chat-section.chat-focused .chat-input{flex-shrink:0}
     /* Hide floating support chat when main chat is active */
     .ai-chat-section.chat-focused ~ .chat-fab,
     .ai-chat-section.chat-focused ~ .chat-window{display:none!important}
-    .chat-header .chat-focused-close{background:none;border:none;color:var(--text-muted);font-size:1.1rem;cursor:pointer;padding:4px;margin-left:auto;position:static}
+    .chat-header .chat-focused-close{background:var(--card);border:1px solid var(--border);color:var(--text-secondary);font-size:1rem;cursor:pointer;padding:0;margin-left:auto;position:static;flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-card)}
   }
   @keyframes chatFadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
   /* ── Hamburger SVG Icons ── */
