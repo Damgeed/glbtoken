@@ -350,6 +350,7 @@
       .nav-right #navGuest,.nav-right #navUser{display:none!important}
       .topup-grid{grid-template-columns:1fr}
       .chat-window{width:calc(100vw - 2rem);height:60vh;bottom:5rem;right:1rem}
+      .ai-chat-inner{min-height:auto}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
     }
     @media(max-width:600px){
