@@ -62,8 +62,7 @@
   <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobile()"></div>
   <div class="mobile-overlay" id="mobileOverlay">
     <div class="m-close"><button onclick="closeMobile()">✕</button></div>
-    <div class="m-section-label">Navigate</div>
-    <a href="index.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg> Home</a>
+        <a href="index.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg> Home</a>
     <a href="pricing.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Pricing</a>
     <a href="how.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V4a2 2 0 012-2h8.5L20 7.5V20a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> How It Works</a>
     <a href="models.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> AI Models</a>
@@ -82,31 +81,14 @@
     </div>
   </div>
 
-<div class="apikey-page"><div class="container" style="max-width:900px">
+<div class="apikey-page"><div class="container">
   <div style="text-align:center;margin-bottom:2.5rem">
     <span class="section-label">Developer</span>
     <h2 class="section-title" style="font-size:2rem">API Documentation</h2>
     <p style="color:var(--text-secondary);max-width:600px;margin:0.5rem auto 0">OpenAI-compatible endpoint. One API key for 100+ models. Integrate in minutes.</p>
   </div>
 
-  <!-- API Key Management -->
-  <div class="dash-card" style="margin-bottom:2rem">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
-      <div>
-        <h3 style="font-size:1.1rem;font-weight:600">🔑 Your API Keys</h3>
-        <p style="font-size:0.85rem;color:var(--text-secondary)">Create and manage API keys from your Dashboard</p>
-      </div>
-      <button class="btn-primary" onclick="window.location.href='dashboard.html'">Manage Keys →</button>
-    </div>
-    <div id="keyList"></div>
-    <div id="loginPrompt" style="text-align:center;padding:2rem 1rem">
-      <p style="color:var(--text-muted);margin-bottom:1rem">Sign in to generate and manage your API keys</p>
-      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
-        <a class="nav-btn" href="login.html" style="padding:0.75rem 2rem">Sign In</a>
-        <a class="nav-btn-outline" href="register.html" style="padding:0.75rem 2rem">Create Account</a>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Quick Start -->
   <div class="dash-card" style="margin-bottom:2rem" id="quickstart">
@@ -365,26 +347,7 @@ console.log(completion.choices[0].message.content);</pre>
 
 <script src="script.js"></script>
 <script>
-// Auth check on page load
-document.addEventListener('DOMContentLoaded',function(){
-  const token=localStorage.getItem('gt_token');
-  const loginPrompt=document.getElementById('loginPrompt');
-  const keyList=document.getElementById('keyList');
-  if(token){
-    if(loginPrompt)loginPrompt.style.display='none';
-    // Show existing keys from localStorage
-    const keys=JSON.parse(localStorage.getItem('gt_api_keys')||'[]');
-    if(keyList){
-      if(keys.length===0){
-        keyList.innerHTML='<p style="text-align:center;padding:1rem;color:var(--text-muted);font-size:0.85rem">No API keys yet. Create one from your Dashboard.</p>';
-      }else{
-        keyList.innerHTML=keys.map(k=>'<div class="api-key-card"><div class="key-info"><div class="key-name">'+k.name+'</div><div class="key-val">'+k.key.slice(0,12)+'...'+k.key.slice(-4)+'</div><div class="meta">Created: '+new Date(k.created).toLocaleDateString()+'</div></div><div class="key-actions"><button class="sort-btn" onclick="navigator.clipboard.writeText(\''+k.key+'\');showToast(\'Copied!\',\'success\')">📋 Copy</button></div></div>').join('');
-      }
-    }
-  }else{
-    if(keyList)keyList.style.display='none';
-  }
-});
+// No auth-dependent sections to manage on this page
 </script>
 </body>
 </html>

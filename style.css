@@ -52,14 +52,13 @@
     .dropdown .dd-footer a{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:6px;font-size:0.85rem;color:var(--destructive);transition:all 0.15s;cursor:pointer}
     .dropdown .dd-footer a:hover{background:hsla(0 68% 52% / 0.1)}
     .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:var(--card);border:1px solid var(--border-light);border-radius:8px;z-index:201;position:relative;min-width:40px;min-height:40px;align-items:center;justify-content:center}
-    .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s}
+    .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.35s cubic-bezier(0.22,1,0.36,1)}
     .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
     .hamburger.active span:nth-child(2){opacity:0}
     .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
-    .mobile-overlay{display:none}
-    .mobile-backdrop{position:fixed;inset:0;background:hsla(224 44% 5% / 0.6);backdrop-filter:blur(4px);z-index:199;opacity:0;transition:opacity 0.3s;pointer-events:none}
-    .mobile-backdrop.open{opacity:1;pointer-events:auto}
-    .mobile-overlay{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:85vw;background:var(--bg);border-left:1px solid var(--border);z-index:200;padding:1.25rem;overflow-y:auto;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;gap:0.25rem}
+    .mobile-overlay{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:85vw;background:var(--bg);border-left:1px solid var(--border);z-index:200;padding:1.25rem;overflow-y:auto;transform:translateX(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;gap:0.25rem}
+    .mobile-backdrop{position:fixed;inset:0;background:hsla(224 44% 5% / 0.6);backdrop-filter:blur(4px);z-index:199;opacity:0;transition:opacity 0.38s cubic-bezier(0.22,1,0.36,1);pointer-events:none}
+    .mobile-backdrop.open{display:block;opacity:1;pointer-events:auto}
     .mobile-overlay.open{transform:translateX(0)}
     .mobile-overlay .m-close{display:flex;justify-content:flex-end;padding:0.25rem 0 0.75rem;margin-bottom:0.5rem}
     .mobile-overlay .m-close button{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text-secondary);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
