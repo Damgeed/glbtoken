@@ -726,10 +726,13 @@
       document.getElementById('mobileOverlay').classList.remove('open');
       document.getElementById('hamburgerBtn').classList.remove('active');
     }
-    let tmIndex=0,tmInterval,tmTotal=2;
+    let tmIndex=0,tmInterval,tmTotal=2,tmTouchStartX=0,tmTouchStartY=0;
+    const tmTitles=['🔥 Top Models This Week','💻 API Quick Start'];
     function slideTopView(dir){
       tmIndex=(tmIndex+dir+tmTotal)%tmTotal;
       document.getElementById('tmTrack').style.transform='translateX(-'+(tmIndex*100)+'%)';
+      const title=document.getElementById('tmTitle');
+      if(title)title.textContent=tmTitles[tmIndex];
       document.querySelectorAll('.tm-dot').forEach((d,i)=>{
         d.style.background=i===tmIndex?'var(--primary)':'var(--text-muted)';
         d.style.width=i===tmIndex?'10px':'8px';
@@ -738,5 +741,17 @@
       clearInterval(tmInterval);tmInterval=setInterval(()=>slideTopView(1),5000);
     }
     function goToSlide(i){tmIndex=i-1;slideTopView(1)}
-    document.addEventListener('DOMContentLoaded',()=>{tmInterval=setInterval(()=>slideTopView(1),5000)});
+    document.addEventListener('DOMContentLoaded',()=>{
+      const track=document.getElementById('tmTrack');
+      if(track){
+        track.addEventListener('touchstart',e=>{tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY},{passive:true});
+        track.addEventListener('touchmove',e=>{e.preventDefault()},{passive:false});
+        track.addEventListener('touchend',e=>{
+          const dx=e.changedTouches[0].clientX-tmTouchStartX;
+          const dy=e.changedTouches[0].clientY-tmTouchStartY;
+          if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)slideTopView(dx<0?1:-1);
+        });
+      }
+      tmInterval=setInterval(()=>slideTopView(1),5000);
+    });
   

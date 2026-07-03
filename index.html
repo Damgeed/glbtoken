@@ -14,7 +14,7 @@
 </head>
 <body>
 <nav class="navbar"><div class="container navbar-inner">
-    <div class="nav-logo" onclick="window.location='index.html'" class="active"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></div>
+    <a href="/glbtoken/" class="nav-logo active"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></a>
     <div class="nav-center" id="navCenter">
       <a href="index.html" class="active">Home</a>
       <a href="pricing.html">Pricing</a>
@@ -95,7 +95,7 @@
         <div style="display:flex;flex-direction:column;gap:1rem">
           <div class="hero-calc" style="max-width:100%">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
-              <h3 style="font-size:1.05rem;font-weight:600;margin:0">🔥 Top Models This Week</h3>
+              <h3 style="font-size:1.05rem;font-weight:600;margin:0" id="tmTitle">🔥 Top Models This Week</h3>
               <a onclick="showPage('models')" style="font-size:0.8rem;color:var(--primary);cursor:pointer">View all 100+ →</a>
             </div>
             <div class="tm-carousel" style="position:relative;overflow:hidden;border-radius:var(--radius-sm)">
@@ -228,7 +228,7 @@
   <!-- PRICING -->
 <footer><div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="nav-logo" onclick="window.location='index.html'"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></div><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
+      <div class="footer-brand"><a href="/glbtoken/" class="nav-logo"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></a><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
       <div class="footer-col"><h4>Product</h4><a href="pricing.html">Pricing</a><a href="models.html">AI Models</a><a href="apikeys.html">API Docs</a></div>
       <div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="blog.html">Blog</a></div>
       <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><span onclick="window.location.href='mailto:global@kai.com'">global@kai.com</span><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
