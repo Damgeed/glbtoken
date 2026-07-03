@@ -394,7 +394,12 @@
       .hero-calc{padding:1.25rem}
       .calc-result .big{font-size:1.35rem}
       .container{padding:0 1rem}
-      section{padding:3rem 0}
+      section{padding:1.5rem 0}
+      .cta-section{padding:1.5rem 1.25rem}
+      .cta-section h2{font-size:1.3rem}
+      .cta-section p{margin-bottom:1.25rem}
+      .vp-card{padding:1rem}
+      .step-card{padding:1rem}
     }
     @media(max-width:400px){
       .hero h1{font-size:1.65rem;text-align:center}
