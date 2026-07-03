@@ -706,8 +706,10 @@
       const section=document.querySelector('.ai-chat-section');
       if(section){
         section.classList.add('chat-focused');
-        // Scroll the chat section into view so keyboard doesn't cover messages
-        section.scrollIntoView({behavior:'smooth',block:'start'});
+        // Align top of chat with bottom of fixed navbar (56px)
+        const rect=section.getBoundingClientRect();
+        const offset=window.scrollY+rect.top-56;
+        window.scrollTo({top:offset,behavior:'smooth'});
         // After a brief delay, scroll messages to bottom
         setTimeout(()=>{
           const msgs=document.getElementById('aiChatMsgs');
