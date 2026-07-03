@@ -325,7 +325,7 @@ console.log(completion.choices[0].message.content);</pre>
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Ready to Build?</h3>
     <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
       <button class="btn-primary" onclick="window.location.href='register.html'" style="padding:0.75rem 2rem">Create Free Account →</button>
-      <button class="btn-secondary" onclick="if(localStorage.getItem('gt_token')){window.location.href='dashboard.html'}else{window.location.href='login.html'}" style="padding:0.75rem 2rem">Go to Dashboard</button>
+      <button class="btn-secondary" id="apiGoToDashBtn" onclick="if(localStorage.getItem('gt_token')){window.location.href='dashboard.html'}else{window.location.href='login.html'}" style="padding:0.75rem 2rem;display:none">Go to Dashboard</button>
     </div>
   </div>
 </div></div>

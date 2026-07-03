@@ -272,6 +272,9 @@
       document.getElementById('navDashLink').style.display=loggedIn?'inline-block':'none';
       document.getElementById('mNavApiLink').style.display=loggedIn?'none':'block';
       document.getElementById('mNavDashLink').style.display=loggedIn?'block':'none';
+      // API doc page: show Go to Dashboard button when logged in
+      const goBtn=document.getElementById('apiGoToDashBtn');
+      if(goBtn)goBtn.style.display=loggedIn?'inline-flex':'none';
       if(loggedIn&&userData.name){
         document.getElementById('dashUserName').textContent=userData.name||'User';
         const initial=(userData.name||'U')[0].toUpperCase();
