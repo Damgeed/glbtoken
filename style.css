@@ -449,10 +449,8 @@
   .star:nth-child(13){top:18%;left:35%;animation:shootDR 12s ease-in infinite;animation-delay:8s}.star:nth-child(14){top:88%;left:60%;animation:shootDL 10s ease-in infinite;animation-delay:6.5s}.star:nth-child(15){top:42%;left:65%;animation:shootArc 14s ease-in infinite;animation-delay:2.5s}
   /* Trails (longer streaks) */
   .star.trail:nth-child(16){top:15%;left:25%;animation:shootDR 18s ease-in infinite;animation-delay:0.8s;height:10px}.star.trail:nth-child(17){top:50%;left:70%;animation:shootDL 16s ease-in infinite;animation-delay:3.2s;height:8px}.star.trail:nth-child(18){top:70%;left:20%;animation:shootD 14s ease-in infinite;animation-delay:5s;height:6px}.star.trail:nth-child(19){top:28%;left:50%;animation:shootArc 20s ease-in infinite;animation-delay:9s;height:12px}.star.trail:nth-child(20){top:60%;left:45%;animation:shootDR 15s ease-in infinite;animation-delay:7.5s;height:7px}
-  /* ── Mobile Chat Focused State (hide heading, expand chat) ── */
+  /* ── Mobile Chat Focused State (hide heading only) ── */
   @media(max-width:768px){
     .ai-chat-section.chat-focused .container>div:first-child{display:none}
-    .ai-chat-section.chat-focused .ai-chat-inner{border:none;border-radius:0;min-height:300px}
-    .ai-chat-section.chat-focused .ai-chat-main .chat-msgs{min-height:200px}
   }
   /* Force rebuild */
