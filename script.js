@@ -690,6 +690,7 @@
           this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
         ta.addEventListener('focus',openMobileChat);
+        ta.addEventListener('blur',function(){setTimeout(closeMobileChat,200)});
       }
       // Auto-init for this page
       const pageId = location.pathname.split('/').pop().replace('.html','') || 'home';
@@ -699,11 +700,12 @@
       if(pageId==='history'&&token)loadTx();
       if(pageId==='models')loadModels();
     });
-    // ── Mobile Chat: scroll into view on focus ──
+    // ── Mobile Chat: scroll into view + hide heading on focus ──
     function openMobileChat(){
       if(window.innerWidth>768)return;
       const section=document.querySelector('.ai-chat-section');
       if(section){
+        section.classList.add('chat-focused');
         // Scroll the chat section into view so keyboard doesn't cover messages
         section.scrollIntoView({behavior:'smooth',block:'start'});
         // After a brief delay, scroll messages to bottom
@@ -712,6 +714,10 @@
           if(msgs)msgs.scrollTop=msgs.scrollHeight;
         },400);
       }
+    }
+    function closeMobileChat(){
+      const section=document.querySelector('.ai-chat-section');
+      if(section)section.classList.remove('chat-focused');
     }
     // ── Support Chat (floating) ──
     function toggleChat(){document.getElementById('chatWindow').classList.toggle('open')}
@@ -767,7 +773,11 @@
       const track=document.getElementById('tmTrack');
       if(track){
         track.addEventListener('touchstart',e=>{tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY},{passive:true});
-        track.addEventListener('touchmove',e=>{e.preventDefault()},{passive:false});
+        track.addEventListener('touchmove',e=>{
+          const dx=Math.abs(e.touches[0].clientX-tmTouchStartX);
+          const dy=Math.abs(e.touches[0].clientY-tmTouchStartY);
+          if(dx>dy&&dx>10)e.preventDefault();
+        },{passive:false});
         track.addEventListener('touchend',e=>{
           const dx=e.changedTouches[0].clientX-tmTouchStartX;
           const dy=e.changedTouches[0].clientY-tmTouchStartY;
