@@ -84,13 +84,108 @@
 <div class="dash-page"><div class="container">
       <span class="section-label">Support</span>
       <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1.5rem">Frequently Asked Questions</h2>
-      <div style="display:flex;flex-direction:column;gap:1rem">
-        <div class="dash-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">What is GlbTOKEN?</h3><div style="display:none;padding-top:0.5rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6" class="open">GlbTOKEN is a global token that gives you access to 100+ AI models through a single balance. Buy once, use across OpenAI, Anthropic, Google, Meta, and more — no separate subscriptions needed.</div></div>
-        <div class="dash-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">How do I buy tokens?</h3><div style="display:none;padding-top:0.5rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6">Create an account, go to the Buy Tokens page, select a package or enter a custom amount (minimum $2), and pay with Stripe (card), Paystack (African mobile money/bank transfer), or Crypto (USDT/BTC/ETH).</div></div>
-        <div class="dash-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">Do tokens expire?</h3><div style="display:none;padding-top:0.5rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6">No! Your GlbTOKEN never expire. Use them whenever you want, across any of our supported AI models.</div></div>
-        <div class="dash-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">Which AI models are supported?</h3><div style="display:none;padding-top:0.5rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6">100+ models from 14+ providers including OpenAI (GPT-5.5, GPT-4o), Anthropic (Claude 3.5, Sonnet 5), Google (Gemini 3.5, 3.1), Meta (Llama 4), DeepSeek, Mistral, Qwen, Cohere, Perplexity, and more. Check our AI Models page for the full list.</div></div>
-        <div class="dash-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">How do I use the API?</h3><div style="display:none;padding-top:0.5rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6">Generate an API key from your Dashboard. Use our OpenRouter-compatible endpoint: POST to https://api.glbtoken.io/v1/chat/completions with your key in the Authorization header. Full docs available in the API Keys page.</div></div>
-        <div class="dash-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;cursor:pointer" onclick="this.nextElementSibling.classList.toggle('open')">What payment methods do you accept?</h3><div style="display:none;padding-top:0.5rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6">We accept Stripe (international credit/debit cards in USD), Paystack (African payments in NGN, GHS, KES via bank transfer, USSD, and mobile money), and Crypto (USDT TRC-20/ERC-20, BTC, ETH).</div></div>
+      <div class="faq-list" style="display:flex;flex-direction:column;gap:0.75rem">
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">What is GlbTOKEN? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">GlbTOKEN is a unified AI access platform. Instead of managing separate subscriptions for OpenAI, Anthropic, Google, and other AI providers, you buy a single token balance and use it across 100+ models from 14+ providers. Think of it as a prepaid wallet for AI — one deposit, zero subscriptions, full flexibility.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">How do I buy tokens? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">Create a free account to receive 25,000 free tokens instantly. Then go to the Buy Tokens page, choose a package (from $5 to $500) or enter a custom amount (minimum $2), and complete payment via one of three methods:<br><br>
+            • <strong>Stripe</strong> — International credit/debit cards (Visa, Mastercard, Amex) in USD<br>
+            • <strong>Paystack</strong> — African payments in NGN, GHS, KES via bank transfer, USSD, and mobile money<br>
+            • <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), BTC, and ETH</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">Do tokens expire? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">No — your GlbTOKEN never expire. Purchase once and use them at your own pace, across any supported model, for as long as your account remains active. There are no monthly renewal requirements or inactivity fees.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">Which AI models are supported? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">100+ models from 14+ providers including:<br><br>
+            • <strong>OpenAI</strong> — GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3<br>
+            • <strong>Anthropic</strong> — Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku<br>
+            • <strong>Google</strong> — Gemini 2.0 Flash, Gemini 2.0 Pro<br>
+            • <strong>Meta</strong> — Llama 4 Scout, Llama 4 Maverick<br>
+            • <strong>DeepSeek</strong> — V3, V4 Pro, R1<br>
+            • <strong>Mistral</strong> — Small, Large 2<br>
+            • <strong>Others</strong> — Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI<br><br>
+            Visit the AI Models page for the complete, searchable list with live pricing.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">How do I use the API? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">Generate an API key from your Dashboard, then use our OpenAI-compatible endpoint:<br><br>
+            <code style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85em">POST https://api.glbtoken.io/v1/chat/completions</code><br><br>
+            Pass your key in the <code style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85em">Authorization: Bearer gt_...</code> header. Full documentation with code examples for Python, Node.js, cURL, and streaming is available on the API Docs page.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">What payment methods do you accept? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">Three payment channels:<br><br>
+            • <strong>Stripe</strong> — International cards (Visa, Mastercard, Amex) in USD. Instant credit.<br>
+            • <strong>Paystack</strong> — African markets: bank transfers, USSD, mobile money in NGN, GHS, KES, ZAR. Instant to 24hr settlement.<br>
+            • <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Credits after 1 confirmation.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">How are token prices calculated? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">1,000 GlbTOKEN = approximately $1 USD. Each model has a per-request cost in tokens (e.g., GPT-4o Mini costs ~0.15 tokens per request, Claude 3.5 Sonnet costs ~3 tokens per request). The exact cost is displayed beside each model on the AI Models page and in your Dashboard transaction history. Larger packages offer better value — the $200 plan includes a 15% bonus.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">Do I need an account to use the chat? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">No — you can try the AI chat on the homepage instantly, no account or payment needed. When you're ready for unlimited access, API keys, usage history, and premium models, create a free account and receive 25,000 free tokens to get started.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">Is there a refund policy? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">Yes — unused tokens are eligible for a full refund within 14 days of purchase. After 14 days, refunds are provided on a pro-rata basis for unused balances. Refunds are processed to the original payment method within 5-10 business days. See our full Refund Policy page for details.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">Is my data secure? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">We take data security seriously. API keys are encrypted at rest using AES-256. All traffic is served over HTTPS (TLS 1.3). We do not store prompt or response content beyond what is necessary for billing and abuse prevention. We never train on your data or prompts. See our Privacy Policy for full details.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">Can I use GlbTOKEN for commercial projects? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">Absolutely. GlbTOKEN is designed for developers, startups, and enterprises building AI-powered products. Use your API key in production applications, serve end users, integrate with your existing stack — there are no usage restrictions beyond our Terms of Service. For high-volume plans, contact us at global@kai.com for custom pricing.</div>
+          </div>
+        </div>
+
+        <div class="dash-card faq-item">
+          <h3 style="font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0" onclick="this.parentNode.classList.toggle('open')">How do I contact support? <span style="font-size:1.2rem;transition:transform 0.2s">+</span></h3>
+          <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7">
+            <div style="padding-top:0.5rem;padding-bottom:0.25rem">You can reach us at <a href="mailto:global@kai.com" style="color:var(--primary)">global@kai.com</a> or use the 💬 chat bubble in the bottom-right corner of any page. We typically respond within 2 hours during business hours (UTC+0 to UTC+8). For urgent API issues, email is fastest — include your account email and a description of the issue.</div>
+          </div>
+        </div>
+
       </div>
     </div></div>
   </div>
