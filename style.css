@@ -229,7 +229,7 @@
     .payment-opt .pm-info{flex:1}
     .payment-opt .pm-info h4{font-size:0.95rem;font-weight:600;margin-bottom:0.15rem}
     .payment-opt .pm-info p{font-size:0.8rem;color:var(--text-muted);margin:0}
-    .apikey-page{padding:0}
+    .apikey-page{padding:2rem 1.25rem 3rem}
     .api-key-card{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem}
     .api-key-card .key-info .key-name{font-weight:600;font-size:0.9rem}
     .api-key-card .key-info .key-val{font-family:monospace;font-size:0.85rem;color:var(--primary);margin-top:0.15rem;word-break:break-all}
@@ -374,6 +374,7 @@
       .footer-bottom{flex-direction:row;justify-content:center;gap:0.75rem;text-align:center;font-size:0.75rem}
       .footer-brand p{max-width:100%}
       .dash-page{padding:1rem 0 1.5rem}
+      .apikey-page{padding:1rem 0 1.5rem}
       .dash-page .container,.apikey-page .container,.history-page .container,.models-page .container,.topup-page .container{max-width:100%!important;padding:0 1rem!important}
       .dash-page .dash-card{padding:1rem}
       .apikey-page .dash-card,.history-page .dash-card{padding:1rem}
