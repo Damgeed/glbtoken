@@ -374,9 +374,9 @@
       .footer-bottom{flex-direction:row;justify-content:center;gap:0.75rem;text-align:center;font-size:0.75rem}
       .footer-brand p{max-width:100%}
       .dash-page{padding:1rem 0 1.5rem}
-      .dash-page .container,.apikey-page .container{max-width:100%!important;padding:0 1rem!important}
+      .dash-page .container,.apikey-page .container,.history-page .container,.models-page .container,.topup-page .container{max-width:100%!important;padding:0 1rem!important}
       .dash-page .dash-card{padding:1rem}
-      .apikey-page .dash-card{padding:1rem}
+      .apikey-page .dash-card,.history-page .dash-card{padding:1rem}
       .dash-stats{grid-template-columns:1fr 1fr}
       .dash-grid{grid-template-columns:1fr}
       .dash-balance{padding:1.25rem}
