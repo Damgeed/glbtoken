@@ -148,7 +148,7 @@
     .auth-oauth-btn svg{flex-shrink:0}
     .auth-switch{text-align:center;margin-top:1.25rem;font-size:0.85rem;color:var(--text-muted)}
     .auth-switch a{color:var(--primary);cursor:pointer}
-    .dash-page{padding:6rem 1.25rem 3rem}
+    .dash-page{padding:2rem 1.25rem 3rem}
     .dash-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
     .dash-welcome h1{font-size:1.5rem;font-weight:700;margin-bottom:0.25rem}
     .dash-welcome p{font-size:0.85rem;color:var(--text-secondary)}
@@ -375,6 +375,9 @@
       .footer-brand p{max-width:100%}
       .dash-page{padding:1rem 0 1.5rem}
       .apikey-page{padding:1rem 0 1.5rem}
+      .models-page{padding:1rem 0 1.5rem}
+      .topup-page{padding:1rem 0 1.5rem}
+      .history-page{padding:1rem 0 1.5rem}
       .dash-page .container,.apikey-page .container,.history-page .container,.models-page .container,.topup-page .container{max-width:100%!important;padding:0 1rem!important}
       .dash-page .dash-card{padding:1rem}
       .apikey-page .dash-card,.history-page .dash-card{padding:1rem}
