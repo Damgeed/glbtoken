@@ -444,90 +444,11 @@ console.log(completion.choices[0].message.content);</pre>
     </div>
   </div>
 
-<script data-cfasync="false" src="script.js?v=1783150508"></script>
+<script data-cfasync="false" src="script.js?v=1783153800"></script>
 <div id="google_translate_element" style="display:none"></div>
+<script>restoreSavedLanguage();</script>
 <script>
-function toggleLangMenu() {
-  var m = document.getElementById('langMenu');
-  if (m) m.classList.toggle('open');
-}
-function switchLanguage(lang) {
-  if(lang === 'en'){
-    document.querySelectorAll('[data-gt-old]').forEach(function(el){
-      el.textContent = el.getAttribute('data-gt-old');
-      el.removeAttribute('data-gt-old');
-    });
-    document.querySelectorAll('[data-gt-old-href]').forEach(function(el){
-      el.href = el.getAttribute('data-gt-old-href');
-      el.removeAttribute('data-gt-old-href');
-    });
-    document.querySelectorAll('[data-gt-old-placeholder]').forEach(function(el){
-      el.placeholder = el.getAttribute('data-gt-old-placeholder');
-      el.removeAttribute('data-gt-old-placeholder');
-    });
-    localStorage.setItem('gt_lang', 'en');
-    updateLangUI('en');
-    return;
-  }
-  var texts = [];
-  var els = [];
-  var walker = document.createTreeWalker(document.body, 4, null, false);
-  while(walker.nextNode()){
-    var n = walker.currentNode;
-    if(n.parentNode && n.parentNode.closest && n.parentNode.closest('.lang-selector,.lang-menu,.lang-btn-mobile,.chat-window,.stars-bg,.footer-bottom,script,style,svg,code,pre')) continue;
-    var t = n.textContent.trim();
-    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || n.parentNode.closest('[data-gt-old]')) continue;
-    texts.push(t);
-    els.push(n);
-  }
-  if(!texts.length){ updateLangUI(lang); return; }
-  function doTranslate(start){
-    var batch = [], batchEls = [], batchSize = 40;
-    for(var i = start; i < texts.length && batch.length < batchSize; i++){
-      batch.push(texts[i]); batchEls.push(els[i]);
-    }
-    if(!batch.length){ updateLangUI(lang); return; }
-    var q = batch.join('\n---GT---\n');
-    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + lang + '&dt=t&q=' + encodeURIComponent(q);
-    fetch(url).then(function(r){ return r.json(); }).then(function(d){
-      if(d && d[0]){
-        for(var i = 0; i < d[0].length && i < batchEls.length; i++){
-          if(d[0][i] && d[0][i][0]){
-            var orig = batchEls[i].textContent;
-            if(!batchEls[i].parentNode.hasAttribute('data-gt-old')){
-              batchEls[i].parentNode.setAttribute('data-gt-old', orig);
-            }
-            var translated = d[0][i][0];
-            if(/GlbTOKEN/i.test(orig) || /Glb[^a-z]/i.test(orig) || /TOKEN[^a-z]/i.test(orig)){
-              translated = orig;
-            }
-            batchEls[i].textContent = translated;
-          }
-        }
-      }
-      doTranslate(start + batchSize);
-    }).catch(function(){ doTranslate(start + batchSize); });
-  }
-  doTranslate(0);
-  localStorage.setItem('gt_lang', lang);
-}
-function updateLangUI(lang){
-  document.querySelectorAll('.lang-option').forEach(function(el) {
-    el.classList.toggle('active', el.getAttribute('data-lang') === lang);
-  });
-  var lbl = document.getElementById('currentLangLabel');
-  if(lbl) lbl.textContent = lang === 'zh-CN' ? '中文' : lang === 'en' ? 'EN' : lang === 'ru' ? 'RU' : lang === 'ja' ? '日' : 'DE';
-  var lm = document.getElementById('langMenu');
-  if(lm) lm.classList.remove('open');
-}
-restoreSavedLanguage();
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.lang-selector') && !e.target.closest('.lang-menu') && !e.target.closest('.lang-btn-mobile')) {
-    var m = document.getElementById('langMenu');
-    if (m) m.classList.remove('open');
-  }
-});
-</script><script>
+(function(){<script>
 (function(){
   var cw = document.getElementById('chatWindow');
   if(!cw) return;
