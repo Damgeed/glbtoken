@@ -243,28 +243,32 @@ function switchLanguage(lang) {
     if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /GlbTOKEN|Glb[^a-z]|TOKEN[^a-z]|^[A-Z\s]{3,}$/.test(t) || n.parentNode.closest('[data-gt-old]')) continue;
     texts.push(t);
     els.push(n);
-    if(texts.length >= 50) break;
   }
   if(!texts.length){ updateLangUI(lang); return; }
-  var q = texts.join('\n---GT---\n');
-  var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + lang + '&dt=t&q=' + encodeURIComponent(q);
-  fetch(url).then(function(r){ return r.json(); }).then(function(d){
-    if(d && d[0]){
-      var translations = d[0];
-      for(var i = 0; i < translations.length && i < els.length; i++){
-        if(translations[i] && translations[i][0]){
-          if(!els[i].parentNode.hasAttribute('data-gt-old')){
-            els[i].parentNode.setAttribute('data-gt-old', els[i].textContent);
+  function doTranslate(start){
+    var batch = [], batchEls = [], batchSize = 40;
+    for(var i = start; i < texts.length && batch.length < batchSize; i++){
+      batch.push(texts[i]); batchEls.push(els[i]);
+    }
+    if(!batch.length){ updateLangUI(lang); return; }
+    var q = batch.join('\n---GT---\n');
+    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + lang + '&dt=t&q=' + encodeURIComponent(q);
+    fetch(url).then(function(r){ return r.json(); }).then(function(d){
+      if(d && d[0]){
+        for(var i = 0; i < d[0].length && i < batchEls.length; i++){
+          if(d[0][i] && d[0][i][0]){
+            if(!batchEls[i].parentNode.hasAttribute('data-gt-old')){
+              batchEls[i].parentNode.setAttribute('data-gt-old', batchEls[i].textContent);
+            }
+            batchEls[i].textContent = d[0][i][0];
           }
-          els[i].textContent = translations[i][0];
         }
       }
-    }
-    localStorage.setItem('gt_lang', lang);
-    updateLangUI(lang);
-  }).catch(function(){
-    updateLangUI(lang);
-  });
+      doTranslate(start + batchSize);
+    }).catch(function(){ doTranslate(start + batchSize); });
+  }
+  doTranslate(0);
+  localStorage.setItem('gt_lang', lang);
 }
 function updateLangUI(lang){
   document.querySelectorAll('.lang-option').forEach(function(el) {
