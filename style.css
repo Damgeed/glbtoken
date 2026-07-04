@@ -43,15 +43,17 @@
     .dropdown-header .dd-info{flex:1;min-width:0}
     .dropdown-header .dd-info .dd-name{font-size:0.9rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .dropdown-header .dd-info .dd-email{font-size:0.75rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .dropdown .dd-bal{display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;margin:0.25rem 0.5rem;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.15);border-radius:var(--radius-sm);font-size:0.85rem}
-    .dropdown .dd-bal span:last-child{font-weight:700;color:var(--primary)}
+    .dropdown .dd-bal{display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;margin:0.25rem 0.5rem;background:hsla(44 96% 52% / 0.15);border:1px solid hsla(44 96% 52% / 0.35);border-radius:var(--radius-sm);font-size:0.85rem}
+    .dropdown .dd-bal span:last-child{font-weight:700;color:var(--primary);font-size:1rem;letter-spacing:0.01em}
     .dropdown .dd-items{padding:0.25rem 0.5rem}
     .dropdown .dd-items a{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-secondary);transition:all 0.15s;cursor:pointer}
     .dropdown .dd-items a:hover{background:var(--primary-subtle);color:var(--text)}
     .dropdown .dd-items a .dd-icon{font-size:1.05rem;width:24px;text-align:center;flex-shrink:0}
+    .dropdown .dd-items a svg{width:18px;height:18px;flex-shrink:0;display:block}
     .dropdown .dd-footer{border-top:1px solid var(--border-light);padding:0.25rem 0.5rem;margin-top:0.25rem}
     .dropdown .dd-footer a{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:6px;font-size:0.85rem;color:var(--destructive);transition:all 0.15s;cursor:pointer}
     .dropdown .dd-footer a:hover{background:hsla(0 68% 52% / 0.1)}
+    .dropdown .dd-footer a svg{width:18px;height:18px;flex-shrink:0;display:block}
     .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:var(--card);border:1px solid var(--border-light);border-radius:8px;z-index:201;position:relative;min-width:40px;min-height:40px;align-items:center;justify-content:center}
     .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.35s cubic-bezier(0.22,1,0.36,1)}
     .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
