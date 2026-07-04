@@ -395,6 +395,7 @@
       .chat-window .chat-input button{font-size:1rem;padding:0.625rem 1rem}
       .ai-chat-inner{min-height:auto;max-height:65vh;height:55vh}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+      .dash-card,.pricing-card,.model-card,.vp-card,.contact-card,.payment-card,.footer-col,.hero-content,.section-sub{overflow-wrap:break-word;word-break:break-word}
     }
     @media(max-width:600px){
       .hero h1{font-size:2rem;text-align:center}.hero-stats{flex-wrap:wrap;gap:1rem;justify-content:center}
@@ -421,6 +422,7 @@
       .history-page{padding:1rem 0 1.5rem}
       .dash-page .container,.apikey-page .container,.history-page .container,.models-page .container,.topup-page .container{max-width:100%!important;padding:0 1rem!important;margin-top:0!important}
       .dash-page,.topup-page,.models-page,.history-page,.apikey-page,.auth-page,.pricing-page,.notif-page{overflow-wrap:break-word;word-break:break-word}
+      .dash-card,.pricing-card,.model-card,.vp-card,.contact-card,.payment-card,.footer-col,.trust-badges,.hero-content,.section-sub,.plan-desc,.plan-features li{overflow-wrap:break-word;word-break:break-word}
       .dash-page .dash-card{padding:1rem}
       .apikey-page .dash-card,.history-page .dash-card{padding:1rem}
       .dash-stats{grid-template-columns:1fr 1fr}
