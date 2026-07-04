@@ -493,6 +493,16 @@
   .logo-img{display:block;width:36px;height:36px;object-fit:contain}
   html.dark .logo-img{filter:none}
   html.light .logo-img{filter:invert(0.85) brightness(0.3)}
+  /* ── Mobile Carousel Fix ── */
+  .tm-carousel{overflow:hidden;border-radius:var(--radius-sm)}
+  .tm-track{display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+  .tm-track > div{min-width:100%;flex-shrink:0}
+  .tm-carousel .tm-dots{display:flex;justify-content:center;gap:0.5rem;margin-top:0.75rem}
+  @media(max-width:768px){
+    .tm-carousel [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr 1fr!important;overflow-wrap:break-word;word-break:break-word}
+    .tm-carousel [style*="grid-template-columns:1fr 1fr"] > div{overflow-wrap:break-word;word-break:break-word;font-size:0.75rem}
+    .tm-carousel pre,.tm-carousel code{white-space:pre-wrap;word-break:break-word;font-size:0.65rem}
+  }
   /* ── Shooting Stars Background ── */
   .stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
   .star{position:absolute;border-radius:50%;opacity:0}
