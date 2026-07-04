@@ -471,6 +471,10 @@
       .trust-badges{gap:0.4rem}
       .trust-badge{font-size:0.7rem;padding:0.25rem 0.5rem}
     }
+  /* ── Google Translate Widget Hide ── */
+  .goog-te-banner-frame,.goog-te-menu-frame,.goog-te-gadget-simple,#goog-gt-tt,.goog-tooltip,.skiptranslate.goog-te-gadget,iframe.goog-te-banner-frame{display:none!important}
+  body{top:0!important}
+  .goog-te-combo{display:none!important}
   /* ── Shooting Stars Background ── */
   .stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
   .star{position:absolute;border-radius:50%;opacity:0}
