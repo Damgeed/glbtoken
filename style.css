@@ -425,7 +425,7 @@
       .section-label{display:table;margin:0 auto 0.75rem}
       .vp-card{padding:1.25rem}
       .pricing-card{padding:1.25rem}
-      .auth-card{padding:1.5rem 1.25rem;margin:0}.auth-page{padding:1rem 1rem 2rem;align-items:flex-start}.auth-field input,.auth-field select{font-size:1rem;padding:0.85rem 0.75rem}
+      .auth-card{padding:1.5rem 1.25rem;margin:0;max-width:100%}.auth-page{padding:1rem 1rem 2rem;align-items:flex-start}.auth-field input,.auth-field select{font-size:1rem;padding:0.85rem 0.75rem}
       .auth-oauth{grid-template-columns:1fr 1fr}
       .models-toolbar{flex-direction:column;gap:0.75rem}
       .models-toolbar input,.models-toolbar select{width:100%}
@@ -553,7 +553,7 @@
 
 /* ── Desktop Auth Split Layout ── */
 .auth-hero{display:none}
-.auth-hero-card{width:100%;max-width:420px;margin:0 auto}
+.auth-hero-card{width:100%;margin:0 auto}
 @media(min-width:901px){
   .auth-page.auth-hero-wrapper{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4rem;min-height:calc(100vh - 64px);padding:2rem}
   .auth-hero{display:block;flex:1.2;max-width:480px;text-align:left}
