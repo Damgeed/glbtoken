@@ -1000,7 +1000,7 @@ function switchLanguage(lang) {
   var walker = document.createTreeWalker(document.body, 4, null, false);
   while(walker.nextNode()){
     var n = walker.currentNode;
-    if(n.parentNode && n.parentNode.closest && n.parentNode.closest('.lang-selector,.lang-menu,.lang-btn-mobile,.chat-window,.stars-bg,.footer-bottom,.logo-full,.logo-glb,.logo-token,script,style,svg,code,pre')) continue;
+    if(n.parentNode && n.parentNode.closest && n.parentNode.closest('.lang-selector,.lang-menu,.lang-btn-mobile,.chat-window,.stars-bg,.footer-bottom,.logo-full,.logo-glb,.logo-token,.trust-badge,.pc-badge,.pm-brand,.payment-card,.modal-box,script,style,svg,code,pre')) continue;
     var t = n.textContent.trim();
     if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|USD|KAI|AIEX)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
     texts.push(t);
