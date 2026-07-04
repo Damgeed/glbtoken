@@ -995,6 +995,19 @@ function switchLanguage(lang) {
     updateLangUI('en');
     return;
   }
+  // Restore original text first so we translate from English, not from a previous translation
+  document.querySelectorAll('[data-gt-old]').forEach(function(el){
+    el.textContent = el.getAttribute('data-gt-old');
+    el.removeAttribute('data-gt-old');
+  });
+  document.querySelectorAll('[data-gt-old-href]').forEach(function(el){
+    el.href = el.getAttribute('data-gt-old-href');
+    el.removeAttribute('data-gt-old-href');
+  });
+  document.querySelectorAll('[data-gt-old-placeholder]').forEach(function(el){
+    el.placeholder = el.getAttribute('data-gt-old-placeholder');
+    el.removeAttribute('data-gt-old-placeholder');
+  });
   var texts = [];
   var els = [];
   var walker = document.createTreeWalker(document.body, 4, null, false);
