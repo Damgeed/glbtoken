@@ -373,7 +373,7 @@
       .chat-window .chat-input{padding:0.625rem 0.75rem}
       .chat-window .chat-input input{font-size:1rem;padding:0.625rem 0.75rem}
       .chat-window .chat-input button{font-size:1rem;padding:0.625rem 1rem}
-      .ai-chat-inner{min-height:400px;max-height:400px}
+      .ai-chat-inner{min-height:auto;max-height:65vh;height:55vh}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
     }
     @media(max-width:600px){
@@ -420,6 +420,7 @@
       .chat-window .chat-input{padding:0.5rem 0.625rem}
       .chat-window .chat-input input{font-size:1rem;padding:0.625rem 0.75rem}
       .chat-window .chat-input button{font-size:1rem;padding:0.625rem 0.875rem}
+      .ai-chat-inner{min-height:auto;max-height:65vh;max-height:480px;height:55vh}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:1fr!important}
       .hero-calc{max-width:100%}
       .hero-calc{padding:1.25rem}

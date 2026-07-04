@@ -698,9 +698,8 @@
       userDiv.innerHTML = '<div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div>';
       msgs.appendChild(userDiv);
       input.value = '';
-      input.style.height = '';
-      // Keep keyboard open on mobile — refocus input
-      if(window.innerWidth<=768)setTimeout(()=>input.focus(),0);
+      // Don't reset height style — causes DOM reflow that closes keyboard on mobile
+      // Keyboard refocus is handled by onmousedown on the send button
       msgs.scrollTop = msgs.scrollHeight;
       // Disable button
       const btn = document.getElementById('aiSendBtn');
