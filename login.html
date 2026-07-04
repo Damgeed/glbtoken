@@ -138,7 +138,7 @@
       <div class="footer-brand"><a href="/" class="nav-logo"><span class="nav-logo-icon">GT</span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></a><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
       <div class="footer-col"><h4>Product</h4><a href="pricing.html">Pricing</a><a href="models.html">AI Models</a><a href="apikeys.html">API Docs</a></div>
       <div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="blog.html">Blog</a></div>
-      <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><span>Contact support</span><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
+      <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><a href="contact.html">Contact support</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
     </div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
   </div></footer>
@@ -213,20 +213,30 @@ document.addEventListener('click', function(e) {
   var h = cw.querySelector('.chat-header');
   if(!h) return;
   var offX, offY, dragging = false;
-  h.addEventListener('mousedown', function(e){
+  function startDrag(e){
     if(e.target.tagName === 'BUTTON') return;
     dragging = true; cw.classList.add('dragging');
     var r = cw.getBoundingClientRect();
-    offX = e.clientX - r.left; offY = e.clientY - r.top;
+    var cx = e.clientX || (e.touches && e.touches[0].clientX);
+    var cy = e.clientY || (e.touches && e.touches[0].clientY);
+    offX = cx - r.left; offY = cy - r.top;
     e.preventDefault();
-  });
-  document.addEventListener('mousemove', function(e){
+  }
+  function moveDrag(e){
     if(!dragging) return;
-    cw.style.left = (e.clientX - offX) + 'px';
-    cw.style.top = (e.clientY - offY) + 'px';
+    var cx = e.clientX || (e.touches && e.touches[0].clientX);
+    var cy = e.clientY || (e.touches && e.touches[0].clientY);
+    cw.style.left = (cx - offX) + 'px';
+    cw.style.top = (cy - offY) + 'px';
     cw.style.right = 'auto'; cw.style.bottom = 'auto';
-  });
-  document.addEventListener('mouseup', function(){if(dragging){dragging=false;cw.classList.remove('dragging')}});
+  }
+  function endDrag(){if(dragging){dragging=false;cw.classList.remove('dragging')}}
+  h.addEventListener('mousedown', startDrag);
+  h.addEventListener('touchstart', startDrag, {passive:false});
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, {passive:false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
 })();
 </script>
 
