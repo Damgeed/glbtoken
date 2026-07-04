@@ -419,13 +419,19 @@
 
     // ── Top-Up ──
     function selectPackage(el,amount){
-      document.querySelectorAll('.topup-card').forEach(c=>c.classList.remove('selected'));
+      document.querySelectorAll('.topup-card').forEach(c=>{c.classList.remove('selected');var r=c.querySelector('.custom-input-row');if(r)r.style.display='none'});
       el.classList.add('selected');selectedAmount=amount;
-      document.getElementById('topupCustom').value='';document.getElementById('topupCustomTokens').textContent='';
-      document.getElementById('topupTotal').textContent='$'+amount.toFixed(2);
+      document.getElementById('topupCustom').value='';document.getElementById('topupTotal').textContent='$'+amount.toFixed(2);
+    }
+    function selectCustomTopup(){
+      document.querySelectorAll('.topup-card').forEach(c=>c.classList.remove('selected'));
+      var card=document.getElementById('customCard');card.classList.add('selected');
+      var row=document.getElementById('customInputRow');row.style.display='flex';
+      var inp=document.getElementById('topupCustom');inp.value='';inp.focus();
+      document.getElementById('topupTotal').textContent='$0.00';
     }
     function customTopupAmount(val){
-      if(val&&parseFloat(val)>=2){selectedAmount=parseFloat(val);document.querySelectorAll('.topup-card').forEach(c=>c.classList.remove('selected'));document.getElementById('topupCustomTokens').textContent='= '+Math.floor(selectedAmount*1000).toLocaleString()+' tokens';document.getElementById('topupTotal').textContent='$'+selectedAmount.toFixed(2)}
+      if(val&&parseFloat(val)>=2){selectedAmount=parseFloat(val);document.querySelectorAll('.topup-card').forEach(c=>{if(!c.classList.contains('topup-custom'))c.classList.remove('selected')});document.getElementById('topupTotal').textContent='$'+selectedAmount.toFixed(2)}
     }
     function selectPayment(el,method){
       document.querySelectorAll('.payment-opt,.payment-card').forEach(p=>p.classList.remove('selected'));

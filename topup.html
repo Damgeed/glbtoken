@@ -95,12 +95,20 @@
 <div class="topup-page"><div class="container" style="max-width:700px">
       <div style="text-align:center;margin-bottom:2rem"><span class="section-label">Buy Tokens</span><h2 class="section-title">Top Up Wallet</h2><p class="section-sub" style="margin:0 auto">Select a package or custom amount. $2 minimum.</p></div>
       <div id="topupStep1">
-        <div class="topup-grid">
+        <div class="topup-grid" id="topupGrid">
           <div class="topup-card" onclick="selectPackage(this,5)"><div class="price">$5</div><div class="name">Starter</div><div class="tokens">5,000 Tokens</div></div>
           <div class="topup-card selected" onclick="selectPackage(this,20)"><div class="price">$20</div><div class="name">Professional</div><div class="tokens">22,000 Tokens</div></div>
           <div class="topup-card" onclick="selectPackage(this,100)"><div class="price">$100</div><div class="name">Enterprise</div><div class="tokens">120,000 Tokens</div></div>
+          <div class="topup-card topup-custom" onclick="selectCustomTopup()" id="customCard">
+            <div class="price" id="customPriceLabel">$</div>
+            <div class="name">Custom</div>
+            <div class="tokens" id="customTokensLabel">Enter amount</div>
+            <div class="custom-input-row" id="customInputRow" style="display:none">
+              <span style="color:var(--primary);font-weight:700;font-size:1.1rem">$</span>
+              <input type="number" id="topupCustom" placeholder="0" min="2" oninput="customTopupAmount(this.value)" autofocus>
+            </div>
+          </div>
         </div>
-        <div class="custom-card"><span class="cc-label">Custom Amount</span><input type="number" id="topupCustom" placeholder="$" min="2" oninput="customTopupAmount(this.value)"><span class="cc-tokens" id="topupCustomTokens"></span></div>
         <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Payment Method</h3>
         <div class="payment-grid">
           <div class="payment-card selected" onclick="selectPayment(this,'stripe')">
