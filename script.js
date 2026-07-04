@@ -427,12 +427,17 @@
       selectedAmount=amt;showPage('topup');
     }
     function selectPackage(el,amount){
-      document.querySelectorAll('.topup-card').forEach(c=>{c.classList.remove('selected');var r=c.querySelector('.custom-input-row');if(r)r.style.display='none'});
-      el.classList.add('selected');selectedAmount=amount;
+      document.querySelectorAll('.pricing-card').forEach(c=>{
+        c.classList.remove('selected');
+        var r=c.querySelector('.custom-input-row');
+        if(r)r.style.display='none'
+      });
+      el.classList.add('selected');
+      selectedAmount=amount;
       document.getElementById('topupTotal').textContent='$'+amount.toFixed(2);
     }
     function selectCustomTopup(){
-      document.querySelectorAll('.topup-card').forEach(c=>c.classList.remove('selected'));
+      document.querySelectorAll('.pricing-card').forEach(c=>c.classList.remove('selected'));
       var card=document.getElementById('customCard');card.classList.add('selected');
       var row=document.getElementById('customInputRow');row.style.display='block';
       updateCustomPricing();
