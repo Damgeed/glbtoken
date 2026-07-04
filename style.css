@@ -340,7 +340,7 @@
     .footer-col a:hover,.footer-col span:hover{color:var(--text)}
     .trust-badges{display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap}
     .trust-badge{padding:0.35rem 0.75rem;border-radius:6px;background:var(--bg-alt);border:1px solid var(--border-light);font-size:0.75rem;font-weight:500;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
-    .footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;margin-top:2rem;display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--text-muted)}
+    .footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;margin-top:2rem;display:flex;justify-content:center;align-items:center;font-size:0.8rem;color:var(--text-muted)}
     .toast{position:fixed;bottom:5.5rem;right:1.5rem;z-index:300;padding:1rem 1.5rem;border-radius:var(--radius-sm);background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow-elevated);font-size:0.9rem;transform:translateY(120%);opacity:0;transition:all 0.3s ease;max-width:360px}
     .toast.show{transform:translateY(0);opacity:1}
     .toast.success{border-left:3px solid var(--success)}
