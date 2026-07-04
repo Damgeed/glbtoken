@@ -1070,5 +1070,5 @@ document.addEventListener('click', function(e) {
 function restoreSavedLanguage(){
   var saved = localStorage.getItem('gt_lang');
   if(!saved || saved === 'en') return;
-  setTimeout(function(){ switchLanguage(saved); }, 500);
+  switchLanguage(saved);
 }
