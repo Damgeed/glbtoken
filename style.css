@@ -25,9 +25,9 @@
     .nav-center a:hover,.nav-center a.active{color:var(--text)}
     .nav-right{display:flex;align-items:center;gap:0.75rem;position:relative}
     .nav-balance-standalone{display:none;padding:0.4rem 0.9rem;border-radius:var(--radius-sm);background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.2);font-size:0.8rem;font-weight:600;color:var(--primary);white-space:nowrap;letter-spacing:0.01em}
-    .nav-btn{padding:0.5rem 1.25rem;border-radius:var(--radius-sm);background:var(--primary);color:#0A0B14;font-weight:600;font-size:0.85rem;transition:all 0.2s;box-shadow:var(--primary-glow);border:none;white-space:nowrap}
+    .nav-btn{padding:0.5rem 1.25rem;border-radius:var(--radius-sm);background:var(--primary);color:#0A0B14;font-weight:600;font-size:0.85rem;transition:all 0.2s;box-shadow:var(--primary-glow);border:none}
     .nav-btn:hover{background:var(--primary-hover);box-shadow:var(--primary-glow-strong)}
-    .nav-btn-outline{padding:0.5rem 1.25rem;border-radius:var(--radius-sm);background:transparent;color:var(--text);font-weight:500;font-size:0.85rem;border:1px solid var(--border);transition:all 0.2s;white-space:nowrap}
+    .nav-btn-outline{padding:0.5rem 1.25rem;border-radius:var(--radius-sm);background:transparent;color:var(--text);font-weight:500;font-size:0.85rem;border:1px solid var(--border);transition:all 0.2s}
     .nav-btn-outline:hover{border-color:var(--primary);background:var(--primary-subtle)}
     .theme-toggle{background:none;border:none;cursor:pointer;font-size:1.15rem;color:var(--text-secondary);padding:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;line-height:1}
     .theme-toggle:hover{opacity:0.7}
@@ -87,9 +87,9 @@
     .hero-text p{font-size:1.075rem;color:var(--text-secondary);max-width:520px;margin-bottom:1.75rem;line-height:1.7}
     .hero h1 .gold{background:linear-gradient(135deg,var(--primary),hsl(44 96% 70%));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
-    .btn-primary{padding:0.875rem 2rem;border-radius:var(--radius-sm);background:var(--primary);color:#0A0B14;font-weight:600;font-size:1rem;border:none;cursor:pointer;transition:all 0.2s;box-shadow:var(--primary-glow);white-space:nowrap}
+    .btn-primary{padding:0.875rem 2rem;border-radius:var(--radius-sm);background:var(--primary);color:#0A0B14;font-weight:600;font-size:1rem;border:none;cursor:pointer;transition:all 0.2s;box-shadow:var(--primary-glow);overflow-wrap:break-word;word-break:break-word}
     .btn-primary:hover{background:var(--primary-hover);box-shadow:var(--primary-glow-strong);transform:translateY(-1px)}
-    .btn-secondary{padding:0.875rem 2rem;border-radius:var(--radius-sm);background:transparent;color:var(--text);font-weight:500;font-size:1rem;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;white-space:nowrap}
+    .btn-secondary{padding:0.875rem 2rem;border-radius:var(--radius-sm);background:transparent;color:var(--text);font-weight:500;font-size:1rem;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;overflow-wrap:break-word;word-break:break-word}
     .btn-secondary:hover{border-color:var(--primary);background:var(--primary-subtle)}
     .hero-stats{display:flex;gap:2.5rem;margin-top:2.5rem;padding-top:1.75rem;border-top:1px solid var(--border)}
     .hero-stat h3{font-size:1.75rem;font-weight:700;color:var(--primary)}
@@ -395,6 +395,8 @@
       .chat-window .chat-input button{font-size:1rem;padding:0.625rem 1rem}
       .ai-chat-inner{min-height:auto;max-height:65vh;height:55vh}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+      .btn-primary,.btn-secondary,.nav-btn,.nav-btn-outline{white-space:normal;word-break:break-word}
+      .nowrap{white-space:normal;overflow-wrap:break-word}
       .dash-card,.pricing-card,.model-card,.vp-card,.contact-card,.payment-card,.footer-col,.hero-content,.section-sub{overflow-wrap:break-word;word-break:break-word}
       .plan-price,.plan-name,.section-title,.section-label,.hero h1,.hero p,.footer-brand p,.footer-col a,.footer-col span,.topup-header,.cat-pill,.nav-center a{overflow-wrap:break-word;word-break:break-word}
     }
