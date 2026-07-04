@@ -104,7 +104,7 @@
     section{padding:2rem 0}
     .section-label{display:table;align-items:center;gap:6px;padding:0.25rem 0.75rem;border-radius:999px;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.2);font-size:0.75rem;font-weight:500;color:var(--primary);margin:0 auto 0.75rem;text-transform:uppercase;letter-spacing:0.06em}
     .section-title{font-size:2.25rem;font-weight:700;margin-bottom:0.75rem;text-align:center}
-    .section-sub{font-size:1.05rem;color:var(--text-secondary);max-width:600px;margin:0 auto 3rem}.topup-header{text-align:center;margin-bottom:2rem}.vp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .section-sub{font-size:1.05rem;color:var(--text-secondary);max-width:600px;margin:0 auto 3rem}.faq-item.open .faq-answer{max-height:600px!important}.faq-item.open h3 span{transform:rotate(45deg)}.topup-header{text-align:center;margin-bottom:2rem}.vp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
     @media(max-width:768px){.vp-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}}
     .vp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:all 0.3s;text-align:center}
     .vp-card:hover{border-color:hsla(44 96% 52% / 0.2);box-shadow:var(--shadow-hover)}
