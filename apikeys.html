@@ -25,15 +25,15 @@
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
-        <div class="lang-selector">
-    <button class="lang-btn" onclick="toggleLangMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg> <span id="currentLangLabel">EN</span></button>
+        <div class="lang-selector notranslate">
+    <button class="lang-btn notranslate" onclick="toggleLangMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg> <span class="notranslate" id="currentLangLabel">EN</span></button>
   </div>
-    <div class="lang-menu" id="langMenu">
-      <div class="lang-option active" data-lang="en" onclick="switchLanguage('en')">🇬🇧 English</div>
-      <div class="lang-option" data-lang="zh-CN" onclick="switchLanguage('zh-CN')">🇨🇳 中文</div>
-      <div class="lang-option" data-lang="ru" onclick="switchLanguage('ru')">🇷🇺 Русский</div>
-      <div class="lang-option" data-lang="ja" onclick="switchLanguage('ja')">🇯🇵 日本語</div>
-      <div class="lang-option" data-lang="de" onclick="switchLanguage('de')">🇩🇪 Deutsch</div>
+    <div class="lang-menu notranslate" id="langMenu">
+      <div class="lang-option notranslate active" data-lang="en" onclick="switchLanguage('en')">🇬🇧 English</div>
+      <div class="lang-option notranslate" data-lang="zh-CN" onclick="switchLanguage('zh-CN')">🇨🇳 中文</div>
+      <div class="lang-option notranslate" data-lang="ru" onclick="switchLanguage('ru')">🇷🇺 Русский</div>
+      <div class="lang-option notranslate" data-lang="ja" onclick="switchLanguage('ja')">🇯🇵 日本語</div>
+      <div class="lang-option notranslate" data-lang="de" onclick="switchLanguage('de')">🇩🇪 Deutsch</div>
     </div>
         <span class="nav-balance-standalone" id="navBalance">0 Tokens</span>
         <div id="navGuest">
@@ -63,7 +63,7 @@
         </div>
     </div>
     <div class="mobile-right-group">
-    <button class="lang-btn-mobile" onclick="toggleLangMenu()" id="langBtnMobile" title="Translate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg></button>
+    <button class="lang-btn-mobile notranslate" onclick="toggleLangMenu()" id="langBtnMobile" title="Translate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg></button>
     <a class="theme-toggle-mobile" onclick="toggleTheme()" id="themeBtnMobile" title="Toggle theme">🌙</a>
     <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
