@@ -414,10 +414,10 @@
       var el2=document.getElementById('customTokensLabel')||document.getElementById('customTokensDisplay');
       var el3=document.getElementById('customBuyBtn');
       var el4=document.getElementById('topupTotal');
-      if(el1)el1.textContent='$'+val.toFixed(2);
+      if(el1)el1.textContent='$'+val;
       if(el2)el2.textContent=(val*1100).toLocaleString()+' Tokens';
-      if(el3)el3.textContent='Buy $'+val.toFixed(2);
-      if(el4)el4.textContent='$'+val.toFixed(2);
+      if(el3)el3.textContent='Buy $'+val;
+      if(el4)el4.textContent='$'+val+'.00';
       selectedAmount=val;
     }
     function customCheckout(){

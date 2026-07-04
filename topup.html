@@ -96,34 +96,16 @@
       <div style="text-align:center;margin-bottom:2rem"><span class="section-label">Buy Tokens</span><h2 class="section-title">Top Up Wallet</h2><p class="section-sub" style="margin:0 auto">Select a package or custom amount. $2 minimum.</p></div>
       <div id="topupStep1">
         <div class="pricing-grid">
-          <div class="pricing-card selected" onclick="selectPackage(this,5)">
-            <div class="plan-name">Starter</div>
-            <div class="plan-price">$5</div>
-            <div class="plan-desc">5,000 Tokens</div>
-            <ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul>
-          </div>
-          <div class="pricing-card featured" onclick="selectPackage(this,20)">
-            <div class="plan-name">Professional</div>
-            <div class="plan-price">$20</div>
-            <div class="plan-desc">22,000 Tokens</div>
-            <ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul>
-          </div>
-          <div class="pricing-card" onclick="selectPackage(this,100)">
-            <div class="plan-name">Enterprise</div>
-            <div class="plan-price">$100</div>
-            <div class="plan-desc">120,000 Tokens</div>
-            <ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul>
-          </div>
-          <div class="pricing-card" onclick="selectCustomTopup()" id="customCard">
-            <div class="plan-name">Custom</div>
-            <div class="plan-price" id="customPriceLabel">$50</div>
-            <div class="plan-desc" id="customTokensLabel">55,000 Tokens</div>
-            <div class="custom-input-row" id="customInputRow">
-              <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()">
+          <div class="pricing-card selected"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary" style="width:100%" onclick="selectPackage(this,5)">Buy $5</button></div>
+          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary" style="width:100%" onclick="selectPackage(this,20)">Buy $20</button></div>
+          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary" style="width:100%" onclick="selectPackage(this,100)">Buy $100</button></div>
+          <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">55,000 Tokens</div>
+            <div style="padding:0.5rem 0 1rem">
+              <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" style="width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none;cursor:pointer">
               <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-top:4px;padding:0 2px"><span>$2</span><span>$500</span></div>
             </div>
             <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Instant top-up</li></ul>
-          </div>
+            <button class="btn-primary" style="width:100%" onclick="selectCustomTopup()" id="customBuyBtn">Buy $50</button></div>
         </div>
         <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Payment Method</h3>
         <div class="payment-grid">
