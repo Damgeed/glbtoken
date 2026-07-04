@@ -972,20 +972,5 @@
 function restoreSavedLanguage(){
   var saved = localStorage.getItem('gt_lang');
   if(!saved || saved === 'en') return;
-  var tries = 0, maxTries = 30;
-  var poll = setInterval(function(){
-    var sel = document.querySelector('.goog-te-combo');
-    if(sel || ++tries > maxTries){
-      clearInterval(poll);
-      if(sel){
-        sel.value = saved;
-        sel.dispatchEvent(new Event('change', {bubbles: true}));
-        document.querySelectorAll('.lang-option').forEach(function(el){
-          el.classList.toggle('active', el.getAttribute('data-lang') === saved);
-        });
-        var lbl = document.getElementById('currentLangLabel');
-        if(lbl) lbl.textContent = saved === 'zh-CN' ? '中文' : saved === 'ru' ? 'RU' : saved === 'ja' ? '日' : 'DE';
-      }
-    }
-  }, 300);
+  setTimeout(function(){ switchLanguage(saved); }, 500);
 }
