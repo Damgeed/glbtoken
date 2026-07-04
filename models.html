@@ -124,7 +124,7 @@
     </div>
   </div>
 
-<script data-cfasync="false" src="script.js?v=1783149303"></script>
+<script data-cfasync="false" src="script.js?v=1783150508"></script>
 <div id="google_translate_element" style="display:none"></div>
 <script>
 function googleTranslateElementInit() {
@@ -140,16 +140,25 @@ function toggleLangMenu() {
   if (m) m.classList.toggle('open');
 }
 function switchLanguage(lang) {
-  var selectField = document.querySelector('.goog-te-combo');
-  if (selectField) {
-    selectField.value = lang;
-    selectField.dispatchEvent(new Event('change'));
+  function applyLang(){
+    var sf = document.querySelector('.goog-te-combo');
+    if(sf){sf.value = lang; sf.dispatchEvent(new Event('change')); return true}
+    return false
+  }
+  if(!applyLang()){
+    // Google Translate not loaded yet — poll for it
+    var tries = 0, maxTries = 30;
+    var poll = setInterval(function(){
+      if(applyLang() || ++tries > maxTries) clearInterval(poll);
+    }, 300);
   }
   document.querySelectorAll('.lang-option').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-lang') === lang);
   });
-  document.getElementById('currentLangLabel').textContent = lang === 'zh-CN' ? '中文' : lang === 'en' ? 'EN' : lang === 'ru' ? 'RU' : lang === 'ja' ? '日' : 'DE';
-  document.getElementById('langMenu').classList.remove('open');
+  var lbl = document.getElementById('currentLangLabel');
+  if(lbl) lbl.textContent = lang === 'zh-CN' ? '中文' : lang === 'en' ? 'EN' : lang === 'ru' ? 'RU' : lang === 'ja' ? '日' : 'DE';
+  var lm = document.getElementById('langMenu');
+  if(lm) lm.classList.remove('open');
   localStorage.setItem('gt_lang', lang);
 }
 restoreSavedLanguage();
@@ -160,7 +169,7 @@ document.addEventListener('click', function(e) {
   }
 });
 </script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script data-cfasync="false" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <script>
 (function(){
   var cw = document.getElementById('chatWindow');

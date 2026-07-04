@@ -397,7 +397,7 @@
       .dash-page{padding:1rem 0 1.5rem}
       .apikey-page{padding:1rem 0 1.5rem}
       .models-page{padding:1rem 0 1.5rem}
-      .topup-page{padding:0.5rem 0 1.5rem}
+      .topup-page{padding:1rem 0 1.5rem}
       .history-page{padding:1rem 0 1.5rem}
       .dash-page .container,.apikey-page .container,.history-page .container,.models-page .container,.topup-page .container{max-width:100%!important;padding:0 1rem!important;margin-top:0!important}
       .dash-page .dash-card{padding:1rem}
