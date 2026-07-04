@@ -1015,11 +1015,11 @@ function switchLanguage(lang) {
     var n = walker.currentNode;
     if(n.parentNode && n.parentNode.closest && n.parentNode.closest('.lang-selector,.lang-menu,.lang-btn-mobile,.chat-window,.stars-bg,.footer-bottom,.logo-full,.logo-glb,.logo-token,.trust-badge,.pc-badge,.pm-brand,.payment-card,.modal-box,script,style,svg,code,pre')) continue;
     var t = n.textContent.trim();
-    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|GHS|KES|ZAR|XAF|XOF|CDF|RWF|UGX|TZS|USD|USSD|ETC|KAI|AIEX|API|VPN|SSL|CORS|JSON|ChatGPT|Anthropic|Claude|Gemini|OpenAI|GPT|Llama|Mistral|DeepSeek|Perplexity|Cohere|Stability|Midjourney|HuggingFace)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
+    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|GHS|KES|ZAR|XAF|XOF|CDF|RWF|UGX|TZS|USD|USSD|ETC|KAI|AIEX|API|VPN|SSL|CORS|JSON|ChatGPT|Anthropic|Claude|Gemini|OpenAI|GPT|Llama|Mistral|DeepSeek|Perplexity|Cohere|Stability|Midjourney|HuggingFace|Buy Tokens Now|How It Works|Create Free Account|Get Started|Ready for Premium AI\?|One Token Balance|Premium AI)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
     texts.push(t);
     els.push(n);
   }
-  if(!texts.length){ updateLangUI(lang); return; }
+    if(!texts.length){ updateLangUI(lang); return; }
   function doTranslate(start){
     var batch = [], batchEls = [], batchSize = 40;
     for(var i = start; i < texts.length && batch.length < batchSize; i++){
@@ -1027,8 +1027,9 @@ function switchLanguage(lang) {
     }
     if(!batch.length){ updateLangUI(lang); return; }
     var q = batch.join('\n');
-    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + lang + '&dt=t&q=' + encodeURIComponent(q);
-    fetch(url).then(function(r){ return r.json(); }).then(function(d){
+    var cb = 'gt_cb_' + Math.random().toString(36).substr(2, 8);
+    window[cb] = function(d){
+      delete window[cb];
       if(d && d[0]){
         for(var i = 0; i < d[0].length && i < batchEls.length; i++){
           if(d[0][i] && d[0][i][0]){
@@ -1045,7 +1046,11 @@ function switchLanguage(lang) {
         }
       }
       doTranslate(start + batchSize);
-    }).catch(function(){ doTranslate(start + batchSize); });
+    };
+    var s = document.createElement('script');
+    s.src = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + lang + '&dt=t&q=' + encodeURIComponent(q) + '&callback=' + cb;
+    s.onerror = function(){ delete window[cb]; document.body.removeChild(s); doTranslate(start + batchSize); };
+    document.body.appendChild(s);
   }
   doTranslate(0);
   localStorage.setItem('gt_lang', lang);
