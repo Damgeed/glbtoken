@@ -453,6 +453,21 @@
         showToast('Payment successful!','success');
       }catch(e){showToast(e.message,'error')}
     }
+    function showPaymentModal(amount){
+      if(!token){showToast('Please login first','error');showPage('register');return}
+      selectedAmount=amount==='custom'?parseInt(document.getElementById('customSlider').value||50):amount;
+      document.getElementById('modalAmount').textContent='$'+selectedAmount.toFixed(2);
+      document.getElementById('paymentModal').classList.add('open');
+    }
+    function closePaymentModal(e){
+      if(e&&e.target!==e.currentTarget)return;
+      document.getElementById('paymentModal').classList.remove('open');
+    }
+    function processModalPayment(){
+      if(!selectedPayment){showToast('Select a payment method','error');return}
+      document.getElementById('paymentModal').classList.remove('open');
+      processTopup();
+    }
     function startCheckout(amount){
       if(!token){showPage('register');return}
       selectedAmount=amount;showPage('topup');
