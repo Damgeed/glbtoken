@@ -1037,13 +1037,27 @@ function restoreSavedLanguage() {
       sel.dispatchEvent(new Event('change', {bubbles: true}));
       updateLangUI(saved);
       clearInterval(interval);
+      // Start persistent snap-back watcher
+      startLangWatcher(saved);
       return;
     }
     tries++;
     if (tries >= 40) {
       clearInterval(interval);
-      // Last resort: set cookie hint
       document.cookie = 'googtrans=/en/' + saved + '; path=/';
     }
   }, 300);
+}
+
+// ── Persistent snap-back prevention ──
+function startLangWatcher(saved) {
+  var lastLang = saved;
+  setInterval(function() {
+    var sel = document.querySelector('.goog-te-combo');
+    if (sel && sel.value !== lastLang) {
+      // Re-apply the user's selected language
+      sel.value = lastLang;
+      sel.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+  }, 1000);
 }
