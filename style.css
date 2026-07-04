@@ -118,7 +118,8 @@
     .step-card p{font-size:0.85rem;color:var(--text-secondary)}
     .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:1.5rem}
     @media(max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:600px){.pricing-grid{grid-template-columns:repeat(2,1fr);gap:0.75rem}}
+    @media(max-width:600px){.pricing-grid{grid-template-columns:1fr;gap:0.625rem}}
+    @media(max-width:600px){.pricing-card{padding:1rem 1.25rem}.pricing-card .plan-price{font-size:1.75rem;margin:0.35rem 0}.pricing-card .plan-desc{margin-bottom:0.75rem;font-size:0.8rem}.pricing-card .plan-features{margin-bottom:0.75rem}.pricing-card .plan-features li{padding:0.25rem 0;font-size:0.8rem}.pricing-card .plan-name{font-size:0.95rem}}
     .pricing-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:all 0.3s;text-align:center;cursor:pointer}
     .pricing-card:hover,.pricing-card.selected{border-color:hsla(44 96% 52% / 0.3);box-shadow:var(--shadow-hover);transform:translateY(-2px)}
     .pricing-card.selected{background:var(--primary-subtle);border-color:var(--primary);box-shadow:0 0 0 1px var(--primary),var(--shadow-card)}

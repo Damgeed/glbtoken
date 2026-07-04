@@ -127,7 +127,7 @@
     </div>
   </div>
 
-<script data-cfasync="false" src="script.js?v=2607041454"></script>
+<script data-cfasync="false" src="script.js?v=2607040657"></script>
 <div id="google_translate_element" style="display:none"></div>
 <script>
 function googleTranslateElementInit() {
@@ -155,22 +155,7 @@ function switchLanguage(lang) {
   document.getElementById('langMenu').classList.remove('open');
   localStorage.setItem('gt_lang', lang);
 }
-(function() {
-  var saved = localStorage.getItem('gt_lang');
-  if (saved && saved !== 'en') {
-    setTimeout(function() {
-      var selectField = document.querySelector('.goog-te-combo');
-      if (selectField) {
-        selectField.value = saved;
-        selectField.dispatchEvent(new Event('change'));
-        document.querySelectorAll('.lang-option').forEach(function(el) {
-          el.classList.toggle('active', el.getAttribute('data-lang') === saved);
-        });
-        document.getElementById('currentLangLabel').textContent = saved === 'zh-CN' ? '中文' : saved === 'ru' ? 'RU' : saved === 'ja' ? '日' : 'DE';
-      }
-    }, 1000);
-  }
-})();
+restoreSavedLanguage();
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.lang-selector') && !e.target.closest('.lang-menu') && !e.target.closest('.lang-btn-mobile')) {
     var m = document.getElementById('langMenu');
