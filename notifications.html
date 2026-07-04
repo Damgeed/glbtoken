@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=15" />
+  <link rel="stylesheet" href="style.css?v=11" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -28,14 +28,14 @@
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
         <span class="nav-balance-standalone" id="navBalance">0 Tokens</span>
         <div class="lang-selector">
-    <button class="lang-btn" onclick="toggleLangMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg> <span id="currentLangLabel">EN</span></div>
+    <button class="lang-btn" onclick="toggleLangMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg> <span id="currentLangLabel">EN</span></button>
   </div>
     <div class="lang-menu" id="langMenu">
-      <div class="lang-option active" data-lang="en">🇬🇧 English</div>
-      <div class="lang-option" data-lang="zh-CN">🇨🇳 中文</div>
-      <div class="lang-option" data-lang="ru">🇷🇺 Русский</div>
-      <div class="lang-option" data-lang="ja">🇯🇵 日本語</div>
-      <div class="lang-option" data-lang="de">🇩🇪 Deutsch</div>
+      <div class="lang-option active" data-lang="en" onclick="switchLanguage('en')">🇬🇧 English</div>
+      <div class="lang-option" data-lang="zh-CN" onclick="switchLanguage('zh-CN')">🇨🇳 中文</div>
+      <div class="lang-option" data-lang="ru" onclick="switchLanguage('ru')">🇷🇺 Русский</div>
+      <div class="lang-option" data-lang="ja" onclick="switchLanguage('ja')">🇯🇵 日本語</div>
+      <div class="lang-option" data-lang="de" onclick="switchLanguage('de')">🇩🇪 Deutsch</div>
     </div>
         <div id="navGuest">
           <a class="nav-btn-outline" href="login.html">Login</a>
@@ -64,15 +64,15 @@
         </div>
     </div>
     <div class="mobile-right-group">
-    <button class="lang-btn-mobile" onclick="toggleLangMenu()" id="langBtnMobile" title="Translate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg></div>
+    <button class="lang-btn-mobile" onclick="toggleLangMenu()" id="langBtnMobile" title="Translate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg></button>
     <a class="theme-toggle-mobile" onclick="toggleTheme()" id="themeBtnMobile" title="Toggle theme">🌙</a>
-    <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></div>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
   </div></nav>
   </div></nav>
   <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobile()"></div>
   <div class="mobile-overlay" id="mobileOverlay">
-    <div class="m-close"><button onclick="closeMobile()">✕</div></div>
+    <div class="m-close"><button onclick="closeMobile()">✕</button></div>
         <a href="/" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg> Home</a>
     <a href="pricing.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Pricing</a>
     <a href="how.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V4a2 2 0 012-2h8.5L20 7.5V20a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> How It Works</a>
@@ -98,20 +98,20 @@
         <div class="dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
           <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem">💰</div>
           <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">Top-up Confirmed</div><div style="font-size:0.8rem;color:var(--text-muted)">2 min ago · $50 added · 55,000 tokens credited</div></div>
-          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</div>
+          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
         </div>
         <div class="dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
           <div style="width:40px;height:40px;border-radius:10px;background:var(--destructive-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem">⚠️</div>
           <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">Low Balance Warning</div><div style="font-size:0.8rem;color:var(--text-muted)">1 hour ago · Your balance is below 1,000 tokens</div></div>
-          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</div>
+          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
         </div>
         <div class="dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;opacity:0.6">
           <div style="width:40px;height:40px;border-radius:10px;background:var(--success-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem">✅</div>
           <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">API Key Created</div><div style="font-size:0.8rem;color:var(--text-muted)">3 days ago · "Production API" key was generated</div></div>
-          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</div>
+          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
         </div>
       </div>
-      <div style="text-align:center;margin-top:1rem"><button class="btn-secondary" style="font-size:0.85rem">Mark All as Read</div></div>
+      <div style="text-align:center;margin-top:1rem"><button class="btn-secondary" style="font-size:0.85rem">Mark All as Read</button></div>
     </div></div><footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand"><a href="/" class="nav-logo"><span class="nav-logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" width="36" height="36"><circle cx="100" cy="100" r="93" stroke="currentColor" stroke-width="14" fill="none"/><g fill="currentColor"><path d="M100,100 L148,60 A79,79 0 0,1 164,82 L135,74 A62,62 0 0,0 124,58 Z"/><path d="M100,100 L165,130 A79,79 0 0,1 150,158 L122,131 A62,62 0 0,0 132,115 Z"/><path d="M100,100 L150,158 A79,79 0 0,1 120,166 L104,136 A62,62 0 0,0 122,131 Z"/><path d="M100,100 L75,162 A79,79 0 0,1 52,152 L62,129 A62,62 0 0,0 80,135 Z"/><path d="M100,100 L40,68 A79,79 0 0,1 54,42 L70,56 A62,62 0 0,0 56,70 Z"/><path d="M100,100 L54,42 A79,79 0 0,1 80,30 L74,50 A62,62 0 0,0 64,43 Z"/></g><g fill="currentColor"><path d="M100,36 C80,36 62,44 48,58 C34,74 30,94 32,112 C34,130 42,148 56,162 C68,174 84,178 100,178 L100,162 C88,162 76,156 68,146 C58,133 52,118 52,106 C52,92 56,78 66,68 C76,58 88,54 100,54 L100,88 L86,88 L86,108 L134,108 L134,68 C128,54 114,42 102,36 C100,36 100,36 100,36 Z"/><path d="M136,50 L136,168 L152,168 L152,120 C158,130 168,136 178,136 C190,136 198,126 198,112 C198,98 190,88 178,86 C170,84 162,88 156,96 L156,76 C154,64 146,54 136,50 Z M158,106 C158,98 162,94 170,94 C178,94 182,100 182,110 C182,118 178,124 170,124 C164,124 158,118 158,106 Z"/><path d="M66,164 L166,164 L166,176 L130,176 L130,206 L112,206 L112,176 L66,176 Z"/></g></svg></span><span class="logo-full"><span class="logo-glb">Glb</span><span class="logo-token">TOKEN</span></span></a><p>Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges"><span class="trust-badge">💳 Stripe</span><span class="trust-badge">🔶 Paystack</span><span class="trust-badge">₿ USDT</span><span class="trust-badge">₿ BTC</span></div></div>
@@ -121,19 +121,19 @@
     </div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
   </div></footer>
-<button class="chat-fab" onclick="toggleChat()">💬</div>
+<button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
-    <div class="chat-header"><h3>💬 Support</h3><button onclick="toggleChat()">✕</div></div>
+    <div class="chat-header"><h3>💬 Support</h3><button onclick="toggleChat()">✕</button></div>
     <div class="chat-msgs" id="chatMsgs">
       <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
     </div>
     <div class="chat-input">
       <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg()}">
-      <button onclick="sendChatMsg()" onmousedown="event.preventDefault();setTimeout(function(){document.getElementById('chatInput').focus()},10)">➤</div>
+      <button onclick="sendChatMsg()" onmousedown="event.preventDefault();setTimeout(function(){document.getElementById('chatInput').focus()},10)">➤</button>
     </div>
   </div>
 
-<script data-cfasync="false" src="script.js?v=25"></script>
+<script data-cfasync="false" src="script.js?v=22"></script>
 <div id="google_translate_element" style="display:none"></div>
 <script>restoreSavedLanguage();</script>
 <script>
