@@ -1015,7 +1015,7 @@ function switchLanguage(lang) {
     var n = walker.currentNode;
     if(n.parentNode && n.parentNode.closest && n.parentNode.closest('.lang-selector,.lang-menu,.lang-btn-mobile,.chat-window,.stars-bg,.footer-bottom,.logo-full,.logo-glb,.logo-token,.trust-badge,.pc-badge,.pm-brand,.payment-card,.modal-box,script,style,svg,code,pre')) continue;
     var t = n.textContent.trim();
-    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|GHS|KES|ZAR|XAF|XOF|CDF|RWF|UGX|TZS|USD|USSD|ETC|KAI|AIEX|API|VPN|SSL|CORS|JSON|ChatGPT|Anthropic|Claude|Gemini|OpenAI|GPT|Llama|Mistral|DeepSeek|Perplexity|Cohere|Stability|Midjourney|HuggingFace)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
+    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|GHS|KES|ZAR|XAF|XOF|CDF|RWF|UGX|TZS|USD|USSD|ETC|KAI|AIEX|API|VPN|SSL|CORS|JSON|ChatGPT|Anthropic|Claude|Gemini|OpenAI|GPT|Llama|Mistral|DeepSeek|Perplexity|Cohere|Stability|Midjourney|HuggingFace|Buy Tokens Now|How It Works|Create Free Account|Get Started|Ready for Premium AI\?|One Token Balance|Premium AI)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
     texts.push(t);
     els.push(n);
   }
