@@ -1015,7 +1015,7 @@ function switchLanguage(lang) {
     var n = walker.currentNode;
     if(n.parentNode && n.parentNode.closest && n.parentNode.closest('.lang-selector,.lang-menu,.lang-btn-mobile,.chat-window,.stars-bg,.footer-bottom,.logo-full,.logo-glb,.logo-token,.trust-badge,.pc-badge,.pm-brand,.payment-card,.modal-box,script,style,svg,code,pre')) continue;
     var t = n.textContent.trim();
-    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|USD|KAI|AIEX)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
+    if(!t || t.length <= 1 || /^[\d\s\W]+$/.test(t) || /^(Stripe|Paystack|USDT|BTC|ETH|BNB|SOL|USDC|DAI|NGN|EUR|GBP|JPY|CNY|KRW|GHS|KES|ZAR|XAF|XOF|CDF|RWF|UGX|TZS|USD|USSD|ETC|KAI|AIEX|API|VPN|SSL|CORS|JSON)$/i.test(t.trim()) || n.parentNode.closest('[data-gt-old]')) continue;
     texts.push(t);
     els.push(n);
   }
