@@ -129,7 +129,8 @@
     .pricing-card.featured{position:relative;border-color:hsla(44 96% 52% / 0.2)}
     .pricing-card.featured::after{content:'Best Value';position:absolute;top:-0.5rem;right:1.25rem;background:var(--primary);color:#0A0B14;font-size:0.7rem;font-weight:600;padding:0.15rem 0.65rem;border-radius:999px}
     .pricing-card .plan-name{font-size:1.1rem;font-weight:600}
-    .pricing-card .plan-price{font-size:2.5rem;font-weight:800;color:var(--primary);margin:0.75rem 0}
+    .pricing-card .plan-price{font-size:2.5rem;font-weight:800;color:var(--text);margin:0.75rem 0}
+    .pricing-card.selected .plan-price{color:var(--primary)}
     .pricing-card .plan-desc{font-size:0.85rem;color:var(--text-secondary);margin-bottom:1.25rem}
     .pricing-card .plan-features{text-align:left;margin-bottom:1.5rem}
     .pricing-card .plan-features li{list-style:none;padding:0.5rem 0;font-size:0.85rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border-light)}
