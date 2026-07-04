@@ -406,18 +406,26 @@
       if(!canvas)return;
       if(chartInst){chartInst.destroy();chartInst=null}
       const labels=usage&&usage.length?usage.map(u=>u.model):['GPT-4o','Claude','DeepSeek','Llama','Other'];
-      const data=usage&&usage.length?usage.map(u=>u.tokens):[42,25,12,8,13];
-      const colors=['hsl(44,96%,52%)','hsl(211,82%,57%)','hsl(145,62%,42%)','hsl(0,68%,52%)','hsl(222,26%,17%)'];
-      const ctx=canvas.getContext('2d');
-      chartInst=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors.slice(0,labels.length),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#9CA3AF',font:{size:11},padding:12}}},cutout:'62%'}});
-      // Sparkline
-      const spark=document.getElementById('sparkline');
-      if(!spark||sparkInst)return;
-      const sctx=spark.getContext('2d');
-      sparkInst=new Chart(sctx,{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{data:[22000,23500,25000,24000,26000,25500,userData.token_balance||27500],borderColor:'hsl(44,96%,52%)',borderWidth:2,pointRadius:0,fill:false,tension:0.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+    function updateCustomPricing(){
+      var slider=document.getElementById('customSlider');
+      if(!slider)return;
+      var val=parseInt(slider.value)||50;
+      var el1=document.getElementById('customPriceLabel')||document.getElementById('customPriceDisplay');
+      var el2=document.getElementById('customTokensLabel')||document.getElementById('customTokensDisplay');
+      var el3=document.getElementById('customBuyBtn');
+      var el4=document.getElementById('topupTotal');
+      if(el1)el1.textContent='$'+val;
+      if(el2)el2.textContent=(val*1100).toLocaleString()+' Tokens';
+      if(el3)el3.textContent='Buy $'+val;
+      if(el4)el4.textContent='$'+val+'.00';
+      selectedAmount=val;
     }
-
-    // ── Top-Up ──
+    function customCheckout(){
+      const amt=parseInt(document.getElementById('customSlider').value||2);
+      if(amt<2){showToast('Minimum $2','error');return}
+      if(!token){showPage('register');return}
+      selectedAmount=amt;showPage('topup');
+    }
     function selectPackage(el,amount){
       document.querySelectorAll('.topup-card').forEach(c=>{c.classList.remove('selected');var r=c.querySelector('.custom-input-row');if(r)r.style.display='none'});
       el.classList.add('selected');selectedAmount=amount;
@@ -428,15 +436,6 @@
       var card=document.getElementById('customCard');card.classList.add('selected');
       var row=document.getElementById('customInputRow');row.style.display='block';
       updateCustomPricing();
-    }
-    function updateCustomPricing(){
-      var slider=document.getElementById('customSlider');
-      if(!slider)return;
-      var val=parseInt(slider.value)||50;
-      selectedAmount=val;
-      document.getElementById('customPriceLabel').textContent='$'+val;
-      document.getElementById('customTokensLabel').textContent=(val*1100).toLocaleString()+' Tokens';
-      document.getElementById('topupTotal').textContent='$'+val+'.00';
     }
     function selectPayment(el,method){
       document.querySelectorAll('.payment-opt,.payment-card').forEach(p=>p.classList.remove('selected'));
