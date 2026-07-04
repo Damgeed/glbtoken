@@ -566,7 +566,10 @@
     .nav-right .lang-selector{display:none!important}
     .lang-menu{position:fixed;top:62px;right:10px;z-index:300}
   }
-  /* Notifications grid: 3 cols desktop, 1 col mobile */
+  /* Settings grid: 2 cols desktop, 1 col mobile */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+@media(max-width:600px){.settings-grid{grid-template-columns:1fr}}
+/* Notifications grid: 3 cols desktop, 1 col mobile */
   .notif-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem}
   @media(max-width:900px){.notif-grid{grid-template-columns:1fr}}
   /* Force rebuild */
