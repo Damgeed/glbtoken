@@ -428,7 +428,7 @@
       if(val&&parseFloat(val)>=2){selectedAmount=parseFloat(val);document.querySelectorAll('.topup-card').forEach(c=>c.classList.remove('selected'));document.getElementById('topupCustomTokens').textContent='= '+Math.floor(selectedAmount*1000).toLocaleString()+' tokens';document.getElementById('topupTotal').textContent='$'+selectedAmount.toFixed(2)}
     }
     function selectPayment(el,method){
-      document.querySelectorAll('.payment-opt').forEach(p=>p.classList.remove('selected'));
+      document.querySelectorAll('.payment-opt,.payment-card').forEach(p=>p.classList.remove('selected'));
       el.classList.add('selected');selectedPayment=method;
     }
     async function processTopup(){

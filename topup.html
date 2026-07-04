@@ -100,11 +100,28 @@
           <div class="topup-card selected" onclick="selectPackage(this,20)"><div class="price">$20</div><div class="name">Professional</div><div class="tokens">22,000 Tokens</div></div>
           <div class="topup-card" onclick="selectPackage(this,100)"><div class="price">$100</div><div class="name">Enterprise</div><div class="tokens">120,000 Tokens</div></div>
         </div>
-        <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:2rem;flex-wrap:wrap"><span style="font-size:0.9rem;color:var(--text-secondary)">Custom:</span><input type="number" id="topupCustom" placeholder="$" min="2" style="padding:0.65rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:1rem;width:100px" oninput="customTopupAmount(this.value)"><span id="topupCustomTokens" style="font-size:0.85rem;color:var(--text-muted)"></span></div>
+        <div class="custom-card"><span class="cc-label">Custom Amount</span><input type="number" id="topupCustom" placeholder="$" min="2" oninput="customTopupAmount(this.value)"><span class="cc-tokens" id="topupCustomTokens"></span></div>
         <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Payment Method</h3>
-        <div class="payment-opt selected" onclick="selectPayment(this,'stripe')" style="position:relative"><span class="pm-check">✓</span><span class="pm-radio"></span><span class="pm-icon">💳</span><div class="pm-info"><h4>Stripe</h4><p>International credit/debit cards · USD</p><span class="pm-brand stripe">Worldwide</span></div></div>
-        <div class="payment-opt" onclick="selectPayment(this,'paystack')" style="position:relative"><span class="pm-check">✓</span><span class="pm-radio"></span><span class="pm-icon">🔶</span><div class="pm-info"><h4>Paystack</h4><p>NGN/GHS/KES · Bank transfer, USSD, Mobile Money</p><span class="pm-brand paystack">Africa</span></div></div>
-        <div class="payment-opt" onclick="selectPayment(this,'crypto')" style="position:relative"><span class="pm-check">✓</span><span class="pm-radio"></span><span class="pm-icon">₿</span><div class="pm-info"><h4>Crypto</h4><p>USDT (TRC-20/ERC-20), BTC, ETH</p><span class="pm-brand crypto">Global</span></div></div>
+        <div class="payment-grid">
+          <div class="payment-card selected" onclick="selectPayment(this,'stripe')">
+            <div class="pc-icon">💳</div>
+            <h4>Stripe</h4>
+            <p>International cards · USD</p>
+            <span class="pc-badge stripe">Worldwide</span>
+          </div>
+          <div class="payment-card" onclick="selectPayment(this,'paystack')">
+            <div class="pc-icon">🔶</div>
+            <h4>Paystack</h4>
+            <p>Bank transfer, USSD, MoMo</p>
+            <span class="pc-badge paystack">Africa</span>
+          </div>
+          <div class="payment-card" onclick="selectPayment(this,'crypto')">
+            <div class="pc-icon">₿</div>
+            <h4>Crypto</h4>
+            <p>USDT (TRC-20/ERC-20) · BTC · ETH</p>
+            <span class="pc-badge crypto">Global</span>
+          </div>
+        </div>
         <button class="btn-primary" style="width:100%;padding:1rem;margin-top:1rem;font-size:1.05rem" onclick="processTopup()">Pay Now — <span id="topupTotal">$20.00</span></button>
       </div>
       <div id="topupSuccess" style="display:none"><div class="success-page"><div class="success-icon">✅</div><h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem">Payment Successful!</h2><p id="topupSuccessMsg" style="color:var(--text-secondary);margin-bottom:1.5rem"></p><button class="btn-primary" onclick="showPage('dashboard')">Dashboard</button><button class="btn-secondary" style="margin-left:0.75rem" onclick="showPage('apikeys')">API Keys</button></div></div>
