@@ -16,7 +16,8 @@
     html.light .navbar{background:hsla(40 20% 98% / 0.85)}
     .navbar-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
     .nav-logo{font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer}
-    .nav-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--primary),hsl(44 96% 40%));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#0A0B14;letter-spacing:-0.03em}
+    .nav-logo-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .nav-logo-icon svg{width:100%;height:100%;display:block}
     .logo-glb{color:var(--primary)}.logo-full{display:inline-flex;align-items:center}.nowrap{white-space:nowrap}
     .logo-token{color:var(--text)}
     .nav-center{display:flex;align-items:center;gap:1.75rem}
