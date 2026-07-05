@@ -927,8 +927,10 @@
     let tmIndex=0,tmInterval,tmTotal=2,tmTouchStartX=0,tmTouchStartY=0;
     const tmTitles=['🔥 Top Models This Week','💻 API Quick Start'];
     function slideTopView(dir){
+      var track=document.getElementById('tmTrack');
+      if(!track)return;
       tmIndex=(tmIndex+dir+tmTotal)%tmTotal;
-      document.getElementById('tmTrack').style.transform='translateX(-'+(tmIndex*100)+'%)';
+      track.style.transform='translateX(-'+(tmIndex*100)+'%)';
       const title=document.getElementById('tmTitle');
       if(title)title.textContent=tmTitles[tmIndex];
       document.querySelectorAll('.tm-dot').forEach((d,i)=>{
@@ -941,19 +943,18 @@
     function goToSlide(i){tmIndex=i-1;slideTopView(1)}
     document.addEventListener('DOMContentLoaded',()=>{
       const track=document.getElementById('tmTrack');
-      if(track){
-        track.addEventListener('touchstart',e=>{tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY},{passive:true});
-        track.addEventListener('touchmove',e=>{
-          const dx=Math.abs(e.touches[0].clientX-tmTouchStartX);
-          const dy=Math.abs(e.touches[0].clientY-tmTouchStartY);
-          if(dx>dy&&dx>10)e.preventDefault();
-        },{passive:false});
-        track.addEventListener('touchend',e=>{
-          const dx=e.changedTouches[0].clientX-tmTouchStartX;
-          const dy=e.changedTouches[0].clientY-tmTouchStartY;
-          if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)slideTopView(dx<0?1:-1);
-        });
-      }
+      if(!track)return;
+      track.addEventListener('touchstart',e=>{tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY},{passive:true});
+      track.addEventListener('touchmove',e=>{
+        const dx=Math.abs(e.touches[0].clientX-tmTouchStartX);
+        const dy=Math.abs(e.touches[0].clientY-tmTouchStartY);
+        if(dx>dy&&dx>10)e.preventDefault();
+      },{passive:false});
+      track.addEventListener('touchend',e=>{
+        const dx=e.changedTouches[0].clientX-tmTouchStartX;
+        const dy=e.changedTouches[0].clientY-tmTouchStartY;
+        if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)slideTopView(dx<0?1:-1);
+      });
       tmInterval=setInterval(()=>slideTopView(1),5000);
       // Delegate clicks on key action buttons (avoid inline onclick XSS)
       document.addEventListener('click',function(e){
@@ -984,6 +985,7 @@ function toggleLangMenu() {
 function switchLanguage(lang) {
   localStorage.setItem('gt_lang', lang);
   GT_LANG = lang;
+  // Set cookie for the current domain (works on both github.io and custom domain)
   document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   updateLangUI(lang);
   if (lang === 'en') {
