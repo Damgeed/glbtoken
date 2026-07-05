@@ -1000,6 +1000,14 @@ function switchLanguage(lang) {
   if (sel) {
     sel.value = lang;
     sel.dispatchEvent(new Event('change', {bubbles: true}));
+    // Inject style to kill any Google Translate spinner immediately
+    var ks = document.getElementById('gt-kill-spinner');
+    if(!ks){
+      ks = document.createElement('style');
+      ks.id = 'gt-kill-spinner';
+      ks.textContent = '.goog-te-spinner,.goog-te-spinner *,.goog-te-spinnerbox,.VIpgJd-yAWNEb-LgbsSe,[class*="VIpgJd"],[id*="VIpgJd"],#goog-gt-tt,.goog-tooltip,.goog-te-menu-frame,.goog-te-gadget-simple,.goog-te-banner,.goog-te-gadget-icon{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
+      document.head.appendChild(ks);
+    }
     updateLangUI(lang);
     startTermWatcher();
     return;
@@ -1012,6 +1020,14 @@ function switchLanguage(lang) {
     if (s) {
       s.value = lang;
       s.dispatchEvent(new Event('change', {bubbles: true}));
+      // Inject style to kill any Google Translate spinner immediately
+      var ks = document.getElementById('gt-kill-spinner');
+      if(!ks){
+        ks = document.createElement('style');
+        ks.id = 'gt-kill-spinner';
+        ks.textContent = '.goog-te-spinner,.goog-te-spinner *,.goog-te-spinnerbox,.VIpgJd-yAWNEb-LgbsSe,[class*="VIpgJd"],[id*="VIpgJd"],#goog-gt-tt,.goog-tooltip,.goog-te-menu-frame,.goog-te-gadget-simple,.goog-te-banner,.goog-te-gadget-icon{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
+        document.head.appendChild(ks);
+      }
       updateLangUI(lang);
       clearInterval(interval);
       startTermWatcher();
