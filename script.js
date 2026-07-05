@@ -1117,5 +1117,60 @@ function startTermWatcher() {
   setTimeout(protectTerms, 500);
   setTimeout(protectTerms, 1500);
   setTimeout(protectTerms, 3000);
-  termTimer = setInterval(protectTerms, 5000);
 }
+
+// ── Mobile Keyboard Fix: keep chat input visible ──
+(function(){
+  if(!window.visualViewport) return;
+  var kbdPadding = 0;
+  function adjustForKeyboard(){
+    var vh = window.visualViewport.height;
+    var winH = window.innerHeight;
+    var diff = winH - vh;
+    if(diff > 80){
+      kbdPadding = diff;
+      var cw = document.getElementById('chatWindow');
+      if(cw && cw.classList.contains('open')){
+        cw.style.maxHeight = 'calc(100dvh - ' + (kbdPadding + 80) + 'px)';
+        cw.style.height = 'calc(100dvh - ' + (kbdPadding + 80) + 'px)';
+        var msgs = cw.querySelector('.chat-msgs');
+        if(msgs) setTimeout(function(){ msgs.scrollTop = msgs.scrollHeight; }, 50);
+      }
+      var focused = document.querySelector('.ai-chat-section.chat-focused');
+      if(focused){
+        var inner = focused.querySelector('.ai-chat-inner');
+        if(inner){
+          inner.style.maxHeight = 'calc(100dvh - ' + (kbdPadding + 40) + 'px)';
+          inner.style.height = 'calc(100dvh - ' + (kbdPadding + 40) + 'px)';
+        }
+        var chatMsgs = focused.querySelector('.chat-msgs');
+        if(chatMsgs) setTimeout(function(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }, 50);
+      }
+    } else if(kbdPadding > 0){
+      kbdPadding = 0;
+      var cw2 = document.getElementById('chatWindow');
+      if(cw2){ cw2.style.maxHeight = ''; cw2.style.height = ''; }
+      var focused2 = document.querySelector('.ai-chat-section.chat-focused');
+      if(focused2){
+        var inner2 = focused2.querySelector('.ai-chat-inner');
+        if(inner2){ inner2.style.maxHeight = ''; inner2.style.height = ''; }
+      }
+    }
+  }
+  window.visualViewport.addEventListener('resize', adjustForKeyboard);
+  document.addEventListener('focusin', function(e){
+    var tag = e.target && e.target.tagName;
+    if((tag === 'INPUT' || tag === 'TEXTAREA') && window.innerWidth <= 768){
+      if(e.target.id === 'chatInput' || e.target.id === 'aiChatInput'){
+        setTimeout(function(){
+          var msgs = e.target.closest('.chat-msgs') || e.target.closest('.ai-chat-main');
+          if(msgs) msgs.scrollTop = msgs.scrollHeight;
+          e.target.scrollIntoView({block:'center', behavior:'smooth'});
+        }, 300);
+      }
+    }
+  });
+})();
+
+// Restore term watcher interval
+termTimer = setInterval(protectTerms, 5000);
