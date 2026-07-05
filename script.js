@@ -986,10 +986,9 @@ function switchLanguage(lang) {
   GT_LANG = lang;
   updateLangUI(lang);
   if (lang === 'en') {
-    // English = default. Delete cookie + localStorage so Google Translate
-    // has zero stored state — fresh page load, no translation.
-    localStorage.removeItem('gt_lang');
+    localStorage.setItem('gt_lang', 'en');
     document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
   } else {
     localStorage.setItem('gt_lang', lang);
     document.cookie = 'googtrans=/en/' + lang + '; path=/;';
