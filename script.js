@@ -985,11 +985,13 @@ function toggleLangMenu() {
 function switchLanguage(lang) {
   localStorage.setItem('gt_lang', lang);
   GT_LANG = lang;
-  // Set cookie for the current domain (works on both github.io and custom domain)
-  document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   updateLangUI(lang);
   if (lang === 'en') {
+    localStorage.removeItem('gt_lang');
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.glbtoken.com';
+  } else {
+    document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   }
   setTimeout(function(){ location.reload(); }, 100);
 }
