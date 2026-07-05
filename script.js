@@ -1174,30 +1174,3 @@ function startTermWatcher() {
 
 // Restore term watcher interval
 termTimer = setInterval(protectTerms, 5000);
-
-// ── Kill Google Translate spinner on sight ──
-(function(){
-  var observer = new MutationObserver(function(mutations){
-    for(var i=0; i<mutations.length; i++){
-      var nodes = mutations[i].addedNodes;
-      for(var j=0; j<nodes.length; j++){
-        var n = nodes[j];
-        if(n.nodeType === 1){
-          // Check if this node or any child has Google spinner classes
-          if(n.matches && n.matches('.goog-te-spinner, .goog-te-spinner *, .goog-te-spinnerbox, [class*=\"VIpgJd\"], #goog-gt-tt, iframe.goog-te-banner-frame')){
-            n.style.display = 'none';
-            if(n.parentNode) n.parentNode.removeChild(n);
-            continue;
-          }
-          // Check children
-          var els = n.querySelectorAll && n.querySelectorAll('.goog-te-spinner, .goog-te-spinnerbox, .VIpgJd-yAWNEb-LgbsSe, iframe.goog-te-banner-frame, .skiptranslate iframe');
-          if(els) for(var k=0; k<els.length; k++){
-            els[k].style.display = 'none';
-            if(els[k].parentNode) els[k].parentNode.removeChild(els[k]);
-          }
-        }
-      }
-    }
-  });
-  observer.observe(document.documentElement, {childList:true, subtree:true});
-})();
