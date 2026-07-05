@@ -616,7 +616,7 @@
 .auth-hero{display:none}
 .auth-hero-card{width:100%;margin:0 auto}
 @media(min-width:901px){
-  .auth-page.auth-hero-wrapper{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:2rem;min-height:calc(100vh - 64px);max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+  .auth-page.auth-hero-wrapper{display:flex;flex-direction:row;align-items:flex-start;justify-content:flex-start;gap:2rem;min-height:auto;max-width:1400px;margin:0 auto;padding:2rem 1.5rem;padding-bottom:0}
   .auth-hero{display:block;flex:1.2;max-width:480px;text-align:left}
   .auth-hero .hero-badge{display:inline-block;padding:0.35rem 1rem;border-radius:20px;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.15);font-size:0.8rem;color:var(--primary);font-weight:600;margin-bottom:1.25rem}
   .auth-hero h1{font-size:3rem;font-weight:800;line-height:1.2;margin-bottom:1rem}
