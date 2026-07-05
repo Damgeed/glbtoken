@@ -975,6 +975,9 @@ function switchLanguage(lang) {
   localStorage.setItem('gt_lang', lang);
   GT_LANG = lang;
   
+  // Set cookie immediately so next page loads pre-translated
+  document.cookie = 'googtrans=/en/' + lang + '; path=/;';
+  
   if (lang === 'en') {
     // Clear ALL Google Translate stored state
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -1017,7 +1020,7 @@ function switchLanguage(lang) {
     tries++;
     if (tries >= 30) {
       clearInterval(interval);
-      document.cookie = 'googtrans=/en/' + lang + '; path=/';
+      // Cookie already set above, just reload
       location.reload();
     }
   }, 300);
