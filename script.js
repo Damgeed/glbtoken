@@ -993,7 +993,7 @@ function switchLanguage(lang) {
   } else {
     document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   }
-  setTimeout(function(){ location.reload(); }, 100);
+  location.reload();
 }
 
 function updateLangUI(lang) {
