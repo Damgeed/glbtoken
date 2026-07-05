@@ -970,6 +970,7 @@ var GT_LANG = 'en';
 var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI'];
 
 function googleTranslateElementInit() {
+  if (sessionStorage.getItem('gt_disable')) return;
   new google.translate.TranslateElement({
     pageLanguage: 'en',
     autoDisplay: false,
@@ -986,13 +987,15 @@ function switchLanguage(lang) {
   GT_LANG = lang;
   updateLangUI(lang);
   if (lang === 'en') {
+    // Nuclear: prevent Google Translate from initializing at all
+    sessionStorage.setItem('gt_disable', '1');
     localStorage.removeItem('gt_lang');
     document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-    // Navigate with cache-busting param to force fresh page load
     location.href = location.pathname + '?_=' + Date.now();
     return;
   }
+  sessionStorage.removeItem('gt_disable');
   localStorage.setItem('gt_lang', lang);
   document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   location.reload();
@@ -1017,7 +1020,7 @@ document.addEventListener('click', function(e) {
 
 function restoreSavedLanguage() {
   var saved = localStorage.getItem('gt_lang');
-  if (!saved) return;
+  if (!saved || sessionStorage.getItem('gt_disable')) return;
   GT_LANG = saved;
   updateLangUI(saved);
   // Programmatically set the hidden Google Translate combo box
