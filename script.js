@@ -1023,6 +1023,18 @@ function restoreSavedLanguage() {
   setTimeout(protectTerms, 3000);
 }
 
+// ── Fix bfcache (back/forward): restore translations when page comes from cache ──
+window.addEventListener('pageshow', function(e){
+  if(!e.persisted) return;
+  var saved = localStorage.getItem('gt_lang');
+  if(saved && saved !== 'en'){
+    // Page was restored from bfcache — Google Translate didn't re-run
+    // Re-set cookie and reload to trigger fresh translation
+    document.cookie = 'googtrans=/en/' + saved + '; path=/;';
+    location.reload();
+  }
+});
+
 // ── Protect terms from translation ──
 function protectTerms() {
   var body = document.body;
