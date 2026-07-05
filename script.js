@@ -1024,12 +1024,19 @@ function restoreSavedLanguage() {
     if (!cb) return false;
     var opt = cb.querySelector('option[value="' + saved + '"]');
     if (!opt) return false;
+    // Skip if already set correctly (cookie already handled it)
+    if (cb.value === saved) return true;
     cb.value = saved;
-    // Temporarily make visible so Google's handler processes the event
-    cb.style.cssText = 'display:block!important;visibility:visible!important;position:fixed;top:-100px;left:0;z-index:9999';
+    // Temporarily make combo box AND its parent visible for Google's handler
+    var parent = document.getElementById('google_translate_element');
+    if (parent) parent.style.cssText = 'display:block!important;position:fixed;top:-9999px;left:0';
+    cb.style.cssText = 'display:block!important;visibility:visible!important';
     cb.dispatchEvent(new Event('change', {bubbles: true}));
     // Re-hide after a tick
-    setTimeout(function(){ cb.style.cssText = ''; }, 50);
+    setTimeout(function(){
+      cb.style.cssText = '';
+      if (parent) parent.style.cssText = 'display:none';
+    }, 50);
     return true;
   }
   // Try at increasing intervals until widget is fully loaded
