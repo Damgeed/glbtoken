@@ -984,8 +984,6 @@ function switchLanguage(lang) {
   
   if (lang === 'en') {
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.glbtoken.com';
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=glbtoken.com; path=/';
   }
   
   // Reload to trigger Google Translate via cookie
