@@ -108,7 +108,17 @@
     section{padding:2rem 0}
     .section-label{display:table;align-items:center;gap:6px;padding:0.25rem 0.75rem;border-radius:999px;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.2);font-size:0.75rem;font-weight:500;color:var(--primary);margin:0 auto 0.75rem;text-transform:uppercase;letter-spacing:0.06em}
     .section-title{font-size:2.25rem;font-weight:700;margin-bottom:0.75rem;text-align:center}
-    .section-sub{font-size:1.05rem;color:var(--text-secondary);max-width:600px;margin:0 auto 3rem}.faq-item.open .faq-answer{max-height:600px!important}.faq-item.open h3 span{transform:rotate(45deg)}.topup-header{text-align:center;margin-bottom:2rem}.vp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .section-sub{font-size:1.05rem;color:var(--text-secondary);max-width:600px;margin:0 auto 3rem}
+    .faq-item .faq-q{font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0}
+    .faq-item .faq-toggle{font-size:1.2rem;transition:transform 0.2s}
+    .faq-item .faq-answer{max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:0.9rem;color:var(--text-secondary);line-height:1.7}
+    .faq-item.open .faq-answer{max-height:600px!important}
+    .faq-item.open h3 .faq-toggle{transform:rotate(45deg)}
+    .faq-item .faq-body{padding-top:0.5rem;padding-bottom:0.25rem}
+    .faq-list{display:flex;flex-direction:column;gap:0.75rem}
+    .contact-link{display:flex;align-items:center;gap:0.5rem;padding:0.75rem;border-radius:8px;background:var(--bg-alt);color:var(--text);text-decoration:none;border:1px solid var(--border-light)}
+    .info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;text-align:center}
+    .topup-header{text-align:center;margin-bottom:2rem}.vp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
     @media(max-width:768px){.vp-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}}
     .vp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:all 0.3s;text-align:center}
     .vp-card:hover{border-color:hsla(44 96% 52% / 0.2);box-shadow:var(--shadow-hover)}
@@ -610,7 +620,6 @@
 /* Notifications grid: 3 cols desktop, 1 col mobile */
   .notif-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem}
   @media(max-width:900px){.notif-grid{grid-template-columns:1fr}}
-  /* Force rebuild */
 
 /* ── Desktop Auth Split Layout ── */
 .auth-hero{display:none}
@@ -635,3 +644,7 @@
   .auth-hero-testimonial blockquote{font-size:0.9rem;font-style:italic;color:var(--text-secondary);line-height:1.6;margin:0 0 0.5rem}
   .auth-hero-testimonial .attribution{font-size:0.8rem;color:var(--text-muted)}
 }
+/* Blog card patterns */
+.blog-title{font-size:1.05rem;font-weight:600;margin-bottom:0.35rem}
+.blog-date{font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem}
+.blog-desc{font-size:0.85rem;color:var(--text-secondary)}
