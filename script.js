@@ -988,8 +988,8 @@ function switchLanguage(lang) {
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=glbtoken.com; path=/';
   }
   
-  // Reload immediately — Google Translate reads cookie on page load, no combo needed
-  location.reload();
+  // Reload to trigger Google Translate via cookie
+  setTimeout(function(){ location.reload(); }, 100);
 }
 
 function updateLangUI(lang) {
