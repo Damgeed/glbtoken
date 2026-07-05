@@ -393,11 +393,14 @@
       /* Hide floating support chat on auth pages (mobile) */
       .auth-page ~ .chat-fab,.auth-page ~ .chat-window{display:none!important}
       .nav-right #navGuest,.nav-right #navUser{display:none!important}
-      .chat-window{width:calc(100vw - 2rem);height:60vh;bottom:5rem;right:1rem}
+      .chat-window{width:calc(100vw - 2rem);height:calc(100dvh - 10rem);max-height:70dvh;bottom:5rem;right:1rem}
+      .chat-window .chat-msgs{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+
       .chat-window .chat-input{padding:0.625rem 0.75rem}
       .chat-window .chat-input input{font-size:1rem;padding:0.625rem 0.75rem}
+      .chat-window .chat-input textarea{font-size:1rem;padding:0.625rem 0.75rem}
       .chat-window .chat-input button{font-size:1rem;padding:0.625rem 1rem}
-      .ai-chat-inner{min-height:auto;max-height:65vh;height:55vh}
+      .ai-chat-inner{min-height:auto;max-height:calc(100dvh - 8rem);height:55dvh}
       [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
       .btn-primary,.btn-secondary,.nav-btn,.nav-btn-outline{white-space:normal;word-break:break-word}
       .nowrap{white-space:normal;overflow-wrap:break-word}
