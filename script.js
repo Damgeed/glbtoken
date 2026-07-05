@@ -1018,6 +1018,20 @@ function restoreSavedLanguage() {
   if (!saved || saved === 'en') return;
   GT_LANG = saved;
   updateLangUI(saved);
+  // Cookie-based: Google Translate reads googtrans cookie on page load
+  // (works instantly for most languages, but unreliable for some)
+  // Fallback: programmatically set the hidden combo box after widget loads
+  function setComboBox() {
+    var cb = document.querySelector('.goog-te-combo');
+    if (cb && cb.value !== saved) {
+      cb.value = saved;
+      cb.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+  }
+  // Try combo box fallback at intervals (widget may take time to init)
+  setTimeout(setComboBox, 500);
+  setTimeout(setComboBox, 1500);
+  setTimeout(setComboBox, 3000);
   setTimeout(protectTerms, 500);
   setTimeout(protectTerms, 1500);
   setTimeout(protectTerms, 3000);
