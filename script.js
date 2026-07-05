@@ -975,71 +975,19 @@ function switchLanguage(lang) {
   localStorage.setItem('gt_lang', lang);
   GT_LANG = lang;
   
-  // Set cookie immediately so next page loads pre-translated
+  // Set cookie for instant recognition on reload
   document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   
+  updateLangUI(lang);
+  
   if (lang === 'en') {
-    // Clear ALL Google Translate stored state
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.glbtoken.com';
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=glbtoken.com; path=/';
-    // Reset the widget combo if present
-    var sel = document.querySelector('.goog-te-combo');
-    if (sel) {
-      sel.value = 'en';
-      sel.dispatchEvent(new Event('change', {bubbles: true}));
-    }
-    // Force reload after a tiny delay to ensure localStorage write is committed
-    setTimeout(function(){ location.reload(); }, 50);
-    updateLangUI('en');
-    return;
   }
   
-  // Try Google Translate widget's internal combo box first
-  var sel = document.querySelector('.goog-te-combo');
-  if (sel) {
-    sel.value = lang;
-    sel.dispatchEvent(new Event('change', {bubbles: true}));
-    // Inject style to kill any Google Translate spinner immediately
-    var ks = document.getElementById('gt-kill-spinner');
-    if(!ks){
-      ks = document.createElement('style');
-      ks.id = 'gt-kill-spinner';
-      ks.textContent = '.goog-te-spinner,.goog-te-spinner *,.goog-te-spinnerbox,.VIpgJd-yAWNEb-LgbsSe,[class*="VIpgJd"],[id*="VIpgJd"],#goog-gt-tt,.goog-tooltip,.goog-te-menu-frame,.goog-te-gadget-simple,.goog-te-banner,.goog-te-gadget-icon{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
-      document.head.appendChild(ks);
-    }
-    updateLangUI(lang);
-    startTermWatcher();
-    return;
-  }
-  
-  // Widget not loaded yet — wait and retry
-  var tries = 0;
-  var interval = setInterval(function() {
-    var s = document.querySelector('.goog-te-combo');
-    if (s) {
-      s.value = lang;
-      s.dispatchEvent(new Event('change', {bubbles: true}));
-      // Inject style to kill any Google Translate spinner immediately
-      var ks = document.getElementById('gt-kill-spinner');
-      if(!ks){
-        ks = document.createElement('style');
-        ks.id = 'gt-kill-spinner';
-        ks.textContent = '.goog-te-spinner,.goog-te-spinner *,.goog-te-spinnerbox,.VIpgJd-yAWNEb-LgbsSe,[class*="VIpgJd"],[id*="VIpgJd"],#goog-gt-tt,.goog-tooltip,.goog-te-menu-frame,.goog-te-gadget-simple,.goog-te-banner,.goog-te-gadget-icon{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
-        document.head.appendChild(ks);
-      }
-      updateLangUI(lang);
-      clearInterval(interval);
-      startTermWatcher();
-      return;
-    }
-    tries++;
-    if (tries >= 30) {
-      clearInterval(interval);
-      // Cookie already set above, just reload
-      location.reload();
-    }
-  }, 300);
+  // Reload immediately — Google Translate reads cookie on page load, no combo needed
+  location.reload();
 }
 
 function updateLangUI(lang) {
@@ -1064,38 +1012,19 @@ function restoreSavedLanguage() {
   if (!saved || saved === 'en') return;
   GT_LANG = saved;
   
-  // If Google Translate widget hasn't loaded yet, wait and retry
-  var tries = 0;
-  var interval = setInterval(function() {
-    var sel = document.querySelector('.goog-te-combo');
-    if (sel) {
-      sel.value = saved;
-      sel.dispatchEvent(new Event('change', {bubbles: true}));
-      updateLangUI(saved);
-      clearInterval(interval);
-      // Start persistent snap-back watcher
-      startLangWatcher(saved);
-      startTermWatcher();
-      return;
-    }
-    tries++;
-    if (tries >= 40) {
-      clearInterval(interval);
-      document.cookie = 'googtrans=/en/' + saved + '; path=/';
-    }
-  }, 300);
+  // Cookie already set from previous visit — Google Translate reads it on load
+  updateLangUI(saved);
+  startLangWatcher(saved);
+  startTermWatcher();
 }
 
 // ── Persistent snap-back prevention ──
 function startLangWatcher(saved) {
-  var lastLang = saved;
+  // Cookie-based approach: Google Translate reads cookie, no combo polling needed
+  // Just ensure the cookie stays set
   setInterval(function() {
-    var sel = document.querySelector('.goog-te-combo');
-    if (sel && sel.value !== lastLang) {
-      sel.value = lastLang;
-      sel.dispatchEvent(new Event('change', {bubbles: true}));
-    }
-  }, 1000);
+    document.cookie = 'googtrans=/en/' + saved + '; path=/;';
+  }, 5000);
 }
 
 // ── Protect terms from translation ──
