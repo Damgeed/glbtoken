@@ -1029,7 +1029,27 @@ function restoreAfterGTLoad() {
   if (!saved || saved === 'en') return;
   GT_LANG = saved;
   updateLangUI(saved);
-  // Let Google Translate read the cookie — it auto-applies translation on init
+  // Programmatically set the hidden GT combo box to trigger translation
+  function setComboBox() {
+    var cb = document.querySelector('.goog-te-combo');
+    if (!cb) return false;
+    if (cb.value === saved) return true;
+    cb.value = saved;
+    // Make combo box visible for GT's change handler
+    var parent = document.getElementById('google_translate_element');
+    if (parent) parent.style.cssText = 'display:block!important;position:fixed;top:-9999px;left:0';
+    cb.style.cssText = 'display:block!important;visibility:visible!important';
+    cb.dispatchEvent(new Event('change', {bubbles: true}));
+    setTimeout(function(){
+      cb.style.cssText = '';
+      if (parent) parent.style.cssText = 'display:none';
+    }, 50);
+    return true;
+  }
+  if (!setComboBox()) {
+    setTimeout(function(){ setComboBox(); }, 800);
+    setTimeout(function(){ setComboBox(); }, 2000);
+  }
   setTimeout(protectTerms, 500);
   setTimeout(protectTerms, 1500);
   setTimeout(protectTerms, 3000);
