@@ -986,12 +986,11 @@ function switchLanguage(lang) {
   localStorage.setItem('gt_lang', lang);
   GT_LANG = lang;
   updateLangUI(lang);
+  // Always set a valid googtrans cookie - never leave it unset
+  // (/en/en means "English to English" = no translation)
+  document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   if (lang === 'en') {
     localStorage.removeItem('gt_lang');
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.glbtoken.com';
-  } else {
-    document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   }
   location.reload();
 }
@@ -1018,20 +1017,27 @@ function restoreSavedLanguage() {
   if (!saved || saved === 'en') return;
   GT_LANG = saved;
   updateLangUI(saved);
-  // Cookie-based: Google Translate reads googtrans cookie on page load
-  // (works instantly for most languages, but unreliable for some)
-  // Fallback: programmatically set the hidden combo box after widget loads
+  // Programmatically set the hidden Google Translate combo box
+  // This is more reliable than cookie-only for some languages
   function setComboBox() {
     var cb = document.querySelector('.goog-te-combo');
-    if (cb && cb.value !== saved) {
-      cb.value = saved;
-      cb.dispatchEvent(new Event('change', {bubbles: true}));
-    }
+    if (!cb) return false;
+    var opt = cb.querySelector('option[value="' + saved + '"]');
+    if (!opt) return false;
+    cb.value = saved;
+    // Temporarily make visible so Google's handler processes the event
+    cb.style.cssText = 'display:block!important;visibility:visible!important;position:fixed;top:-100px;left:0;z-index:9999';
+    cb.dispatchEvent(new Event('change', {bubbles: true}));
+    // Re-hide after a tick
+    setTimeout(function(){ cb.style.cssText = ''; }, 50);
+    return true;
   }
-  // Try combo box fallback at intervals (widget may take time to init)
-  setTimeout(setComboBox, 500);
-  setTimeout(setComboBox, 1500);
-  setTimeout(setComboBox, 3000);
+  // Try at increasing intervals until widget is fully loaded
+  if (!setComboBox()) {
+    setTimeout(function(){ setComboBox(); }, 800);
+    setTimeout(function(){ setComboBox(); }, 2000);
+    setTimeout(function(){ setComboBox(); }, 4000);
+  }
   setTimeout(protectTerms, 500);
   setTimeout(protectTerms, 1500);
   setTimeout(protectTerms, 3000);
