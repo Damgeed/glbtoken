@@ -1053,54 +1053,73 @@ function protectTerms() {
 // ── Ongoing term protection (every 5s) ──
 var termTimer = setInterval(protectTerms, 5000);
 
-// ── Mobile Keyboard Fix: keep chat input visible ──
+// ── Mobile Keyboard Fix: keep chat input visible above keyboard ──
 (function(){
   if(!window.visualViewport) return;
   var kbdPadding = 0;
+  var chatBottomDefault = null;
   function adjustForKeyboard(){
     var vh = window.visualViewport.height;
     var winH = window.innerHeight;
     var diff = winH - vh;
     if(diff > 80){
       kbdPadding = diff;
+      // Bring input above keyboard by adjusting bottom position
+      // (Chrome/Safari don't push fixed elements above keyboard like Firefox does)
       var cw = document.getElementById('chatWindow');
-      if(cw && cw.classList.contains('open')){
-        cw.style.maxHeight = 'calc(100dvh - ' + (kbdPadding + 80) + 'px)';
-        cw.style.height = 'calc(100dvh - ' + (kbdPadding + 80) + 'px)';
+      if(cw){
+        if(chatBottomDefault === null) chatBottomDefault = cw.style.bottom || '';
+        cw.style.bottom = (diff + 10) + 'px';
+        cw.style.height = 'calc(100dvh - ' + (diff + 80) + 'px)';
+        cw.style.maxHeight = 'calc(100dvh - ' + (diff + 80) + 'px)';
         var msgs = cw.querySelector('.chat-msgs');
-        if(msgs) setTimeout(function(){ msgs.scrollTop = msgs.scrollHeight; }, 50);
+        if(msgs) setTimeout(function(){ msgs.scrollTop = msgs.scrollHeight; }, 100);
       }
       var focused = document.querySelector('.ai-chat-section.chat-focused');
       if(focused){
+        focused.style.bottom = (diff + 10) + 'px';
         var inner = focused.querySelector('.ai-chat-inner');
         if(inner){
-          inner.style.maxHeight = 'calc(100dvh - ' + (kbdPadding + 40) + 'px)';
-          inner.style.height = 'calc(100dvh - ' + (kbdPadding + 40) + 'px)';
+          inner.style.maxHeight = 'calc(100dvh - ' + (diff + 40) + 'px)';
+          inner.style.height = 'calc(100dvh - ' + (diff + 40) + 'px)';
         }
         var chatMsgs = focused.querySelector('.chat-msgs');
-        if(chatMsgs) setTimeout(function(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }, 50);
+        if(chatMsgs) setTimeout(function(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }, 100);
       }
+      // Ensure input is scrolled into view
+      setTimeout(function(){
+        var input = document.getElementById('chatInput') || document.getElementById('aiChatInput');
+        if(input && document.activeElement === input) input.scrollIntoView({block:'nearest'});
+      }, 200);
     } else if(kbdPadding > 0){
       kbdPadding = 0;
       var cw2 = document.getElementById('chatWindow');
-      if(cw2){ cw2.style.maxHeight = ''; cw2.style.height = ''; }
+      if(cw2){
+        cw2.style.bottom = chatBottomDefault || '';
+        cw2.style.maxHeight = ''; cw2.style.height = '';
+        chatBottomDefault = null;
+      }
       var focused2 = document.querySelector('.ai-chat-section.chat-focused');
       if(focused2){
+        focused2.style.bottom = '';
         var inner2 = focused2.querySelector('.ai-chat-inner');
         if(inner2){ inner2.style.maxHeight = ''; inner2.style.height = ''; }
       }
     }
   }
   window.visualViewport.addEventListener('resize', adjustForKeyboard);
+  // Also handle on focus — double-tap input to scroll it into view
   document.addEventListener('focusin', function(e){
     var tag = e.target && e.target.tagName;
     if((tag === 'INPUT' || tag === 'TEXTAREA') && window.innerWidth <= 768){
       if(e.target.id === 'chatInput' || e.target.id === 'aiChatInput'){
+        // Re-measure in case keyboard just opened
+        setTimeout(adjustForKeyboard, 50);
         setTimeout(function(){
+          e.target.scrollIntoView({block:'nearest'});
           var msgs = e.target.closest('.chat-msgs') || e.target.closest('.ai-chat-main');
           if(msgs) msgs.scrollTop = msgs.scrollHeight;
-          e.target.scrollIntoView({block:'center', behavior:'smooth'});
-        }, 300);
+        }, 350);
       }
     }
   });
