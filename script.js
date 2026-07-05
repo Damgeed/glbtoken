@@ -968,6 +968,14 @@
 var GT_LANG = 'en';
 var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI'];
 
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false,
+    includedLanguages: 'en,zh-CN,ru,ja,de'
+  }, 'google_translate_element');
+}
+
 function toggleLangMenu() {
   var m = document.getElementById('langMenu');
   if (m) m.classList.toggle('open');
@@ -976,17 +984,11 @@ function toggleLangMenu() {
 function switchLanguage(lang) {
   localStorage.setItem('gt_lang', lang);
   GT_LANG = lang;
-  
-  // Set cookie for instant recognition on reload
   document.cookie = 'googtrans=/en/' + lang + '; path=/;';
-  
   updateLangUI(lang);
-  
   if (lang === 'en') {
     document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
-  
-  // Reload to trigger Google Translate via cookie
   setTimeout(function(){ location.reload(); }, 100);
 }
 
@@ -1011,20 +1013,10 @@ function restoreSavedLanguage() {
   var saved = localStorage.getItem('gt_lang');
   if (!saved || saved === 'en') return;
   GT_LANG = saved;
-  
-  // Cookie already set from previous visit — Google Translate reads it on load
   updateLangUI(saved);
-  startLangWatcher(saved);
-  startTermWatcher();
-}
-
-// ── Persistent snap-back prevention ──
-function startLangWatcher(saved) {
-  // Cookie-based approach: Google Translate reads cookie, no combo polling needed
-  // Just ensure the cookie stays set
-  setInterval(function() {
-    document.cookie = 'googtrans=/en/' + saved + '; path=/;';
-  }, 5000);
+  setTimeout(protectTerms, 500);
+  setTimeout(protectTerms, 1500);
+  setTimeout(protectTerms, 3000);
 }
 
 // ── Protect terms from translation ──
@@ -1043,12 +1035,8 @@ function protectTerms() {
       var word = PROTECTED_WORDS[w];
       var idx = lower.indexOf(word.toLowerCase());
       if (idx !== -1) {
-        // Found a protected word in this text node - check if it got translated
         var before = orig.substring(0, idx);
         var after = orig.substring(idx + word.length);
-        // The word itself should be unchanged (Google preserves brand names)
-        // But check if the surrounding context changed
-        // Just restore the exact word if it was mangled
         var actual = orig.substring(idx, idx + word.length);
         if (actual !== word) {
           n.textContent = before + word + after;
@@ -1058,14 +1046,8 @@ function protectTerms() {
   }
 }
 
-var termTimer = null;
-function startTermWatcher() {
-  if (termTimer) clearInterval(termTimer);
-  // Run immediately and periodically
-  setTimeout(protectTerms, 500);
-  setTimeout(protectTerms, 1500);
-  setTimeout(protectTerms, 3000);
-}
+// ── Ongoing term protection (every 5s) ──
+var termTimer = setInterval(protectTerms, 5000);
 
 // ── Mobile Keyboard Fix: keep chat input visible ──
 (function(){
@@ -1120,5 +1102,3 @@ function startTermWatcher() {
   });
 })();
 
-// Restore term watcher interval
-termTimer = setInterval(protectTerms, 5000);
