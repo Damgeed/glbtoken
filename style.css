@@ -507,6 +507,12 @@
   body{top:0!important;position:inherit!important}
   .goog-te-combo{display:none!important}
   #goog-gt-tt,.goog-tooltip,.goog-te-menu-frame,.goog-te-gadget-simple,.goog-te-banner{display:none!important}
+  .goog-te-spinner,.goog-te-spinner *,.goog-te-spinner svg,
+  .goog-te-spinner svg circle,
+  .goog-te-spinnerbox,
+  div[class*="goog-te-spinner"],
+  div[id*="goog-te-spinner"],
+  .VIpgJd-yAWNEb-LgbsSe{display:none!important}
 
   /* ── Mobile Carousel Fix ── */
   .tm-carousel{overflow:hidden;border-radius:var(--radius-sm)}
@@ -608,7 +614,7 @@
   .lang-btn-mobile{display:none;cursor:pointer;font-size:1.05rem;color:var(--text-secondary);padding:6px 2px;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;background:none;border:none;border-radius:var(--radius-sm)}
   .lang-btn-mobile:hover{color:var(--primary)}
   /* Google Translate overrides */
-  .goog-te-banner-frame.skiptranslate{display:none!important}body{top:0!important}.goog-te-gadget-icon{display:none!important}.goog-te-gadget-simple{background:none!important;border:none!important;font-size:0!important}iframe.goog-te-banner-frame{display:none!important}.skiptranslate.goog-te-gadget{display:none!important}
+  .goog-te-banner-frame.skiptranslate{display:none!important}body{top:0!important}.goog-te-gadget-icon{display:none!important}.goog-te-gadget-simple{background:none!important;border:none!important;font-size:0!important}iframe.goog-te-banner-frame{display:none!important}.skiptranslate.goog-te-gadget{display:none!important}.goog-te-spinner,.goog-te-spinner *,.goog-te-spinnerbox,.VIpgJd-yAWNEb-LgbsSe{display:none!important}
   @media(max-width:900px){
     .lang-btn-mobile{display:flex}
     .nav-right .lang-selector{display:none!important}
