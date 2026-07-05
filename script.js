@@ -986,13 +986,15 @@ function switchLanguage(lang) {
   GT_LANG = lang;
   updateLangUI(lang);
   if (lang === 'en') {
-    localStorage.setItem('gt_lang', 'en');
+    localStorage.removeItem('gt_lang');
     document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-  } else {
-    localStorage.setItem('gt_lang', lang);
-    document.cookie = 'googtrans=/en/' + lang + '; path=/;';
+    // Navigate with cache-busting param to force fresh page load
+    location.href = location.pathname + '?_=' + Date.now();
+    return;
   }
+  localStorage.setItem('gt_lang', lang);
+  document.cookie = 'googtrans=/en/' + lang + '; path=/;';
   location.reload();
 }
 
@@ -1019,15 +1021,16 @@ function restoreSavedLanguage() {
   GT_LANG = saved;
   updateLangUI(saved);
   // Programmatically set the hidden Google Translate combo box
-  // (even for 'en' — some browsers need explicit combo box change to revert)
   function setComboBox() {
     var cb = document.querySelector('.goog-te-combo');
     if (!cb) return false;
-    var opt = cb.querySelector('option[value="' + saved + '"]');
+    // For EN: set to empty string ("Select Language") to disable translation
+    // For other languages: set to the language code to trigger translation
+    var val = saved === 'en' ? '' : saved;
+    var opt = cb.querySelector('option[value="' + val + '"]');
     if (!opt) return false;
-    // Skip if already set correctly (cookie already handled it)
-    if (cb.value === saved) return true;
-    cb.value = saved;
+    if (cb.value === val) return true;
+    cb.value = val;
     // Temporarily make combo box AND its parent visible for Google's handler
     var parent = document.getElementById('google_translate_element');
     if (parent) parent.style.cssText = 'display:block!important;position:fixed;top:-9999px;left:0';
