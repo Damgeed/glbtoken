@@ -381,9 +381,9 @@
       list.innerHTML=k.map(key=>`
         <div class="api-key-card" style="padding:0.75rem 1rem">
           <div class="key-info">
-            <div class="key-name">${key.name}</div>
-            <div class="key-val">${key.key_prefix}••••••••</div>
-            <div class="meta">${key.permissions} · ${key.request_count} requests · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+            <div class="key-name">'+escapeHtml(key.name)+'</div>
+            <div class="key-val">'+escapeHtml(key.key_prefix)+'••••••••</div>
+            <div class="meta">'+escapeHtml(key.permissions)+' · '+key.request_count+' requests · '+(key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>')+'</div>
           </div>
           <div class="key-actions">
             <button class="sort-btn" data-key-id="${key.id}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
@@ -400,7 +400,7 @@
           body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions</td></tr>';
           return;
         }
-        body.innerHTML=d.items.map(t=>`<tr><td>${t.created_at?new Date(t.created_at).toLocaleDateString():''}</td><td>${t.type}</td><td>${t.model_used||t.payment_method||'-'}</td><td class="amount ${t.type==='deposit'?'gold':'red'}">${t.type==='deposit'?'+':''}${t.tokens||0}</td><td><span style="color:var(--success)">${t.status}</span></td></tr>`).join('');
+body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+t.type+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+(t.tokens||0)+'</td><td><span style="color:var(--success)">'+t.status+'</span></td></tr>').join('');
       }catch(e){}
     }
     function initCharts(usage){
@@ -649,9 +649,9 @@
       list.innerHTML=k.map(key=>`
         <div class="api-key-card">
           <div class="key-info">
-            <div class="key-name">${key.name}</div>
-            <div class="key-val">${key.key_prefix}••••••••</div>
-            <div class="meta">${key.permissions} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+            <div class="key-name">'+escapeHtml(key.name)+'</div>
+            <div class="key-val">'+escapeHtml(key.key_prefix)+'••••••••</div>
+            <div class="meta">'+escapeHtml(key.permissions)+' · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
           </div>
           <div class="key-actions">
             <button class="sort-btn" data-key-id="${key.id}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
