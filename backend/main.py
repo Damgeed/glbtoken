@@ -1341,12 +1341,19 @@ class SyncUsersRequest(BaseModel):
 async def admin_sync_users(
     req: SyncUsersRequest,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
+    api_key: str = "",
 ):
-    """Sync all existing users to New API. Admin-only. Dry-run supported."""
-    if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+    """Sync all existing users to New API. Admin-only. Dry-run supported.
+    
+    Authentication: Requires admin JWT OR api_key=GLBTOKEN_SECRET.
+    """
+    # Allow GLBTOKEN_SECRET as alternative auth (for automated calls)
+    glbtoken_secret = os.environ.get("GLBTOKEN_SECRET", "")
+    if api_key != glbtoken_secret:
+        if not user or not user.is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
 
     from sync_users import run_sync as _run_sync, health_check as _sync_health
 
