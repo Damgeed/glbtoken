@@ -5,7 +5,6 @@
     "dockerfilePath": "backend/Dockerfile"
   },
   "deploy": {
-    "rootDirectory": "backend",
     "numReplicas": 1,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
