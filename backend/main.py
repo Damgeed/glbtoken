@@ -1332,6 +1332,72 @@ def trigger_model_pull(api_key: str = ""):
     auto_pull_models()
     return {"status": "ok", "message": "Models refreshed from Fallback"}
 
+# ── Admin: Sync All Users to New API ──
+class SyncUsersRequest(BaseModel):
+    dry_run: bool = False
+
+@app.post("/api/admin/sync-users")
+@limiter.limit("2/minute")
+async def admin_sync_users(
+    req: SyncUsersRequest,
+    request: Request,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Sync all existing users to New API. Admin-only. Dry-run supported."""
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    from sync_users import run_sync as _run_sync, health_check as _sync_health
+
+    # Check New API connectivity
+    if not _sync_health():
+        raise HTTPException(status_code=503, detail="New API is not reachable")
+
+    # Count unsynced
+    total = db.query(func.count(User.id)).scalar()
+    unsynced = db.query(func.count(User.id)).filter(User.newapi_user_id.is_(None)).scalar()
+
+    if req.dry_run:
+        return {
+            "status": "dry_run",
+            "total_users": total,
+            "unsynced_users": unsynced,
+            "message": f"Would sync {unsynced} user(s). Run with dry_run=false to execute.",
+        }
+
+    if unsynced == 0:
+        return {"status": "ok", "message": "All users already synced to New API"}
+
+    # Run sync in a background thread so we don't block
+    import threading
+    result_container = {}
+
+    def _sync_worker():
+        try:
+            res = _run_sync(dry_run=False, verbose=False)
+            result_container["result"] = res
+        except Exception as e:
+            result_container["error"] = str(e)
+
+    thread = threading.Thread(target=_sync_worker, daemon=True)
+    thread.start()
+    thread.join(timeout=120)  # 2 min timeout
+
+    if "error" in result_container:
+        raise HTTPException(status_code=500, detail=f"Sync failed: {result_container['error']}")
+
+    res = result_container.get("result")
+    return {
+        "status": "ok",
+        "total_users": total,
+        "synced": res.created if res else 0,
+        "failed": res.failed if res else 0,
+        "skipped": total - unsynced,
+        "errors": (res.errors[:20] if res and res.errors else []),
+        "message": f"Synced {res.created} user(s), {res.failed} failed." if res else "Sync completed",
+    }
+
 @app.get("/api/health")
 async def health():
     # Check New API connectivity
