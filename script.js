@@ -1134,9 +1134,8 @@ function restoreAfterGTLoad() {
   function setComboBox() {
     var cb = document.querySelector('.goog-te-combo');
     if (!cb) return false;
-    // Always dispatch — don't skip if value matches, GT may have cached stale state
-    // Toggle through EN first to clear GT's internal cache, then go to target
-    if (cb.value !== 'en') {
+    // Toggle through EN only if GT is stuck on a DIFFERENT language (not the saved one)
+    if (cb.value !== 'en' && cb.value !== saved) {
       cb.value = 'en';
       cb.dispatchEvent(new Event('change', {bubbles: true}));
     }
