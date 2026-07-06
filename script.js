@@ -1,6 +1,6 @@
 
     const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'http://localhost:8000' : 'https://glbtoken-backend.up.railway.app';
+      ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
     let token = localStorage.getItem('gt_token') || '';
     let userData = JSON.parse(localStorage.getItem('gt_user') || '{}');
     let keys = JSON.parse(localStorage.getItem('gt_keys') || '[]');
