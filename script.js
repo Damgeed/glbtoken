@@ -135,7 +135,7 @@
     }
     // ── Auth0 Social Login Callback ──
     async function handleAuth0Callback(){
-      // Called on /auth/callback page
+      // Called on /auth/callback page — no nav/toast DOM elements here
       const hash = window.location.hash.substring(1);
       if(!hash) return;
       const params = new URLSearchParams(hash);
@@ -143,15 +143,14 @@
       if(!idToken) return;
       try{
         const data = await api('POST','/api/auth/auth0/login', {token: idToken});
-        token = data.token;
-        userData = data.user;
-        localStorage.setItem('gt_token', token);
-        localStorage.setItem('gt_user', JSON.stringify(userData));
-        applyAuth();
+        localStorage.setItem('gt_token', data.token);
+        localStorage.setItem('gt_user', JSON.stringify(data.user));
+        // Don't call applyAuth() — callback page has no nav DOM elements
+        // Redirect to dashboard which will apply auth from localStorage
         window.location.href = '/dashboard.html';
       }catch(e){
-        showToast('Auth0 login failed: ' + (e.message || 'Unknown error'), 'error');
-        window.location.href = '/login.html';
+        // Don't call showToast — callback page has no toast DOM
+        window.location.href = '/login.html?error=' + encodeURIComponent(e.message || 'Auth0 login failed');
       }
     }
     function applyAuth(){
@@ -684,6 +683,12 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       if(pageId==='history'&&token)loadTx();
       if(pageId==='models')loadModels();
     });
+    // Parse URL error param (from Auth0 callback failure redirect)
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+      const err = params.get('error');
+      if(err) showToast(decodeURIComponent(err), 'error');
+    })();
     // ── Mobile Chat: floating popup on focus ──
     function openMobileChat(){
       if(window.innerWidth>768)return;
