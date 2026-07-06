@@ -741,7 +741,10 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
             "HTTP-Referer": "https://glbtoken.com",
             "X-Title": "GlbTOKEN",
         }
-        api_endpoint = "https://api.glbtoken.io/v1/chat/completions"
+        fallback_url = os.getenv("FALLBACK_API_URL", "")
+        if not fallback_url:
+            raise HTTPException(status_code=400, detail="No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_URL")
+        api_endpoint = f"{fallback_url.rstrip('/')}/v1/chat/completions"
     
     async with httpx.AsyncClient(timeout=60) as client:
         resp = await client.post(
@@ -929,11 +932,25 @@ def auto_pull_models():
     import httpx
     print("🔄 Auto-pulling models from Fallback...")
     try:
-        resp = httpx.get(
-            "https://api.glbtoken.io/v1/models",
-            headers={"Content-Type": "application/json"},
-            timeout=30
-        )
+        # Try New API's admin endpoint first, then fallback URL
+        newapi_url = os.getenv("NEW_API_BASE_URL", "")
+        fallback_url = os.getenv("FALLBACK_API_URL", "")
+        models_url = ""
+        headers = {"Content-Type": "application/json"}
+        
+        if newapi_url:
+            # Use New API's model endpoint (no auth needed for public models)
+            models_url = f"{newapi_url.rstrip('/')}/api/model"
+        elif fallback_url:
+            models_url = f"{fallback_url.rstrip('/')}/v1/models"
+            admin_key = os.getenv("FALLBACK_API_KEY", "")
+            if admin_key:
+                headers["Authorization"] = f"Bearer {admin_key}"
+        else:
+            print("⚠️ No Fallback API URL configured (set FALLBACK_API_URL or NEW_API_BASE_URL). Using seeded models only.")
+            return
+        
+        resp = httpx.get(models_url, headers=headers, timeout=30)
         if resp.status_code != 200:
             print(f"⚠️ Fallback API returned {resp.status_code}")
             return
