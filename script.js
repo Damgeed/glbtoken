@@ -204,9 +204,10 @@
       // API doc page: show Go to Dashboard button when logged in
       const goBtn=document.getElementById('apiGoToDashBtn');
       if(goBtn)goBtn.style.display=loggedIn?'inline-flex':'none';
-      if(loggedIn&&userData.name){
-        document.getElementById('dashUserName').textContent=userData.name||'User';
-        const initial=(userData.name||'U')[0].toUpperCase();
+      if(loggedIn){
+        var displayName = userData.name || (userData.email ? userData.email.split('@')[0] : 'User');
+        document.getElementById('dashUserName').textContent=displayName;
+        const initial=(displayName||'U')[0].toUpperCase();
         // Update avatar initial without breaking dropdown structure
         const av=document.querySelector('.nav-avatar');
         const textNode = document.createTextNode(initial);
@@ -214,11 +215,11 @@
         av.textContent = '';
         av.appendChild(textNode);
         if (dropdown) av.appendChild(dropdown);
-        document.getElementById('ddAvatar').textContent=initial;document.getElementById('dropName').textContent=userData.name||'User';
+        document.getElementById('ddAvatar').textContent=initial;document.getElementById('dropName').textContent=displayName;
         document.getElementById('dropEmail').textContent=userData.email||'';
         // Mobile sync
         document.getElementById('mAvatar').textContent=initial;
-        document.getElementById('mName').textContent=userData.name||'User';
+        document.getElementById('mName').textContent=displayName;
         document.getElementById('mEmail').textContent=userData.email||'';
       }
       updateBalance();
