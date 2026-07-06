@@ -1442,7 +1442,7 @@ async def fix_newapi(
         except Exception as e:
             tables = [f"ERROR: {e}"]
         
-        # Check if 'users' table exists and its structure
+        # Check if 'users' table exists and fix it
         users_info = {}
         if 'users' in tables:
             try:
@@ -1455,18 +1455,38 @@ async def fix_newapi(
             except Exception as e:
                 users_info['error'] = str(e)
         
-        # Also check if there's a user with a specific role that could be admin
+        # Force-create root user if users table is empty
         if 'users' in tables:
-            # Try to promote user id=1 to role=100
-            cur.execute("UPDATE users SET role = 100 WHERE id = 1 AND role < 100")
-            r1 = cur.rowcount
-            if r1 == 0:
-                cur.execute("UPDATE users SET role = 100 WHERE username = 'root' AND role < 100")
-                r1 = cur.rowcount
+            # Check if user exists already
+            cur.execute("SELECT id FROM users WHERE username = 'root'")
+            existing = cur.fetchone()
+            
+            if existing:
+                # Update
+                cur.execute("UPDATE users SET role = 100, status = 1 WHERE username = 'root'")
+                users_info['action'] = 'updated'
+            else:
+                # Insert root user - bcrypt hash of 'Admin123!'
+                from passlib.hash import bcrypt as bcrypt_hasher
+                password_hash = bcrypt_hasher.hash("Admin123!")
+                import time
+                now = int(time.time())
+                cur.execute("""
+                    INSERT INTO users (id, username, password, display_name, role, status, email, access_token, quota, used_quota, request_count, "group", aff_code, aff_count, aff_quota, aff_history, inviter_id, created_at)
+                    VALUES (1, 'root', %s, 'Admin', 100, 1, 'admin@glbtoken.io', %s, 999999999, 0, 0, 'default', '', 0, 0, '', 0, %s)
+                    ON CONFLICT (id) DO UPDATE SET role = 100, status = 1
+                """, (password_hash, "b6dd6a45838303d40cde3d094e3c7b97", now))
+                users_info['action'] = 'inserted'
+            
+            affected = cur.rowcount
             conn.commit()
-            users_info['promoted'] = r1
+            users_info['affected'] = affected
+            
+            # Verify
+            cur.execute("SELECT id, username, role, status FROM users WHERE username = 'root'")
+            users_info['result'] = [(r[0], r[1], r[2], r[3]) for r in cur.fetchall()]
         
-        return {"status": "ok", "database": db_info[0] if db_info else "unknown", "tables": tables, "users": users_info}
+        return {"status": "ok", "database": db_info[0] if db_info else "unknown", "tables": tables[:10], "users": users_info}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
 
