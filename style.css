@@ -379,8 +379,9 @@
     .loading-dots span:nth-child(2){animation-delay:0.2s}
     .loading-dots span:nth-child(3){animation-delay:0.4s}
     @keyframes dot{0%,80%,100%{opacity:0.3}40%{opacity:1}}
-    .modal-overlay{position:fixed;inset:0;z-index:150;background:hsla(224 44% 5% / 0.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center}
+    .modal-overlay{position:fixed;inset:0;z-index:150;background:hsla(224 44% 5% / 0.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center}
     .modal-overlay.open{display:flex}
+    html.light .modal-overlay{background:hsla(40 20% 50% / 0.3)}
     .modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;max-width:480px;width:90%;max-height:85vh;overflow-y:auto;position:relative}
     .modal-box h3{font-size:1.15rem;font-weight:600;margin-bottom:1rem}
     .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;padding:4px;line-height:1}

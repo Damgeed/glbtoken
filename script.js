@@ -168,7 +168,7 @@
       // Create modal overlay
       var overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
-      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999';
+      overlay.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;inset:0;z-index:9999';
       overlay.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
         '<h3 style="margin:0 0 0.5rem;color:var(--text)">Reset Password</h3>' +
         '<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">Enter your email and we\'ll send a reset link.</p>' +
@@ -1070,7 +1070,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     });
 // ── Translation (Google Translate Widget) ──
 var GT_LANG = 'en';
-var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI'];
+var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI','HTTP','GET','POST','PUT','DELETE','PATCH','curl','Bearer','Authorization','Content-Type','application/json','localhost','Base URL','endpoint','request','response','header','parameter','query','string','integer','boolean','object','array','token','api_key','model','stream','temperature','max_tokens','role','content','user','assistant','system','function','tools','messages','chat','completion','GPT-4o','GPT-5','gpt-4','gpt-5','claude-3','claude-4','gemini-2','gemini-3'];
 
 // ── Before GT loads: ensure cookie matches saved language ──
 (function(){
