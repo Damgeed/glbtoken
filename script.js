@@ -169,14 +169,14 @@
       var overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
       overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999';
-      overlay.innerHTML = '<div style="background:var(--card-bg,#1a1a2e);border:1px solid var(--border,#2a2a3e);border-radius:16px;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
-        '<h3 style="margin:0 0 0.5rem;color:var(--text,#e0e0e0)">Reset Password</h3>' +
-        '<p style="color:var(--muted,#888);font-size:0.9rem;margin-bottom:1.5rem">Enter your email and we\'ll send a reset link.</p>' +
+      overlay.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
+        '<h3 style="margin:0 0 0.5rem;color:var(--text)">Reset Password</h3>' +
+        '<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">Enter your email and we\'ll send a reset link.</p>' +
         '<div class="auth-field"><label>Email</label><input type="email" id="resetEmail" placeholder="you@example.com"></div>' +
         '<div id="resetError" style="color:#ff4444;font-size:0.85rem;margin-bottom:1rem;text-align:center;display:none"></div>' +
         '<div style="display:flex;gap:0.75rem;margin-top:1rem">' +
         '<button class="btn-primary" style="flex:1;font-size:0.8rem;white-space:nowrap" id="resetSendBtn" onclick="sendResetLink()">Send Reset Link</button>' +
-        '<button style="flex:1;padding:0.75rem 1.5rem;background:var(--card-bg-alt,#2a2a3e);color:var(--text,#e0e0e0);border:1px solid var(--border,#3a3a4e);border-radius:12px;cursor:pointer" onclick="this.closest(\'.modal-overlay\').remove()">Cancel</button>' +
+        '<button class="btn-secondary" style="flex:1;font-size:0.8rem;text-align:center;justify-content:center;padding:0.75rem 1rem" onclick="this.closest(\'.modal-overlay\').remove()">Cancel</button>' +
         '</div></div>';
       document.body.appendChild(overlay);
     }
