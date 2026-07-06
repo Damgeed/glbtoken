@@ -1427,32 +1427,44 @@ async def fix_newapi(
             dbname="new-api",
         )
         cur = conn.cursor()
-        # First check the schema
-        cur.execute("SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'access_token'")
-        schema = cur.fetchone()
-        print(f"Schema: {schema}")
+        # List tables
+        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name")
+        tables = [r[0] for r in cur.fetchall()]
+        print(f"Tables: {tables}")
         
-        # Check current state
-        cur.execute("SELECT id, username, role, access_token FROM users WHERE id = 1 OR username = 'root'")
-        users = cur.fetchall()
-        print(f"Current users: {users}")
-        
-        # access_token might be auto-assigned; just set role=100
-        fixed_token = "admin_token_32chars!"
-        cur.execute(
-            "UPDATE users SET role = 100 WHERE id = 1"
-        )
-        affected = cur.rowcount
-        if affected == 0:
-            cur.execute(
-                "UPDATE users SET role = 100, access_token = %s WHERE username = 'root'",
-                (fixed_token,)
-            )
-            affected = cur.rowcount
-        conn.commit()
-        cur.close()
-        conn.close()
-        return {"status": "ok", "rows_affected": affected}
+        # Check if users table exists
+        if 'users' in tables:
+            cur.execute("SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = 'users' ORDER BY ordinal_position")
+            cols = cur.fetchall()
+            print(f"Users columns: {cols}")
+            
+            cur.execute("SELECT count(*) FROM users")
+            count = cur.fetchone()[0]
+            print(f"Users count: {count}")
+            
+            cur.execute("SELECT id, username, role, access_token FROM users LIMIT 5")
+            users = cur.fetchall()
+            print(f"Users: {users}")
+            
+            # Now update
+            cur.execute("UPDATE users SET role = 100 WHERE id = 1")
+            affected = cur.fetchone()  # might not return anything
+            # Actually need rowcount
+            affected_rowcount = cur.rowcount
+            print(f"Update affected: {affected_rowcount}")
+            
+            # Try by username too
+            if affected_rowcount == 0:
+                cur.execute("UPDATE users SET role = 100 WHERE username = 'root'")
+                affected_rowcount = cur.rowcount
+                print(f"Update by username affected: {affected_rowcount}")
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            return {"status": "ok", "rows_affected": affected_rowcount, "tables": tables, "user_count": count}
+        else:
+            return {"status": "ok", "tables": tables, "note": "No users table found"}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
 
