@@ -151,23 +151,29 @@ def send_email(to: str, subject: str, body: str):
 # ── Auth Routes ──
 @app.post("/api/auth/register")
 async def register(req: RegisterRequest, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == req.email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-    if len(req.password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
-    user = User(
-        name=req.name,
-        email=req.email,
-        password_hash=hash_password(req.password),
-        country=req.country,
-        token_balance=25000,  # Welcome bonus
-        is_admin=(db.query(User).count() == 0),  # First user is admin
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    try:
+        if db.query(User).filter(User.email == req.email).first():
+            raise HTTPException(status_code=400, detail="Email already registered")
+        if len(req.password) < 8:
+            raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+        user = User(
+            name=req.name,
+            email=req.email,
+            password_hash=hash_password(req.password),
+            country=req.country,
+            token_balance=25000,  # Welcome bonus
+            is_admin=(db.query(User).count() == 0),  # First user is admin
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ REGISTER DB ERROR: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)[:100]}")
     
-    # ── Sync to New API ──
+    # ── Sync to New API (non-blocking, best-effort) ──
     newapi_user = None
     newapi_token = None
     try:
@@ -176,7 +182,7 @@ async def register(req: RegisterRequest, db: Session = Depends(get_db)):
             name=req.name,
             quota=25000,
         )
-        if newapi_user and newapi_user.get("id"):
+        if newapi_user and isinstance(newapi_user, dict) and newapi_user.get("id"):
             # Create an API token for this user in New API
             token_resp = await create_api_token(
                 user_id=newapi_user["id"],
