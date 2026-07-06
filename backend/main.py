@@ -25,11 +25,34 @@ from newapi_integration import (
     get_usage_today, create_api_token, health_check
 )
 
-app = FastAPI(title="GlbTOKEN API", version="1.0.0")
+# ── Lifespan (replaces deprecated on_event) ──
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    init_db()
+    seed_models()
+    try:
+        auto_pull_models()
+    except Exception as e:
+        print(f"⚠️ Auto-pull error (non-critical): {e}")
+    yield
+    # Shutdown (nothing to clean up yet)
+
+
+app = FastAPI(title="GlbTOKEN API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://glbtoken.com",
+        "https://www.glbtoken.com",
+        "https://damgeed.github.io",
+        "http://localhost:5500",
+        "http://localhost:8000",
+        "http://127.0.0.1:5500",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,16 +62,6 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"status": "ok", "name": "GlbTOKEN API", "version": "1.0.0"}
-
-# ── Startup ──
-@app.on_event("startup")
-def startup():
-    init_db()
-    seed_models()
-    try:
-        auto_pull_models()
-    except Exception as e:
-        print(f'⚠️ Auto-pull skipped: {e}')
 
 # ── Pydantic Schemas ──
 class RegisterRequest(BaseModel):
@@ -140,8 +153,8 @@ def send_email(to: str, subject: str, body: str):
 async def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == req.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-    if len(req.password) < 6:
-        raise HTTPException(status_code=400, detail="Password too short")
+    if len(req.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
     user = User(
         name=req.name,
         email=req.email,

@@ -8,5 +8,6 @@ httpx
 pydantic
 pydantic-settings
 aiosqlite
+psycopg2-binary
 stripe
 paystack-python
