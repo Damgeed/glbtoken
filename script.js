@@ -892,19 +892,18 @@
     })();
     function sendChatMsg(){
       const input=document.getElementById('chatInput');
-      const msg=input.value.trim();if(!msg)return;
+      const btn=document.getElementById('chatSendBtn');
+      const msg=input.value.trim();if(!msg||(btn&&btn.disabled))return;
+      if(btn){btn.disabled=true}
       const msgs=document.getElementById('chatMsgs');
       const userHtml='<div class="chat-msg user"><div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div></div>';
       msgs.innerHTML+=userHtml;input.value='';
-      // Save chat history
       saveChatHistory();
-      // Refocus input to keep keyboard open on mobile
-      setTimeout(function(){ input.focus(); }, 10);
+      setTimeout(function(){ if(btn)btn.disabled=false; input.focus(); }, 10);
       setTimeout(()=>{
         const rs=["Great question! Here's how it works...","We support 100+ models from 56 providers!","You can pay with Stripe, Paystack, or crypto.","Tokens never expire. Use across any model.","Check your Dashboard for usage analytics."];
         const aiHtml='<div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">'+rs[Math.floor(Math.random()*rs.length)]+'</div></div>';
         msgs.innerHTML+=aiHtml;msgs.scrollTop=msgs.scrollHeight;
-        // Save chat history again after AI responds
         saveChatHistory();
       },600+Math.random()*800);
       msgs.scrollTop=msgs.scrollHeight;
