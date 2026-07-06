@@ -24,6 +24,7 @@ from newapi_integration import (
     create_newapi_user, update_user_quota, add_user_quota,
     get_usage_today, create_api_token, health_check
 )
+from auth0 import is_auth0_configured, get_auth0_config, verify_auth0_token, get_user_info
 
 # ── Lifespan (replaces deprecated on_event) ──
 from contextlib import asynccontextmanager
@@ -290,6 +291,78 @@ async def github_callback(req: GithubAuthRequest, db: Session = Depends(get_db))
         db.commit()
     token = create_access_token({"sub": str(user.id)})
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": token}
+
+# ── Auth0 Routes (production-grade auth, works alongside self-serve JWT) ──
+class Auth0LoginRequest(BaseModel):
+    token: str
+
+@app.get("/api/auth/auth0/config")
+def auth0_config():
+    """Return Auth0 public config for frontend. Gracefully disabled if unconfigured."""
+    return get_auth0_config()
+
+@app.post("/api/auth/auth0/login")
+async def auth0_login(req: Auth0LoginRequest, db: Session = Depends(get_db)):
+    """Verify Auth0 ID token, create/link user, return GlbTOKEN JWT."""
+    if not is_auth0_configured():
+        raise HTTPException(status_code=400, detail="Auth0 not configured")
+
+    try:
+        payload = verify_auth0_token(req.token)
+        info = get_user_info(payload)
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+    # Find or create user by Auth0 sub
+    user = db.query(User).filter(
+        (User.email == info["email"]) | (User.email == "" and 1 == 0)  # placeholder
+    ).first()
+    
+    # Also search by Auth0 ID pattern in email (can't easily search, so loop)
+    if not user and info.get("sub"):
+        user = db.query(User).filter(User.google_id == info["sub"]).first()
+    
+    if not user and info.get("sub"):
+        # Check if any user has this as auth0_id (stored in google_id field for now)
+        pass  # Will check below
+
+    # Find by email or sub
+    if not user and info["email"]:
+        user = db.query(User).filter(User.email == info["email"]).first()
+
+    if user:
+        # Link Auth0 sub to existing user
+        if not user.google_id:
+            user.google_id = info["sub"]
+        user.email_verified = user.email_verified or info["email_verified"]
+        db.commit()
+    else:
+        # Create new user
+        user = User(
+            name=info["name"],
+            email=info["email"],
+            google_id=info["sub"],  # Reuse google_id field for Auth0 sub
+            token_balance=25000,
+            email_verified=info["email_verified"],
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        # Sync to New API (non-blocking)
+        try:
+            await create_newapi_user(email=info["email"], name=info["name"], quota=25000)
+        except Exception as e:
+            print(f"⚠️ New API sync failed for Auth0 user: {e}")
+
+    token = create_access_token({"sub": str(user.id)})
+    return {
+        "user": {
+            "id": user.id, "name": user.name, "email": user.email,
+            "token_balance": user.token_balance, "picture": info.get("picture", ""),
+        },
+        "token": token,
+    }
 
 @app.get("/api/auth/me")
 def get_me(user: User = Depends(get_current_user)):

@@ -261,6 +261,47 @@
       if(!token)return;
       try{const d=await api('GET','/api/auth/me');userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth()}catch(e){}
     }
+    // ── Auth0 Integration ──
+    let auth0Config = null;
+    async function checkAuth0Config(){
+      try{
+        const cfg = await api('GET','/api/auth/auth0/config');
+        auth0Config = cfg;
+        const btn = document.getElementById('auth0LoginBtn');
+        if(btn && cfg.configured) btn.style.display='flex';
+      }catch(e){}
+    }
+    function auth0Login(){
+      if(!auth0Config || !auth0Config.configured){ showToast('Auth0 not configured','error'); return; }
+      const params = new URLSearchParams({
+        client_id: auth0Config.client_id,
+        redirect_uri: auth0Config.redirect_uri,
+        response_type: 'token id_token',
+        scope: 'openid email profile',
+        nonce: Math.random().toString(36).substring(2),
+      });
+      window.location.href = 'https://'+auth0Config.domain+'/authorize?'+params.toString();
+    }
+    async function handleAuth0Callback(){
+      // Called on /auth/callback page
+      const hash = window.location.hash.substring(1);
+      if(!hash) return;
+      const params = new URLSearchParams(hash);
+      const idToken = params.get('id_token');
+      if(!idToken) return;
+      try{
+        const data = await api('POST','/api/auth/auth0/login', {token: idToken});
+        token = data.token;
+        userData = data.user;
+        localStorage.setItem('gt_token', token);
+        localStorage.setItem('gt_user', JSON.stringify(userData));
+        applyAuth();
+        window.location.href = '/dashboard.html';
+      }catch(e){
+        showToast('Auth0 login failed: ' + (e.message || 'Unknown error'), 'error');
+        window.location.href = '/login.html';
+      }
+    }
     function applyAuth(){
       const loggedIn=!!token;
       document.getElementById('navGuest').style.display=loggedIn?'none':'flex';

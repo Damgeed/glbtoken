@@ -9,5 +9,6 @@ pydantic
 pydantic-settings
 aiosqlite
 psycopg2-binary
+requests
 stripe
 paystack-python
