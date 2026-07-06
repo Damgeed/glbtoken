@@ -1473,7 +1473,7 @@ async def fix_newapi(
                 now = int(time.time())
                 cur.execute("""
                     INSERT INTO users (id, username, password, display_name, role, status, email, access_token, quota, used_quota, request_count, "group", aff_code, aff_count, aff_quota, aff_history, inviter_id, created_at)
-                    VALUES (1, 'root', %s, 'Admin', 100, 1, 'admin@glbtoken.io', %s, 999999999, 0, 0, 'default', '', 0, 0, '', 0, %s)
+                    VALUES (1, 'root', %s, 'Admin', 100, 1, 'admin@glbtoken.io', %s, 999999999, 0, 0, 'default', '', 0, 0, 0, 0, %s)
                     ON CONFLICT (id) DO UPDATE SET role = 100, status = 1
                 """, (password_hash, "b6dd6a45838303d40cde3d094e3c7b97", now))
                 users_info['action'] = 'inserted'
