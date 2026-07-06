@@ -144,10 +144,15 @@ def send_email(to: str, subject: str, body: str):
     msg["Subject"] = subject
     msg["From"] = from_addr
     msg["To"] = to
-    with smtplib.SMTP(smtp_host, smtp_port) as s:
-        s.starttls()
-        s.login(smtp_user, smtp_pass)
-        s.send_message(msg)
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as s:
+            s.starttls()
+            s.login(smtp_user, smtp_pass)
+            s.send_message(msg)
+        print(f"📧 Email sent to {to}: {subject}")
+    except Exception as e:
+        print(f"📧 SMTP FAILED to {to}: {e}")
+        # Don't crash the request — just log it
 
 # ── Auth Routes ──
 @app.post("/api/auth/register")
