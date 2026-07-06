@@ -35,6 +35,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Root Health ──
+@app.get("/")
+def root():
+    return {"status": "ok", "name": "GlbTOKEN API", "version": "1.0.0"}
+
 # ── Startup ──
 @app.on_event("startup")
 def startup():
