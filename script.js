@@ -997,10 +997,11 @@ function toggleLangMenu() {
   if (m) m.classList.toggle('open');
 }
 
-// ── Bfcache: reload page if non-EN language was active (back/forward nav) ──
+// ── Bfcache: reload once if non-EN language was active (back/forward nav) ──
 (function(){
   var saved = localStorage.getItem('gt_lang');
-  if (saved && saved !== 'en') {
+  if (saved && saved !== 'en' && !sessionStorage.getItem('gt_bfcache_done')) {
+    sessionStorage.setItem('gt_bfcache_done', '1');
     window.addEventListener('pageshow', function(e) {
       if (e.persisted) location.reload();
     });
