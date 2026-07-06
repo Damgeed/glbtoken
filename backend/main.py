@@ -1427,12 +1427,20 @@ async def fix_newapi(
             dbname="new-api",
         )
         cur = conn.cursor()
-        # access_token is varchar(32), use first 31 chars to be safe
-        fixed_token = "b6dd6a45838303d40cde3d094e3c7b97"
-        print(f"FIX: Setting role=100, access_token='{fixed_token}' (len={len(fixed_token)})")
+        # First check the schema
+        cur.execute("SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'access_token'")
+        schema = cur.fetchone()
+        print(f"Schema: {schema}")
+        
+        # Check current state
+        cur.execute("SELECT id, username, role, access_token FROM users WHERE id = 1 OR username = 'root'")
+        users = cur.fetchall()
+        print(f"Current users: {users}")
+        
+        # access_token might be auto-assigned; just set role=100
+        fixed_token = "admin_token_32chars!"
         cur.execute(
-            "UPDATE users SET role = 100, access_token = %s WHERE id = 1",
-            (fixed_token,)
+            "UPDATE users SET role = 100 WHERE id = 1"
         )
         affected = cur.rowcount
         if affected == 0:
