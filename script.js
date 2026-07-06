@@ -89,22 +89,22 @@
       }catch(e){showToast(e.message,'error')}
     }
     function oauthLogin(provider){
-      // Redirect to Auth0 social login
-      api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
-        if(cfg && cfg.url) window.location.href=cfg.url;
-        else showToast('Social login unavailable. Try email/password.','error');
-      }).catch(function(){
-        showToast('Social login unavailable. Try email/password.','error');
-      });
+      // Direct OAuth — redirect to our backend's OAuth URL
+      if(provider==='google'){
+        api('GET','/api/auth/google').then(function(cfg){
+          if(cfg && cfg.url) window.location.href=cfg.url;
+          else showToast('Google login unavailable','error');
+        }).catch(function(){showToast('Google login unavailable','error')});
+      }else if(provider==='github'){
+        api('GET','/api/auth/github').then(function(cfg){
+          if(cfg && cfg.url) window.location.href=cfg.url;
+          else showToast('GitHub login unavailable','error');
+        }).catch(function(){showToast('GitHub login unavailable','error')});
+      }
     }
     function oauthRegister(provider){
-      // Redirect to Auth0 social signup
-      api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
-        if(cfg && cfg.url) window.location.href=cfg.url;
-        else showToast('Social signup unavailable. Try email/password.','error');
-      }).catch(function(){
-        showToast('Social signup unavailable. Try email/password.','error');
-      });
+      // Same redirect — OAuth handles both login and signup
+      oauthLogin(provider);
     }
     function logoutUser(){
       token='';userData={};
@@ -115,26 +115,8 @@
       if(!token)return;
       try{const d=await api('GET','/api/auth/me');userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth()}catch(e){}
     }
-    // ── Auth0 Social Login Callback ──
-    async function handleAuth0Callback(){
-      // Called on /auth/callback page — no nav/toast DOM elements here
-      const hash = window.location.hash.substring(1);
-      if(!hash) return;
-      const params = new URLSearchParams(hash);
-      const idToken = params.get('id_token');
-      if(!idToken) return;
-      try{
-        const data = await api('POST','/api/auth/auth0/login', {token: idToken});
-        localStorage.setItem('gt_token', data.token);
-        localStorage.setItem('gt_user', JSON.stringify(data.user));
-        // Don't call applyAuth() — callback page has no nav DOM elements
-        // Redirect to dashboard which will apply auth from localStorage
-        window.location.href = '/dashboard.html';
-      }catch(e){
-        // Don't call showToast — callback page has no toast DOM
-        window.location.href = '/login.html?error=' + encodeURIComponent(e.message || 'Auth0 login failed');
-      }
-    }
+    // ── OAuth Callback (from auth/oauth-callback.html) ──
+    // Handled directly by the callback page itself
     function applyAuth(){
       const loggedIn=!!token;
       document.getElementById('navGuest').style.display=loggedIn?'none':'flex';
