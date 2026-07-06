@@ -1,12 +1,55 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Signing in — GlbTOKEN</title>
-<style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg,#0f0f1a);color:var(--text,#e0e0e0);font-family:system-ui,-apple-system,sans-serif}
+<style>
+body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg,#0f0f1a);color:var(--text,#e0e0e0);font-family:system-ui,-apple-system,sans-serif}
 .loader{width:40px;height:40px;border:3px solid var(--border,#2a2a3e);border-top-color:var(--accent,#00D68F);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
 @keyframes spin{to{transform:rotate(360deg)}}
 p{text-align:center;color:var(--muted,#888);font-size:.9rem}
+.error{color:#ff4444;margin-top:1rem;font-size:.85rem;text-align:center}
 </style></head><body>
-<div><div class="loader"></div><p>Signing you in...</p></div>
+<div><div class="loader" id="spinner"></div><p id="status">Signing you in...</p>
+<p class="error" id="errorMsg" style="display:none"></p></div>
 <script src="/script.js?v=42"></script>
-<script>handleAuth0Callback()</script>
+<script>
+(async function(){
+  // Try hash fragment first (implicit flow), then search params
+  var hash = window.location.hash.substring(1);
+  var params = hash ? new URLSearchParams(hash) : new URLSearchParams(window.location.search);
+  var idToken = params.get('id_token') || params.get('idToken');
+  var accessToken = params.get('access_token');
+
+  if(!idToken && !accessToken){
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('status').textContent='No authentication data received';
+    document.getElementById('errorMsg').textContent='The login provider did not return a token. Please try again.';
+    document.getElementById('errorMsg').style.display='block';
+    return;
+  }
+  if(!idToken){
+    // Some providers only return access_token — try exchanging it
+    // For now, show error
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('status').textContent='Sign in incomplete';
+    document.getElementById('errorMsg').textContent='Your login was received but we need an ID token. Please try a different provider or email/password.';
+    document.getElementById('errorMsg').style.display='block';
+    return;
+  }
+  try{
+    var data = await api('POST','/api/auth/auth0/login', {token: idToken});
+    localStorage.setItem('gt_token', data.token);
+    localStorage.setItem('gt_user', JSON.stringify(data.user));
+    // Clean the URL hash so it doesn't interfere
+    if(window.history && window.history.replaceState){
+      window.history.replaceState(null, '', '/dashboard.html');
+    }
+    window.location.href = '/dashboard.html';
+  }catch(e){
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('status').textContent='Sign in failed';
+    document.getElementById('errorMsg').textContent=e.message || 'Authentication failed';
+    document.getElementById('errorMsg').style.display='block';
+  }
+})();
+</script>
 </body></html>
