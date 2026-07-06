@@ -54,9 +54,12 @@ async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
     if not NEW_API_BASE or not ADMIN_TOKEN:
         # Fall back to local-only mode
         return {"id": 0, "email": email, "name": name, "quota": quota}
+    import secrets
+    auto_password = "GlbToken_" + secrets.token_hex(12)
     return await _post("/api/user/register", {
         "email": email,
         "name": name,
+        "password": auto_password,
         "quota": quota
     })
 
