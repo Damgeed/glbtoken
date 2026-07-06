@@ -804,25 +804,29 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       fab.addEventListener('touchmove', onMove, {passive:false});
       fab.addEventListener('touchend', onEnd);
     })();
+    var _sendingMsg = false;
     function sendChatMsg(){
+      if(_sendingMsg) return;
       const input=document.getElementById('chatInput');
       const btn=document.getElementById('chatSendBtn');
-      const msg=input.value.trim();if(!msg||(btn&&btn.disabled))return;
-      if(btn){btn.disabled=true}
+      const msg=input.value.trim();if(!msg)return;
+      _sendingMsg = true;
+      if(btn){btn.disabled=true;btn.style.opacity='0.5'}
       const msgs=document.getElementById('chatMsgs');
       const userHtml='<div class="chat-msg user"><div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div></div>';
       msgs.innerHTML+=userHtml;input.value='';
       saveChatHistory();
-      // Keep keyboard open on mobile — immediate focus + RAF chain
+      // Keep keyboard open on mobile
       input.focus();
       requestAnimationFrame(function(){ input.focus(); });
-      setTimeout(function(){ if(btn)btn.disabled=false; }, 10);
-      // Acknowledge receipt (support team will respond via email)
+      // Acknowledge receipt
       setTimeout(()=>{
         const aiHtml='<div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Thanks for your message. Our support team will get back to you at the email on file. For urgent issues, contact support@glbtoken.com</div></div>';
         msgs.innerHTML+=aiHtml;msgs.scrollTop=msgs.scrollHeight;
         saveChatHistory();
-      },800);
+        _sendingMsg = false;
+        if(btn){btn.disabled=false;btn.style.opacity='1'}
+      },1000);
       msgs.scrollTop=msgs.scrollHeight;
     }
 
