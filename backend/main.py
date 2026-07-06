@@ -162,7 +162,7 @@ async def register(req: RegisterRequest, db: Session = Depends(get_db)):
             email=req.email,
             password_hash=hash_password(req.password),
             country=req.country,
-            token_balance=25000,  # Welcome bonus
+            token_balance=0,
             is_admin=(db.query(User).count() == 0),  # First user is admin
         )
         db.add(user)
@@ -181,7 +181,7 @@ async def register(req: RegisterRequest, db: Session = Depends(get_db)):
         newapi_user = await create_newapi_user(
             email=req.email,
             name=req.name,
-            quota=25000,
+            quota=0,
         )
         if newapi_user and isinstance(newapi_user, dict) and newapi_user.get("id"):
             # Create an API token for this user in New API
@@ -267,7 +267,7 @@ async def google_callback(req: GoogleAuthRequest, db: Session = Depends(get_db))
             name=google_user["name"],
             email=google_user["email"],
             google_id=google_user["id"],
-            token_balance=25000,
+            token_balance=0,
             email_verified=True,
         )
         db.add(user)
@@ -359,7 +359,7 @@ async def auth0_login(req: Auth0LoginRequest, db: Session = Depends(get_db)):
             name=info["name"],
             email=info["email"],
             google_id=info["sub"],
-            token_balance=25000,
+            token_balance=0,
             email_verified=info["email_verified"],
         )
         db.add(user)
@@ -367,7 +367,7 @@ async def auth0_login(req: Auth0LoginRequest, db: Session = Depends(get_db)):
         db.refresh(user)
 
         try:
-            await create_newapi_user(email=info["email"], name=info["name"], quota=25000)
+            await create_newapi_user(email=info["email"], name=info["name"], quota=0)
         except Exception as e:
             print(f"⚠️ New API sync failed for Auth0 user: {e}")
 
@@ -405,12 +405,12 @@ async def auth0_password_login_endpoint(req: Request, db: Session = Depends(get_
     else:
         user = User(
             name=info["name"], email=info["email"],
-            google_id=info["sub"], token_balance=25000,
+            google_id=info["sub"], token_balance=0,
             email_verified=info["email_verified"],
         )
         db.add(user); db.commit(); db.refresh(user)
         try:
-            await create_newapi_user(email=info["email"], name=info["name"], quota=25000)
+            await create_newapi_user(email=info["email"], name=info["name"], quota=0)
         except Exception as e:
             print(f"⚠️ New API sync failed for Auth0 password user: {e}")
 
@@ -447,12 +447,12 @@ async def auth0_signup_endpoint(req: Request, db: Session = Depends(get_db)):
 
     user = User(
         name=info["name"], email=info["email"],
-        google_id=info["sub"], token_balance=25000,
+        google_id=info["sub"], token_balance=0,
         email_verified=info["email_verified"],
     )
     db.add(user); db.commit(); db.refresh(user)
     try:
-        await create_newapi_user(email=info["email"], name=info["name"], quota=25000)
+        await create_newapi_user(email=info["email"], name=info["name"], quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 signup user: {e}")
 
@@ -574,21 +574,38 @@ async def get_dashboard(user: User = Depends(get_current_user), db: Session = De
     
     # ── New API usage data ──
     newapi_usage = {}
+    newapi_connected = False
     try:
         if user.newapi_user_id:
             newapi_usage = await get_usage_today(user.newapi_user_id)
+            if newapi_usage and "error" not in newapi_usage:
+                newapi_connected = True
     except Exception as e:
         print(f"⚠️ New API usage fetch failed: {e}")
+    
+    # Calculate active days from registration
+    days_active = 0
+    if user.created_at:
+        days_active = (datetime.now(timezone.utc) - user.created_at).days or 1
+    
+    # Total consumption from local DB (fallback when New API not connected)
+    total_consumption = db.query(func.sum(Transaction.tokens)).filter(
+        Transaction.user_id == user.id,
+        Transaction.type == "consumption"
+    ).scalar() or 0
     
     return {
         "token_balance": user.token_balance,
         "total_spent": user.total_spent,
         "models_used": len(usage),
         "api_keys_active": key_count,
-        "days_active": 14,
+        "days_active": days_active,
+        "total_tokens_consumed": float(total_consumption),
+        "newapi_connected": newapi_connected,
         "usage_by_model": [
             {"model": m[0] or "Unknown", "tokens": float(m[1])} for m in usage
         ],
+        "usage_from_newapi": newapi_usage,
         "recent_activity": [
             {
                 "type": t.type,

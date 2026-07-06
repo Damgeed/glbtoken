@@ -341,6 +341,18 @@
         document.getElementById('dashModelsUsed').textContent=d.models_used;
         document.getElementById('dashKeyCount').textContent=d.api_keys_active;
         document.getElementById('dashKeyStatus').textContent=d.api_keys_active>0?'Active':'No keys';
+        // Show real days active from New API or local DB
+        var daysEl = document.getElementById('dashDaysActive');
+        if(daysEl) daysEl.textContent = d.days_active;
+        // Show New API connection status
+        var newapiStatus = document.getElementById('dashNewapiStatus');
+        if(newapiStatus) newapiStatus.textContent = d.newapi_connected ? 'New API Connected' : 'Offline';
+        // Show total tokens consumed from New API data
+        var newapiTotal = d.usage_from_newapi && d.usage_from_newapi.total;
+        if(newapiTotal && d.newapi_connected){
+          var consumedEl = document.getElementById('dashTotalConsumed');
+          if(consumedEl) consumedEl.textContent = parseInt(newapiTotal).toLocaleString() + ' tokens today';
+        }
         initCharts(d.usage_by_model);
         // Activity
         const act=document.getElementById('dashActivity');
