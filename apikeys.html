@@ -362,7 +362,7 @@ console.log(completion.choices[0].message.content); // demo output
     </div>
     <div class="chat-input">
       <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg()}">
-      <button id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault();setTimeout(function(){document.getElementById('chatInput').focus()},10)">➤</button>
+      <button id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
     </div>
   </div>
 

@@ -802,9 +802,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       userDiv.innerHTML = '<div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div>';
       msgs.appendChild(userDiv);
       input.value = '';
-      // DON'T reset input.style.height — that triggers layout reflow and dismisses keyboard on mobile
-      // Refocus input to keep keyboard open on mobile
-      setTimeout(function(){ input.focus(); }, 10);
+      // Keep keyboard open on mobile — immediate focus + RAF chain
+      input.focus();
+      requestAnimationFrame(function(){ input.focus(); requestAnimationFrame(function(){ input.focus(); }); });
       msgs.scrollTop = msgs.scrollHeight;
       // Disable button
       const btn = document.getElementById('aiSendBtn');
@@ -940,7 +940,10 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const userHtml='<div class="chat-msg user"><div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div></div>';
       msgs.innerHTML+=userHtml;input.value='';
       saveChatHistory();
-      setTimeout(function(){ if(btn)btn.disabled=false; input.focus(); }, 10);
+      // Keep keyboard open on mobile — immediate focus + RAF chain
+      input.focus();
+      requestAnimationFrame(function(){ input.focus(); });
+      setTimeout(function(){ if(btn)btn.disabled=false; }, 10);
       setTimeout(()=>{
         const rs=["Great question! Here's how it works...","We support 100+ models from 56 providers!","You can pay with Stripe, Paystack, or crypto.","Tokens never expire. Use across any model.","Check your Dashboard for usage analytics."];
         const aiHtml='<div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">'+rs[Math.floor(Math.random()*rs.length)]+'</div></div>';
@@ -948,7 +951,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         saveChatHistory();
       },600+Math.random()*800);
       msgs.scrollTop=msgs.scrollHeight;
-      setTimeout(()=>input.focus(),50);
     }
 
     // ── Chat History Persistence (localStorage) ──

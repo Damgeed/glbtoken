@@ -189,7 +189,7 @@
           </div>
           <div class="chat-input">
             <textarea id="aiChatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIChatMsg()}"></textarea>
-            <button type="button" onmousedown="event.preventDefault();setTimeout(function(){document.getElementById('aiChatInput').focus()},10)" onclick="sendAIChatMsg()" id="aiSendBtn">➤</button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="sendAIChatMsg()" id="aiSendBtn">➤</button>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@
     </div>
     <div class="chat-input">
       <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg()}">
-      <button id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault();setTimeout(function(){document.getElementById('chatInput').focus()},10)">➤</button>
+      <button id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
     </div>
   </div>
 
