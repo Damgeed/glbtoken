@@ -189,29 +189,46 @@
       if(!name||!email||!pass){showToast('Fill all fields','error');return}
       if(pass!==confirm){showToast('Passwords dont match','error');return}
       try{
-        const data=await api('POST','/api/auth/register',{name,email,password:pass,country});
+        // Route through Auth0 signup (falls back to custom auth if Auth0 not configured)
+        const data = await api('POST','/api/auth/auth0/signup',{name,email,password:pass,country});
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
-        // Store New API token if returned
-        if(data.newapi_token){
-          newapiToken=data.newapi_token;
-          newapiEndpoint=data.newapi_endpoint||'';
-          localStorage.setItem('gt_newapi_token',newapiToken);
-          localStorage.setItem('gt_newapi_endpoint',newapiEndpoint);
-        }
         applyAuth();showToast('Account created! Welcome.','success');showPage('dashboard');
-      }catch(e){showToast(e.message,'error')}
+      }catch(e){
+        // Fallback to custom auth
+        try{
+          const data=await api('POST','/api/auth/register',{name,email,password:pass,country});
+          token=data.token;userData=data.user;
+          localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+          if(data.newapi_token){
+            newapiToken=data.newapi_token;
+            newapiEndpoint=data.newapi_endpoint||'';
+            localStorage.setItem('gt_newapi_token',newapiToken);
+            localStorage.setItem('gt_newapi_endpoint',newapiEndpoint);
+          }
+          applyAuth();showToast('Account created! Welcome.','success');showPage('dashboard');
+        }catch(e2){showToast(e2.message,'error')}
+      }
     }
     async function loginUser(){
       const email=document.getElementById('loginEmail').value;
       const pass=document.getElementById('loginPassword').value;
       if(!email||!pass){showToast('Enter email and password','error');return}
       try{
-        const data=await api('POST','/api/auth/login',{email,password:pass});
+        // Route through Auth0 password grant
+        const data = await api('POST','/api/auth/auth0/password-login',{email,password:pass});
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');showPage('dashboard');
-      }catch(e){showToast(e.message,'error')}
+      }catch(e){
+        // Fallback to custom auth if Auth0 not configured
+        try{
+          const data=await api('POST','/api/auth/login',{email,password:pass});
+          token=data.token;userData=data.user;
+          localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+          applyAuth();showToast('Welcome back!','success');showPage('dashboard');
+        }catch(e2){showToast(e2.message,'error')}
+      }
     }
     function showOAuthModal(provider, isRegister){
       const overlay=document.createElement('div');
@@ -250,8 +267,20 @@
         applyAuth();showToast('Account created with '+provider,'success');window.location.href='dashboard.html';
       }catch(e){showToast(e.message,'error')}
     }
-    function oauthLogin(provider){showOAuthModal(provider,false)}
-    function oauthRegister(provider){showOAuthModal(provider,true)}
+    function oauthLogin(provider){
+      // Redirect to Auth0 social login
+      api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
+        if(cfg && cfg.url) window.location.href=cfg.url;
+        else showOAuthModal(provider,false);
+      }).catch(function(){showOAuthModal(provider,false)});
+    }
+    function oauthRegister(provider){
+      // Redirect to Auth0 social signup
+      api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
+        if(cfg && cfg.url) window.location.href=cfg.url;
+        else showOAuthModal(provider,true);
+      }).catch(function(){showOAuthModal(provider,true)});
+    }
     function logoutUser(){
       token='';userData={};
       localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
@@ -261,27 +290,7 @@
       if(!token)return;
       try{const d=await api('GET','/api/auth/me');userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth()}catch(e){}
     }
-    // ── Auth0 Integration ──
-    let auth0Config = null;
-    async function checkAuth0Config(){
-      try{
-        const cfg = await api('GET','/api/auth/auth0/config');
-        auth0Config = cfg;
-        const btn = document.getElementById('auth0LoginBtn');
-        if(btn && cfg.configured) btn.style.display='flex';
-      }catch(e){}
-    }
-    function auth0Login(){
-      if(!auth0Config || !auth0Config.configured){ showToast('Auth0 not configured','error'); return; }
-      const params = new URLSearchParams({
-        client_id: auth0Config.client_id,
-        redirect_uri: auth0Config.redirect_uri,
-        response_type: 'token id_token',
-        scope: 'openid email profile',
-        nonce: Math.random().toString(36).substring(2),
-      });
-      window.location.href = 'https://'+auth0Config.domain+'/authorize?'+params.toString();
-    }
+    // ── Auth0 Social Login Callback ──
     async function handleAuth0Callback(){
       // Called on /auth/callback page
       const hash = window.location.hash.substring(1);

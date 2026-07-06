@@ -1,8 +1,8 @@
-"""
-GlbTOKEN — Auth0 Integration
-Verifies Auth0 JWTs, creates/links users in our database.
-Gracefully disabled — all endpoints/docs work without Auth0 config.
-"""
+"""GlbTOKEN — Auth0 Integration
+Handles password grant login, signup, social login, and JWT verification.
+All existing frontend buttons route through Auth0 behind the scenes.
+Gracefully disabled — falls back to custom auth if Auth0 not configured."""
+
 import os, json, requests
 from jose import jwt, JWTError
 from datetime import datetime, timezone
@@ -10,28 +10,89 @@ from datetime import datetime, timezone
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID", "")
 AUTH0_CLIENT_SECRET = os.getenv("AUTH0_CLIENT_SECRET", "")
-AUTH0_AUDIENCE = os.getenv("AUTH0_AUDIENCE", f"https://{AUTH0_DOMAIN}/api/v2/") if AUTH0_DOMAIN else ""
 
 JWKS_CACHE = None
 
-def is_auth0_configured() -> bool:
-    """Check if Auth0 env vars are set."""
+def is_configured() -> bool:
     return bool(AUTH0_DOMAIN and AUTH0_CLIENT_ID and AUTH0_CLIENT_SECRET)
 
-
-def get_auth0_config() -> dict:
-    """Return public Auth0 config for the frontend."""
+def get_config() -> dict:
     return {
-        "configured": is_auth0_configured(),
+        "configured": is_configured(),
         "domain": AUTH0_DOMAIN,
         "client_id": AUTH0_CLIENT_ID,
-        "audience": AUTH0_AUDIENCE or "",
-        "redirect_uri": f"https://glbtoken.com/auth/callback.html",
     }
 
+# ── Password Grant (Email/Password Login) ──
+
+def password_login(email: str, password: str) -> dict:
+    """Exchange email+password for Auth0 tokens via Resource Owner Password Grant."""
+    if not is_configured():
+        raise ValueError("Auth0 not configured")
+    url = f"https://{AUTH0_DOMAIN}/oauth/token"
+    payload = {
+        "grant_type": "password",
+        "username": email,
+        "password": password,
+        "client_id": AUTH0_CLIENT_ID,
+        "client_secret": AUTH0_CLIENT_SECRET,
+        "scope": "openid email profile",
+    }
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code != 200:
+        err = resp.json().get("error_description", resp.text)
+        raise ValueError(f"Auth0 login failed: {err}")
+    return resp.json()
+
+# ── Signup (Database Connection) ──
+
+def signup(email: str, password: str, name: str) -> dict:
+    """Create a new user in Auth0's Username-Password-Authentication database."""
+    if not is_configured():
+        raise ValueError("Auth0 not configured")
+    url = f"https://{AUTH0_DOMAIN}/dbconnections/signup"
+    payload = {
+        "client_id": AUTH0_CLIENT_ID,
+        "email": email,
+        "password": password,
+        "name": name,
+        "connection": "Username-Password-Authentication",
+    }
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code != 200:
+        err = resp.json().get("description", resp.text)
+        raise ValueError(f"Auth0 signup failed: {err}")
+    return resp.json()
+
+# ── Social Login Redirect URL ──
+
+def get_social_login_url(provider: str, redirect_uri: str) -> str:
+    """Build Auth0 authorize URL for a social connection (google-oauth2, github, etc.)."""
+    if not is_configured():
+        return ""
+    connection_map = {
+        "google": "google-oauth2",
+        "github": "github",
+        "microsoft": "windowslive",
+        "apple": "apple",
+    }
+    connection = connection_map.get(provider)
+    if not connection:
+        return ""
+    params = {
+        "client_id": AUTH0_CLIENT_ID,
+        "redirect_uri": redirect_uri,
+        "response_type": "token id_token",
+        "scope": "openid email profile",
+        "connection": connection,
+        "nonce": str(datetime.now(timezone.utc).timestamp()),
+    }
+    qs = "&".join(f"{k}={v}" for k, v in params.items())
+    return f"https://{AUTH0_DOMAIN}/authorize?{qs}"
+
+# ── JWT Verification ──
 
 def _fetch_jwks() -> dict:
-    """Fetch Auth0 JWKS keys (cached)."""
     global JWKS_CACHE
     if JWKS_CACHE is None and AUTH0_DOMAIN:
         try:
@@ -43,39 +104,24 @@ def _fetch_jwks() -> dict:
             pass
     return JWKS_CACHE or {}
 
-
-def verify_auth0_token(id_token: str) -> dict:
-    """
-    Verify an Auth0 ID token / access token.
-    Returns decoded payload on success, or raises ValueError.
-    """
-    if not is_auth0_configured():
+def verify_token(id_token: str) -> dict:
+    """Verify an Auth0 ID token. Returns decoded payload on success."""
+    if not is_configured():
         raise ValueError("Auth0 not configured")
-
     jwks = _fetch_jwks()
     if not jwks:
         raise ValueError("Could not fetch Auth0 JWKS")
-
     try:
-        # Get the key ID from token header
         unverified_header = jwt.get_unverified_header(id_token)
         rsa_key = {}
         for key in jwks.get("keys", []):
             if key["kid"] == unverified_header["kid"]:
-                rsa_key = {
-                    "kty": key["kty"],
-                    "kid": key["kid"],
-                    "use": key["use"],
-                    "n": key["n"],
-                    "e": key["e"],
-                }
+                rsa_key = {k: key[k] for k in ["kty", "kid", "use", "n", "e"] if k in key}
                 break
         if not rsa_key:
             raise ValueError("No matching RSA key found in JWKS")
-
         payload = jwt.decode(
-            id_token,
-            rsa_key,
+            id_token, rsa_key,
             algorithms=["RS256"],
             audience=AUTH0_CLIENT_ID,
             issuer=f"https://{AUTH0_DOMAIN}/",
@@ -85,11 +131,10 @@ def verify_auth0_token(id_token: str) -> dict:
     except JWTError as e:
         raise ValueError(f"Auth0 token verification failed: {e}")
 
-
 def get_user_info(payload: dict) -> dict:
     """Extract standardized user info from Auth0 token payload."""
     return {
-        "sub": payload.get("sub", ""),           # Auth0 user ID (e.g. auth0|xxx)
+        "sub": payload.get("sub", ""),
         "email": payload.get("email", ""),
         "name": payload.get("name", payload.get("nickname", payload.get("sub", ""))),
         "picture": payload.get("picture", ""),
