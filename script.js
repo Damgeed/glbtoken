@@ -1058,6 +1058,24 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
 var GT_LANG = 'en';
 var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI'];
 
+// ── Before GT loads: ensure cookie matches saved language ──
+(function(){
+  var saved = localStorage.getItem('gt_lang');
+  if (!saved || saved === 'en') { 
+    if (saved === 'en') { localStorage.removeItem('gt_lang'); }
+    return; 
+  }
+  // Set the cookie with 1-year expiry BEFORE GT initializes
+  clearGoogTransCookie();
+  var expiry = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
+  document.cookie = 'googtrans=/en/' + saved + '; path=/; expires=' + expiry;
+  // Reload ONCE per session to force GT to read the fresh cookie
+  if (!sessionStorage.getItem('gt_lang_ready')) {
+    sessionStorage.setItem('gt_lang_ready', '1');
+    location.reload();
+  }
+})();
+
 function googleTranslateElementInit() {
   if (sessionStorage.getItem('gt_disable')) return;
   new google.translate.TranslateElement({
@@ -1065,7 +1083,7 @@ function googleTranslateElementInit() {
     autoDisplay: false,
     includedLanguages: 'en,zh-CN,ru,ja,de'
   }, 'google_translate_element');
-  // After widget loads, restore previously saved language
+  // After GT loads, just protect brand names and update UI
   restoreAfterGTLoad();
 }
 
@@ -1082,28 +1100,13 @@ function toggleLangMenu() {
   if (m) m.classList.toggle('open');
 }
 
-// ── Bfcache: reload once if non-EN language was active (back/forward nav) ──
+// ── Bfcache: force reload on back/forward when non-EN ──
 (function(){
   var saved = localStorage.getItem('gt_lang');
-  if (saved && saved !== 'en' && !sessionStorage.getItem('gt_bfcache_done')) {
-    sessionStorage.setItem('gt_bfcache_done', '1');
+  if (saved && saved !== 'en') {
     window.addEventListener('pageshow', function(e) {
       if (e.persisted) location.reload();
     });
-  }
-})();
-
-// ── Save carousel slide index before language reload ──
-(function(){
-  var saved = sessionStorage.getItem('gt_carousel_idx');
-  if (saved !== null) {
-    setTimeout(function(){
-      // Try all dot types (tm-carousel uses .tm-dot, others might use .carousel-dot, .slider-dot)
-      var dots = document.querySelectorAll('.tm-dot, .carousel-dot, .slider-dot');
-      var idx = parseInt(saved, 10);
-      if (dots.length > idx && dots[idx]) dots[idx].click();
-      sessionStorage.removeItem('gt_carousel_idx');
-    }, 600);
   }
 })();
 
@@ -1111,37 +1114,18 @@ function switchLanguage(lang) {
   GT_LANG = lang;
   updateLangUI(lang);
   
-  // Save carousel position before reload
-  var carousel = document.querySelector('.tm-carousel, .carousel, .slider, .testimonial-carousel');
-  if (carousel) {
-    var idx = -1;
-    var tmDots = carousel.querySelectorAll('.tm-dot');
-    if (tmDots.length) {
-      tmDots.forEach(function(d, i) { if (d.classList.contains('active')) idx = i; });
-    } else {
-      var active = carousel.querySelector('.active, .slide-active');
-      if (active) {
-        var slides = carousel.querySelectorAll('.slide, .carousel-item, .testimonial-slide');
-        for (var si = 0; si < slides.length; si++) {
-          if (slides[si] === active) { idx = si; break; }
-        }
-      }
-    }
-    if (idx >= 0) sessionStorage.setItem('gt_carousel_idx', idx);
-  }
-  
   if (lang === 'en') {
     clearGoogTransCookie();
     localStorage.removeItem('gt_lang');
     sessionStorage.setItem('gt_disable', '1');
+    sessionStorage.removeItem('gt_lang_ready');
   } else {
-    // Clear ALL previous googtrans cookies first
     clearGoogTransCookie();
-    // Set cookie with 1-year expiry so it persists across sessions
     var expiry = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
     document.cookie = 'googtrans=/en/' + lang + '; path=/; expires=' + expiry;
     localStorage.setItem('gt_lang', lang);
     sessionStorage.removeItem('gt_disable');
+    sessionStorage.removeItem('gt_lang_ready');
   }
   location.href = location.pathname + '?_=' + Date.now();
 }
@@ -1166,16 +1150,6 @@ document.addEventListener('click', function(e) {
 function restoreAfterGTLoad() {
   var saved = localStorage.getItem('gt_lang');
   if (!saved || saved === 'en') return;
-  // Check if the googtrans cookie actually matches the saved language
-  var cookies = document.cookie.split(';').map(function(c){return c.trim()});
-  var hasCookie = cookies.some(function(c){return c.indexOf('googtrans=/en/' + saved) === 0 || c.indexOf('googtrans=' + saved) >= 0});
-  if (!hasCookie) {
-    // Cookie was lost (e.g. expired, new tab) — re-set it and reload
-    var expiry = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
-    document.cookie = 'googtrans=/en/' + saved + '; path=/; expires=' + expiry;
-    location.reload();
-    return;
-  }
   GT_LANG = saved;
   updateLangUI(saved);
   // Protect brand names from being translated
