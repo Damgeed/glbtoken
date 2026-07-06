@@ -1,76 +1,19 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Signing in — GlbTOKEN</title>
-<style>
-body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg,#0f0f1a);color:var(--text,#e0e0e0);font-family:system-ui,-apple-system,sans-serif}
-.loader{width:40px;height:40px;border:3px solid var(--border,#2a2a3e);border-top-color:var(--accent,#00D68F);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
-@keyframes spin{to{transform:rotate(360deg)}}
-p{text-align:center;color:var(--muted,#888);font-size:.9rem}
-.error{color:#ff4444;margin-top:1rem;font-size:.85rem;text-align:center}
-</style></head><body>
-<div><div class="loader" id="spinner"></div><p id="status">Signing you in...</p>
-<p class="error" id="errorMsg" style="display:none"></p></div>
+<!DOCTYPE html>
 <script>
-(function(){
-  var E = document.getElementById('errorMsg');
-  var S = document.getElementById('spinner');
-  var ST = document.getElementById('status');
-
-  function showError(msg){
-    if(S)S.style.display='none';
-    ST.textContent='Sign in failed';
-    E.textContent=msg;
-    E.style.display='block';
-  }
-
-  // Parse both hash fragment and query string
-  var allParams = {};
-  var hash = window.location.hash.substring(1);
-  var search = window.location.search.substring(1);
-  (hash + '&' + search).split('&').forEach(function(pair){
-    if(!pair) return;
-    var parts = pair.split('=');
-    allParams[decodeURIComponent(parts[0])] = decodeURIComponent(parts.slice(1).join('='));
+// Instantly redirect to root with hash preserved — no flash, no visible page
+var hash = window.location.hash;
+if (hash) {
+  window.location.replace('/' + hash);
+} else {
+  // Check search params too
+  var params = {};
+  (window.location.search.substring(1)).split('&').forEach(function(p){
+    if(!p)return;var ps=p.split('=');params[decodeURIComponent(ps[0])]=decodeURIComponent(ps.slice(1).join('='));
   });
-
-  // Check for error first
-  if(allParams['error']){
-    var desc = allParams['error_description'] || allParams['error'];
-    showError(desc);
-    return;
+  if (params.error) {
+    window.location.replace('/login.html?error=' + encodeURIComponent(params.error_description || params.error));
+  } else {
+    window.location.replace('/');
   }
-
-  var idToken = allParams['id_token'] || allParams['idToken'];
-  var accessToken = allParams['access_token'];
-
-  if(!idToken && !accessToken){
-    showError('No authentication token received. The social provider may not be fully configured.');
-    return;
-  }
-  if(!idToken){
-    showError('Only an access token was returned. Please try email/password login instead.');
-    return;
-  }
-
-  // We have an id_token — send it to backend
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-    ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app' + '/api/auth/auth0/login', true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onload = function(){
-    if(xhr.status >= 200 && xhr.status < 300){
-      var data = JSON.parse(xhr.responseText);
-      localStorage.setItem('gt_token', data.token);
-      localStorage.setItem('gt_user', JSON.stringify(data.user));
-      window.location.href = '/dashboard.html';
-    } else {
-      var msg = 'Auth verification failed';
-      try{ var d = JSON.parse(xhr.responseText); msg = d.detail || msg; }catch(e){}
-      showError(msg);
-    }
-  };
-  xhr.onerror = function(){ showError('Network error. Please try again.'); };
-  xhr.send(JSON.stringify({token: idToken}));
-})();
+}
 </script>
-</body></html>

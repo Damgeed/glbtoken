@@ -221,6 +221,36 @@
         document.getElementById('mAvatar').textContent=initial;
         document.getElementById('mName').textContent=displayName;
         document.getElementById('mEmail').textContent=userData.email||'';
+        // ── "Sign Out [name]" in nav (dynamic, injects after navGuest) ──
+        var so = document.getElementById('navSignedIn');
+        if(!so){
+          so = document.createElement('div');
+          so.id = 'navSignedIn';
+          so.style.cssText = 'display:none;align-items:center;gap:0.6rem;flex-shrink:0';
+          var guest = document.getElementById('navGuest');
+          if(guest && guest.parentNode) guest.parentNode.insertBefore(so, guest.nextSibling);
+        }
+        so.style.display = 'flex';
+        so.innerHTML = '<a onclick="logoutUser()" style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;color:var(--text,#e0e0e0);text-decoration:none;font-size:0.85rem;font-weight:500;white-space:nowrap;padding:0.35rem 0.6rem;border:1px solid var(--border,#3a3a4e);border-radius:8px;transition:all 0.2s">Sign Out ' + displayName + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a>';
+        var soMobile = document.getElementById('navSignedInMobile');
+        if(!soMobile && document.querySelector('.mobile-right-group')){
+          soMobile = document.createElement('div');
+          soMobile.id = 'navSignedInMobile';
+          soMobile.style.cssText = 'display:none;align-items:center;margin-left:0;flex-shrink:0';
+          var mobileGroup = document.querySelector('.mobile-right-group');
+          mobileGroup.insertBefore(soMobile, mobileGroup.firstChild);
+        }
+        if(soMobile && window.innerWidth <= 768){
+          soMobile.style.display = 'flex';
+          soMobile.innerHTML = '<span style="color:var(--text,#e0e0e0);font-size:0.75rem;font-weight:500;white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis">' + displayName + '</span>';
+        } else if(soMobile) {
+          soMobile.style.display = 'none';
+        }
+      } else {
+        var so = document.getElementById('navSignedIn');
+        if(so) so.style.display = 'none';
+        var soMobile = document.getElementById('navSignedInMobile');
+        if(soMobile) soMobile.style.display = 'none';
       }
       updateBalance();
     }
@@ -247,6 +277,27 @@
       const page=location.hash.replace('#','')||'home';
       showPage(page);
     });
+    // ── Handle Auth0 callback (redirect from /auth/callback.html) ──
+    (function(){
+      var h = window.location.hash.substring(1);
+      if (h && !token) {
+        var p = new URLSearchParams(h);
+        var idToken = p.get('id_token');
+        if (idToken) {
+          fetch(API_URL + '/api/auth/auth0/login', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({token:idToken})
+          }).then(function(r){return r.json()}).then(function(d){
+            if(d.token){
+              localStorage.setItem('gt_token',d.token);
+              localStorage.setItem('gt_user',JSON.stringify(d.user));
+              window.location.replace('/dashboard.html');
+            }
+          }).catch(function(){});
+          return; // Stop further init, redirect is coming
+        }
+      }
+    })();
     // ── Init auth ──
     if(token){refreshMe();applyAuth()}
     // ── Initial route from hash ──
