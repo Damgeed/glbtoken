@@ -816,9 +816,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const userHtml='<div class="chat-msg user"><div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div></div>';
       msgs.innerHTML+=userHtml;input.value='';
       saveChatHistory();
-      // Keep keyboard open on mobile
+      // Keep keyboard open on mobile — aggressive focus retention
       input.focus();
       requestAnimationFrame(function(){ input.focus(); });
+      setTimeout(function(){ input.focus(); }, 100);
+      setTimeout(function(){ input.focus(); }, 300);
       // Acknowledge receipt
       setTimeout(()=>{
         const aiHtml='<div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Thanks for your message. Our support team will get back to you at the email on file. For urgent issues, contact support@glbtoken.com</div></div>';
@@ -826,6 +828,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         saveChatHistory();
         _sendingMsg = false;
         if(btn){btn.disabled=false;btn.style.opacity='1'}
+        // Refocus input on mobile to bring keyboard back after lockout
+        var inp = document.getElementById('chatInput');
+        if(inp && window.innerWidth <= 768) { inp.focus(); requestAnimationFrame(function(){ inp.focus(); }); }
       },1000);
       msgs.scrollTop=msgs.scrollHeight;
     }
@@ -1039,33 +1044,15 @@ function switchLanguage(lang) {
     if (idx >= 0) sessionStorage.setItem('gt_carousel_idx', idx);
   }
   
-  // Helper: clear googtrans cookies at ALL known domain/path combos
-  function clearGoogTrans() {
-    var paths = ['/', '/glbtoken'];
-    var domains = ['', '.glbtoken.com', 'glbtoken.com', '.github.io', 'damgeed.github.io'];
-    var expiry = 'expires=Thu, 01 Jan 1970 00:00:00 UTC';
-    for (var pi = 0; pi < paths.length; pi++) {
-      for (var di = 0; di < domains.length; di++) {
-        var c = 'googtrans=; path=' + paths[pi] + '; ' + expiry;
-        if (domains[di]) c += '; domain=' + domains[di];
-        document.cookie = c;
-      }
-    }
-  }
-  
   if (lang === 'en') {
-    clearGoogTrans();
+    clearGoogTransCookie();
     localStorage.removeItem('gt_lang');
     sessionStorage.setItem('gt_disable', '1');
   } else {
     // Clear ALL previous googtrans cookies first (GT may have set its own domain-scoped version)
-    clearGoogTrans();
-    // Then set the new cookie at every domain/path level
+    clearGoogTransCookie();
+    // Then set the new cookie for the current domain
     document.cookie = 'googtrans=/en/' + lang + '; path=/;';
-    document.cookie = 'googtrans=/en/' + lang + '; path=/; domain=.glbtoken.com;';
-    document.cookie = 'googtrans=/en/' + lang + '; path=/; domain=glbtoken.com;';
-    document.cookie = 'googtrans=/en/' + lang + '; path=/; domain=.github.io;';
-    document.cookie = 'googtrans=/en/' + lang + '; path=/; domain=damgeed.github.io;';
     localStorage.setItem('gt_lang', lang);
     sessionStorage.removeItem('gt_disable');
   }
@@ -1094,37 +1081,27 @@ function restoreAfterGTLoad() {
   if (!saved || saved === 'en') return;
   GT_LANG = saved;
   updateLangUI(saved);
-  // Programmatically set the hidden GT combo box to trigger translation
-  function setComboBox() {
-    var cb = document.querySelector('.goog-te-combo');
-    if (!cb) return false;
-    // Toggle through EN only if GT is stuck on a DIFFERENT language (not the saved one)
-    if (cb.value !== 'en' && cb.value !== saved) {
-      cb.value = 'en';
-      cb.dispatchEvent(new Event('change', {bubbles: true}));
-    }
-    // Small delay then set to target language
-    setTimeout(function(){
-      cb.value = saved;
-      var parent = document.getElementById('google_translate_element');
-      if (parent) parent.style.cssText = 'display:block!important;position:fixed;top:-9999px;left:0';
-      cb.style.cssText = 'display:block!important;visibility:visible!important';
-      cb.dispatchEvent(new Event('change', {bubbles: true}));
-      setTimeout(function(){
-        cb.style.cssText = '';
-        if (parent) parent.style.cssText = 'display:none';
-      }, 50);
-    }, 100);
-    return true;
+  // Check if GT combo box already reflects the saved language
+  var cb = document.querySelector('.goog-te-combo');
+  if (cb && cb.value === saved) {
+    // Already translated — just protect terms
+    setTimeout(protectTerms, 500);
+    setTimeout(protectTerms, 1500);
+    setTimeout(protectTerms, 3000);
+    return;
   }
-  if (!setComboBox()) {
-    setTimeout(function(){ setComboBox(); }, 800);
-    setTimeout(function(){ setComboBox(); }, 2000);
-    setTimeout(function(){ setComboBox(); }, 4000);
-  }
-  setTimeout(protectTerms, 500);
-  setTimeout(protectTerms, 1500);
-  setTimeout(protectTerms, 3000);
+  // Combo box doesn't match — set cookie and reload to let GT pick it up
+  clearGoogTransCookie();
+  document.cookie = 'googtrans=/en/' + saved + '; path=/;';
+  localStorage.setItem('gt_lang', saved);
+  setTimeout(function(){ location.href = location.pathname + '?_=' + Date.now(); }, 200);
+}
+
+function clearGoogTransCookie(){
+  var expiry = 'expires=Thu, 01 Jan 1970 00:00:00 UTC';
+  document.cookie = 'googtrans=; path=/; ' + expiry;
+  document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; ' + expiry;
+  document.cookie = 'googtrans=; path=/; domain=glbtoken.com; ' + expiry;
 }
 
 // ── Protect terms from translation ──
