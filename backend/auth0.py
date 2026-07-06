@@ -125,7 +125,7 @@ def verify_token(id_token: str) -> dict:
             algorithms=["RS256"],
             audience=AUTH0_CLIENT_ID,
             issuer=f"https://{AUTH0_DOMAIN}/",
-            options={"verify_exp": True},
+            options={"verify_exp": True, "verify_at_hash": False},
         )
         return payload
     except JWTError as e:
