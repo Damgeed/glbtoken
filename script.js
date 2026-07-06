@@ -926,6 +926,32 @@
     }
     let tmIndex=0,tmInterval,tmTotal=2,tmTouchStartX=0,tmTouchStartY=0;
     const tmTitles=['🔥 Top Models This Week','💻 API Quick Start'];
+
+    async function refreshTopModels(){
+      var container=document.getElementById('tmModelsView');
+      if(!container)return;
+      container.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-muted);font-size:0.8rem">Loading models...</div>';
+      try{
+        var all=await api('GET','/api/models');
+        if(!all||!all.length){container.innerHTML='';return;}
+        var featured=all.filter(function(m){return m.category==='Flagship'||m.category==='Flash';});
+        var top4=featured.length>=4?featured.slice(0,4):all.slice(0,4);
+        var html='';
+        top4.forEach(function(m){
+          var price='$'+(m.prompt_price*1000).toFixed(4).replace(/0+$/,'').replace(/\.$/,'')+'/1k';
+          var ctx=m.context_length>=1000000?(m.context_length/1000000).toFixed(0)+'M':m.context_length>=1000?(m.context_length/1000).toFixed(0)+'K':m.context_length;
+          html+='<div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:0.75rem;overflow-wrap:break-word;word-break:break-word;overflow:hidden;width:100%;box-sizing:border-box">'
+            +'<div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.2rem;overflow-wrap:break-word;word-break:break-word">'+m.provider+'</div>'
+            +'<div style="font-weight:600;font-size:0.85rem;overflow-wrap:break-word;word-break:break-word">'+m.name+'</div>'
+            +'<div style="font-size:0.75rem;color:var(--text-secondary);overflow-wrap:break-word;word-break:break-word">'+ctx+' ctx · '+price+'</div>'
+            +'</div>';
+        });
+        container.innerHTML=html;
+      }catch(e){
+        container.innerHTML='';
+      }
+    }
+
     function slideTopView(dir){
       var track=document.getElementById('tmTrack');
       if(!track)return;
@@ -933,6 +959,8 @@
       track.style.transform='translateX(-'+(tmIndex*100)+'%)';
       const title=document.getElementById('tmTitle');
       if(title)title.textContent=tmTitles[tmIndex];
+      // Auto-refresh models when sliding to slide 0
+      if(tmIndex===0)refreshTopModels();
       document.querySelectorAll('.tm-dot').forEach((d,i)=>{
         d.style.background=i===tmIndex?'var(--primary)':'var(--text-muted)';
         d.style.width=i===tmIndex?'10px':'8px';
@@ -956,6 +984,8 @@
         if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)slideTopView(dx<0?1:-1);
       });
       tmInterval=setInterval(()=>slideTopView(1),5000);
+      // Initial load: refresh top model cards (replaces hardcoded HTML)
+      refreshTopModels();
       // Delegate clicks on key action buttons (avoid inline onclick XSS)
       document.addEventListener('click',function(e){
         const btn=e.target.closest('[data-key-id]');
@@ -970,6 +1000,7 @@ var GT_LANG = 'en';
 var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI'];
 
 function googleTranslateElementInit() {
+  if (sessionStorage.getItem('gt_disable')) return;
   new google.translate.TranslateElement({
     pageLanguage: 'en',
     autoDisplay: false,
@@ -979,8 +1010,9 @@ function googleTranslateElementInit() {
   restoreAfterGTLoad();
 }
 
-// ── Load Google Translate JS on every page (cookie controls translation, not script loading) ──
+// ── Load Google Translate JS on every page (unless disabled for EN) ──
 (function(){
+  if (sessionStorage.getItem('gt_disable')) return;
   var s = document.createElement('script');
   s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
   document.head.appendChild(s);
@@ -991,18 +1023,53 @@ function toggleLangMenu() {
   if (m) m.classList.toggle('open');
 }
 
+// ── Save carousel slide index before language reload ──
+(function(){
+  var saved = sessionStorage.getItem('gt_carousel_idx');
+  if (saved !== null) {
+    setTimeout(function(){
+      var dots = document.querySelectorAll('.carousel-dot, .slider-dot');
+      var idx = parseInt(saved, 10);
+      if (dots.length > idx && dots[idx]) dots[idx].click();
+      sessionStorage.removeItem('gt_carousel_idx');
+    }, 600);
+  }
+})();
+
 function switchLanguage(lang) {
   GT_LANG = lang;
   updateLangUI(lang);
+  
+  // Save carousel position before reload
+  var carousel = document.querySelector('.carousel, .slider, .testimonial-carousel');
+  if (carousel) {
+    var active = carousel.querySelector('.active, .slide-active');
+    if (active) {
+      var slides = carousel.querySelectorAll('.slide, .carousel-item, .testimonial-slide');
+      for (var si = 0; si < slides.length; si++) {
+        if (slides[si] === active) {
+          sessionStorage.setItem('gt_carousel_idx', si);
+          break;
+        }
+      }
+    }
+  }
+  
   if (lang === 'en') {
-    // Clear cookie → GT has no translation instruction → stays at pageLanguage 'en'
+    // Nuclear clear: remove googtrans at every path/domain level
     document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'googtrans=; path=/; domain=glbtoken.com; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; max-age=0;';
+    document.cookie = 'googtrans=; path=/; domain=.github.io; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'googtrans=; path=/; domain=damgeed.github.io; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    document.cookie = 'googtrans=; domain=.glbtoken.com; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
     localStorage.removeItem('gt_lang');
+    sessionStorage.setItem('gt_disable', '1');
   } else {
-    // Set cookie → GT translates page to target language
     document.cookie = 'googtrans=/en/' + lang + '; path=/;';
     localStorage.setItem('gt_lang', lang);
+    sessionStorage.removeItem('gt_disable');
   }
   location.href = location.pathname + '?_=' + Date.now();
 }
