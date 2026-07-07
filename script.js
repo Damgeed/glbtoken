@@ -1198,9 +1198,13 @@ function toggleLangMenu() {
 (function(){
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
-    window.addEventListener('pageshow', function(e) {
-      if (e.persisted) location.reload();
-    });
+    var reloaded = sessionStorage.getItem('gt_bf_reloaded');
+    if (!reloaded) {
+      sessionStorage.setItem('gt_bf_reloaded', '1');
+      window.addEventListener('pageshow', function(e) {
+        if (e.persisted) location.reload();
+      });
+    }
   }
 })();
 
@@ -1218,9 +1222,9 @@ function switchLanguage(lang) {
     document.cookie = 'googtrans=/en/' + lang + '; path=/; expires=' + expiry;
     localStorage.setItem('gt_lang', lang);
     sessionStorage.removeItem('gt_disable');
-    sessionStorage.removeItem('gt_lang_ready');
+    sessionStorage.setItem('gt_lang_ready', '1');
   }
-  location.href = location.pathname + '?_=' + Date.now();
+  location.reload();
 }
 
 function updateLangUI(lang) {
