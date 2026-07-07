@@ -126,7 +126,7 @@
     <button class="btn-primary" style="width:100%;display:none" id="loginVerifyBtn" onclick="verifyLoginCode()">Verify & Sign In</button>
     <div class="auth-divider">or continue with</div>
     <button class="auth-oauth-btn" style="width:100%" onclick="togglePhone('login')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Continue with Phone</button>
-    <div id="loginPhoneSection" style="display:none;margin:0.5rem 0">
+    <div id="loginPhoneSection" style="display:none;margin:0.5rem 0 1rem 0">
       <div class="auth-field"><label>Phone</label><input type="tel" id="loginPhone" placeholder="+1234567890" autocomplete="tel"></div>
       <div class="auth-field" id="loginSmsCodeGroup" style="display:none"><label>SMS Code</label><input type="text" id="loginSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"></div>
       <button class="btn-primary" style="width:100%" id="loginPhoneSendBtn" onclick="sendPhoneCode('login')">Send Code</button>
