@@ -99,7 +99,7 @@
 <div class="hero-text">
 <span class="hero-badge notranslate">🌐 100+ Models. One Balance.</span>
 <h1><span class="nowrap notranslate">Premium AI.</span><br><span class="gold notranslate">One Token Balance.</span></h1>
-<p>Access the world's most sophisticated AI models through a single, elegant API. Designed for those who demand excellence.</p>
+<p id="heroTagline">Access the world's most sophisticated AI models through a single, elegant API. Designed for those who demand excellence.</p>
 <div class="hero-actions">
 <button class="btn-primary" onclick="showPage('register')">Buy Tokens Now</button>
 <button class="btn-secondary" onclick="showPage('how')">How It Works</button>
@@ -360,7 +360,7 @@
               </div>
 
 <script src="translations.js?v=100"></script>
-<script data-cfasync="false" src="script.js?v=102"></script>
+<script data-cfasync="false" src="script.js?v=103"></script>
 
 <script>
 (function(){
@@ -393,6 +393,22 @@ document.addEventListener('mousemove', moveDrag);
 document.addEventListener('touchmove', moveDrag, {passive:false});
 document.addEventListener('mouseup', endDrag);
 document.addEventListener('touchend', endDrag);
+})();
+</script>
+
+
+<script>
+(function() {
+  var el = document.getElementById('heroTagline');
+  if (!el) return;
+  var n = Math.floor(Math.random() * 5) + 1;
+  var key = 'hero-variant-' + n;
+  var lang = localStorage.getItem('gt_lang') || 'en';
+  if (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key][lang]) {
+    el.textContent = TRANS[key][lang];
+  } else if (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key]['en']) {
+    el.textContent = TRANS[key]['en'];
+  }
 })();
 </script>
 
