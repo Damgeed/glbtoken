@@ -9,8 +9,8 @@ let curLang = localStorage.getItem('gt_lang') || 'en';
 function switchLanguage(lang) {
   curLang = lang;
   localStorage.setItem('gt_lang', lang);
-  translatePage();
-  updateLangUI(lang);
+  // Reload so all text (including mixed-content with links) is properly translated
+  location.reload();
 }
 
 function translatePage() {
@@ -46,17 +46,23 @@ function updateLangUI(lang) {
   if (lm) lm.classList.remove('open');
 }
 
-// Apply on load
+// Apply on every page load — immediately translate if a saved language exists
 (function() {
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
     curLang = saved;
-    document.addEventListener('DOMContentLoaded', function() { translatePage(); updateLangUI(saved); });
+    function doTranslate() { translatePage(); updateLangUI(saved); }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', doTranslate);
+    } else {
+      doTranslate();
+    }
   }
 })();
 
 // Also translate after page navigation (bfcache)
-window.addEventListener('pageshow', function() {
+window.addEventListener('pageshow', function(e) {
+  // e.persisted is true when page is served from bfcache
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
     curLang = saved;
@@ -297,3 +303,27 @@ TRANS["This Month"] = {en: "This Month", "zh-CN": "本月", ru: "Этот мес
 TRANS["Custom Range"] = {en: "Custom Range", "zh-CN": "自定义范围", ru: "Свой диапазон", ja: "カスタム範囲", de: "Benutzerdefinierter Bereich"};
 TRANS["Apply"] = {en: "Apply", "zh-CN": "应用", ru: "Применить", ja: "適用", de: "Anwenden"};
 TRANS["Cancel"] = {en: "Cancel", "zh-CN": "取消", ru: "Отмена", ja: "キャンセル", de: "Abbrechen"};
+
+
+// ── User-requested group (v=83 additions) ──
+
+TRANS["Create an API key from your dashboard. Use our OpenAI-compatible API endpoint to access 100+ models with one integration. Full docs included."] = {en: "Create an API key from your dashboard. Use our OpenAI-compatible API endpoint to access 100+ models with one integration. Full docs included.", "zh-CN": "从您的控制台创建 API 密钥。使用我们的 OpenAI 兼容端点，一次集成即可访问 100+ 模型。完整文档已包含。", ru: "Создайте API-ключ в панели управления. Используйте нашу совместимую с OpenAI конечную точку для доступа к 100+ моделям с одной интеграцией. Полная документация прилагается.", ja: "ダッシュボードからAPIキーを作成。OpenAI互換のエンドポイントを使用して、1つの統合で100以上のモデルにアクセス。完全なドキュメント付き。", de: "Erstellen Sie einen API-Schlüssel über Ihr Dashboard. Nutzen Sie unseren OpenAI-kompatiblen Endpunkt für den Zugriff auf 100+ Modelle mit einer Integration. Vollständige Dokumentation inklusive."};
+TRANS["Custom"] = {en: "Custom", "zh-CN": "自定义", ru: "Своя сумма", ja: "カスタム", de: "Benutzerdefiniert"};
+TRANS["Best all-around flagship models"] = {en: "Best all-around flagship models", "zh-CN": "最佳全能旗舰模型", ru: "Лучшие универсальные флагманские модели", ja: "最高のオールラウンドフラッグシップモデル", de: "Beste Allround-Flaggschiff-Modelle"};
+TRANS["Budget-friendly workhorses"] = {en: "Budget-friendly workhorses", "zh-CN": "经济实惠的主力模型", ru: "Бюджетные рабочие лошадки", ja: "コスパ重視の実用モデル", de: "Budgetfreundliche Arbeitspferde"};
+TRANS["Deep thinking & logical reasoning"] = {en: "Deep thinking & logical reasoning", "zh-CN": "深度思考与逻辑推理", ru: "Глубокое мышление и логические рассуждения", ja: "深い思考と論理的推論", de: "Tiefes Denken & logisches Schlussfolgern"};
+TRANS["Multimodal & image understanding"] = {en: "Multimodal & image understanding", "zh-CN": "多模态与图像理解", ru: "Мультимодальность и понимание изображений", ja: "マルチモーダル＆画像理解", de: "Multimodal & Bildverständnis"};
+TRANS["Ultra-fast response models"] = {en: "Ultra-fast response models", "zh-CN": "超快响应模型", ru: "Сверхбыстрые модели ответа", ja: "超高速応答モデル", de: "Ultra-schnelle Antwortmodelle"};
+TRANS["Large-scale open models"] = {en: "Large-scale open models", "zh-CN": "大规模开源模型", ru: "Крупномасштабные открытые модели", ja: "大規模オープンモデル", de: "Groß angelegte offene Modelle"};
+TRANS["Web-connected search models"] = {en: "Web-connected search models", "zh-CN": "联网搜索模型", ru: "Модели с подключением к веб-поиску", ja: "ウェブ検索対応モデル", de: "Web-verbundene Suchmodelle"};
+TRANS["Sign in"] = {en: "Sign in", "zh-CN": "登录", ru: "Войти", ja: "サインイン", de: "Anmelden"};
+TRANS["This endpoint is fully compatible with the OpenAI SDK. Just change the base_url and your api_key."] = {en: "This endpoint is fully compatible with the OpenAI SDK. Just change the base_url and your api_key.", "zh-CN": "此端点与 OpenAI SDK 完全兼容。只需更改 base_url 和您的 api_key 即可。", ru: "Эта конечная точка полностью совместима с OpenAI SDK. Просто измените base_url и ваш api_key.", ja: "このエンドポイントはOpenAI SDKと完全互換です。base_urlとapi_keyを変更するだけです。", de: "Dieser Endpunkt ist vollständig mit dem OpenAI SDK kompatibel. Ändern Sie einfach die base_url und Ihren api_key."};
+TRANS["Generate your first API key from the Dashboard after signing up."] = {en: "Generate your first API key from the Dashboard after signing up.", "zh-CN": "注册后，从控制台生成您的第一个 API 密钥。", ru: "Создайте свой первый API-ключ в панели управления после регистрации.", ja: "サインアップ後、ダッシュボードから最初のAPIキーを生成してください。", de: "Generieren Sie Ihren ersten API-Schlüssel über das Dashboard nach der Anmeldung."};
+TRANS["Or browse all models on the Models page."] = {en: "Or browse all models on the Models page.", "zh-CN": "或在模型页面上浏览所有模型。", ru: "Или просмотрите все модели на странице Models.", ja: "またはモデルページですべてのモデルを参照してください。", de: "Oder durchsuchen Sie alle Modelle auf der Modelle-Seite."};
+TRANS["All parameters from the OpenAI API are supported: stream, frequency_penalty, top_p, etc."] = {en: "All parameters from the OpenAI API are supported: stream, frequency_penalty, top_p, etc.", "zh-CN": "支持 OpenAI API 的所有参数：stream、frequency_penalty、top_p 等。", ru: "Поддерживаются все параметры OpenAI API: stream, frequency_penalty, top_p и т.д.", ja: "OpenAI APIのすべてのパラメータをサポート：stream、frequency_penalty、top_pなど。", de: "Alle Parameter der OpenAI API werden unterstützt: stream, frequency_penalty, top_p, etc."};
+TRANS["Send a chat completion request (OpenAI-compatible):"] = {en: "Send a chat completion request (OpenAI-compatible):", "zh-CN": "发送聊天补全请求（兼容 OpenAI）：", ru: "Отправьте запрос на завершение чата (совместимый с OpenAI):", ja: "チャット補完リクエストを送信（OpenAI互換）：", de: "Senden Sie eine Chat-Completion-Anfrage (OpenAI-kompatibel):"};
+TRANS["Server-Sent Events (SSE) streaming is fully supported:"] = {en: "Server-Sent Events (SSE) streaming is fully supported:", "zh-CN": "完全支持 Server-Sent Events (SSE) 流式传输：", ru: "Потоковая передача Server-Sent Events (SSE) полностью поддерживается:", ja: "Server-Sent Events (SSE) ストリーミングを完全サポート：", de: "Server-Sent Events (SSE)-Streaming wird vollständig unterstützt:"};
+TRANS["Each API call consumes GlbTOKENs based on the model used. Prices vary by model capability:"] = {en: "Each API call consumes GlbTOKENs based on the model used. Prices vary by model capability:", "zh-CN": "每次 API 调用根据使用的模型消耗 GlbTOKEN。价格因模型能力而异：", ru: "Каждый API-запрос расходует GlbTOKEN в зависимости от используемой модели. Цены варьируются в зависимости от возможностей модели:", ja: "各API呼び出しは、使用するモデルに基づいてGlbTOKENを消費します。価格はモデルの性能によって異なります：", de: "Jeder API-Aufruf verbraucht GlbTOKEN basierend auf dem verwendeten Modell. Die Preise variieren je nach Modellleistung:"};
+TRANS["Create Free Account \u2192"] = {en: "Create Free Account \u2192", "zh-CN": "免费创建账户 \u2192", ru: "Создать бесплатный аккаунт \u2192", ja: "無料アカウント作成 \u2192", de: "Kostenloses Konto erstellen \u2192"};
+TRANS["Code"] = {en: "Code", "zh-CN": "状态码", ru: "Код", ja: "コード", de: "Code"};
+TRANS["Meaning"] = {en: "Meaning", "zh-CN": "含义", ru: "Значение", ja: "意味", de: "Bedeutung"};
