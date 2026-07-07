@@ -24,7 +24,7 @@ from newapi_integration import (
     create_newapi_user, update_user_quota, add_user_quota,
     get_usage_today, create_api_token, health_check
 )
-from auth0 import is_configured as is_auth0_configured, get_config as get_auth0_config, verify_token as verify_auth0_token, get_user_info, password_login as auth0_password_login, signup as auth0_signup, get_social_login_url, send_passwordless_code, verify_passwordless_code
+from auth0 import is_configured as is_auth0_configured, get_config as get_auth0_config, verify_token as verify_auth0_token, get_user_info, password_login as auth0_password_login, signup as auth0_signup, get_social_login_url, send_passwordless_code, verify_passwordless_code, send_sms_code, verify_sms_code
 
 # ── Lifespan (replaces deprecated on_event) ──
 from contextlib import asynccontextmanager
@@ -405,6 +405,74 @@ async def verify_code(request: Request, body: dict = Body(...), db: Session = De
                 db.commit()
         except Exception as e:
             print(f"⚠️ New API sync failed on verify-code: {e}")
+    else:
+        user.email_verified = True
+        db.commit()
+    
+    jwt_token = create_access_token({"sub": str(user.id)})
+    return {
+        "token": jwt_token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "token_balance": user.token_balance,
+        },
+    }
+
+@app.post("/api/auth/send-sms-code")
+@limiter.limit("5/minute")
+async def send_sms_code_endpoint(request: Request, body: dict = Body(...)):
+    """Send a verification code via SMS using Auth0 Passwordless SMS."""
+    phone = body.get("phone", "").strip()
+    if not phone:
+        raise HTTPException(status_code=400, detail="Phone number required")
+    if not is_auth0_configured():
+        raise HTTPException(status_code=400, detail="Auth0 not configured")
+    try:
+        send_sms_code(phone)
+        return {"sent": True, "phone": phone}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/api/auth/verify-sms-code")
+@limiter.limit("10/minute")
+async def verify_sms_code_endpoint(request: Request, body: dict = Body(...), db: Session = Depends(get_db)):
+    """Verify SMS code, create/login user, return JWT."""
+    phone = body.get("phone", "").strip()
+    code = body.get("code", "").strip()
+    if not phone or not code:
+        raise HTTPException(status_code=400, detail="Phone and code required")
+    if not is_auth0_configured():
+        raise HTTPException(status_code=400, detail="Auth0 not configured")
+    try:
+        tokens = verify_sms_code(phone, code)
+        payload = verify_auth0_token(tokens["id_token"])
+        user_info = get_user_info(payload)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid or expired code. Please try again.")
+    
+    email = user_info.get("email", f"{phone}@phone.glbtoken.io")
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        user = User(
+            name=user_info.get("name", phone),
+            email=email,
+            password_hash=None,
+            token_balance=0,
+            email_verified=True,
+            is_admin=(db.query(User).count() == 0),
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        try:
+            newapi_user = await create_newapi_user(email=email, name=user.name, quota=0)
+            if newapi_user and isinstance(newapi_user, dict) and newapi_user.get("id"):
+                user.newapi_user_id = newapi_user["id"]
+                db.commit()
+        except Exception as e:
+            print(f"⚠️ New API sync failed on verify-sms-code: {e}")
     else:
         user.email_verified = True
         db.commit()

@@ -183,6 +183,71 @@
         btn.disabled=false;btn.textContent='Verify & Create Account';
       }
     }
+    function togglePhone(prefix){
+      var section = document.getElementById(prefix + 'PhoneSection');
+      if(!section) return;
+      var isShow = section.style.display !== 'none';
+      section.style.display = isShow ? 'none' : 'block';
+      if(!isShow) setTimeout(function(){
+        var inp = document.getElementById(prefix + 'Phone');
+        if(inp) inp.focus();
+      }, 100);
+    }
+    async function sendPhoneCode(prefix){
+      var phone = document.getElementById(prefix + 'Phone').value.trim();
+      var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
+      if(errEl){errEl.style.display='none';errEl.textContent=''}
+      if(!phone || phone.length < 5){
+        var m = 'Please enter a valid phone number';
+        showToast(m,'error');
+        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        return;
+      }
+      var btn = document.getElementById(prefix + 'PhoneSendBtn');
+      btn.disabled=true; btn.textContent='Sending...';
+      try{
+        await api('POST','/api/auth/send-sms-code',{phone:phone});
+        document.getElementById(prefix + 'SmsCodeGroup').style.display='block';
+        btn.style.display='none';
+        document.getElementById(prefix + 'PhoneVerifyBtn').style.display='block';
+        document.getElementById(prefix + 'SmsCode').focus();
+        showToast('Code sent to ' + phone,'success');
+      }catch(e){
+        var msg = e.message || 'Failed to send code';
+        showToast(msg,'error');
+        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
+      }finally{
+        btn.disabled=false; btn.textContent='Send Code';
+      }
+    }
+    async function verifyPhoneCode(prefix){
+      var phone = document.getElementById(prefix + 'Phone').value.trim();
+      var code = document.getElementById(prefix + 'SmsCode').value.trim();
+      var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
+      if(errEl){errEl.style.display='none';errEl.textContent=''}
+      if(!code || code.length < 4){
+        var m = 'Please enter the verification code from SMS';
+        showToast(m,'error');
+        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        return;
+      }
+      var btn = document.getElementById(prefix + 'PhoneVerifyBtn');
+      btn.disabled=true; btn.textContent='Verifying...';
+      try{
+        var data = await api('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
+        token=data.token;userData=data.user;
+        localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+        applyAuth();
+        showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
+        window.location.href='/dashboard.html';
+      }catch(e){
+        var msg = e.message || 'Invalid code';
+        showToast(msg,'error');
+        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
+      }finally{
+        btn.disabled=false; btn.textContent= prefix === 'login' ? 'Verify & Sign In' : 'Verify & Create Account';
+      }
+    }
     function oauthLogin(provider){
       // Redirect to Auth0 social login
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){

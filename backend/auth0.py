@@ -104,6 +104,46 @@ def verify_passwordless_code(email: str, code: str) -> dict:
         raise ValueError(f"Auth0 code verification failed: {err}")
     return resp.json()
 
+# ── Passwordless SMS (Phone Code) ──
+
+def send_sms_code(phone: str) -> dict:
+    """Send a verification code via SMS using Auth0 Passwordless SMS."""
+    if not is_configured():
+        raise ValueError("Auth0 not configured")
+    url = f"https://{AUTH0_DOMAIN}/passwordless/start"
+    payload = {
+        "client_id": AUTH0_CLIENT_ID,
+        "client_secret": AUTH0_CLIENT_SECRET,
+        "connection": "sms",
+        "phone_number": phone,
+        "send": "code",
+    }
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code != 200:
+        err = resp.json().get("error_description", resp.text)
+        raise ValueError(f"Auth0 SMS start failed: {err}")
+    return {"phone": phone, "sent": True}
+
+def verify_sms_code(phone: str, code: str) -> dict:
+    """Exchange an SMS verification code for Auth0 tokens."""
+    if not is_configured():
+        raise ValueError("Auth0 not configured")
+    url = f"https://{AUTH0_DOMAIN}/oauth/token"
+    payload = {
+        "grant_type": "http://auth0.com/oauth/grant-type/passwordless/otp",
+        "realm": "sms",
+        "username": phone,
+        "otp": code,
+        "client_id": AUTH0_CLIENT_ID,
+        "client_secret": AUTH0_CLIENT_SECRET,
+        "scope": "openid email profile phone",
+    }
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code != 200:
+        err = resp.json().get("error_description", resp.text)
+        raise ValueError(f"Auth0 SMS verification failed: {err}")
+    return resp.json()
+
 # ── Social Login Redirect URL ──
 
 def get_social_login_url(provider: str, redirect_uri: str) -> str:
