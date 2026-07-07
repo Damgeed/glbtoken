@@ -54,7 +54,8 @@ async def health_check() -> bool:
 async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
     """
     Create a user in New API.
-    The /api/user/register endpoint is public (no auth needed).
+    The /api/user/register endpoint is public (no auth needed) and returns
+    success without the user ID. We then query the admin endpoint to get the ID.
     Returns user dict with 'id' field on success.
     """
     if not NEW_API_BASE or not ADMIN_TOKEN:
@@ -66,12 +67,23 @@ async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
     username = email.split("@")[0] + "_" + secrets.token_hex(4)
     # Truncate to avoid overly long usernames
     username = username[:32]
-    return await _post("/api/user/register", {
+    resp = await _post("/api/user/register", {
         "username": username,
         "password": auto_password,
         "display_name": name,
         "email": email,
     })
+    # Register endpoint returns {"message":"","success":true} without ID.
+    # Query user list to find the newly created user by email.
+    if resp and resp.get("success") is True:
+        users_resp = await _get("/api/user/?page=1&page_size=100", admin=True)
+        if users_resp and "items" in users_resp.get("data", {}):
+            for u in users_resp["data"]["items"]:
+                if u.get("email") == email or u.get("username") == username:
+                    return {"id": u["id"], "email": email, "name": name, "quota": quota, "username": username}
+        # Fallback: just return what we have
+        return {"id": 0, "email": email, "name": name, "quota": quota, "username": username}
+    return resp or {"id": 0}
 
 async def update_user_quota(user_id: int, quota: int) -> dict:
     """Set a user's remaining quota in New API."""

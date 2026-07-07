@@ -70,7 +70,24 @@ import httpx
 NEW_API_BASE = os.getenv("NEW_API_BASE_URL", "")
 ADMIN_TOKEN = os.getenv("NEW_API_ADMIN_TOKEN", "")
 HEADERS = {"Authorization": f"Bearer {ADMIN_TOKEN}"} if ADMIN_TOKEN else {}
+ADMIN_HEADERS = {**HEADERS, "New-Api-User": "1"} if ADMIN_TOKEN else {}
 
+
+def newapi_get(path: str) -> dict:
+    """Synchronous GET to New API."""
+    if not NEW_API_BASE or not ADMIN_TOKEN:
+        return {"error": "New API not configured"}
+    url = f"{NEW_API_BASE.rstrip('/')}{path}"
+    try:
+        with httpx.Client(timeout=30) as client:
+            r = client.get(url, headers=ADMIN_HEADERS)
+            if r.status_code >= 400:
+                return {"error": f"HTTP {r.status_code}", "detail": r.text[:500]}
+            return r.json()
+    except httpx.TimeoutException:
+        return {"error": "timeout"}
+    except Exception as e:
+        return {"error": str(e)}
 
 def newapi_post(path: str, data: dict = None) -> dict:
     """Synchronous POST to New API (sync script, no async needed)."""
@@ -167,12 +184,20 @@ def sync_user(user: User, dry_run: bool = False) -> Optional[str]:
         "email": user.email,
     })
 
-    if not resp or "error" in resp:
-        return resp.get("detail", resp.get("error", "unknown error"))
+    if not resp or not resp.get("success"):
+        return resp.get("detail", resp.get("message", "unknown error")) if resp else "no response"
 
-    newapi_user_id = resp.get("id")
+    # Register returns success without user ID — query list to find it
+    list_resp = newapi_get("/api/user/?page=1&page_size=100")
+    newapi_user_id = None
+    if list_resp and "items" in list_resp.get("data", {}):
+        for u in list_resp["data"]["items"]:
+            if u.get("email") == user.email or u.get("username") == username:
+                newapi_user_id = u["id"]
+                break
+
     if not newapi_user_id:
-        return f"New API returned no user ID: {json.dumps(resp)[:200]}"
+        return f"Could not find user in New API after registration"
 
     # Step 2: Create API token
     token_resp = newapi_post(f"/api/user/{newapi_user_id}/key", {
