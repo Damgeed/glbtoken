@@ -1049,6 +1049,14 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     }
     function goToSlide(i){tmIndex=i-1;slideTopView(1)}
     function resumeAutoSlide(){clearInterval(tmInterval);tmInterval=setInterval(()=>slideTopView(1),5000);}
+    function copyCode(btn){
+      var container = btn.closest('[data-copy]');
+      if(!container) return;
+      var text = container.textContent || container.innerText;
+      text = text.replace(/^# .+\n/mg,'').replace(/^REQUEST\n|^RESPONSE\n/gm,'').trim();
+      if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){showToast('Copied!','success')}).catch(function(){})}
+      else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Copied!','success')}
+    }
     function tmDragStart(clientX){
       clearInterval(tmInterval);
       tmDragStartX=clientX;
