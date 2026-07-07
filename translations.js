@@ -465,6 +465,29 @@ TRANS["📬 Contact GlbTOKEN"] = {
 };
 
 
+TRANS["30-day validity"] = {
+  en: "30-day validity",
+  "zh-CN": "30天有效期",
+  ru: "Срок действия 30 дней",
+  ja: "30日間有効",
+  de: "30 Tage gültig"
+};
+TRANS["90-day validity"] = {
+  en: "90-day validity",
+  "zh-CN": "90天有效期",
+  ru: "Срок действия 90 дней",
+  ja: "90日間有効",
+  de: "90 Tage gültig"
+};
+TRANS["💳 Stripe (cards, USD) · 🔶 Paystack (NGN/GHS/KES: bank transfer, USSD, MoMo) · ₿ Crypto (USDT TRC-20/ERC-20, BTC, ETH)"] = {
+  en: "💳 Stripe (cards, USD) · 🔶 Paystack (NGN/GHS/KES: bank transfer, USSD, MoMo) · ₿ Crypto (USDT TRC-20/ERC-20, BTC, ETH)",
+  "zh-CN": "💳 Stripe（银行卡，USD）· 🔶 Paystack（NGN/GHS/KES：银行转账、USSD、MoMo）· ₿ 加密货币（USDT TRC-20/ERC-20、BTC、ETH）",
+  ru: "💳 Stripe (карты, USD) · 🔶 Paystack (NGN/GHS/KES: банковский перевод, USSD, MoMo) · ₿ Криптовалюта (USDT TRC-20/ERC-20, BTC, ETH)",
+  ja: "💳 Stripe（カード、USD）· 🔶 Paystack（NGN/GHS/KES：銀行振込、USSD、MoMo）· ₿ 暗号通貨（USDT TRC-20/ERC-20、BTC、ETH）",
+  de: "💳 Stripe (Karten, USD) · 🔶 Paystack (NGN/GHS/KES: Banküberweisung, USSD, MoMo) · ₿ Krypto (USDT TRC-20/ERC-20, BTC, ETH)"
+};
+
+
 I18N_MIXED["footer-tagline"] = {en: "Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.", "zh-CN": "AI 全球通证。一个余额，100+ 模型，56 家供应商。按需付费。", ru: "Глобальный токен для ИИ. Один баланс, 100+ моделей, 56 провайдеров. Оплата по мере использования.", ja: "AIのためのグローバルトークン。1つの残高、100以上のモデル、56のプロバイダー。従量課金制。", de: "Globaler Token für KI. Ein Guthaben, 100+ Modelle, 56 Anbieter. Pay-as-you-go."};
 I18N_MIXED["footer-email-label"] = {en: "<strong>Email</strong>", "zh-CN": "<strong>\u90ae\u7bb1</strong>", ru: "<strong>Email</strong>", ja: "<strong>\u30e1\u30fc\u30eb</strong>", de: "<strong>E-Mail</strong>"};
 
@@ -586,5 +609,77 @@ I18N_MIXED["privacy-section-3"] = {en: "<strong>3. Data Protection</strong><br>W
 I18N_MIXED["privacy-section-4"] = {en: "<strong>4. Third Parties</strong><br>We share data only with our payment processors (Stripe, Paystack) and AI model providers (OpenAI, Anthropic, etc.) for API routing. We never sell your data.", "zh-CN": "<strong>4. 第三方</strong><br>我们仅与支付处理商（Stripe、Paystack）和 AI 模型提供商（OpenAI、Anthropic 等）共享数据，用于 API 路由。我们绝不出售您的数据。", ru: "<strong>4. Третьи стороны</strong><br>Мы делимся данными только с нашими платежными процессорами (Stripe, Paystack) и поставщиками моделей ИИ (OpenAI, Anthropic и т. д.) для маршрутизации API. Мы никогда не продаем ваши данные.", ja: "<strong>4. 第三者</strong><br>当社は、API ルーティングのために、決済プロセッサー（Stripe、Paystack）および AI モデルプロバイダー（OpenAI、Anthropic など）とのみデータを共有します。当社はお客様のデータを販売することはありません。", de: "<strong>4. Dritte</strong><br>Wir geben Daten nur an unsere Zahlungsabwickler (Stripe, Paystack) und KI-Modellanbieter (OpenAI, Anthropic usw.) für das API-Routing weiter. Wir verkaufen Ihre Daten niemals."};
 I18N_MIXED["privacy-section-5"] = {en: '<strong>5. Your Rights</strong><br>You may request access to, correction of, or deletion of your personal data at any time by contacting <a href="mailto:privacy@glbtoken.com" style="color:var(--primary)">privacy@glbtoken.com</a>.', "zh-CN": '<strong>5. 您的权利</strong><br>您可以随时通过联系 <a href="mailto:privacy@glbtoken.com" style="color:var(--primary)">privacy@glbtoken.com</a> 请求访问、更正或删除您的个人数据。', ru: '<strong>5. Ваши права</strong><br>Вы можете запросить доступ, исправление или удаление ваших персональных данных в любое время, связавшись с нами по адресу <a href="mailto:privacy@glbtoken.com" style="color:var(--primary)">privacy@glbtoken.com</a>.', ja: '<strong>5. お客様の権利</strong><br>お客様は、<a href="mailto:privacy@glbtoken.com" style="color:var(--primary)">privacy@glbtoken.com</a> に連絡することにより、いつでもお客様の個人データへのアクセス、修正、または削除を要求することができます。', de: '<strong>5. Ihre Rechte</strong><br>Sie können jederzeit Zugang zu, Berichtigung oder Löschung Ihrer personenbezogenen Daten verlangen, indem Sie <a href="mailto:privacy@glbtoken.com" style="color:var(--primary)">privacy@glbtoken.com</a> kontaktieren.'};
 I18N_MIXED["privacy-section-6"] = {en: '<strong>6. Contact</strong><br>For privacy inquiries: privacy@glbtoken.com. Last updated: July 2026.', "zh-CN": '<strong>6. 联系我们</strong><br>隐私咨询：privacy@glbtoken.com。最后更新日期：2026 年 7 月。', ru: '<strong>6. Контакты</strong><br>По вопросам конфиденциальности: privacy@glbtoken.com. Последнее обновление: июль 2026 года.', ja: '<strong>6. 連絡先</strong><br>プライバシーに関するお問い合わせ：privacy@glbtoken.com。最終更新日：2026 年 7 月。', de: '<strong>6. Kontakt</strong><br>Für Datenschutzanfragen: privacy@glbtoken.com. Stand: Juli 2026.'};
+
+
+I18N_MIXED["terms-section-1"] = {
+  en: "<strong>1. Acceptance of Terms</strong><br>By accessing or using GlbTOKEN, you agree to be bound by these Terms of Service. If you do not agree, do not use the service.",
+  "zh-CN": "<strong>1. 条款接受</strong><br>访问或使用 GlbTOKEN，即表示您同意遵守这些服务条款。如果您不同意，请勿使用本服务。",
+  ru: "<strong>1. Принятие условий</strong><br>Получая доступ к GlbTOKEN или используя его, вы соглашаетесь соблюдать настоящие Условия предоставления услуг. Если вы не согласны, не используйте сервис.",
+  ja: "<strong>1. 規約の承諾</strong><br>GlbTOKENにアクセスまたは使用することにより、本利用規約に拘束されることに同意したものとみなされます。同意しない場合は、サービスを使用しないでください。",
+  de: "<strong>1. Zustimmung zu den Bedingungen</strong><br>Durch den Zugriff auf oder die Nutzung von GlbTOKEN erklären Sie sich mit diesen Nutzungsbedingungen einverstanden. Wenn Sie nicht einverstanden sind, nutzen Sie den Dienst nicht."
+};
+I18N_MIXED["terms-section-2"] = {
+  en: "<strong>2. Token Purchases</strong><br>All token purchases are final and non-refundable. Tokens are non-transferable and have no cash value. Prices may change at any time.",
+  "zh-CN": "<strong>2. 代币购买</strong><br>所有代币购买均为最终交易，不可退款。代币不可转让，无现金价值。价格可能随时变更。",
+  ru: "<strong>2. Покупка токенов</strong><br>Все покупки токенов являются окончательными и не подлежат возврату. Токены не подлежат передаче и не имеют денежной стоимости. Цены могут измениться в любое время.",
+  ja: "<strong>2. トークンの購入</strong><br>トークンの購入はすべて最終的なものであり、返金はできません。トークンは譲渡不可で、現金価値はありません。価格は予告なく変更される場合があります。",
+  de: "<strong>2. Token-Käufe</strong><br>Alle Token-Käufe sind endgültig und nicht erstattungsfähig. Token sind nicht übertragbar und haben keinen Barwert. Die Preise können sich jederzeit ändern."
+};
+I18N_MIXED["terms-section-3"] = {
+  en: "<strong>3. Account Responsibility</strong><br>You are responsible for maintaining the confidentiality of your account credentials and API keys. Notify us immediately of unauthorized use.",
+  "zh-CN": "<strong>3. 账户责任</strong><br>您有责任维护账户凭证和 API 密钥的机密性。如发现未经授权使用，请立即通知我们。",
+  ru: "<strong>3. Ответственность за аккаунт</strong><br>Вы несете ответственность за сохранение конфиденциальности учетных данных вашего аккаунта и ключей API. Немедленно уведомляйте нас о несанкционированном использовании.",
+  ja: "<strong>3. アカウントの責任</strong><br>お客様は、アカウントの認証情報と API キーの機密性を保持する責任を負います。不正使用があった場合は直ちに当社に通知してください。",
+  de: "<strong>3. Kontoverantwortung</strong><br>Sie sind für die Vertraulichkeit Ihrer Kontodaten und API-Schlüssel verantwortlich. Benachrichtigen Sie uns unverzüglich über unbefugte Nutzung."
+};
+I18N_MIXED["terms-section-4"] = {
+  en: "<strong>4. Acceptable Use</strong><br>You agree not to use the service for any illegal purpose, to violate any laws, or to transmit any harmful code. We reserve the right to suspend accounts for abuse.",
+  "zh-CN": "<strong>4. 可接受的使用</strong><br>您同意不将本服务用于任何非法目的、不违反任何法律、不传输任何有害代码。我们保留因滥用而暂停账户的权利。",
+  ru: "<strong>4. Допустимое использование</strong><br>Вы соглашаетесь не использовать сервис в незаконных целях, не нарушать законы и не передавать вредоносный код. Мы оставляем за собой право приостанавливать аккаунты за злоупотребления.",
+  ja: "<strong>4. 適切な使用</strong><br>お客様は、本サービスを違法な目的に使用したり、法律に違反したり、有害なコードを送信したりしないことに同意するものとします。当社は、悪用に対するアカウント停止権を留保します。",
+  de: "<strong>4. Zulässige Nutzung</strong><br>Sie erklären sich damit einverstanden, den Dienst nicht für illegale Zwecke zu nutzen, gegen Gesetze zu verstoßen oder schädlichen Code zu übertragen. Wir behalten uns das Recht vor, Konten bei Missbrauch zu sperren."
+};
+I18N_MIXED["terms-section-5"] = {
+  en: "<strong>5. Limitation of Liability</strong><br>GlbTOKEN is provided \"as is\" without warranty. We are not liable for any damages arising from your use of the service.",
+  "zh-CN": "<strong>5. 责任限制</strong><br>GlbTOKEN 按\"现状\"提供，不提供任何担保。对于您因使用本服务而产生的任何损害，我们概不负责。",
+  ru: "<strong>5. Ограничение ответственности</strong><br>GlbTOKEN предоставляется «как есть» без гарантии. Мы не несем ответственности за любой ущерб, возникший в результате использования вами сервиса.",
+  ja: "<strong>5. 責任の制限</strong><br>GlbTOKENは「現状のまま」保証なしで提供されます。当社は、本サービスの利用に起因するいかなる損害についても責任を負いません。",
+  de: "<strong>5. Haftungsbeschränkung</strong><br>GlbTOKEN wird „wie besehen” ohne Gewährleistung bereitgestellt. Wir haften nicht für Schäden, die sich aus Ihrer Nutzung des Dienstes ergeben."
+};
+I18N_MIXED["terms-section-6"] = {
+  en: "<strong>6. Changes</strong><br>We may modify these terms at any time. Continued use after changes constitutes acceptance. Last updated: July 2026.",
+  "zh-CN": "<strong>6. 条款变更</strong><br>我们可能随时修改这些条款。变更后继续使用即表示接受。最后更新：2026年7月。",
+  ru: "<strong>6. Изменения</strong><br>Мы можем изменять настоящие условия в любое время. Продолжение использования после внесения изменений означает принятие. Последнее обновление: июль 2026 г.",
+  ja: "<strong>6. 変更</strong><br>当社は随時本規約を変更することができます。変更後の継続利用は承諾とみなされます。最終更新日：2026年7月。",
+  de: "<strong>6. Änderungen</strong><br>Wir können diese Bedingungen jederzeit ändern. Die fortgesetzte Nutzung nach Änderungen gilt als Zustimmung. Stand: Juli 2026."
+};
+I18N_MIXED["refund-section-1"] = {
+  en: "<strong>Token Purchases</strong><br>All token purchases are final. Tokens that have been used (consumed via API or chat) cannot be refunded.",
+  "zh-CN": "<strong>代币购买</strong><br>所有代币购买均为最终交易。已使用（通过 API 或聊天消耗）的代币无法退款。",
+  ru: "<strong>Покупка токенов</strong><br>Все покупки токенов являются окончательными. Токены, которые были использованы (потреблены через API или чат), не подлежат возврату.",
+  ja: "<strong>トークンの購入</strong><br>トークンの購入はすべて最終的なものです。使用済み（APIまたはチャットで消費）のトークンは返金できません。",
+  de: "<strong>Token-Käufe</strong><br>Alle Token-Käufe sind endgültig. Verbrauchte Token (über API oder Chat genutzt) können nicht erstattet werden."
+};
+I18N_MIXED["refund-section-3"] = {
+  en: "<strong>Service Downtime</strong><br>In the event of extended service downtime (>48 hours), we may issue token credits at our discretion.",
+  "zh-CN": "<strong>服务宕机</strong><br>如果出现长时间服务中断（超过48小时），我们可酌情发放代币补偿。",
+  ru: "<strong>Простой сервиса</strong><br>В случае длительного простоя сервиса (>48 часов) мы можем по своему усмотрению выдавать токен-кредиты.",
+  ja: "<strong>サービスダウンタイム</strong><br>長期のサービスダウン（48時間以上）が発生した場合、当社の裁量でトークンクレジットを発行することがあります。",
+  de: "<strong>Service-Ausfallzeit</strong><br>Bei längeren Serviceausfällen (>48 Stunden) können wir nach eigenem Ermessen Token-Guthaben ausstellen."
+};
+I18N_MIXED["refund-section-4"] = {
+  en: "<strong>Crypto Payments</strong><br>Crypto payments are processed on-chain and are generally non-reversible. Please verify all transaction details before sending.",
+  "zh-CN": "<strong>加密货币支付</strong><br>加密货币支付在链上处理，通常不可逆转。请在发送前仔细核对所有交易详情。",
+  ru: "<strong>Криптовалютные платежи</strong><br>Криптоплатежи обрабатываются в блокчейне и, как правило, необратимы. Пожалуйста, проверяйте все детали транзакции перед отправкой.",
+  ja: "<strong>暗号通貨での支払い</strong><br>暗号通貨での支払いはオンチェーンで処理され、通常は取消不可です。送金前にすべての取引詳細を確認してください。",
+  de: "<strong>Krypto-Zahlungen</strong><br>Krypto-Zahlungen werden on-chain abgewickelt und sind in der Regel nicht umkehrbar. Bitte überprüfen Sie alle Transaktionsdetails vor dem Senden."
+};
+I18N_MIXED["refund-section-5"] = {
+  en: "<strong>Chargebacks</strong><br>Chargebacks will result in immediate account suspension and forfeiture of all token balances.",
+  "zh-CN": "<strong>退单拒付</strong><br>退单拒付将导致账户立即被暂停，并没收所有代币余额。",
+  ru: "<strong>Возврат платежей</strong><br>Возврат платежей приведет к немедленной приостановке аккаунта и потере всех балансов токенов.",
+  ja: "<strong>チャージバック</strong><br>チャージバックが発生した場合、アカウントは即時停止され、すべてのトークン残高は没収されます。",
+  de: "<strong>Rückbuchungen</strong><br>Rückbuchungen führen zur sofortigen Sperrung des Kontos und zum Verfall aller Token-Guthaben."
+};
 
 I18N_MIXED["auth-header-text"] = {en: 'All API requests require an API key passed via the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> header:', "zh-CN": '所有 API 请求都需要通过 <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> 标头传递 API 密钥：', ru: 'Все API-запросы требуют передачи API-ключа через заголовок <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>:', ja: 'すべてのAPIリクエストには <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> ヘッダーでAPIキーを渡す必要があります：', de: 'Alle API-Anfragen erfordern einen API-Schlüssel, der über den <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>-Header übergeben wird:'};
