@@ -1,19 +1,28 @@
 <!DOCTYPE html>
-<script>
-// Instantly redirect to root with hash preserved — no flash, no visible page
-var hash = window.location.hash;
-if (hash) {
-  window.location.replace('/' + hash);
-} else {
-  // Check search params too
-  var params = {};
-  (window.location.search.substring(1)).split('&').forEach(function(p){
-    if(!p)return;var ps=p.split('=');params[decodeURIComponent(ps[0])]=decodeURIComponent(ps.slice(1).join('='));
-  });
-  if (params.error) {
-    window.location.replace('/login.html?error=' + encodeURIComponent(params.error_description || params.error));
-  } else {
-    window.location.replace('/');
-  }
-}
-</script>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Redirecting — GlbTOKEN</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="icon" type="image/x-icon" href="../favicon.ico" />
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png" />
+<link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.spinner{width:32px;height:32px;border:3px solid #313244;border-top-color:#F4B400;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.card{background:#161822;border:1px solid #2a2b3d;border-radius:12px;padding:2rem;text-align:center;max-width:360px}
+.card p{margin-top:1rem;color:#7f8490;font-size:0.9rem}
+</style>
+<script src="../script.js?v=104"></script>
+</head>
+<body>
+<div class="card">
+<div class="spinner"></div>
+<p>Completing sign in...</p>
+</div>
+</body>
+</html>
