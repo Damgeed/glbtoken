@@ -131,7 +131,7 @@ print(response.choices[0].message.content)</pre>
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">🌐 Base URL</h3>
     <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:0.75rem;font-family:monospace;font-size:0.9rem;color:var(--primary);word-break:break-all">https://glbtoken-api.onrender.com/api/proxy</div>
-    <p style="font-size:0.85rem;color:var(--text-secondary)">This endpoint is fully compatible with the OpenAI SDK. Just change the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85rem">base_url</code> and your <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85rem">api_key</code>.</p>
+    <p data-i18n="sdk-compat" style="font-size:0.85rem;color:var(--text-secondary)">This endpoint is fully compatible with the OpenAI SDK. Just change the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85rem">base_url</code> and your <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85rem">api_key</code>.</p>
   </div>
 
   <!-- Authentication -->
@@ -139,7 +139,7 @@ print(response.choices[0].message.content)</pre>
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">🔐 Authentication</h3>
     <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">All API requests require an API key passed via the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> header:</p>
     <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:0.75rem;font-family:monospace;font-size:0.85rem;color:var(--text)">Authorization: Bearer sk-glt_&lt;your_api_key&gt;</div>
-    <p style="font-size:0.85rem;color:var(--text-muted)">Generate your first API key from the <a href="dashboard.html" style="color:var(--primary)">Dashboard</a> after signing up.</p>
+    <p data-i18n="first-key" style="font-size:0.85rem;color:var(--text-muted)">Generate your first API key from the <a href="dashboard.html" style="color:var(--primary)">Dashboard</a> after signing up.</p>
   </div>
 
   <!-- Available Models -->
@@ -150,13 +150,13 @@ print(response.choices[0].message.content)</pre>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)">curl https://glbtoken-api.onrender.com/api/proxy/models \
   -H <span style="color:var(--text-muted)">"Authorization: Bearer sk-glt_..."</span></pre>
     </div>
-    <p style="font-size:0.85rem;color:var(--text-muted)">Or browse all models on the <a href="models.html" style="color:var(--primary)">Models</a> page.</p>
+    <p data-i18n="browse-models" style="font-size:0.85rem;color:var(--text-muted)">Or browse all models on the <a href="models.html" style="color:var(--primary)">Models</a> page.</p>
   </div>
 
   <!-- Chat Completions -->
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">💬 Chat Completions</h3>
-    <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Send a chat completion request (OpenAI-compatible):</p>
+    <p data-i18n="chat-compat" style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Send a chat completion request (OpenAI-compatible):</p>
     <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)">curl https://glbtoken-api.onrender.com/api/proxy/v1/chat/completions \
   -H <span style="color:var(--text-muted)">"Content-Type: application/json"</span> \
@@ -171,13 +171,13 @@ print(response.choices[0].message.content)</pre>
     <span style="color:var(--text-muted)">"max_tokens"</span>: 1000
   }'</pre>
     </div>
-    <p style="font-size:0.85rem;color:var(--text-muted)">All parameters from the OpenAI API are supported: <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">stream</code>, <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">frequency_penalty</code>, <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">top_p</code>, etc.</p>
+    <p data-i18n="params-supported" style="font-size:0.85rem;color:var(--text-muted)">All parameters from the OpenAI API are supported: <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">stream</code>, <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">frequency_penalty</code>, <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">top_p</code>, etc.</p>
   </div>
 
   <!-- Streaming -->
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">⚡ Streaming</h3>
-    <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Server-Sent Events (SSE) streaming is fully supported:</p>
+    <p data-i18n="sse-streaming" style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Server-Sent Events (SSE) streaming is fully supported:</p>
     <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)"><span style="color:var(--primary)">from</span> openai <span style="color:var(--primary)">import</span> OpenAI
 
@@ -220,7 +220,7 @@ console.log(completion.choices[0].message.content); // demo output
   <!-- Pricing Info -->
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">💰 Token Pricing</h3>
-    <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Each API call consumes GlbTOKENs based on the model used. Prices vary by model capability:</p>
+    <p data-i18n="api-costs" style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Each API call consumes GlbTOKENs based on the model used. Prices vary by model capability:</p>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
         <thead>
@@ -253,7 +253,7 @@ console.log(completion.choices[0].message.content); // demo output
         </tbody>
       </table>
     </div>
-    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem">Full pricing: <a href="pricing.html" style="color:var(--primary)">Pricing page</a> | 1,000 GT = $1 USD</p>
+    <p data-i18n="full-pricing-ref" style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem">Full pricing: <a href="pricing.html" style="color:var(--primary)">Pricing page</a> | 1,000 GT = $1 USD</p>
   </div>
 
   <!-- Error Codes -->
@@ -293,11 +293,11 @@ console.log(completion.choices[0].message.content); // demo output
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">✅ Best Practices</h3>
     <ul style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8;padding-left:1.25rem">
-      <li><strong style="color:var(--text)">Rotate keys regularly</strong> — Generate new API keys from your Dashboard and revoke old ones.</li>
-      <li><strong style="color:var(--text)">Use separate keys per project</strong> — Helps track usage and limit blast radius.</li>
-      <li><strong style="color:var(--text)">Set max tokens</strong> — Always set <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">max_tokens</code> to control costs.</li>
-      <li><strong style="color:var(--text)">Monitor usage</strong> — Check your Dashboard for real-time token consumption.</li>
-      <li><strong style="color:var(--text)">Handle 402 errors</strong> — Top up before your balance runs out to avoid service interruption.</li>
+      <li data-i18n="rotate-keys"><strong style="color:var(--text)">Rotate keys regularly</strong> — Generate new API keys from your Dashboard and revoke old ones.</li>
+      <li data-i18n="separate-keys"><strong style="color:var(--text)">Use separate keys per project</strong> — Helps track usage and limit blast radius.</li>
+      <li data-i18n="set-max-tokens"><strong style="color:var(--text)">Set max tokens</strong> — Always set <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">max_tokens</code> to control costs.</li>
+      <li data-i18n="monitor-usage"><strong style="color:var(--text)">Monitor usage</strong> — Check your Dashboard for real-time token consumption.</li>
+      <li data-i18n="handle-402"><strong style="color:var(--text)">Handle 402 errors</strong> — Top up before your balance runs out to avoid service interruption.</li>
     </ul>
   </div>
 
@@ -367,7 +367,7 @@ console.log(completion.choices[0].message.content); // demo output
   </div>
 
 <script src="translations.js"></script>
-<script data-cfasync="false" src="script.js?v=85"></script>
+<script data-cfasync="false" src="script.js?v=86"></script>
 
 <script>
 (function(){
