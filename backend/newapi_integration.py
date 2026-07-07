@@ -61,7 +61,7 @@ async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
         # Fall back to local-only mode
         return {"id": 0, "email": email, "name": name, "quota": quota}
     import secrets
-    auto_password = "GlbToken_" + secrets.token_hex(12)
+    auto_password = "Gt" + secrets.token_hex(6)  # 14 chars — fits New API's validation
     # New API uses 'username' not 'email' for registration
     username = email.split("@")[0] + "_" + secrets.token_hex(4)
     # Truncate to avoid overly long usernames

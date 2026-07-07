@@ -157,7 +157,7 @@ def sync_user(user: User, dry_run: bool = False) -> Optional[str]:
 
     # Step 1: Create user in New API
     import secrets
-    auto_password = "GlbToken_" + secrets.token_hex(12)
+    auto_password = "Gt" + secrets.token_hex(6)  # 14 chars — fits New API's validation
     username = (user.email.split("@")[0] + "_" + secrets.token_hex(4))[:32]
 
     resp = newapi_post("/api/user/register", {
