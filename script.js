@@ -83,7 +83,7 @@
         showToast(msg,'error');
         if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
-        btn.disabled=false;btn.textContent='Send Code';
+        btn.disabled=false;btn.textContent='Continue';
       }
     }
     async function verifyLoginCode(){
@@ -138,7 +138,7 @@
         showToast(msg,'error');
         if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
-        btn.disabled=false;btn.textContent='Send Code';
+        btn.disabled=false;btn.textContent='Continue';
       }
     }
     async function verifyRegisterCode(){
