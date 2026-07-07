@@ -1212,16 +1212,19 @@ function switchLanguage(lang) {
   GT_LANG = lang;
   updateLangUI(lang);
   
+  // Hard reset GT state before switching
+  clearGoogTransCookie();
+  sessionStorage.removeItem('gt_disable');
+  sessionStorage.removeItem('gt_lang_ready');
+  sessionStorage.removeItem('gt_bf_reloaded');
+  
   if (lang === 'en') {
-    clearGoogTransCookie();
     localStorage.removeItem('gt_lang');
     sessionStorage.setItem('gt_disable', '1');
-    sessionStorage.removeItem('gt_lang_ready');
   } else {
     var expiry = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
     document.cookie = 'googtrans=/en/' + lang + '; path=/; expires=' + expiry;
     localStorage.setItem('gt_lang', lang);
-    sessionStorage.removeItem('gt_disable');
     sessionStorage.setItem('gt_lang_ready', '1');
   }
   location.href = location.pathname + '?_=' + Date.now();
@@ -1260,6 +1263,8 @@ function clearGoogTransCookie(){
   document.cookie = 'googtrans=; path=/; ' + expiry;
   document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; ' + expiry;
   document.cookie = 'googtrans=; path=/; domain=glbtoken.com; ' + expiry;
+  document.cookie = 'googtrans=; path=/; domain=.github.io; ' + expiry;
+  document.cookie = 'googtrans=; path=/; domain=.damgeed.github.io; ' + expiry;
 }
 
 // ── Protect terms from translation ──
