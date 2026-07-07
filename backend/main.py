@@ -352,7 +352,7 @@ def auth0_config():
 
 @app.post("/api/auth/send-code")
 @limiter.limit("5/minute")
-async def send_code(req: Request, body: dict = Body(...), db: Session = Depends(get_db)):
+async def send_code(request: Request, body: dict = Body(...), db: Session = Depends(get_db)):
     """Send a verification code via Auth0 Passwordless Email to the given email."""
     email = body.get("email", "").lower().strip()
     if not email or "@" not in email:
@@ -367,7 +367,7 @@ async def send_code(req: Request, body: dict = Body(...), db: Session = Depends(
 
 @app.post("/api/auth/verify-code")
 @limiter.limit("10/minute")
-async def verify_code(req: Request, body: dict = Body(...), db: Session = Depends(get_db)):
+async def verify_code(request: Request, body: dict = Body(...), db: Session = Depends(get_db)):
     """Verify a code from Auth0 Passwordless Email, create/login user, return JWT."""
     email = body.get("email", "").lower().strip()
     code = body.get("code", "").strip()
