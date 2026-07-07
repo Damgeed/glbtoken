@@ -528,6 +528,10 @@
     .tm-carousel [style*="grid-template-columns:1fr 1fr"] > div{overflow-wrap:break-word;word-break:break-word;font-size:0.75rem}
     .tm-carousel pre,.tm-carousel code{white-space:pre-wrap;word-break:break-word;font-size:0.65rem}
   }
+  /* ── Light mode code blocks ── */
+  html.light .tm-carousel [style*="background:#0d1117"]{background:#f6f8fa!important}
+  html.light .tm-carousel pre,html.light .tm-carousel code{color:#24292e!important}
+  html.light .tm-carousel hr{border-top-color:rgba(0,0,0,0.08)!important}
   /* ── Shooting Stars Background ── */
   .stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
   .star{position:absolute;border-radius:50%;opacity:0}
