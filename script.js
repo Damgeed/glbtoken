@@ -29,8 +29,10 @@
     let models = [], selectedAmount = 5, selectedPayment = 'stripe';
     let chartInst = null, sparkInst = null, sortDir = 'price_asc';
     
-    async function api(method, path, body){
-      const opts={method,headers:{'Content-Type':'application/json'}};
+    async function api(method, path, body, timeoutMs){
+      const controller=new AbortController();
+      const timer=timeoutMs?setTimeout(()=>controller.abort(),timeoutMs):null;
+      const opts={method,headers:{'Content-Type':'application/json'},signal:controller.signal};
       if(token) opts.headers['Authorization']='Bearer '+token;
       if(body) opts.body=JSON.stringify(body);
       try {
@@ -40,8 +42,8 @@
           throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
         }
         return await resp.json();
-      } catch(e) {
-        throw e;
+      } finally {
+        if(timer) clearTimeout(timer);
       }
     }
 
@@ -1008,7 +1010,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       var fallbackHtml = container.innerHTML;
       container.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-muted);font-size:0.8rem">Loading models...</div>';
       try{
-        var all=await api('GET','/api/models');
+        var all=await api('GET','/api/models',null,8000);
         if(!all||!all.length){container.innerHTML=fallbackHtml;return;}
         var featured=all.filter(function(m){return m.category==='Flagship'||m.category==='Flash';});
         var top4=featured.length>=4?featured.slice(0,4):all.slice(0,4);
@@ -1052,6 +1054,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       tmDragStartX=clientX;
       tmDragOffset=0;
       tmIsDragging=true;
+      document.body.style.userSelect='none';
+      document.body.style.webkitUserSelect='none';
       var track=document.getElementById('tmTrack');
       if(track) track.style.transition='none';
     }
@@ -1065,6 +1069,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     function tmDragEnd(clientX){
       if(!tmIsDragging){tmIsDragging=false;return}
       tmIsDragging=false;
+      document.body.style.userSelect='';
+      document.body.style.webkitUserSelect='';
       var track=document.getElementById('tmTrack');
       if(track) track.style.transition='';
       if(Math.abs(tmDragOffset)>40) slideTopView(tmDragOffset<0?1:-1);
@@ -1092,7 +1098,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       track.addEventListener('mousedown',e=>{
         tmTouchStartX=e.clientX;tmTouchStartY=e.clientY;
         tmDragStart(e.clientX);
-        e.preventDefault();
       });
       document.addEventListener('mousemove',e=>{
         if(!tmIsDragging)return;
