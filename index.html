@@ -178,6 +178,26 @@
 }</code></pre>
 </div>
 </div>
+<!-- Slide 4: Responses -->
+<div style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
+<div style="background:#0d1117;border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
+<pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:#e6edf3;white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:#e6edf3"><span style="color:#6272A4"># POST /v1/responses</span></code></pre>
+<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:#e6edf3;white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:#e6edf3"><span style="color:#6272A4;font-weight:700">REQUEST</span>
+<span style="color:#FF79C6">curl</span> <span style="color:#50FA7B">-X</span> <span style="color:#FFB86C">POST</span> <span style="color:#F1FA8C">"/v1/responses"</span> \
+  <span style="color:#50FA7B">-H</span> <span style="color:#F1FA8C">"Authorization: Bearer sk-••••"</span> \
+  <span style="color:#50FA7B">-d</span> <span style="color:#F1FA8C">'{</span>
+    <span style="color:#F1FA8C">"</span><span style="color:#8BE9FD">model</span><span style="color:#F1FA8C">"</span>: <span style="color:#F1FA8C">"your-model"</span>,
+    <span style="color:#F1FA8C">"</span><span style="color:#8BE9FD">input</span><span style="color:#F1FA8C">"</span>: <span style="color:#F1FA8C">"..."</span>
+  <span style="color:#F1FA8C">}'</span></code></pre>
+<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:#e6edf3;white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:#e6edf3"><span style="color:#6272A4;font-weight:700">RESPONSE</span>
+{
+  <span style="color:#8BE9FD">"output"</span>: [{ <span style="color:#8BE9FD">"type"</span>: <span style="color:#F1FA8C">"output_text"</span>, <span style="color:#8BE9FD">"text"</span>: <span style="color:#F1FA8C">"Response workflow ready."</span> }],
+  <span style="color:#8BE9FD">"usage"</span>: { <span style="color:#8BE9FD">"total_tokens"</span>: <span style="color:#BD93F9">31</span> }
+}</code></pre>
+</div>
+</div>
               </div>
 <button class="tm-arrow tm-arrow-left" onclick="slideTopView(-1)" aria-label="Previous">‹</button>
 <button class="tm-arrow tm-arrow-right" onclick="slideTopView(1)" aria-label="Next">›</button>
@@ -186,6 +206,7 @@
 <span class="tm-dot active" onclick="goToSlide(0)" style="width:8px;height:8px;border-radius:50%;background:var(--primary);cursor:pointer;transition:all 0.3s"></span>
 <span class="tm-dot" onclick="goToSlide(1)" style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s"></span>
 <span class="tm-dot" onclick="goToSlide(2)" style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s"></span>
+<span class="tm-dot" onclick="goToSlide(3)" style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s"></span>
               </div>
 <div style="margin-top:1rem;padding:0.75rem;background:var(--primary-subtle);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center">
 <div><span style="font-size:0.8rem;color:var(--text-secondary)">Your Token Balance</span><div style="font-size:1.25rem;font-weight:700;color:var(--primary)"><span id="heroBalance">0</span> GT</div></div>
