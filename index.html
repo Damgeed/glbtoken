@@ -157,6 +157,25 @@
               </div>
 <p style="font-size:0.7rem;color:var(--text-muted);margin:0;text-align:center">Change the model string to switch between 100+ models.</p>
               </div>
+<div style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
+<div style="background:#0d1117;border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
+<pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:#e6edf3;white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:#e6edf3"><span style="color:#8b949e"># POST /v1/chat/completions</span>
+$ curl -X POST <span style="color:#a5d6ff">"/v1/chat/completions"</span> \
+  -H <span style="color:#a5d6ff">"Authorization: Bearer sk-••••"</span> \
+  -d '{
+    <span style="color:#79c0ff">"model"</span>: <span style="color:#a5d6ff">"your-model"</span>,
+    <span style="color:#79c0ff">"messages"</span>: [
+      { <span style="color:#79c0ff">"role"</span>: <span style="color:#a5d6ff">"user"</span>, <span style="color:#79c0ff">"content"</span>: <span style="color:#a5d6ff">"..."</span> }
+    ]
+  }'
+
+<span style="color:#8b949e"># Response</span>
+{
+  <span style="color:#79c0ff">"choices"</span>: [{ <span style="color:#79c0ff">"message"</span>: { <span style="color:#79c0ff">"content"</span>: <span style="color:#a5d6ff">"Chat request routed."</span> } }],
+  <span style="color:#79c0ff">"usage"</span>: { <span style="color:#79c0ff">"total_tokens"</span>: 27 }
+}</code></pre>
+</div>
+</div>
               </div>
 <button class="tm-arrow tm-arrow-left" onclick="slideTopView(-1)" aria-label="Previous">‹</button>
 <button class="tm-arrow tm-arrow-right" onclick="slideTopView(1)" aria-label="Next">›</button>
@@ -164,6 +183,7 @@
 <div class="tm-dots" style="display:flex;justify-content:center;gap:0.5rem;margin-top:0.75rem">
 <span class="tm-dot active" onclick="goToSlide(0)" style="width:8px;height:8px;border-radius:50%;background:var(--primary);cursor:pointer;transition:all 0.3s"></span>
 <span class="tm-dot" onclick="goToSlide(1)" style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s"></span>
+<span class="tm-dot" onclick="goToSlide(2)" style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s"></span>
               </div>
 <div style="margin-top:1rem;padding:0.75rem;background:var(--primary-subtle);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center">
 <div><span style="font-size:0.8rem;color:var(--text-secondary)">Your Token Balance</span><div style="font-size:1.25rem;font-weight:700;color:var(--primary)"><span id="heroBalance">0</span> GT</div></div>
@@ -263,7 +283,7 @@
               </div>
               </div>
 
-<script data-cfasync="false" src="script.js?v=48"></script>
+<script data-cfasync="false" src="script.js?v=49"></script>
 <div id="google_translate_element" style="display:none"></div>
 
 <script>
