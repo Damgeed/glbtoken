@@ -1142,160 +1142,18 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         if(btn.dataset.action==='toggle')toggleKeyStatus(id);
         else if(btn.dataset.action==='delete')deleteKey(id);
       });
-      // GT-safe button handlers (Google Translate wraps text in <font>, breaking onclick)
-      document.addEventListener('click',function(e){
-        var btn=e.target.closest('#regBtn');if(btn){e.preventDefault();registerUser();return}
-        btn=e.target.closest('#loginBtn');if(btn){e.preventDefault();loginUser();return}
-      });
     });
-// ── Translation (Google Translate Widget) ──
-var GT_LANG = 'en';
-var PROTECTED_WORDS = ['GPT','OpenAI','Claude','Gemini','Llama','Mistral','DeepSeek','Perplexity','Cohere','Stripe','Paystack','USDT','BTC','ETH','BNB','SOL','USDC','DAI','NGN','EUR','GBP','JPY','CNY','KRW','GHS','KES','ZAR','USD','API','VPN','SSL','CORS','JSON','ChatGPT','Anthropic','Starter','Professional','Enterprise','Pay-as-You-Go','Multi-Model','Local Payments','GlbTOKEN','Glb','TOKEN','AIEX','KAI','HTTP','GET','POST','PUT','DELETE','PATCH','curl','Bearer','Authorization','Content-Type','application/json','localhost','Base URL','base_url','endpoint','request','response','header','parameter','query','string','integer','boolean','object','array','token','api_key','model','stream','temperature','max_tokens','max_token','role','content','user','assistant','system','function','tools','messages','chat','completion','GPT-4o','GPT-5','gpt-4','gpt-5','claude-3','claude-4','gemini-2','gemini-3','openai','pip','install','import','client','chunk','print','response.','choices','delta','content','True','await','const','new','async'];
-
-// ── Before GT loads: ensure cookie matches saved language ──
-(function(){
-  var saved = localStorage.getItem('gt_lang');
-  if (!saved || saved === 'en') { 
-    if (saved === 'en') { localStorage.removeItem('gt_lang'); }
-    return; 
-  }
-  // Set the cookie with 1-year expiry BEFORE GT initializes
-  // Overwrite directly — clearing before setting creates a race window
-  var expiry = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
-  document.cookie = 'googtrans=/en/' + saved + '; path=/; expires=' + expiry;
-  // Reload ONCE per session to force GT to read the fresh cookie
-  if (!sessionStorage.getItem('gt_lang_ready')) {
-    sessionStorage.setItem('gt_lang_ready', '1');
-    location.href = location.pathname + '?_=' + Date.now();
-  }
-})();
-
-function googleTranslateElementInit() {
-  if (sessionStorage.getItem('gt_disable')) return;
-  new google.translate.TranslateElement({
-    pageLanguage: 'en',
-    autoDisplay: false,
-    includedLanguages: 'en,zh-CN,ru,ja,de'
-  }, 'google_translate_element');
-  // After GT loads, just protect brand names and update UI
-  restoreAfterGTLoad();
-}
-
-// ── Load Google Translate JS on every page (unless disabled for EN) ──
-(function(){
-  if (sessionStorage.getItem('gt_disable')) return;
-  var s = document.createElement('script');
-  s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-  document.head.appendChild(s);
-})();
-
+// ── Lang menu toggle ──
 function toggleLangMenu() {
   var m = document.getElementById('langMenu');
   if (m) m.classList.toggle('open');
 }
-
-// ── Bfcache: force reload on back/forward when non-EN ──
-(function(){
-  var saved = localStorage.getItem('gt_lang');
-  if (saved && saved !== 'en') {
-    var reloaded = sessionStorage.getItem('gt_bf_reloaded');
-    if (!reloaded) {
-      sessionStorage.setItem('gt_bf_reloaded', '1');
-      window.addEventListener('pageshow', function(e) {
-        if (e.persisted) location.reload();
-      });
-    }
-  }
-})();
-
-function switchLanguage(lang) {
-  GT_LANG = lang;
-  updateLangUI(lang);
-  
-  // Hard reset GT state before switching
-  clearGoogTransCookie();
-  sessionStorage.removeItem('gt_disable');
-  sessionStorage.removeItem('gt_lang_ready');
-  sessionStorage.removeItem('gt_bf_reloaded');
-  
-  if (lang === 'en') {
-    localStorage.removeItem('gt_lang');
-    sessionStorage.setItem('gt_disable', '1');
-  } else {
-    var expiry = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
-    document.cookie = 'googtrans=/en/' + lang + '; path=/; expires=' + expiry;
-    localStorage.setItem('gt_lang', lang);
-    sessionStorage.setItem('gt_lang_ready', '1');
-  }
-  location.href = location.pathname + '?_=' + Date.now();
-}
-
-function updateLangUI(lang) {
-  document.querySelectorAll('.lang-option').forEach(function(el) {
-    el.classList.toggle('active', el.getAttribute('data-lang') === lang);
-  });
-  var lbl = document.getElementById('currentLangLabel');
-  if (lbl) lbl.textContent = lang === 'zh-CN' ? '中文' : lang === 'en' ? 'EN' : lang === 'ru' ? 'RU' : lang === 'ja' ? '日' : 'DE';
-  var lm = document.getElementById('langMenu');
-  if (lm) lm.classList.remove('open');
-}
-
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.lang-selector') && !e.target.closest('.lang-menu') && !e.target.closest('.lang-btn-mobile')) {
     var m = document.getElementById('langMenu');
     if (m) m.classList.remove('open');
   }
 });
-
-function restoreAfterGTLoad() {
-  var saved = localStorage.getItem('gt_lang');
-  if (!saved || saved === 'en') return;
-  GT_LANG = saved;
-  updateLangUI(saved);
-  // Protect brand names from being translated
-  setTimeout(protectTerms, 1000);
-  setTimeout(protectTerms, 2500);
-  setTimeout(protectTerms, 4000);
-}
-
-function clearGoogTransCookie(){
-  var expiry = 'expires=Thu, 01 Jan 1970 00:00:00 UTC';
-  document.cookie = 'googtrans=; path=/; ' + expiry;
-  document.cookie = 'googtrans=; path=/; domain=.glbtoken.com; ' + expiry;
-  document.cookie = 'googtrans=; path=/; domain=glbtoken.com; ' + expiry;
-  document.cookie = 'googtrans=; path=/; domain=.github.io; ' + expiry;
-  document.cookie = 'googtrans=; path=/; domain=.damgeed.github.io; ' + expiry;
-}
-
-// ── Protect terms from translation ──
-function protectTerms() {
-  var body = document.body;
-  if (!body || GT_LANG === 'en') return;
-  var walker = document.createTreeWalker(body, 4, null, false);
-  var nodes = [];
-  while (walker.nextNode()) { nodes.push(walker.currentNode); }
-  for (var i = 0; i < nodes.length; i++) {
-    var n = nodes[i];
-    if (!n.parentNode || n.parentNode.closest('.notranslate,[translate="no"],script,style,svg,code,pre,option')) continue;
-    var orig = n.textContent;
-    var lower = orig.toLowerCase();
-    for (var w = 0; w < PROTECTED_WORDS.length; w++) {
-      var word = PROTECTED_WORDS[w];
-      var idx = lower.indexOf(word.toLowerCase());
-      if (idx !== -1) {
-        var before = orig.substring(0, idx);
-        var after = orig.substring(idx + word.length);
-        var actual = orig.substring(idx, idx + word.length);
-        if (actual !== word) {
-          n.textContent = before + word + after;
-        }
-      }
-    }
-  }
-}
-
-// ── Ongoing term protection (every 5s) ──
-var termTimer = setInterval(protectTerms, 5000);
 
 // ── Mobile Keyboard Fix: keep chat input visible above keyboard ──
 (function(){
