@@ -360,7 +360,7 @@
               </div>
 
 <script src="translations.js?v=100"></script>
-<script data-cfasync="false" src="script.js?v=103"></script>
+<script data-cfasync="false" src="script.js?v=104"></script>
 
 <script>
 (function(){
@@ -401,7 +401,7 @@ document.addEventListener('touchend', endDrag);
 (function() {
   var el = document.getElementById('heroTagline');
   if (!el) return;
-  var n = Math.floor(Math.random() * 5) + 1;
+  var n = Math.floor(Math.random() * 6) + 1;
   var key = 'hero-variant-' + n;
   var lang = localStorage.getItem('gt_lang') || 'en';
   if (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key][lang]) {
