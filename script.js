@@ -1139,6 +1139,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         if(btn.dataset.action==='toggle')toggleKeyStatus(id);
         else if(btn.dataset.action==='delete')deleteKey(id);
       });
+      // GT-safe button handlers (Google Translate wraps text in <font>, breaking onclick)
+      document.addEventListener('click',function(e){
+        var btn=e.target.closest('#regBtn');if(btn){e.preventDefault();registerUser();return}
+        btn=e.target.closest('#loginBtn');if(btn){e.preventDefault();loginUser();return}
+      });
     });
 // ── Translation (Google Translate Widget) ──
 var GT_LANG = 'en';
