@@ -998,6 +998,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       document.body.style.overflow='';
     }
     let tmIndex=0,tmInterval,tmTotal=6,tmTouchStartX=0,tmTouchStartY=0;
+    let tmDragStartX=0,tmDragOffset=0,tmIsDragging=false,tmTrackWidth=0;
     const tmTitles=['🔥 Top Models This Week','💻 API Quick Start','💬 Chat','💬 Responses','🧠 Claude','🔮 Gemini'];
 
     async function refreshTopModels(){
@@ -1046,23 +1047,61 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     }
     function goToSlide(i){tmIndex=i-1;slideTopView(1)}
     function resumeAutoSlide(){clearInterval(tmInterval);tmInterval=setInterval(()=>slideTopView(1),5000);}
+    function tmDragStart(clientX){
+      clearInterval(tmInterval);
+      tmDragStartX=clientX;
+      tmDragOffset=0;
+      tmIsDragging=true;
+      var track=document.getElementById('tmTrack');
+      if(track) track.style.transition='none';
+    }
+    function tmDragMove(clientX){
+      if(!tmIsDragging)return;
+      tmDragOffset=clientX-tmDragStartX;
+      var track=document.getElementById('tmTrack');
+      if(!track)return;
+      track.style.transform='translateX(calc(-'+(tmIndex*100)+'% + '+tmDragOffset+'px))';
+    }
+    function tmDragEnd(clientX){
+      if(!tmIsDragging){tmIsDragging=false;return}
+      tmIsDragging=false;
+      var track=document.getElementById('tmTrack');
+      if(track) track.style.transition='';
+      if(Math.abs(tmDragOffset)>40) slideTopView(tmDragOffset<0?1:-1);
+      else slideTopView(0); // snap back
+      tmDragOffset=0;
+      resumeAutoSlide();
+    }
     document.addEventListener('DOMContentLoaded',()=>{
       const track=document.getElementById('tmTrack');
       if(!track)return;
+      // Touch events
       track.addEventListener('touchstart',e=>{
         tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY;
-        clearInterval(tmInterval); // pause auto-slide while touching
+        tmDragStart(e.touches[0].clientX);
       },{passive:true});
       track.addEventListener('touchmove',e=>{
-        const dx=Math.abs(e.touches[0].clientX-tmTouchStartX);
         const dy=Math.abs(e.touches[0].clientY-tmTouchStartY);
-        if(dx>dy&&dx>10)e.preventDefault();
+        const dx=Math.abs(e.touches[0].clientX-tmTouchStartX);
+        if(dx>dy&&dx>10){e.preventDefault();tmDragMove(e.touches[0].clientX)}
       },{passive:false});
       track.addEventListener('touchend',e=>{
-        const dx=e.changedTouches[0].clientX-tmTouchStartX;
-        const dy=e.changedTouches[0].clientY-tmTouchStartY;
-        if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)slideTopView(dx<0?1:-1);
-        resumeAutoSlide(); // resume auto-slide after touch ends
+        tmDragEnd(e.changedTouches[0].clientX);
+      });
+      // Mouse events (desktop drag)
+      track.addEventListener('mousedown',e=>{
+        tmTouchStartX=e.clientX;tmTouchStartY=e.clientY;
+        tmDragStart(e.clientX);
+        e.preventDefault();
+      });
+      document.addEventListener('mousemove',e=>{
+        if(!tmIsDragging)return;
+        tmDragMove(e.clientX);
+        e.preventDefault();
+      });
+      document.addEventListener('mouseup',e=>{
+        if(!tmIsDragging)return;
+        tmDragEnd(e.clientX);
       });
       tmInterval=setInterval(()=>slideTopView(1),5000);
       // Initial load: refresh top model cards (replaces hardcoded HTML)
