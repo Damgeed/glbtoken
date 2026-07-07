@@ -7,7 +7,7 @@
     }
     html.light{
       --bg: hsl(40 20% 98%); --bg-alt: hsl(40 15% 95%); --card: hsl(0 0% 100%); --card-hover: hsl(40 15% 97%); --border: hsl(40 10% 90%); --border-light: hsl(40 10% 93%); --text: hsl(0 0% 9%); --text-secondary: hsl(0 0% 42%); --text-muted: hsl(0 0% 60%); --primary: hsl(44 96% 47%); --primary-hover: hsl(44 96% 55%); --primary-subtle: hsla(44 96% 47% / 0.08); --primary-glow: 0 0 20px hsla(44 96% 47% / 0.12), 0 0 40px hsla(44 96% 47% / 0.04); --primary-glow-strong: 0 0 24px hsla(44 96% 47% / 0.2), 0 0 48px hsla(44 96% 47% / 0.08); --success: hsl(145 62% 40%); --destructive: hsl(0 80% 55%); --destructive-subtle: hsla(0 80% 55% / 0.12); --shadow-card: 0 1px 4px 0 hsl(0 0% 0% / 0.06), 0 1px 2px -1px hsl(0 0% 0% / 0.04); --shadow-hover: 0 10px 28px -6px hsl(0 0% 0% / 0.1); --shadow-elevated: 0 16px 40px -8px hsl(0 0% 0% / 0.12); --hero-grad: linear-gradient(145deg,hsl(40 20% 98%),hsl(40 15% 97%),hsl(40 10% 95%));
-      --code-keyword:#cf222e; --code-function:#8250df; --code-literal:#0550ae; --code-string:#0a3069; --code-property:#953800; --code-number:#0550ae; --code-comment:#656d76; --code-operator:#1f2328;
+      --code-keyword:#d63384; --code-function:#16a34a; --code-literal:#d97706; --code-string:#a16207; --code-property:#0891b2; --code-number:#7c3aed; --code-comment:#64748b; --code-operator:#1e293b;
     }
     body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6;transition:background 0.3s,color 0.3s}
     h1,h2,h3,h4{letter-spacing:-0.02em;line-height:1.2}
