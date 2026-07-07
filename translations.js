@@ -456,6 +456,15 @@ TRANS["Developer API Launched: 100+ Models, One Endpoint"] = {en: "Developer API
 
 
 
+TRANS["📬 Contact GlbTOKEN"] = {
+  en: "📬 Contact GlbTOKEN",
+  "zh-CN": "📬 联系 GlbTOKEN",
+  ru: "📬 Связаться с GlbTOKEN",
+  ja: "📬 GlbTOKEN へのお問い合わせ",
+  de: "📬 Kontakt zu GlbTOKEN"
+};
+
+
 I18N_MIXED["footer-tagline"] = {en: "Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.", "zh-CN": "AI 全球通证。一个余额，100+ 模型，56 家供应商。按需付费。", ru: "Глобальный токен для ИИ. Один баланс, 100+ моделей, 56 провайдеров. Оплата по мере использования.", ja: "AIのためのグローバルトークン。1つの残高、100以上のモデル、56のプロバイダー。従量課金制。", de: "Globaler Token für KI. Ein Guthaben, 100+ Modelle, 56 Anbieter. Pay-as-you-go."};
 I18N_MIXED["footer-email-label"] = {en: "<strong>Email</strong>", "zh-CN": "<strong>\u90ae\u7bb1</strong>", ru: "<strong>Email</strong>", ja: "<strong>\u30e1\u30fc\u30eb</strong>", de: "<strong>E-Mail</strong>"};
 
@@ -466,5 +475,98 @@ I18N_MIXED["blog-4"] = {en: "Our OpenAI-compatible API is now live. Generate a k
 
 I18N_MIXED["about-mission"] = {en: "<strong>Our Mission:</strong> Make AI as easy to buy as electricity. Pay for what you use, use any model, switch anytime.", "zh-CN": "<strong>我们的使命：</strong>让AI像买电一样简单。按使用量付费，使用任何模型，随时切换。", ru: "<strong>Наша миссия:</strong> Сделайте покупку ИИ такой же простой, как покупка электроэнергии. Платите за использование, используйте любую модель, переключайтесь в любой момент.", ja: "<strong>私たちの使命：</strong>AIを電気のように簡単に購入できるように。使った分だけ支払い、どんなモデルでも使い、いつでも切り替え可能。", de: "<strong>Unsere Mission:</strong> Machen Sie KI so einfach zu kaufen wie Strom. Bezahlen Sie für das, was Sie nutzen, verwenden Sie jedes Modell, wechseln Sie jederzeit."};
 I18N_MIXED["about-global-team"] = {en: "<strong>Global Team:</strong> Operating from Ghana, Nigeria, Kenya, South Africa, UAE, Hong Kong, and the US.", "zh-CN": "<strong>全球团队：</strong>业务覆盖加纳、尼日利亚、肯尼亚、南非、阿联酋、香港和美国。", ru: "<strong>Глобальная команда:</strong> Работаем в Гане, Нигерии, Кении, ЮАР, ОАЭ, Гонконге и США.", ja: "<strong>グローバルチーム：</strong>ガーナ、ナイジェリア、ケニア、南アフリカ、UAE、香港、米国で事業展開。", de: "<strong>Globales Team:</strong> Tätig in Ghana, Nigeria, Kenia, Südafrika, VAE, Hongkong und den USA."};
+
+
+
+I18N_MIXED["faq-answer-1"] = {
+  en: "GlbTOKEN is a unified AI access platform. Instead of managing separate subscriptions for OpenAI, Anthropic, Google, and other AI providers, you buy a single token balance and use it across 100+ models from 14+ providers. Think of it as a prepaid wallet for AI — one deposit, zero subscriptions, full flexibility.",
+  "zh-CN": "GlbTOKEN 是一个统一的 AI 访问平台。您无需分别管理 OpenAI、Anthropic、Google 等 AI 提供商的独立订阅，只需购买一个通证余额，即可在来自 14 多家提供商的 100 多个模型中使用。可以把它想象成一个 AI 预付钱包——一次充值，零订阅，完全灵活。",
+  ru: "GlbTOKEN — это единая платформа доступа к ИИ. Вместо управления отдельными подписками на OpenAI, Anthropic, Google и других поставщиков ИИ, вы покупаете единый баланс токенов и используете его на 100+ моделях от 14+ провайдеров. Это как предоплаченный кошелёк для ИИ — один депозит, ноль подписок, полная гибкость.",
+  ja: "GlbTOKEN は統合型 AI アクセスプラットフォームです。OpenAI、Anthropic、Google などの AI プロバイダーごとに個別のサブスクリプションを管理する代わりに、1 つのトークン残高を購入し、14 以上のプロバイダーの 100 以上のモデルで使用できます。AI 向けのプリペイドウォレットと考えてください — 1 回の入金、サブスクリプション不要、完全な柔軟性。",
+  de: "GlbTOKEN ist eine einheitliche KI-Zugriffsplattform. Anstatt separate Abonnements für OpenAI, Anthropic, Google und andere KI-Anbieter zu verwalten, kaufen Sie ein einziges Token-Guthaben und nutzen es über 100+ Modelle von 14+ Anbietern hinweg. Stellen Sie es sich als Prepaid-Wallet für KI vor — eine Einzahlung, null Abonnements, volle Flexibilität."
+};
+
+I18N_MIXED["faq-answer-2"] = {
+  en: 'Create a free account to receive 25,000 free tokens instantly. Then go to the Buy Tokens page, choose a package (from $5 to $500) or enter a custom amount (minimum $2), and complete payment via one of three methods:<br><br>• <strong>Stripe</strong> — International credit/debit cards (Visa, Mastercard, Amex) in USD<br>• <strong>Paystack</strong> — African payments in NGN, GHS, KES via bank transfer, USSD, and mobile money<br>• <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), BTC, and ETH',
+  "zh-CN": '创建免费账户，立即获得 25,000 个免费通证。然后前往「购买通证」页面，选择一个套餐（$5 至 $500）或输入自定义金额（最低 $2），并通过以下三种方式之一完成支付：<br><br>• <strong>Stripe</strong> — 国际信用卡/借记卡（Visa、Mastercard、Amex），以美元结算<br>• <strong>Paystack</strong> — 非洲地区支付，支持 NGN、GHS、KES，可通过银行转账、USSD 和移动货币支付<br>• <strong>Crypto</strong> — USDT（TRC-20 / ERC-20）、BTC 和 ETH',
+  ru: 'Создайте бесплатную учётную запись, чтобы мгновенно получить 25 000 бесплатных токенов. Затем перейдите на страницу «Купить токены», выберите пакет (от $5 до $500) или введите произвольную сумму (минимум $2) и завершите оплату одним из трёх способов:<br><br>• <strong>Stripe</strong> — Международные кредитные/дебетовые карты (Visa, Mastercard, Amex) в USD<br>• <strong>Paystack</strong> — Африканские платежи в NGN, GHS, KES через банковский перевод, USSD и мобильные деньги<br>• <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), BTC и ETH',
+  ja: '無料アカウントを作成すると、すぐに 25,000 の無料トークンを受け取れます。次に「トークンを購入」ページに移動し、パッケージ（$5〜$500）を選択するか、カスタム金額（最低 $2）を入力し、以下の 3 つの方法のいずれかで支払いを完了します：<br><br>• <strong>Stripe</strong> — 国際クレジット/デビットカード（Visa、Mastercard、Amex）、USD 建て<br>• <strong>Paystack</strong> — アフリカ向け決済、NGN・GHS・KES 対応、銀行振込、USSD、モバイルマネーに対応<br>• <strong>Crypto</strong> — USDT（TRC-20 / ERC-20）、BTC、ETH',
+  de: 'Erstellen Sie ein kostenloses Konto und erhalten Sie sofort 25.000 kostenlose Token. Gehen Sie dann zur Seite „Token kaufen", wählen Sie ein Paket (von $5 bis $500) oder geben Sie einen individuellen Betrag ein (mindestens $2), und schließen Sie die Zahlung über eine der drei folgenden Methoden ab:<br><br>• <strong>Stripe</strong> — Internationale Kredit-/Debitkarten (Visa, Mastercard, Amex) in USD<br>• <strong>Paystack</strong> — Afrikanische Zahlungen in NGN, GHS, KES per Banküberweisung, USSD und Mobile Money<br>• <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), BTC und ETH'
+};
+
+I18N_MIXED["faq-answer-3"] = {
+  en: "No — your GlbTOKEN never expire. Purchase once and use them at your own pace, across any supported model, for as long as your account remains active. There are no monthly renewal requirements or inactivity fees.",
+  "zh-CN": "不会——您的 GlbTOKEN 永不过期。一次购买，即可在您拥有的任何受支持模型上随时使用，只要您的账户保持活跃状态。没有月度续订要求，也没有闲置费用。",
+  ru: "Нет — ваши GlbTOKEN никогда не истекают. Купите один раз и используйте их в своём темпе, на любой поддерживаемой модели, пока ваша учётная запись активна. Никаких ежемесячных продлений или платы за бездействие.",
+  ja: "いいえ — GlbTOKEN に有効期限はありません。一度購入すれば、アカウントが有効である限り、サポートされている任意のモデルでご自身のペースでご利用いただけます。月額更新の必要も、 inactivity 手数料もありません。",
+  de: "Nein — Ihre GlbTOKEN verfallen nie. Kaufen Sie sie einmal und nutzen Sie sie in Ihrem eigenen Tempo, mit jedem unterstützten Modell, solange Ihr Konto aktiv ist. Keine monatlichen Verlängerungen oder Inaktivitätsgebühren."
+};
+
+I18N_MIXED["faq-answer-4"] = {
+  en: '100+ models from 14+ providers including:<br><br>• <strong>OpenAI</strong> — GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3<br>• <strong>Anthropic</strong> — Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku<br>• <strong>Google</strong> — Gemini 2.0 Flash, Gemini 2.0 Pro<br>• <strong>Meta</strong> — Llama 4 Scout, Llama 4 Maverick<br>• <strong>DeepSeek</strong> — V3, V4 Pro, R1<br>• <strong>Mistral</strong> — Small, Large 2<br>• <strong>Others</strong> — Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI<br><br>Visit the Models page for the complete, searchable list with live pricing.',
+  "zh-CN": '来自 14+ 家提供商的 100+ 种模型，包括：<br><br>• <strong>OpenAI</strong> — GPT-4o、GPT-4o Mini、GPT-4 Turbo、o1、o3<br>• <strong>Anthropic</strong> — Claude 3.5 Sonnet、Claude 3 Opus、Claude 3 Haiku<br>• <strong>Google</strong> — Gemini 2.0 Flash、Gemini 2.0 Pro<br>• <strong>Meta</strong> — Llama 4 Scout、Llama 4 Maverick<br>• <strong>DeepSeek</strong> — V3、V4 Pro、R1<br>• <strong>Mistral</strong> — Small、Large 2<br>• <strong>其他</strong> — Qwen、Cohere、Perplexity、xAI (Grok)、Microsoft (Phi-4)、Stability AI<br><br>请访问模型页面查看完整、可搜索的列表及实时定价。',
+  ru: 'Более 100 моделей от 14+ провайдеров, включая:<br><br>• <strong>OpenAI</strong> — GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3<br>• <strong>Anthropic</strong> — Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku<br>• <strong>Google</strong> — Gemini 2.0 Flash, Gemini 2.0 Pro<br>• <strong>Meta</strong> — Llama 4 Scout, Llama 4 Maverick<br>• <strong>DeepSeek</strong> — V3, V4 Pro, R1<br>• <strong>Mistral</strong> — Small, Large 2<br>• <strong>Другие</strong> — Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI<br><br>Посетите страницу «Модели» для получения полного, доступного для поиска списка с актуальными ценами.',
+  ja: '14 以上のプロバイダーによる 100 以上のモデル：<br><br>• <strong>OpenAI</strong> — GPT-4o、GPT-4o Mini、GPT-4 Turbo、o1、o3<br>• <strong>Anthropic</strong> — Claude 3.5 Sonnet、Claude 3 Opus、Claude 3 Haiku<br>• <strong>Google</strong> — Gemini 2.0 Flash、Gemini 2.0 Pro<br>• <strong>Meta</strong> — Llama 4 Scout、Llama 4 Maverick<br>• <strong>DeepSeek</strong> — V3、V4 Pro、R1<br>• <strong>Mistral</strong> — Small、Large 2<br>• <strong>その他</strong> — Qwen、Cohere、Perplexity、xAI (Grok)、Microsoft (Phi-4)、Stability AI<br><br>詳細な検索可能なリストとリアルタイム料金は、モデルページをご覧ください。',
+  de: '100+ Modelle von 14+ Anbietern, darunter:<br><br>• <strong>OpenAI</strong> — GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3<br>• <strong>Anthropic</strong> — Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku<br>• <strong>Google</strong> — Gemini 2.0 Flash, Gemini 2.0 Pro<br>• <strong>Meta</strong> — Llama 4 Scout, Llama 4 Maverick<br>• <strong>DeepSeek</strong> — V3, V4 Pro, R1<br>• <strong>Mistral</strong> — Small, Large 2<br>• <strong>Andere</strong> — Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI<br><br>Besuchen Sie die Modelle-Seite für die vollständige, durchsuchbare Liste mit Live-Preisen.'
+};
+
+I18N_MIXED["faq-answer-5"] = {
+  en: 'Generate an API key from your Dashboard, then use our OpenAI-compatible endpoint:<br><br><code translate="no" style="background:var(--bg-alt);
+
+I18N_MIXED["faq-answer-6"] = {
+  en: 'Three payment channels:<br><br>• <strong>Stripe</strong> — International cards (Visa, Mastercard, Amex) in USD. Instant credit.<br>• <strong>Paystack</strong> — African markets: bank transfers, USSD, mobile money in NGN, GHS, KES, ZAR. Instant to 24hr settlement.<br>• <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Credits after 1 confirmation.',
+  "zh-CN": '三种支付通道：<br><br>• <strong>Stripe</strong> — 国际信用卡（Visa、Mastercard、Amex），以美元结算，即时到账。<br>• <strong>Paystack</strong> — 非洲市场：银行转账、USSD、移动货币，支持 NGN、GHS、KES、ZAR，即时至 24 小时内结算。<br>• <strong>Crypto</strong> — USDT（TRC-20 / ERC-20）、Bitcoin（BTC）、Ethereum（ETH）。1 次确认后到账。',
+  ru: 'Три способа оплаты:<br><br>• <strong>Stripe</strong> — Международные карты (Visa, Mastercard, Amex) в USD. Мгновенное зачисление.<br>• <strong>Paystack</strong> — Африканские рынки: банковские переводы, USSD, мобильные деньги в NGN, GHS, KES, ZAR. Зачисление от нескольких секунд до 24 часов.<br>• <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Зачисление после 1 подтверждения.',
+  ja: '3 つの支払い方法：<br><br>• <strong>Stripe</strong> — 国際カード（Visa、Mastercard、Amex）、USD 建て。即時反映。<br>• <strong>Paystack</strong> — アフリカ市場：銀行振込、USSD、モバイルマネー、NGN・GHS・KES・ZAR 対応。即時から 24 時間以内に反映。<br>• <strong>Crypto</strong> — USDT（TRC-20 / ERC-20）、Bitcoin（BTC）、Ethereum（ETH）。1 回の確認後に反映。',
+  de: 'Drei Zahlungswege:<br><br>• <strong>Stripe</strong> — Internationale Karten (Visa, Mastercard, Amex) in USD. Sofortige Gutschrift.<br>• <strong>Paystack</strong> — Afrikanische Märkte: Banküberweisungen, USSD, Mobile Money in NGN, GHS, KES, ZAR. Abrechnung von sofort bis 24 Stunden.<br>• <strong>Crypto</strong> — USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Gutschrift nach 1 Bestätigung.'
+};
+
+I18N_MIXED["faq-answer-7"] = {
+  en: "1,000 GlbTOKEN = approximately $1 USD. Each model has a per-request cost in tokens (e.g., GPT-4o Mini costs ~0.15 tokens per request, Claude 3.5 Sonnet costs ~3 tokens per request). The exact cost is displayed beside each model on the Models page and in your Dashboard transaction history. Larger packages offer better value — the $200 plan includes a 15% bonus.",
+  "zh-CN": "1,000 GlbTOKEN 约等于 $1 USD。每个模型都有每次请求的通证成本（例如，GPT-4o Mini 每次请求约需 0.15 通证，Claude 3.5 Sonnet 每次请求约需 3 通证）。具体费用显示在模型页面每个模型旁边以及控制台的交易记录中。较大套餐更划算——$200 计划包含 15% 的额外奖励。",
+  ru: "1 000 GlbTOKEN ≈ $1 USD. Каждая модель имеет стоимость за запрос в токенах (например, GPT-4o Mini стоит ~0,15 токенов за запрос, Claude 3.5 Sonnet — ~3 токена за запрос). Точная стоимость отображается рядом с каждой моделью на странице «Модели» и в истории транзакций панели управления. Крупные пакеты выгоднее — план за $200 включает бонус 15%.",
+  ja: "1,000 GlbTOKEN ≈ $1 USD です。各モデルにはリクエストごとのトークンコストがあります（例：GPT-4o Mini はリクエストあたり約 0.15 トークン、Claude 3.5 Sonnet はリクエストあたり約 3 トークン）。正確なコストは、モデルページの各モデル横とダッシュボードの取引履歴に表示されます。大容量パッケージの方がお得です — $200 プランには 15% のボーナスが含まれています。",
+  de: "1.000 GlbTOKEN entsprechen etwa $1 USD. Jedes Modell hat Kosten pro Anfrage in Token (z. B. kostet GPT-4o Mini ~0,15 Token pro Anfrage, Claude 3.5 Sonnet ~3 Token pro Anfrage). Die genauen Kosten werden neben jedem Modell auf der Modelle-Seite und in Ihrem Dashboard-Transaktionsverlauf angezeigt. Größere Pakete bieten ein besseres Preis-Leistungs-Verhältnis — der $200-Plan beinhaltet einen 15%-Bonus."
+};
+
+I18N_MIXED["faq-answer-8"] = {
+  en: "No — you can try the AI chat on the homepage instantly, no account or payment needed. When you're ready for unlimited access, API keys, usage history, and premium models, create a free account and receive 25,000 free tokens to get started.",
+  "zh-CN": "不需要——您可以立即在首页上体验 AI 聊天，无需注册或付费。当您准备好享受无限制访问、API 密钥、使用历史记录和高级模型时，创建一个免费账户即可获得 25,000 个免费通证开始使用。",
+  ru: "Нет — вы можете попробовать AI-чат на главной странице мгновенно, без регистрации или оплаты. Когда будете готовы к неограниченному доступу, API-ключам, истории использования и премиум-моделям, создайте бесплатную учётную запись и получите 25 000 бесплатных токенов для старта.",
+  ja: "いいえ — ホームページで AI チャットをすぐにお試しいただけます。アカウントやお支払いは不要です。無制限アクセス、API キー、使用履歴、プレミアムモデルのご用意ができましたら、無料アカウントを作成して 25,000 の無料トークンを受け取り、始めてください。",
+  de: "Nein — Sie können den KI-Chat auf der Startseite sofort ausprobieren, ohne Konto oder Zahlung. Wenn Sie bereit für unbegrenzten Zugriff, API-Schlüssel, Nutzungsverlauf und Premium-Modelle sind, erstellen Sie ein kostenloses Konto und erhalten Sie 25.000 kostenlose Token für den Einstieg."
+};
+
+I18N_MIXED["faq-answer-9"] = {
+  en: "Yes — unused tokens are eligible for a full refund within 14 days of purchase. After 14 days, refunds are provided on a pro-rata basis for unused balances. Refunds are processed to the original payment method within 5-10 business days. See our full Refund Policy page for details.",
+  "zh-CN": "是的——未使用的通证在购买后 14 天内可申请全额退款。14 天后，我们将按比例退还未使用的余额。退款将在 5-10 个工作日内按原路返回。详情请参阅我们的完整退款政策页面。",
+  ru: "Да — неиспользованные токены подлежат полному возврату в течение 14 дней после покупки. После 14 дней возврат осуществляется пропорционально неиспользованному остатку. Возврат обрабатывается на исходный способ оплаты в течение 5-10 рабочих дней. Подробнее на странице политики возврата.",
+  ja: "はい — 未使用のトークンは購入から 14 日以内に全額返金対象となります。14 日以降は、未使用残高に対して按分計算で返金されます。返金は元のお支払い方法に 5〜10 営業日以内に処理されます。詳細は返金ポリシーページをご覧ください。",
+  de: "Ja — ungenutzte Token können innerhalb von 14 Tagen nach dem Kauf vollständig erstattet werden. Nach 14 Tagen erfolgt die Rückerstattung anteilig für das ungenutzte Guthaben. Rückerstattungen werden innerhalb von 5-10 Werktagen auf die ursprüngliche Zahlungsmethode abgewickelt. Details entnehmen Sie bitte unserer vollständigen Rückerstattungsrichtlinie."
+};
+
+I18N_MIXED["faq-answer-10"] = {
+  en: "We take data security seriously. API keys are encrypted at rest using AES-256. All traffic is served over HTTPS (TLS 1.3). We do not store prompt or response content beyond what is necessary for billing and abuse prevention. We never train on your data or prompts. See our Privacy Policy for full details.",
+  "zh-CN": "我们非常重视数据安全。API 密钥使用 AES-256 进行静态加密。所有流量均通过 HTTPS（TLS 1.3）传输。我们不会存储超出计费和滥用预防所需的提示或响应内容。我们绝不会使用您的数据或提示进行训练。详情请参阅我们的隐私政策。",
+  ru: "Мы серьёзно относимся к безопасности данных. API-ключи зашифрованы в состоянии покоя с использованием AES-256. Весь трафик передаётся по HTTPS (TLS 1.3). Мы не храним содержимое запросов и ответов сверх необходимого для выставления счетов и предотвращения злоупотреблений. Мы никогда не обучаемся на ваших данных. Подробнее в политике конфиденциальности.",
+  ja: "当社はデータセキュリティを真剣に考えています。API キーは保存時に AES-256 で暗号化されます。すべてのトラフィックは HTTPS（TLS 1.3）で提供されます。請求および不正利用防止に必要な範囲を超えてプロンプトや応答内容を保存することはありません。お客様のデータやプロンプトで学習することは一切ありません。詳細はプライバシーポリシーをご覧ください。",
+  de: "Wir nehmen Datensicherheit ernst. API-Schlüssel werden im Ruhezustand mit AES-256 verschlüsselt. Der gesamte Datenverkehr wird über HTTPS (TLS 1.3) abgewickelt. Wir speichern keine Prompt- oder Antwortinhalte, die über das für Abrechnung und Missbrauchsbekämpfung Notwendige hinausgehen. Wir trainieren niemals mit Ihren Daten oder Prompts. Details entnehmen Sie bitte unserer Datenschutzerklärung."
+};
+
+I18N_MIXED["faq-answer-11"] = {
+  en: 'Absolutely. GlbTOKEN is designed for developers, startups, and enterprises building AI-powered products. Use your API key in production applications, serve end users, integrate with your existing stack — there are no usage restrictions beyond our Terms of Service. For high-volume plans, contact us at <a href="mailto:sales@glbtoken.com" style="color:var(--primary)">sales@glbtoken.com</a> for custom pricing.',
+  "zh-CN": '当然可以。GlbTOKEN 专为构建 AI 驱动产品的开发者、初创公司和企业而设计。您可以在生产环境中使用 API 密钥，服务最终用户，集成现有技术栈——除服务条款外，无任何使用限制。对于高用量方案，请联系 <a href="mailto:sales@glbtoken.com" style="color:var(--primary)">sales@glbtoken.com</a> 获取定制报价。',
+  ru: 'Безусловно. GlbTOKEN создан для разработчиков, стартапов и предприятий, создающих продукты на базе ИИ. Используйте API-ключ в production-приложениях, обслуживайте конечных пользователей, интегрируйте с вашим стеком — никаких ограничений, кроме наших Условий обслуживания. Для планов с высоким объёмом обращайтесь по адресу <a href="mailto:sales@glbtoken.com" style="color:var(--primary)">sales@glbtoken.com</a> для индивидуальных цен.',
+  ja: 'もちろんです。GlbTOKEN は、AI を活用した製品を構築する開発者、スタートアップ、企業向けに設計されています。プロダクションアプリケーションで API キーを使用し、エンドユーザーにサービスを提供し、既存のスタックと統合できます — 利用規約以外に使用制限はありません。大量利用プランについては、<a href="mailto:sales@glbtoken.com" style="color:var(--primary)">sales@glbtoken.com</a> までお問い合わせください。',
+  de: 'Absolut. GlbTOKEN wurde für Entwickler, Startups und Unternehmen entwickelt, die KI-gestützte Produkte erstellen. Verwenden Sie Ihren API-Schlüssel in Produktionsanwendungen, bedienen Sie Endbenutzer, integrieren Sie ihn in Ihren bestehenden Stack — es gibt keine Nutzungseinschränkungen außerhalb unserer Nutzungsbedingungen. Für Pläne mit hohem Volumen kontaktieren Sie uns unter <a href="mailto:sales@glbtoken.com" style="color:var(--primary)">sales@glbtoken.com</a> für individuelle Preise.'
+};
+
+I18N_MIXED["faq-answer-12"] = {
+  en: 'You can reach us at <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> or use the 💬 chat bubble in the bottom-right corner of any page. We typically respond within 2 hours during business hours (UTC+0 to UTC+8). For urgent API issues, email is fastest — include your account email and a description of the issue.',
+  "zh-CN": '您可以通过 <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> 联系我们，或使用任意页面右下角的 💬 聊天气泡。我们通常会在工作时间（UTC+0 至 UTC+8）内 2 小时回复。对于紧急 API 问题，发送邮件最快——请附上您的账户邮箱和问题描述。',
+  ru: 'Вы можете связаться с нами по адресу <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> или использовать чат-пузырёк 💬 в правом нижнем углу любой страницы. Мы обычно отвечаем в течение 2 часов в рабочее время (UTC+0 до UTC+8). Для срочных проблем с API быстрее всего написать на email — укажите email вашей учётной записи и описание проблемы.',
+  ja: '<a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> までお問い合わせいただくか、各ページ右下の 💬 チャットバブルをご利用ください。営業時間内（UTC+0〜UTC+8）に通常 2 時間以内にご返信いたします。緊急の API 問題については、メールが最速です — アカウントのメールアドレスと問題の説明を記載してください。',
+  de: 'Sie erreichen uns unter <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> oder über die 💬 Chat-Blase in der unteren rechten Ecke jeder Seite. Wir antworten in der Regel innerhalb von 2 Stunden während der Geschäftszeiten (UTC+0 bis UTC+8). Bei dringenden API-Problemen ist eine E-Mail am schnellsten — geben Sie Ihre Konto-E-Mail-Adresse und eine Beschreibung des Problems an.'
+};
 
 I18N_MIXED["auth-header-text"] = {en: 'All API requests require an API key passed via the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> header:', "zh-CN": '所有 API 请求都需要通过 <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> 标头传递 API 密钥：', ru: 'Все API-запросы требуют передачи API-ключа через заголовок <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>:', ja: 'すべてのAPIリクエストには <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> ヘッダーでAPIキーを渡す必要があります：', de: 'Alle API-Anfragen erfordern einen API-Schlüssel, der über den <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>-Header übergeben wird:'};
