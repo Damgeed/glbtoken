@@ -994,8 +994,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       document.getElementById('hamburgerBtn').classList.remove('active');
       document.body.style.overflow='';
     }
-    let tmIndex=0,tmInterval,tmTotal=6,tmTouchStartX=0,tmTouchStartY=0;
-    const tmTitles=['🔥 Top Models This Week','💻 API Quick Start','💬 Chat','💬 Responses','🧠 Claude','🔮 Gemini'];
+    let tmIndex=0,tmInterval,tmTotal=5,tmTouchStartX=0,tmTouchStartY=0;
+    const tmTitles=['🔥 Top Models This Week','💻 API Quick Start','💬 Chat','💬 Responses','🧠 Claude'];
 
     async function refreshTopModels(){
       var container=document.getElementById('tmModelsView');
