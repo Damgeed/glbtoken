@@ -1118,15 +1118,19 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       track.addEventListener('mousedown',e=>{
         tmTouchStartX=e.clientX;tmTouchStartY=e.clientY;
         tmDragStart(e.clientX);
+        e.preventDefault();
       });
       document.addEventListener('mousemove',e=>{
         if(!tmIsDragging)return;
         tmDragMove(e.clientX);
-        e.preventDefault();
       });
       document.addEventListener('mouseup',e=>{
         if(!tmIsDragging)return;
         tmDragEnd(e.clientX);
+      });
+      // Safety: release drag if window loses focus (prevents stuck drag)
+      window.addEventListener('blur',function(){
+        if(tmIsDragging){tmIsDragging=false;document.body.style.userSelect='';document.body.style.webkitUserSelect=''}
       });
       tmInterval=setInterval(()=>slideTopView(1),5000);
       // Initial load: refresh top model cards (replaces hardcoded HTML)
