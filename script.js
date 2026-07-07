@@ -60,7 +60,7 @@
       const name=document.getElementById('regName').value;
       const email=document.getElementById('regEmail').value;
       const pass=document.getElementById('regPassword').value;
-      const confirm=document.getElementById('regConfirm').value;
+      const confirmPass=document.getElementById('regConfirm').value;
       const country='';
       const errEl=document.getElementById('regError');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
@@ -73,7 +73,8 @@
       if(!pass){fieldErrors.push('Password'); document.getElementById('regPassword').classList.add('field-error')}
       else document.getElementById('regPassword').classList.remove('field-error');
       if(fieldErrors.length){const m='Please fill in: ' + fieldErrors.join(', ');showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      if(pass!==confirm){const m='Passwords do not match';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){const m='Please enter a valid email address';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
+      if(pass!==confirmPass){const m='Passwords do not match';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
       if(pass.length<6){const m='Password must be at least 6 characters';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
       try{
         const data=await api('POST','/api/auth/register',{name,email,password:pass,country});
@@ -104,6 +105,7 @@
       if(!pass){fieldErrors.push('Password'); document.getElementById('loginPassword').classList.add('field-error')}
       else document.getElementById('loginPassword').classList.remove('field-error');
       if(fieldErrors.length){const m='Please enter: ' + fieldErrors.join(', ');showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){const m='Please enter a valid email address';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
       try{
         const data=await api('POST','/api/auth/login',{email,password:pass});
         token=data.token;userData=data.user;
@@ -187,6 +189,7 @@
       var errEl = document.getElementById('resetError');
       if(errEl)errEl.style.display='none';
       if(!email){var m='Enter your email';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){var m='Please enter a valid email address';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
       var btn = document.getElementById('resetSendBtn');
       if(btn){btn.disabled=true;btn.textContent='Sending...'}
       try{
