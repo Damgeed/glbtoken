@@ -160,7 +160,7 @@
 <div style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
 <div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment)"># POST /v1/chat/completions</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">REQUEST</span>
 <span style="color:var(--code-keyword)">curl</span> <span style="color:var(--code-function)">-X</span> <span style="color:var(--code-literal)">POST</span> <span style="color:var(--code-string)">"/v1/chat/completions"</span> \
   <span style="color:var(--code-function)">-H</span> <span style="color:var(--code-string)">"Authorization: Bearer sk-••••"</span> \
@@ -170,7 +170,7 @@
       { <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">role</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"user"</span>, <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">content</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"..."</span> }
     ]
   <span style="color:var(--code-string)">}'</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">RESPONSE</span>
 {
   <span style="color:var(--code-property)">"choices"</span>: [{ <span style="color:var(--code-property)">"message"</span>: { <span style="color:var(--code-property)">"content"</span>: <span style="color:var(--code-string)">"Chat request routed."</span> } }],
@@ -182,7 +182,7 @@
 <div style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
 <div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment)"># POST /v1/responses</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">REQUEST</span>
 <span style="color:var(--code-keyword)">curl</span> <span style="color:var(--code-function)">-X</span> <span style="color:var(--code-literal)">POST</span> <span style="color:var(--code-string)">"/v1/responses"</span> \
   <span style="color:var(--code-function)">-H</span> <span style="color:var(--code-string)">"Authorization: Bearer sk-••••"</span> \
@@ -190,7 +190,7 @@
     <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">model</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"your-model"</span>,
     <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">input</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"..."</span>
   <span style="color:var(--code-string)">}'</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">RESPONSE</span>
 {
   <span style="color:var(--code-property)">"output"</span>: [{ <span style="color:var(--code-property)">"type"</span>: <span style="color:var(--code-string)">"output_text"</span>, <span style="color:var(--code-property)">"text"</span>: <span style="color:var(--code-string)">"Response workflow ready."</span> }],
@@ -202,7 +202,7 @@
 <div style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
 <div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment)"># POST /v1/messages</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">REQUEST</span>
 <span style="color:var(--code-keyword)">curl</span> <span style="color:var(--code-function)">-X</span> <span style="color:var(--code-literal)">POST</span> <span style="color:var(--code-string)">"/v1/messages"</span> \
   <span style="color:var(--code-function)">-H</span> <span style="color:var(--code-string)">"x-api-key: sk-••••"</span> \
@@ -214,7 +214,7 @@
       { <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">role</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"user"</span>, <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">content</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"..."</span> }
     ]
   <span style="color:var(--code-string)">}'</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">RESPONSE</span>
 {
   <span style="color:var(--code-property)">"content"</span>: [{ <span style="color:var(--code-property)">"type"</span>: <span style="color:var(--code-string)">"text"</span>, <span style="color:var(--code-property)">"text"</span>: <span style="color:var(--code-string)">"Claude message routed."</span> }],
@@ -226,7 +226,7 @@
 <div style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
 <div style="background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment)"># POST /v1beta/models/{model}:generateContent</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">REQUEST</span>
 <span style="color:var(--code-keyword)">curl</span> <span style="color:var(--code-function)">-X</span> <span style="color:var(--code-literal)">POST</span> <span style="color:var(--code-string)">"/v1beta/models/{model}:generateContent"</span> \
   <span style="color:var(--code-function)">-H</span> <span style="color:var(--code-string)">"x-goog-api-key: sk-••••"</span> \
@@ -236,7 +236,7 @@
         <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">parts</span><span style="color:var(--code-string)">"</span>: [{ <span style="color:var(--code-string)">"</span><span style="color:var(--code-property)">text</span><span style="color:var(--code-string)">"</span>: <span style="color:var(--code-string)">"..."</span> }] }
     ]
   <span style="color:var(--code-string)">}'</span></code></pre>
-<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:0.5rem 0">
+<hr style="border:none;border-top:1px solid var(--border-light);margin:0.5rem 0">
 <pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:var(--text)"><span style="color:var(--code-comment);font-weight:700">RESPONSE</span>
 {
   <span style="color:var(--code-property)">"candidates"</span>: [{ <span style="color:var(--code-property)">"content"</span>: { <span style="color:var(--code-property)">"parts"</span>: [{ <span style="color:var(--code-property)">"text"</span>: <span style="color:var(--code-string)">"Gemini request served."</span> }] } }],
@@ -354,7 +354,7 @@
               </div>
               </div>
 
-<script data-cfasync="false" src="script.js?v=57"></script>
+<script data-cfasync="false" src="script.js?v=58"></script>
 <div id="google_translate_element" style="display:none"></div>
 
 <script>
