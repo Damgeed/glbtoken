@@ -27,10 +27,15 @@ function translatePage() {
       n.textContent = TRANS[text][curLang];
     }
   }
-  // Also handle data-i18n elements for dynamic content
+  // Also handle data-i18n elements with HTML content
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
-    if (TRANS[key] && TRANS[key][curLang]) {
+    // First try I18N_MIXED for HTML-safe translation (preserves child elements)
+    if (typeof I18N_MIXED !== 'undefined' && I18N_MIXED[key] && I18N_MIXED[key][curLang]) {
+      el.innerHTML = I18N_MIXED[key][curLang];
+    }
+    // Fallback to plain text translation
+    else if (TRANS[key] && TRANS[key][curLang]) {
       el.textContent = TRANS[key][curLang];
     }
   });
