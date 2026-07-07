@@ -1042,10 +1042,14 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       clearInterval(tmInterval);tmInterval=setInterval(()=>slideTopView(1),5000);
     }
     function goToSlide(i){tmIndex=i-1;slideTopView(1)}
+    function resumeAutoSlide(){clearInterval(tmInterval);tmInterval=setInterval(()=>slideTopView(1),5000);}
     document.addEventListener('DOMContentLoaded',()=>{
       const track=document.getElementById('tmTrack');
       if(!track)return;
-      track.addEventListener('touchstart',e=>{tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY},{passive:true});
+      track.addEventListener('touchstart',e=>{
+        tmTouchStartX=e.touches[0].clientX;tmTouchStartY=e.touches[0].clientY;
+        clearInterval(tmInterval); // pause auto-slide while touching
+      },{passive:true});
       track.addEventListener('touchmove',e=>{
         const dx=Math.abs(e.touches[0].clientX-tmTouchStartX);
         const dy=Math.abs(e.touches[0].clientY-tmTouchStartY);
@@ -1055,6 +1059,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const dx=e.changedTouches[0].clientX-tmTouchStartX;
         const dy=e.changedTouches[0].clientY-tmTouchStartY;
         if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5)slideTopView(dx<0?1:-1);
+        resumeAutoSlide(); // resume auto-slide after touch ends
       });
       tmInterval=setInterval(()=>slideTopView(1),5000);
       // Initial load: refresh top model cards (replaces hardcoded HTML)
