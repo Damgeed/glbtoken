@@ -64,6 +64,46 @@ def signup(email: str, password: str, name: str) -> dict:
         raise ValueError(f"Auth0 signup failed: {err}")
     return resp.json()
 
+# ── Passwordless Email (Magic Code) ──
+
+def send_passwordless_code(email: str) -> dict:
+    """Send a verification code to the user's email via Auth0 Passwordless Email."""
+    if not is_configured():
+        raise ValueError("Auth0 not configured")
+    url = f"https://{AUTH0_DOMAIN}/passwordless/start"
+    payload = {
+        "client_id": AUTH0_CLIENT_ID,
+        "client_secret": AUTH0_CLIENT_SECRET,
+        "connection": "email",
+        "email": email,
+        "send": "code",
+    }
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code != 200:
+        err = resp.json().get("error_description", resp.text)
+        raise ValueError(f"Auth0 passwordless start failed: {err}")
+    return {"email": email, "sent": True}
+
+def verify_passwordless_code(email: str, code: str) -> dict:
+    """Exchange a verification code for Auth0 tokens."""
+    if not is_configured():
+        raise ValueError("Auth0 not configured")
+    url = f"https://{AUTH0_DOMAIN}/oauth/token"
+    payload = {
+        "grant_type": "http://auth0.com/oauth/grant-type/passwordless/otp",
+        "realm": "email",
+        "username": email,
+        "otp": code,
+        "client_id": AUTH0_CLIENT_ID,
+        "client_secret": AUTH0_CLIENT_SECRET,
+        "scope": "openid email profile",
+    }
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code != 200:
+        err = resp.json().get("error_description", resp.text)
+        raise ValueError(f"Auth0 code verification failed: {err}")
+    return resp.json()
+
 # ── Social Login Redirect URL ──
 
 def get_social_login_url(provider: str, redirect_uri: str) -> str:

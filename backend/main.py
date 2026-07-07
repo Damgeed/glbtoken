@@ -24,7 +24,7 @@ from newapi_integration import (
     create_newapi_user, update_user_quota, add_user_quota,
     get_usage_today, create_api_token, health_check
 )
-from auth0 import is_configured as is_auth0_configured, get_config as get_auth0_config, verify_token as verify_auth0_token, get_user_info, password_login as auth0_password_login, signup as auth0_signup, get_social_login_url
+from auth0 import is_configured as is_auth0_configured, get_config as get_auth0_config, verify_token as verify_auth0_token, get_user_info, password_login as auth0_password_login, signup as auth0_signup, get_social_login_url, send_passwordless_code, verify_passwordless_code
 
 # ── Lifespan (replaces deprecated on_event) ──
 from contextlib import asynccontextmanager
@@ -349,6 +349,76 @@ class Auth0LoginRequest(BaseModel):
 def auth0_config():
     """Return Auth0 public config for frontend. Gracefully disabled if unconfigured."""
     return get_auth0_config()
+
+@app.post("/api/auth/send-code")
+@limiter.limit("5/minute")
+async def send_code(req: Request, body: dict = Body(...), db: Session = Depends(get_db)):
+    """Send a verification code via Auth0 Passwordless Email to the given email."""
+    email = body.get("email", "").lower().strip()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Valid email required")
+    if not is_auth0_configured():
+        raise HTTPException(status_code=400, detail="Auth0 not configured")
+    try:
+        send_passwordless_code(email)
+        return {"sent": True, "email": email}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/api/auth/verify-code")
+@limiter.limit("10/minute")
+async def verify_code(req: Request, body: dict = Body(...), db: Session = Depends(get_db)):
+    """Verify a code from Auth0 Passwordless Email, create/login user, return JWT."""
+    email = body.get("email", "").lower().strip()
+    code = body.get("code", "").strip()
+    if not email or not code:
+        raise HTTPException(status_code=400, detail="Email and code required")
+    if not is_auth0_configured():
+        raise HTTPException(status_code=400, detail="Auth0 not configured")
+    try:
+        tokens = verify_passwordless_code(email, code)
+        payload = verify_auth0_token(tokens["id_token"])
+        user_info = get_user_info(payload)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid or expired code. Please try again.")
+    
+    # Find or create user
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        user = User(
+            name=user_info.get("name", email.split("@")[0]),
+            email=email,
+            password_hash=None,
+            token_balance=0,
+            email_verified=True,
+            is_admin=(db.query(User).count() == 0),
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        # Sync to New API (non-blocking)
+        try:
+            newapi_user = await create_newapi_user(email=email, name=user.name, quota=0)
+            if newapi_user and isinstance(newapi_user, dict) and newapi_user.get("id"):
+                user.newapi_user_id = newapi_user["id"]
+                db.commit()
+        except Exception as e:
+            print(f"⚠️ New API sync failed on verify-code: {e}")
+    else:
+        user.email_verified = True
+        db.commit()
+    
+    jwt_token = create_access_token({"sub": str(user.id)})
+    return {
+        "token": jwt_token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "token_balance": user.token_balance,
+        },
+    }
 
 @app.post("/api/auth/auth0/login")
 async def auth0_login(req: Auth0LoginRequest, db: Session = Depends(get_db)):

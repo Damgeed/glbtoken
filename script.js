@@ -57,67 +57,115 @@
       if (pageMap[page]) { window.location=pageMap[page]; }
     }
 
-    // ── Auth ──
-    async function registerUser(){
-      const name=document.getElementById('regName').value;
-      const email=document.getElementById('regEmail').value;
-      const pass=document.getElementById('regPassword').value;
-      const confirmPass=document.getElementById('regConfirm').value;
-      const country='';
-      const errEl=document.getElementById('regError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
-      // Per-field validation
-      var fieldErrors = [];
-      if(!name){fieldErrors.push('Name'); document.getElementById('regName').classList.add('field-error')}
-      else document.getElementById('regName').classList.remove('field-error');
-      if(!email){fieldErrors.push('Email'); document.getElementById('regEmail').classList.add('field-error')}
-      else document.getElementById('regEmail').classList.remove('field-error');
-      if(!pass){fieldErrors.push('Password'); document.getElementById('regPassword').classList.add('field-error')}
-      else document.getElementById('regPassword').classList.remove('field-error');
-      if(fieldErrors.length){const m='Please fill in: ' + fieldErrors.join(', ');showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){const m='Please enter a valid email address';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      if(pass!==confirmPass){const m='Passwords do not match';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      if(pass.length<6){const m='Password must be at least 6 characters';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      try{
-        const data=await api('POST','/api/auth/register',{name,email,password:pass,country});
-        token=data.token;userData=data.user;
-        localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
-        if(data.newapi_token){
-          newapiToken=data.newapi_token;
-          newapiEndpoint=data.newapi_endpoint||'';
-          localStorage.setItem('gt_newapi_token',newapiToken);
-          localStorage.setItem('gt_newapi_endpoint',newapiEndpoint);
-        }
-        applyAuth();showToast('Account created! Welcome.','success');window.location.href='/dashboard.html';
-      }catch(e){
-        const msg=e.message||'Registration failed';
-        showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
-      }
-    }
-    async function loginUser(){
-      const email=document.getElementById('loginEmail').value;
-      const pass=document.getElementById('loginPassword').value;
+    // ── Auth (Passwordless Email via Auth0) ──
+    async function sendLoginCode(){
+      const email=document.getElementById('loginEmail').value.trim();
       const errEl=document.getElementById('loginError');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
-      // Per-field validation
-      var fieldErrors = [];
-      if(!email){fieldErrors.push('Email'); document.getElementById('loginEmail').classList.add('field-error')}
-      else document.getElementById('loginEmail').classList.remove('field-error');
-      if(!pass){fieldErrors.push('Password'); document.getElementById('loginPassword').classList.add('field-error')}
-      else document.getElementById('loginPassword').classList.remove('field-error');
-      if(fieldErrors.length){const m='Please enter: ' + fieldErrors.join(', ');showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){const m='Please enter a valid email address';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
+      if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        const m='Please enter a valid email address';
+        showToast(m,'error');
+        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        return
+      }
+      const btn=document.getElementById('loginSendBtn');
+      btn.disabled=true;btn.textContent='Sending...';
       try{
-        const data=await api('POST','/api/auth/login',{email,password:pass});
+        await api('POST','/api/auth/send-code',{email:email});
+        document.getElementById('loginEmailGroup').style.display='none';
+        document.getElementById('loginCodeGroup').style.display='block';
+        document.getElementById('loginSendBtn').style.display='none';
+        document.getElementById('loginVerifyBtn').style.display='block';
+        document.getElementById('loginCode').focus();
+        showToast('Code sent to '+email,'success');
+      }catch(e){
+        const msg=e.message||'Failed to send code';
+        showToast(msg,'error');
+        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
+      }finally{
+        btn.disabled=false;btn.textContent='Send Code';
+      }
+    }
+    async function verifyLoginCode(){
+      const email=document.getElementById('loginEmail').value.trim();
+      const code=document.getElementById('loginCode').value.trim();
+      const errEl=document.getElementById('loginError');
+      if(errEl){errEl.style.display='none';errEl.textContent=''}
+      if(!code||code.length<4){
+        const m='Please enter the verification code from your email';
+        showToast(m,'error');
+        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        return
+      }
+      const btn=document.getElementById('loginVerifyBtn');
+      btn.disabled=true;btn.textContent='Verifying...';
+      try{
+        var data=await api('POST','/api/auth/verify-code',{email:email,code:code});
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
-        window.location.href = '/dashboard.html';
+        window.location.href='/dashboard.html';
       }catch(e){
-        const msg=e.message||'Login failed';
+        const msg=e.message||'Invalid code';
         showToast(msg,'error');
         if(errEl){errEl.textContent=msg;errEl.style.display='block'}
+      }finally{
+        btn.disabled=false;btn.textContent='Verify & Sign In';
+      }
+    }
+    async function sendRegisterCode(){
+      const email=document.getElementById('regEmail').value.trim();
+      const errEl=document.getElementById('regError');
+      if(errEl){errEl.style.display='none';errEl.textContent=''}
+      if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        const m='Please enter a valid email address';
+        showToast(m,'error');
+        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        return
+      }
+      const btn=document.getElementById('regSendBtn');
+      btn.disabled=true;btn.textContent='Sending...';
+      try{
+        await api('POST','/api/auth/send-code',{email:email});
+        document.getElementById('regEmailGroup').style.display='none';
+        document.getElementById('regCodeGroup').style.display='block';
+        document.getElementById('regSendBtn').style.display='none';
+        document.getElementById('regVerifyBtn').style.display='block';
+        document.getElementById('regCode').focus();
+        showToast('Code sent to '+email,'success');
+      }catch(e){
+        const msg=e.message||'Failed to send code';
+        showToast(msg,'error');
+        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
+      }finally{
+        btn.disabled=false;btn.textContent='Send Code';
+      }
+    }
+    async function verifyRegisterCode(){
+      const email=document.getElementById('regEmail').value.trim();
+      const code=document.getElementById('regCode').value.trim();
+      const errEl=document.getElementById('regError');
+      if(errEl){errEl.style.display='none';errEl.textContent=''}
+      if(!code||code.length<4){
+        const m='Please enter the verification code from your email';
+        showToast(m,'error');
+        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        return
+      }
+      const btn=document.getElementById('regVerifyBtn');
+      btn.disabled=true;btn.textContent='Verifying...';
+      try{
+        var data=await api('POST','/api/auth/verify-code',{email:email,code:code});
+        token=data.token;userData=data.user;
+        localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+        applyAuth();showToast('Account created! Welcome.','success');
+        window.location.href='/dashboard.html';
+      }catch(e){
+        const msg=e.message||'Invalid code';
+        showToast(msg,'error');
+        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
+      }finally{
+        btn.disabled=false;btn.textContent='Verify & Create Account';
       }
     }
     function oauthLogin(provider){
