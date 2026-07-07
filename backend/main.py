@@ -12,7 +12,7 @@ from sqlalchemy import desc, func
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 from email.mime.text import MIMEText
-import smtplib, secrets, os, json
+import smtplib, secrets, os, json, random
 
 from database import init_db, get_db, User, ApiKey, Transaction, AIModel
 from auth import (
@@ -130,6 +130,9 @@ class ResetPasswordRequest(BaseModel):
 class SendVerificationRequest(BaseModel):
     email: str = ""
 
+class OptionalEmailRequest(BaseModel):
+    email: str = ""
+
 class VerifyEmailRequest(BaseModel):
     otp: str
 
@@ -140,15 +143,15 @@ class InitiatePaymentRequest(BaseModel):
     email: str = ""
 
 # ── Email Config ──
-def send_email(to: str, subject: str, body: str):
+def send_email(to: str, subject: str, body: str) -> bool:
     smtp_host = os.getenv("SMTP_HOST", "")
     smtp_port = int(os.getenv("SMTP_PORT", "587"))
     smtp_user = os.getenv("SMTP_USER", "")
     smtp_pass = os.getenv("SMTP_PASS", "")
-    from_addr = os.getenv("SMTP_FROM", "noreply@glbtoken.com")
+    from_addr = os.getenv("SMTP_FROM", "noreply@glbtoken.io")
     if not smtp_host:
         print(f"📧 SMTP not configured. Would send email to {to}: {subject}")
-        return
+        return False
     msg = MIMEText(body, "plain", "utf-8")
     msg["Subject"] = subject
     msg["From"] = from_addr
@@ -159,9 +162,14 @@ def send_email(to: str, subject: str, body: str):
             s.login(smtp_user, smtp_pass)
             s.send_message(msg)
         print(f"📧 Email sent to {to}: {subject}")
+        return True
     except Exception as e:
         print(f"📧 SMTP FAILED to {to}: {e}")
-        # Don't crash the request — just log it
+        return False
+
+# ── Startup check ──
+if not os.getenv("SMTP_HOST"):
+    print("⚠️  SMTP not configured — password reset and email verification will silently fail.")
 
 # ── Auth Routes ──
 @app.post("/api/auth/register")
@@ -507,16 +515,18 @@ def get_me(user: User = Depends(get_current_user)):
 
 # ── Email Verification ──
 @app.post("/api/auth/send-verification")
-@limiter.limit("3/minute")
-def send_verification(request: Request, req: SendVerificationRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def send_verification(req: OptionalEmailRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     email = req.email or user.email
-    otp = f"{secrets.randbelow(900000) + 100000}"  # 6-digit
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+    otp = str(random.randint(100000, 999999))
     user.email_otp = otp
     user.email_otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
     db.commit()
-    send_email(email, "Verify your GlbTOKEN email",
+    sent = send_email(email, "Verify your GlbTOKEN email",
         f"Your verification code is: {otp}\n\nIt expires in 10 minutes.\n\n- GlbTOKEN Team")
-    return {"status": "sent", "email": email}
+    return {"status": "sent" if sent else "email_unavailable", "email": email}
 
 @app.post("/api/auth/verify-email")
 def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -552,9 +562,9 @@ def forgot_password(request: Request, req: ForgotPasswordRequest, db: Session = 
     user.reset_token = token
     user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
     db.commit()
-    send_email(user.email, "Reset your GlbTOKEN password",
-        f"Reset token: {token}\n\nPaste this in the reset password form.\nIt expires in 1 hour.\n\n- GlbTOKEN Team")
-    return {"status": "sent"}
+    sent = send_email(user.email, "Reset your GlbTOKEN password",
+        f"Reset token: {token}\n\nGo to: https://glbtoken.com/reset-password\nPaste the token above.\nIt expires in 1 hour.\n\n- GlbTOKEN Team")
+    return {"status": "sent" if sent else "email_unavailable"}
 
 @app.post("/api/auth/reset-password")
 def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
