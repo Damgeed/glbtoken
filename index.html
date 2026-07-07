@@ -143,16 +143,16 @@
               </div>
                   <div id="tmCodeView" style="min-width:100%;flex-shrink:0;display:grid;gap:0.625rem">
 <div style="background:#0d1117;border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto">
-<pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:#e6edf3;white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:#e6edf3"><span style="color:#7ee787">from</span> <span style="color:#79c0ff">openai</span> <span style="color:#7ee787">import</span> <span style="color:#d2a8ff">OpenAI</span>
+<pre translate="no" style="margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:#e6edf3;white-space:pre-wrap;word-break:break-word"><code translate="no" style="background:none;padding:0;color:#e6edf3"><span style="color:#FF79C6">from</span> <span style="color:#50FA7B">openai</span> <span style="color:#FF79C6">import</span> <span style="color:#50FA7B">OpenAI</span>
 
-<span style="color:#7ee787">client</span> <span style="color:#ffa657">=</span> <span style="color:#d2a8ff">OpenAI</span>(
-<span style="color:#79c0ff">base_url</span><span style="color:#ffa657">=</span><span style="color:#a5d6ff">"https://api.glbtoken.io/v1"</span>,
-<span style="color:#79c0ff">api_key</span><span style="color:#ffa657">=</span><span style="color:#a5d6ff">"YOUR_GLBTOKEN_API_KEY"</span>,
+<span style="color:#F8F8F2">client</span> <span style="color:#F8F8F2">=</span> <span style="color:#50FA7B">OpenAI</span>(
+  <span style="color:#8BE9FD">base_url</span><span style="color:#F8F8F2">=</span><span style="color:#F1FA8C">"https://api.glbtoken.io/v1"</span>,
+  <span style="color:#8BE9FD">api_key</span><span style="color:#F8F8F2">=</span><span style="color:#F1FA8C">"YOUR_GLBTOKEN_API_KEY"</span>,
 )
 
-<span style="color:#7ee787">response</span> <span style="color:#ffa657">=</span> <span style="color:#7ee787">client</span>.<span style="color:#d2a8ff">chat</span>.<span style="color:#d2a8ff">completions</span>.<span style="color:#d2a8ff">create</span>(
-<span style="color:#79c0ff">model</span><span style="color:#ffa657">=</span><span style="color:#a5d6ff">"openai/gpt-4o"</span>,
-<span style="color:#79c0ff">messages</span><span style="color:#ffa657">=</span>[{<span style="color:#a5d6ff">"role"</span>: <span style="color:#a5d6ff">"user"</span>, <span style="color:#a5d6ff">"content"</span>: <span style="color:#a5d6ff">"Hello!"</span>}]
+<span style="color:#F8F8F2">response</span> <span style="color:#F8F8F2">=</span> <span style="color:#F8F8F2">client</span><span style="color:#F8F8F2">.</span><span style="color:#50FA7B">chat</span><span style="color:#F8F8F2">.</span><span style="color:#50FA7B">completions</span><span style="color:#F8F8F2">.</span><span style="color:#50FA7B">create</span>(
+  <span style="color:#8BE9FD">model</span><span style="color:#F8F8F2">=</span><span style="color:#F1FA8C">"openai/gpt-4o"</span>,
+  <span style="color:#8BE9FD">messages</span><span style="color:#F8F8F2">=</span>[{<span style="color:#F1FA8C">"role"</span>: <span style="color:#F1FA8C">"user"</span>, <span style="color:#F1FA8C">"content"</span>: <span style="color:#F1FA8C">"Hello!"</span>}]
 )</code></pre>
               </div>
 <p style="font-size:0.7rem;color:var(--text-muted);margin:0;text-align:center">Change the model string to switch between 100+ models.</p>
