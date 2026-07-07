@@ -125,8 +125,8 @@
     <button class="btn-primary" style="width:100%;margin-top:0.75rem" id="regSendBtn" onclick="sendRegisterCode()">Continue</button>
     <button class="btn-primary" style="width:100%;display:none" id="regVerifyBtn" onclick="verifyRegisterCode()">Verify & Create Account</button>
     <div class="auth-divider">or continue with</div>
-    <button class="auth-oauth-btn" style="width:100%" onclick="togglePhone('reg')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Continue with Phone</button>
-    <div id="regPhoneSection" style="display:none;margin:0.5rem 0 1rem 0">
+    <button class="auth-oauth-btn" style="width:100%;margin-bottom:0.75rem" onclick="togglePhone('reg')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Continue with Phone</button>
+    <div id="regPhoneSection" style="display:none;margin:0 0 0.75rem 0">
       <div class="auth-field"><label>Phone</label><input type="tel" id="regPhone" placeholder="+1234567890" autocomplete="tel"></div>
       <div class="auth-field" id="regSmsCodeGroup" style="display:none"><label>SMS Code</label><input type="text" id="regSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"></div>
       <button class="btn-primary" style="width:100%" id="regPhoneSendBtn" onclick="sendPhoneCode('reg')">Send Code</button>
