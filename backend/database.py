@@ -24,7 +24,10 @@ if DATABASE_URL.startswith("postgresql://"):
         admin_cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
         if not admin_cur.fetchone():
             # Need to quote the db name for the CREATE DATABASE statement
-            safe_db = db_name.replace("'", "''")
+            import re
+            safe_db = re.sub(r'[^a-zA-Z0-9_]', '', db_name)
+            if not safe_db:
+                raise ValueError("Invalid database name")
             admin_cur.execute(f"CREATE DATABASE \"{safe_db}\"")
             print(f"✅ Created PostgreSQL database: {db_name}")
         admin_cur.close()

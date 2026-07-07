@@ -170,8 +170,8 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
     try:
         if db.query(User).filter(User.email == req.email).first():
             raise HTTPException(status_code=400, detail="Email already registered")
-        if len(req.password) < 8:
-            raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+        if len(req.password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
         user = User(
             name=req.name,
             email=req.email,
@@ -187,7 +187,7 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         raise
     except Exception as e:
         print(f"❌ REGISTER DB ERROR: {e}")
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)[:100]}")
+        raise HTTPException(status_code=500, detail="Database error. Please try again.")
     
     # ── Sync to New API (non-blocking, best-effort) ──
     newapi_user = None
@@ -269,7 +269,7 @@ async def google_callback(req: GoogleAuthRequest, db: Session = Depends(get_db))
             }
         )
         if token_resp.status_code != 200:
-            raise HTTPException(status_code=400, detail=f"Google token exchange failed: {token_resp.text[:200]}")
+            raise HTTPException(status_code=400, detail="Authentication failed. Please try again.")
         token_data = token_resp.json()
         id_token = token_data.get("id_token")
         if not id_token:
@@ -460,7 +460,7 @@ async def auth0_signup_endpoint(request: Request, db: Session = Depends(get_db))
         payload = verify_auth0_token(tokens["id_token"])
         info = get_user_info(payload)
     except ValueError as e:
-        raise HTTPException(status_code=401, detail=f"Account created but login failed: {e}")
+        raise HTTPException(status_code=401, detail="Account created but login failed.")
 
     user = User(
         name=info["name"], email=info["email"],
@@ -892,14 +892,20 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
 # ── Crypto Payment ──
 CRYPTO_WALLET_ADDRESSES = {
-    "USDT_TRC20": os.getenv("CRYPTO_USDT_TRC20", "TXYZ123456789..."),
-    "USDT_ERC20": os.getenv("CRYPTO_USDT_ERC20", "0x0000000000000000000000000000000000000000"),
-    "BTC": os.getenv("CRYPTO_BTC", "bc1q0000000000000000000000000000000000000"),
-    "ETH": os.getenv("CRYPTO_ETH", "0x0000000000000000000000000000000000000000"),
+    "USDT_TRC20": os.getenv("CRYPTO_USDT_TRC20", ""),
+    "USDT_ERC20": os.getenv("CRYPTO_USDT_ERC20", ""),
+    "BTC": os.getenv("CRYPTO_BTC", ""),
+    "ETH": os.getenv("CRYPTO_ETH", ""),
 }
+
+TRON_USDT_ADDRESS = os.getenv("TRON_USDT_ADDRESS", "")
+ETH_USDT_ADDRESS = os.getenv("ETH_USDT_ADDRESS", "")
+BTC_ADDRESS = os.getenv("BTC_ADDRESS", "")
 
 @app.get("/api/payments/crypto/addresses")
 def get_crypto_addresses(user: User = Depends(get_current_user)):
+    if not any(CRYPTO_WALLET_ADDRESSES.values()):
+        raise HTTPException(status_code=500, detail="Crypto payment not configured")
     return {
         "addresses": [
             {"asset": k, "network": k.split("_")[1] if "_" in k else k, "address": v}
@@ -1392,7 +1398,7 @@ async def admin_sync_users(
     thread.join(timeout=120)  # 2 min timeout
 
     if "error" in result_container:
-        raise HTTPException(status_code=500, detail=f"Sync failed: {result_container['error']}")
+        raise HTTPException(status_code=500, detail="Sync failed. Please try again.")
 
     res = result_container.get("result")
     return {

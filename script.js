@@ -421,7 +421,7 @@
           body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions</td></tr>';
           return;
         }
-body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+t.type+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+(t.tokens||0)+'</td><td><span style="color:var(--success)">'+t.status+'</span></td></tr>').join('');
+body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join('');
       }catch(e){}
     }
     function initCharts(usage){
@@ -719,8 +719,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const d=await api('GET','/api/transactions?limit=50');
         const dep=d.items.filter(t=>t.type==='deposit');
         const con=d.items.filter(t=>t.type==='consumption');
-        document.getElementById('txDepositBody').innerHTML=dep.length?dep.map(t=>`<tr><td>${t.created_at?new Date(t.created_at).toLocaleDateString():''}</td><td>$${t.amount.toFixed(2)}</td><td>${t.payment_method||'-'}</td><td class="gold">+${t.tokens||0}</td><td><span style="color:var(--success)">${t.status}</span></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No deposits</td></tr>';
-        document.getElementById('txConsumptionBody').innerHTML=con.length?con.map(t=>`<tr><td>${t.created_at?new Date(t.created_at).toLocaleDateString():''}</td><td>${t.model_used||'-'}</td><td class="red">-${t.tokens||0}</td><td>API</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No consumption</td></tr>';
+        document.getElementById('txDepositBody').innerHTML=dep.length?dep.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>$'+escapeHtml(t.amount.toFixed(2))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No deposits</td></tr>';
+        document.getElementById('txConsumptionBody').innerHTML=con.length?con.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>').join(''):'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No consumption</td></tr>';
       }catch(e){}
     }
     function switchTxTab(el,tab){

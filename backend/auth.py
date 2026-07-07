@@ -9,7 +9,9 @@ from database import get_db, User
 import httpx
 import os
 
-SECRET_KEY = os.getenv("GLBTOKEN_SECRET", secrets.token_hex(32))
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    raise RuntimeError("JWT_SECRET environment variable is required")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
 
