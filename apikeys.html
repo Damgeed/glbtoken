@@ -107,7 +107,7 @@
   <!-- Quick Start -->
   <div class="dash-card" style="margin-bottom:2rem" id="quickstart">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">🚀 Quick Start</h3>
-    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem">
+    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem">Use the OpenAI Python SDK with your GlbTOKEN API key:</p>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)"><span style="color:var(--text-muted)"># pip install openai</span>
 <span style="color:var(--primary)">from</span> openai <span style="color:var(--primary)">import</span> OpenAI
@@ -146,7 +146,7 @@ print(response.choices[0].message.content)</pre>
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">🤖 Available Models</h3>
     <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">List all available models with pricing:</p>
-    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem">
+    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)">curl https://glbtoken-api.onrender.com/api/proxy/models \
   -H <span style="color:var(--text-muted)">"Authorization: Bearer sk-glt_..."</span></pre>
     </div>
@@ -157,7 +157,7 @@ print(response.choices[0].message.content)</pre>
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">💬 Chat Completions</h3>
     <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Send a chat completion request (OpenAI-compatible):</p>
-    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem">
+    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)">curl https://glbtoken-api.onrender.com/api/proxy/v1/chat/completions \
   -H <span style="color:var(--text-muted)">"Content-Type: application/json"</span> \
   -H <span style="color:var(--text-muted)">"Authorization: Bearer sk-glt_..."</span> \
@@ -178,7 +178,7 @@ print(response.choices[0].message.content)</pre>
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">⚡ Streaming</h3>
     <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.75rem">Server-Sent Events (SSE) streaming is fully supported:</p>
-    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem">
+    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)"><span style="color:var(--primary)">from</span> openai <span style="color:var(--primary)">import</span> OpenAI
 
 client = OpenAI(
@@ -200,7 +200,7 @@ stream = client.chat.completions.create(
   <!-- Node.js Example -->
   <div class="dash-card" style="margin-bottom:2rem">
     <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem">🟩 Node.js Example</h3>
-    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem">
+    <div style="background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;position:relative" data-copy><button onclick="copyCode(this)" style="position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
       <pre translate="no" style="font-family:monospace;font-size:0.85rem;line-height:1.7;overflow-x:auto;white-space:pre;color:var(--text)"><span style="color:var(--primary)">import</span> OpenAI <span style="color:var(--primary)">from</span> <span style="color:var(--text-muted)">"openai"</span>;
 
 <span style="color:var(--primary)">const</span> client = <span style="color:var(--primary)">new</span> OpenAI({
@@ -366,7 +366,7 @@ console.log(completion.choices[0].message.content); // demo output
     </div>
   </div>
 
-<script data-cfasync="false" src="script.js?v=73"></script>
+<script data-cfasync="false" src="script.js?v=74"></script>
 <div id="google_translate_element" style="display:none"></div>
 
 <script>
