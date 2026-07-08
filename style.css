@@ -595,9 +595,9 @@
     body:has(.chat-window.open) .chat-fab{display:none!important}
     .chat-header .chat-focused-close{background:var(--card);border:1px solid var(--border);color:var(--text-secondary);font-size:1rem;cursor:pointer;padding:0;margin-left:auto;position:static;flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-card)}
     /* ── Support chat focused popup (mobile) ── */
-    .support-chat-backdrop{position:fixed;inset:0;z-index:299;background:hsla(224 44% 5% / 0.5);backdrop-filter:blur(6px);animation:chatFadeIn 0.2s ease-out}
+    .support-chat-backdrop{position:fixed;inset:0;z-index:299;background:hsla(224 44% 5% / 0.5);backdrop-filter:blur(6px);animation:chatFadeIn 0.2s ease-out;display:flex;align-items:center;justify-content:center;padding:0.5rem}
     html.light .support-chat-backdrop{background:hsla(40 20% 50% / 0.3)}
-    .chat-window.chat-focused{position:fixed;top:50%;left:50%;z-index:300;transform:translate(-50%,-50%);width:100%;max-width:400px;height:calc(100dvh - 60px);max-height:calc(100dvh - 60px);border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);box-shadow:var(--shadow-elevated);display:flex;flex-direction:column;overflow:hidden;animation:chatFadeIn 0.2s ease-out;margin:0;bottom:auto;right:auto}
+    .chat-window.chat-focused{position:static;width:100%;max-width:400px;height:calc(100dvh - 60px);max-height:calc(100dvh - 60px);border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--card);box-shadow:var(--shadow-elevated);display:flex;flex-direction:column;overflow:hidden;animation:chatFadeIn 0.2s ease-out;margin:0}
     .chat-window.chat-focused .chat-msgs{flex:1;overflow-y:auto;min-height:0}
     .chat-window.chat-focused .chat-input{flex-shrink:0;padding:0.5rem 0.75rem;background:var(--bg);border-top:1px solid var(--border)}
     .chat-window.chat-focused .chat-header{flex-shrink:0;padding:0.5rem 0.625rem;display:flex;align-items:center;gap:0.375rem}

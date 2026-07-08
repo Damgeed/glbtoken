@@ -1008,11 +1008,12 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     function openMobileSupportChat(){
       const win = document.getElementById('chatWindow');
       win.classList.add('chat-focused');
-      // Backdrop
+      // Backdrop wraps the window (same flexbox centering as AI chat)
       const backdrop = document.createElement('div');
       backdrop.className = 'support-chat-backdrop';
       backdrop.onclick = closeMobileSupportChat;
       win.parentNode.insertBefore(backdrop, win);
+      backdrop.appendChild(win);
       addCloseBtn(win.querySelector('.chat-header'), closeMobileSupportChat);
       lockBodyScroll(true);
       // Auto-focus textarea so keyboard pops up
@@ -1030,7 +1031,10 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       if(!win) return;
       win.classList.remove('chat-focused');
       const backdrop = document.querySelector('.support-chat-backdrop');
-      if(backdrop) backdrop.remove();
+      if(backdrop){
+        backdrop.parentNode.insertBefore(win, backdrop);
+        backdrop.remove();
+      }
       removeCloseBtn(win.querySelector('.chat-header'));
       lockBodyScroll(false);
     }
