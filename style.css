@@ -167,24 +167,26 @@
 
     /* ── Country Code Picker (inline inside input) ── */
     .phone-wrap{position:relative;width:100%}
-    .phone-inner{display:flex;align-items:center;background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);transition:border 0.2s}
+    .phone-inner{display:flex;align-items:center;background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);transition:border 0.2s;overflow:hidden}
     .phone-inner:focus-within{border-color:var(--primary)}
-    .phone-country{display:flex;align-items:center;gap:3px;padding:0.75rem 0.5rem;background:transparent;border:none;border-right:1px solid var(--border);color:var(--text);font-size:0.9rem;cursor:pointer;white-space:nowrap;flex-shrink:0;line-height:1;min-height:44px}
-    .phone-country:hover{background:rgba(255,255,255,0.03)}
-    .phone-country svg{opacity:0.5;transition:transform 0.2s;margin-top:1px}
-    .phone-inner input[type="tel"]{flex:1;min-width:0;border:none!important;background:transparent!important;padding:0.75rem;font-size:0.95rem;color:var(--text);outline:none;box-shadow:none!important}
+    .phone-country{display:flex;align-items:center;gap:4px;padding:0.75rem 0.6rem 0.75rem 0.75rem;background:transparent;border:none;border-right:1px solid var(--border);color:var(--text);font-size:0.95rem;cursor:pointer;white-space:nowrap;flex-shrink:0;line-height:1;min-height:44px;font-weight:500;letter-spacing:0.3px}
+    .phone-country:hover{background:rgba(255,255,255,0.04)}
+    .phone-country svg{opacity:0.45;transition:transform 0.2s;margin-top:1px}
+    .phone-inner input[type="tel"]{flex:1;min-width:0;border:none!important;background:transparent!important;padding:0.75rem;font-size:0.95rem;color:var(--text);outline:none;box-shadow:none!important;letter-spacing:0.5px}
     .phone-inner input[type="tel"]:focus{border:none!important;box-shadow:none!important}
-    .phone-dropdown{position:absolute;top:calc(100% + 4px);left:0;z-index:100;min-width:280px;width:100%;max-height:220px;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.35)}
-    .phone-dropdown .country-opt{display:flex;align-items:center;gap:0.5rem;padding:0.55rem 0.75rem;cursor:pointer;font-size:0.9rem;color:var(--text);transition:background 0.12s}
-    .phone-dropdown .country-opt:hover{background:rgba(244,180,0,0.08)}
-    .phone-dropdown .country-opt.active{font-weight:600;color:var(--primary);background:rgba(244,180,0,0.06)}
-    .phone-dropdown .country-opt .country-dial{margin-left:auto;opacity:0.45;font-size:0.85rem}
-    .phone-dropdown::-webkit-scrollbar{width:5px}
-    .phone-dropdown::-webkit-scrollbar-track{background:transparent}
-    .phone-dropdown::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .phone-inner input[type="tel"]::placeholder{letter-spacing:0;opacity:0.45}
+    .phone-dropdown{position:absolute;top:calc(100% + 4px);left:0;z-index:100;min-width:300px;width:100%;max-height:240px;overflow-y:auto;overflow-x:hidden;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.4);padding:4px 0}
+    .phone-dropdown .country-opt{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.85rem;cursor:pointer;font-size:0.9rem;color:var(--text);transition:background 0.1s;border-radius:6px;margin:1px 4px}
+    .phone-dropdown .country-opt:hover{background:rgba(244,180,0,0.1)}
+    .phone-dropdown .country-opt.active{font-weight:600;color:var(--primary);background:rgba(244,180,0,0.07)}
+    .phone-dropdown .country-opt .country-dial{margin-left:auto;opacity:0.4;font-size:0.85rem;font-weight:500;letter-spacing:0.3px}
+    .phone-dropdown::-webkit-scrollbar{width:4px}
+    .phone-dropdown::-webkit-scrollbar-track{background:transparent;margin:4px}
+    .phone-dropdown::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
     @media(max-width:768px){
-      .phone-dropdown{min-width:auto;max-height:200px}
-      .phone-country{min-height:48px;padding:0.85rem 0.5rem}
+      .phone-dropdown{min-width:auto;max-height:210px;margin:0 -0.25rem;width:calc(100% + 0.5rem);border-radius:8px}
+      .phone-country{min-height:48px;padding:0.85rem 0.5rem 0.85rem 0.7rem;font-size:0.9rem}
+      .phone-inner input[type="tel"]{font-size:1rem}
     }
     .auth-divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--text-muted);font-size:0.8rem}
     .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}

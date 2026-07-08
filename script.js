@@ -295,6 +295,10 @@
     async function sendPhoneCode(prefix){
       var dial = selectedDial[prefix] || '+1';
       var phoneRaw = document.getElementById(prefix + 'Phone').value.trim();
+      // Strip non-digits from the local number (handles spaces, dashes, parens)
+      phoneRaw = phoneRaw.replace(/\D/g,'');
+      // Remove leading zero if present (country code is the prefix)
+      phoneRaw = phoneRaw.replace(/^0+/,'');
       var phone = dial + phoneRaw;
       var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
@@ -324,6 +328,8 @@
     async function verifyPhoneCode(prefix){
       var dial = selectedDial[prefix] || '+1';
       var phoneRaw = document.getElementById(prefix + 'Phone').value.trim();
+      phoneRaw = phoneRaw.replace(/\D/g,'');
+      phoneRaw = phoneRaw.replace(/^0+/,'');
       var phone = dial + phoneRaw;
       var code = document.getElementById(prefix + 'SmsCode').value.trim();
       var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
