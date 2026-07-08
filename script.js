@@ -453,21 +453,7 @@
       }
     })();
     // ── Mobile keyboard retention for chat send button ──
-    document.addEventListener('touchend', function(e){
-      var target = e.target;
-      if(target && (target.id === 'chatSendBtn' || target.closest('#chatSendBtn'))){
-        // Prevent default so button doesn't steal focus
-        e.preventDefault();
-        var input = document.getElementById('chatInput');
-        if(input) {
-          // Keep focus BEFORE calling sendChatMsg
-          input.focus({preventScroll:true});
-          setTimeout(function(){ sendChatMsg(); }, 50);
-        } else {
-          sendChatMsg();
-        }
-      }
-    }, {passive:false});
+    // Handled via onmousedown="event.preventDefault()" + type="button" in HTML
     // ── Init auth ──
     if(token){refreshMe();applyAuth()}
     // ── Initial route from hash ──
