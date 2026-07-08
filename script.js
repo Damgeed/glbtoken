@@ -249,12 +249,9 @@
     // ── Auth (Passwordless Email via Auth0) ──
     async function sendLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
-      const errEl=document.getElementById('loginError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
         const m='Please enter a valid email address';
         showToast(m,'error');
-        if(errEl){errEl.textContent=m;errEl.style.display='block'}
         return
       }
       const btn=document.getElementById('loginSendBtn');
@@ -270,7 +267,6 @@
       }catch(e){
         const msg=e.message||'Failed to send code';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
         btn.disabled=false;btn.textContent='Continue';
       }
@@ -278,12 +274,8 @@
     async function verifyLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
       const code=document.getElementById('loginCode').value.trim();
-      const errEl=document.getElementById('loginError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!code||code.length<4){
-        const m='Please enter the verification code from your email';
-        showToast(m,'error');
-        if(errEl){errEl.textContent=m;errEl.style.display='block'}
+        showToast('Please enter the verification code from your email','error');
         return
       }
       const btn=document.getElementById('loginVerifyBtn');
@@ -297,19 +289,15 @@
       }catch(e){
         const msg=e.message||'Invalid code';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
         btn.disabled=false;btn.textContent='Verify & Sign In';
       }
     }
     async function sendRegisterCode(){
       const email=document.getElementById('regEmail').value.trim();
-      const errEl=document.getElementById('regError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
         const m='Please enter a valid email address';
         showToast(m,'error');
-        if(errEl){errEl.textContent=m;errEl.style.display='block'}
         return
       }
       const btn=document.getElementById('regSendBtn');
@@ -325,7 +313,6 @@
       }catch(e){
         const msg=e.message||'Failed to send code';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
         btn.disabled=false;btn.textContent='Continue';
       }
@@ -333,12 +320,9 @@
     async function verifyRegisterCode(){
       const email=document.getElementById('regEmail').value.trim();
       const code=document.getElementById('regCode').value.trim();
-      const errEl=document.getElementById('regError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!code||code.length<4){
         const m='Please enter the verification code from your email';
         showToast(m,'error');
-        if(errEl){errEl.textContent=m;errEl.style.display='block'}
         return
       }
       const btn=document.getElementById('regVerifyBtn');
@@ -352,7 +336,6 @@
       }catch(e){
         const msg=e.message||'Invalid code';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
         btn.disabled=false;btn.textContent='Verify & Create Account';
       }
@@ -431,12 +414,9 @@
       // Remove leading zero if present (country code is the prefix)
       phoneRaw = phoneRaw.replace(/^0+/,'');
       var phone = dial + phoneRaw;
-      var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!phone || phone.length < 5){
         var m = 'Please enter a valid phone number';
         showToast(m,'error');
-        if(errEl){errEl.textContent=m;errEl.style.display='block'}
         return;
       }
       var btn = document.getElementById(prefix + 'PhoneSendBtn');
@@ -451,7 +431,6 @@
       }catch(e){
         var msg = e.message || 'Failed to send code';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
         btn.disabled=false; btn.textContent='Send Code';
       }
@@ -463,12 +442,9 @@
       phoneRaw = phoneRaw.replace(/^0+/,'');
       var phone = dial + phoneRaw;
       var code = document.getElementById(prefix + 'SmsCode').value.trim();
-      var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
-      if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!code || code.length < 4){
         var m = 'Please enter the verification code from SMS';
         showToast(m,'error');
-        if(errEl){errEl.textContent=m;errEl.style.display='block'}
         return;
       }
       var btn = document.getElementById(prefix + 'PhoneVerifyBtn');
@@ -483,7 +459,6 @@
       }catch(e){
         var msg = e.message || 'Invalid code';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }finally{
         btn.disabled=false; btn.textContent= prefix === 'login' ? 'Verify & Sign In' : 'Verify & Create Account';
       }
@@ -557,10 +532,6 @@
     }
     async function sendResetLink(){
       var email = document.getElementById('resetEmail').value;
-      var errEl = document.getElementById('resetError');
-      if(errEl)errEl.style.display='none';
-      if(!email){var m='Enter your email';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){var m='Please enter a valid email address';showToast(m,'error');if(errEl){errEl.textContent=m;errEl.style.display='block'}return}
       var btn = document.getElementById('resetSendBtn');
       if(btn){btn.disabled=true;btn.textContent='Sending...'}
       try{
@@ -574,7 +545,6 @@
       }catch(e){
         var msg = e.message || 'Failed to send reset link';
         showToast(msg,'error');
-        if(errEl){errEl.textContent=msg;errEl.style.display='block'}
       }
       if(btn){btn.disabled=false;btn.textContent='Send Reset Link'}
     }

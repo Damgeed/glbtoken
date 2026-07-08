@@ -163,7 +163,6 @@
     .auth-field input,.auth-field select{width:100%;padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.95rem;transition:border 0.2s}
     .auth-field input:focus,.auth-field select:focus{outline:none;border-color:var(--primary)}
     .auth-field input.field-error{border-color:#ff4444;box-shadow:0 0 0 2px rgba(255,68,68,0.15)}
-    .auth-error{color:#ff4444;font-size:.85rem;margin-bottom:1rem;text-align:center;line-height:1.5}
 
     /* ── Country Code Picker (inline inside input) ── */
     .phone-wrap{position:relative;width:100%}
