@@ -928,6 +928,14 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         });
         ta.addEventListener('focus',openMobileChat);
       }
+      // Support chat textarea auto-resize (mirrors AI chat behavior)
+      const supportTa = document.getElementById('chatInput');
+      if(supportTa){
+        supportTa.addEventListener('input',function(){
+          this.style.height = 'auto';
+          this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+      }
       // Auto-init for this page
       const pageId = location.pathname.split('/').pop().replace('.html','') || 'home';
       if(token){refreshMe();applyAuth()}
@@ -1015,6 +1023,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       document.body.style.overflow = 'hidden';
       var fab = document.querySelector('.chat-fab');
       if(fab) fab.style.display = 'none';
+      // Auto-focus textarea so keyboard pops up (same as AI chat behavior)
+      setTimeout(function(){
+        var input = document.getElementById('chatInput');
+        if(input) input.focus();
+      }, 200);
       requestAnimationFrame(function(){
         var msgs = document.getElementById('chatMsgs');
         if(msgs) msgs.scrollTop = msgs.scrollHeight;
