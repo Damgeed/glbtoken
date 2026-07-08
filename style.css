@@ -164,6 +164,26 @@
     .auth-field input:focus,.auth-field select:focus{outline:none;border-color:var(--primary)}
     .auth-field input.field-error{border-color:#ff4444;box-shadow:0 0 0 2px rgba(255,68,68,0.15)}
     .auth-error{color:#ff4444;font-size:.85rem;margin-bottom:1rem;text-align:center;line-height:1.5}
+
+    /* ── Country Code Picker ── */
+    .phone-input-wrapper{display:flex;gap:0;align-items:stretch}
+    .phone-input-wrapper .auth-field{margin-bottom:0}
+    .country-picker{position:relative;flex-shrink:0}
+    .country-trigger{display:flex;align-items:center;gap:0.35rem;padding:0.75rem 0.6rem;border-radius:var(--radius-sm) 0 0 var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);border-right:0;color:var(--text);font-size:0.95rem;cursor:pointer;height:100%;white-space:nowrap;transition:border 0.2s}
+    .country-trigger:hover{border-color:var(--primary)}
+    .country-trigger svg{opacity:0.6;margin-left:0.1rem}
+    .phone-input-wrapper input[type="tel"]{border-radius:0 var(--radius-sm) var(--radius-sm) 0;flex:1;min-width:0}
+    .country-list{position:absolute;top:100%;left:0;z-index:100;min-width:280px;max-height:260px;overflow-y:auto;background:var(--bg-card) !important;border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:2px;box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+    .country-opt{display:flex;align-items:center;gap:0.5rem;padding:0.55rem 0.75rem;cursor:pointer;font-size:0.9rem;color:var(--text);transition:background 0.15s}
+    .country-opt:hover{background:var(--bg-alt)}
+    .country-opt.active{background:rgba(244,180,0,0.08);color:var(--primary);font-weight:500}
+    .country-dial{margin-left:auto;opacity:0.5;font-size:0.85rem}
+    .country-list::-webkit-scrollbar{width:5px}
+    .country-list::-webkit-scrollbar-track{background:transparent}
+    .country-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    @media(max-width:768px){
+      .country-list{min-width:240px;max-height:220px}
+    }
     .auth-divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--text-muted);font-size:0.8rem}
     .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
     .auth-oauth{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}

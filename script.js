@@ -7,6 +7,68 @@
     let newapiToken = localStorage.getItem('gt_newapi_token') || '';
     let newapiEndpoint = localStorage.getItem('gt_newapi_endpoint') || '';
 
+    // ── Country Codes for Phone Registration ──
+    const COUNTRY_CODES = [
+      {flag:'🇺🇸',dial:'+1',name:'United States'},
+      {flag:'🇨🇦',dial:'+1',name:'Canada'},
+      {flag:'🇬🇧',dial:'+44',name:'United Kingdom'},
+      {flag:'🇦🇺',dial:'+61',name:'Australia'},
+      {flag:'🇩🇪',dial:'+49',name:'Germany'},
+      {flag:'🇫🇷',dial:'+33',name:'France'},
+      {flag:'🇮🇹',dial:'+39',name:'Italy'},
+      {flag:'🇪🇸',dial:'+34',name:'Spain'},
+      {flag:'🇳🇱',dial:'+31',name:'Netherlands'},
+      {flag:'🇨🇳',dial:'+86',name:'China'},
+      {flag:'🇯🇵',dial:'+81',name:'Japan'},
+      {flag:'🇰🇷',dial:'+82',name:'South Korea'},
+      {flag:'🇮🇳',dial:'+91',name:'India'},
+      {flag:'🇧🇷',dial:'+55',name:'Brazil'},
+      {flag:'🇲🇽',dial:'+52',name:'Mexico'},
+      {flag:'🇳🇬',dial:'+234',name:'Nigeria'},
+      {flag:'🇷🇺',dial:'+7',name:'Russia'},
+      {flag:'🇿🇦',dial:'+27',name:'South Africa'},
+      {flag:'🇸🇬',dial:'+65',name:'Singapore'},
+      {flag:'🇭🇰',dial:'+852',name:'Hong Kong'},
+      {flag:'🇦🇪',dial:'+971',name:'UAE'},
+      {flag:'🇸🇦',dial:'+966',name:'Saudi Arabia'},
+      {flag:'🇹🇷',dial:'+90',name:'Turkey'},
+      {flag:'🇮🇩',dial:'+62',name:'Indonesia'},
+      {flag:'🇵🇭',dial:'+63',name:'Philippines'},
+      {flag:'🇻🇳',dial:'+84',name:'Vietnam'},
+      {flag:'🇹🇭',dial:'+66',name:'Thailand'},
+      {flag:'🇵🇰',dial:'+92',name:'Pakistan'},
+      {flag:'🇧🇩',dial:'+880',name:'Bangladesh'},
+      {flag:'🇪🇬',dial:'+20',name:'Egypt'},
+      {flag:'🇰🇪',dial:'+254',name:'Kenya'},
+      {flag:'🇬🇭',dial:'+233',name:'Ghana'},
+      {flag:'🇨🇮',dial:'+225',name:'Ivory Coast'},
+      {flag:'🇲🇦',dial:'+212',name:'Morocco'},
+      {flag:'🇦🇷',dial:'+54',name:'Argentina'},
+      {flag:'🇨🇱',dial:'+56',name:'Chile'},
+      {flag:'🇨🇴',dial:'+57',name:'Colombia'},
+      {flag:'🇵🇪',dial:'+51',name:'Peru'},
+      {flag:'🇸🇪',dial:'+46',name:'Sweden'},
+      {flag:'🇳🇴',dial:'+47',name:'Norway'},
+      {flag:'🇩🇰',dial:'+45',name:'Denmark'},
+      {flag:'🇫🇮',dial:'+358',name:'Finland'},
+      {flag:'🇨🇭',dial:'+41',name:'Switzerland'},
+      {flag:'🇦🇹',dial:'+43',name:'Austria'},
+      {flag:'🇧🇪',dial:'+32',name:'Belgium'},
+      {flag:'🇵🇹',dial:'+351',name:'Portugal'},
+      {flag:'🇮🇪',dial:'+353',name:'Ireland'},
+      {flag:'🇳🇿',dial:'+64',name:'New Zealand'},
+      {flag:'🇮🇱',dial:'+972',name:'Israel'},
+      {flag:'🇵🇱',dial:'+48',name:'Poland'},
+      {flag:'🇨🇿',dial:'+420',name:'Czech Republic'},
+      {flag:'🇺🇦',dial:'+380',name:'Ukraine'},
+      {flag:'🇷🇴',dial:'+40',name:'Romania'},
+      {flag:'🇬🇷',dial:'+30',name:'Greece'},
+      {flag:'🇭🇺',dial:'+36',name:'Hungary'},
+      {flag:'🇲🇾',dial:'+60',name:'Malaysia'},
+      {flag:'🇹🇼',dial:'+886',name:'Taiwan'},
+    ];
+    var selectedDial = {'login':'+1','reg':'+1'};
+
     // ── Theme ──
     (function(){try{
       const t=localStorage.getItem('gt_theme')||'dark';
@@ -194,12 +256,46 @@
       var isShow = section.style.display !== 'none';
       section.style.display = isShow ? 'none' : 'block';
       if(!isShow) setTimeout(function(){
+        renderCountryOptions(prefix);
         var inp = document.getElementById(prefix + 'Phone');
         if(inp) inp.focus();
-      }, 100);
+      }, 150);
     }
+    function toggleCountryList(prefix){
+      var list = document.getElementById(prefix + 'CountryList');
+      if(!list) return;
+      list.style.display = list.style.display === 'none' ? 'block' : 'none';
+    }
+    function selectCountry(prefix, dial, flag){
+      document.getElementById(prefix + 'CountryFlag').textContent = flag;
+      document.getElementById(prefix + 'CountryDial').textContent = dial;
+      selectedDial[prefix] = dial;
+      var list = document.getElementById(prefix + 'CountryList');
+      if(list) list.style.display = 'none';
+    }
+    function renderCountryOptions(prefix){
+      var list = document.getElementById(prefix + 'CountryList');
+      if(!list) return;
+      var html = '';
+      for(var i=0;i<COUNTRY_CODES.length;i++){
+        var c = COUNTRY_CODES[i];
+        var sel = c.dial === selectedDial[prefix] ? ' class="country-opt active"' : ' class="country-opt"';
+        html += '<div' + sel + ' onclick="selectCountry(\'' + prefix + '\',\'' + c.dial + '\',\'' + c.flag + '\')">' + c.flag + ' ' + c.name + ' <span class="country-dial">' + c.dial + '</span></div>';
+      }
+      list.innerHTML = html;
+    }
+    // Close country dropdown on click outside
+    document.addEventListener('click',function(e){
+      var cp = e.target.closest('.country-picker');
+      if(!cp){
+        var lists = document.querySelectorAll('.country-list');
+        for(var i=0;i<lists.length;i++) lists[i].style.display = 'none';
+      }
+    });
     async function sendPhoneCode(prefix){
-      var phone = document.getElementById(prefix + 'Phone').value.trim();
+      var dial = selectedDial[prefix] || '+1';
+      var phoneRaw = document.getElementById(prefix + 'Phone').value.trim();
+      var phone = dial + phoneRaw;
       var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!phone || phone.length < 5){
@@ -226,7 +322,9 @@
       }
     }
     async function verifyPhoneCode(prefix){
-      var phone = document.getElementById(prefix + 'Phone').value.trim();
+      var dial = selectedDial[prefix] || '+1';
+      var phoneRaw = document.getElementById(prefix + 'Phone').value.trim();
+      var phone = dial + phoneRaw;
       var code = document.getElementById(prefix + 'SmsCode').value.trim();
       var errEl = document.getElementById(prefix === 'login' ? 'loginError' : 'regError');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
