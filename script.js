@@ -1259,9 +1259,10 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
 
     // ── Toast ──
     function showToast(msg,type){
-      const t=document.getElementById('toast');
+      var t=document.getElementById('toast');
+      if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t)}
       t.textContent=msg;t.className='toast '+(type||'info');t.classList.add('show');
-      clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove('show'),3000);
+      clearTimeout(t._timeout);t._timeout=setTimeout(function(){t.classList.remove('show')},3000);
     }
     function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
     function toggleMobile(){
