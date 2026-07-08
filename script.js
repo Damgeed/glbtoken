@@ -9,63 +9,98 @@
 
     // ── Country Codes for Phone Registration ──
     const COUNTRY_CODES = [
-      {flag:'🇺🇸',dial:'+1',name:'United States'},
-      {flag:'🇨🇦',dial:'+1',name:'Canada'},
-      {flag:'🇬🇧',dial:'+44',name:'United Kingdom'},
-      {flag:'🇦🇺',dial:'+61',name:'Australia'},
-      {flag:'🇩🇪',dial:'+49',name:'Germany'},
-      {flag:'🇫🇷',dial:'+33',name:'France'},
-      {flag:'🇮🇹',dial:'+39',name:'Italy'},
-      {flag:'🇪🇸',dial:'+34',name:'Spain'},
-      {flag:'🇳🇱',dial:'+31',name:'Netherlands'},
-      {flag:'🇨🇳',dial:'+86',name:'China'},
-      {flag:'🇯🇵',dial:'+81',name:'Japan'},
-      {flag:'🇰🇷',dial:'+82',name:'South Korea'},
-      {flag:'🇮🇳',dial:'+91',name:'India'},
-      {flag:'🇧🇷',dial:'+55',name:'Brazil'},
-      {flag:'🇲🇽',dial:'+52',name:'Mexico'},
-      {flag:'🇳🇬',dial:'+234',name:'Nigeria'},
-      {flag:'🇷🇺',dial:'+7',name:'Russia'},
-      {flag:'🇿🇦',dial:'+27',name:'South Africa'},
-      {flag:'🇸🇬',dial:'+65',name:'Singapore'},
-      {flag:'🇭🇰',dial:'+852',name:'Hong Kong'},
-      {flag:'🇦🇪',dial:'+971',name:'UAE'},
-      {flag:'🇸🇦',dial:'+966',name:'Saudi Arabia'},
-      {flag:'🇹🇷',dial:'+90',name:'Turkey'},
-      {flag:'🇮🇩',dial:'+62',name:'Indonesia'},
-      {flag:'🇵🇭',dial:'+63',name:'Philippines'},
-      {flag:'🇻🇳',dial:'+84',name:'Vietnam'},
-      {flag:'🇹🇭',dial:'+66',name:'Thailand'},
-      {flag:'🇵🇰',dial:'+92',name:'Pakistan'},
-      {flag:'🇧🇩',dial:'+880',name:'Bangladesh'},
-      {flag:'🇪🇬',dial:'+20',name:'Egypt'},
-      {flag:'🇰🇪',dial:'+254',name:'Kenya'},
-      {flag:'🇬🇭',dial:'+233',name:'Ghana'},
-      {flag:'🇨🇮',dial:'+225',name:'Ivory Coast'},
-      {flag:'🇲🇦',dial:'+212',name:'Morocco'},
-      {flag:'🇦🇷',dial:'+54',name:'Argentina'},
-      {flag:'🇨🇱',dial:'+56',name:'Chile'},
-      {flag:'🇨🇴',dial:'+57',name:'Colombia'},
-      {flag:'🇵🇪',dial:'+51',name:'Peru'},
-      {flag:'🇸🇪',dial:'+46',name:'Sweden'},
-      {flag:'🇳🇴',dial:'+47',name:'Norway'},
-      {flag:'🇩🇰',dial:'+45',name:'Denmark'},
-      {flag:'🇫🇮',dial:'+358',name:'Finland'},
-      {flag:'🇨🇭',dial:'+41',name:'Switzerland'},
-      {flag:'🇦🇹',dial:'+43',name:'Austria'},
-      {flag:'🇧🇪',dial:'+32',name:'Belgium'},
-      {flag:'🇵🇹',dial:'+351',name:'Portugal'},
-      {flag:'🇮🇪',dial:'+353',name:'Ireland'},
-      {flag:'🇳🇿',dial:'+64',name:'New Zealand'},
-      {flag:'🇮🇱',dial:'+972',name:'Israel'},
-      {flag:'🇵🇱',dial:'+48',name:'Poland'},
-      {flag:'🇨🇿',dial:'+420',name:'Czech Republic'},
-      {flag:'🇺🇦',dial:'+380',name:'Ukraine'},
-      {flag:'🇷🇴',dial:'+40',name:'Romania'},
-      {flag:'🇬🇷',dial:'+30',name:'Greece'},
-      {flag:'🇭🇺',dial:'+36',name:'Hungary'},
-      {flag:'🇲🇾',dial:'+60',name:'Malaysia'},
-      {flag:'🇹🇼',dial:'+886',name:'Taiwan'},
+      {flag:'🇺🇸',dial:'+1',name:'United States'},{flag:'🇨🇦',dial:'+1',name:'Canada'},
+      {flag:'🇬🇧',dial:'+44',name:'United Kingdom'},{flag:'🇦🇺',dial:'+61',name:'Australia'},
+      {flag:'🇩🇪',dial:'+49',name:'Germany'},{flag:'🇫🇷',dial:'+33',name:'France'},
+      {flag:'🇮🇹',dial:'+39',name:'Italy'},{flag:'🇪🇸',dial:'+34',name:'Spain'},
+      {flag:'🇵🇹',dial:'+351',name:'Portugal'},{flag:'🇳🇱',dial:'+31',name:'Netherlands'},
+      {flag:'🇧🇪',dial:'+32',name:'Belgium'},{flag:'🇨🇭',dial:'+41',name:'Switzerland'},
+      {flag:'🇦🇹',dial:'+43',name:'Austria'},{flag:'🇸🇪',dial:'+46',name:'Sweden'},
+      {flag:'🇳🇴',dial:'+47',name:'Norway'},{flag:'🇩🇰',dial:'+45',name:'Denmark'},
+      {flag:'🇫🇮',dial:'+358',name:'Finland'},{flag:'🇮🇸',dial:'+354',name:'Iceland'},
+      {flag:'🇮🇪',dial:'+353',name:'Ireland'},{flag:'🇵🇱',dial:'+48',name:'Poland'},
+      {flag:'🇨🇿',dial:'+420',name:'Czech Republic'},{flag:'🇸🇰',dial:'+421',name:'Slovakia'},
+      {flag:'🇭🇺',dial:'+36',name:'Hungary'},{flag:'🇷🇴',dial:'+40',name:'Romania'},
+      {flag:'🇧🇬',dial:'+359',name:'Bulgaria'},{flag:'🇬🇷',dial:'+30',name:'Greece'},
+      {flag:'🇭🇷',dial:'+385',name:'Croatia'},{flag:'🇷🇸',dial:'+381',name:'Serbia'},
+      {flag:'🇸🇮',dial:'+386',name:'Slovenia'},{flag:'🇱🇹',dial:'+370',name:'Lithuania'},
+      {flag:'🇱🇻',dial:'+371',name:'Latvia'},{flag:'🇪🇪',dial:'+372',name:'Estonia'},
+      {flag:'🇺🇦',dial:'+380',name:'Ukraine'},{flag:'🇷🇺',dial:'+7',name:'Russia'},
+      {flag:'🇰🇿',dial:'+7',name:'Kazakhstan'},{flag:'🇹🇷',dial:'+90',name:'Turkey'},
+      {flag:'🇮🇱',dial:'+972',name:'Israel'},{flag:'🇦🇪',dial:'+971',name:'UAE'},
+      {flag:'🇸🇦',dial:'+966',name:'Saudi Arabia'},{flag:'🇶🇦',dial:'+974',name:'Qatar'},
+      {flag:'🇴🇲',dial:'+968',name:'Oman'},{flag:'🇧🇭',dial:'+973',name:'Bahrain'},
+      {flag:'🇰🇼',dial:'+965',name:'Kuwait'},{flag:'🇯🇴',dial:'+962',name:'Jordan'},
+      {flag:'🇱🇧',dial:'+961',name:'Lebanon'},{flag:'🇮🇷',dial:'+98',name:'Iran'},
+      {flag:'🇮🇶',dial:'+964',name:'Iraq'},{flag:'🇸🇾',dial:'+963',name:'Syria'},
+      {flag:'🇾🇪',dial:'+967',name:'Yemen'},{flag:'🇨🇾',dial:'+357',name:'Cyprus'},
+      {flag:'🇲🇹',dial:'+356',name:'Malta'},{flag:'🇨🇳',dial:'+86',name:'China'},
+      {flag:'🇭🇰',dial:'+852',name:'Hong Kong'},{flag:'🇲🇴',dial:'+853',name:'Macau'},
+      {flag:'🇹🇼',dial:'+886',name:'Taiwan'},{flag:'🇯🇵',dial:'+81',name:'Japan'},
+      {flag:'🇰🇷',dial:'+82',name:'South Korea'},{flag:'🇲🇳',dial:'+976',name:'Mongolia'},
+      {flag:'🇮🇳',dial:'+91',name:'India'},{flag:'🇵🇰',dial:'+92',name:'Pakistan'},
+      {flag:'🇧🇩',dial:'+880',name:'Bangladesh'},{flag:'🇱🇰',dial:'+94',name:'Sri Lanka'},
+      {flag:'🇳🇵',dial:'+977',name:'Nepal'},{flag:'🇧🇹',dial:'+975',name:'Bhutan'},
+      {flag:'🇲🇻',dial:'+960',name:'Maldives'},{flag:'🇹🇭',dial:'+66',name:'Thailand'},
+      {flag:'🇻🇳',dial:'+84',name:'Vietnam'},{flag:'🇮🇩',dial:'+62',name:'Indonesia'},
+      {flag:'🇵🇭',dial:'+63',name:'Philippines'},{flag:'🇲🇾',dial:'+60',name:'Malaysia'},
+      {flag:'🇸🇬',dial:'+65',name:'Singapore'},{flag:'🇧🇳',dial:'+673',name:'Brunei'},
+      {flag:'🇰🇭',dial:'+855',name:'Cambodia'},{flag:'🇱🇦',dial:'+856',name:'Laos'},
+      {flag:'🇲🇲',dial:'+95',name:'Myanmar'},{flag:'🇧🇷',dial:'+55',name:'Brazil'},
+      {flag:'🇲🇽',dial:'+52',name:'Mexico'},{flag:'🇦🇷',dial:'+54',name:'Argentina'},
+      {flag:'🇨🇴',dial:'+57',name:'Colombia'},{flag:'🇨🇱',dial:'+56',name:'Chile'},
+      {flag:'🇵🇪',dial:'+51',name:'Peru'},{flag:'🇻🇪',dial:'+58',name:'Venezuela'},
+      {flag:'🇪🇨',dial:'+593',name:'Ecuador'},{flag:'🇧🇴',dial:'+591',name:'Bolivia'},
+      {flag:'🇵🇾',dial:'+595',name:'Paraguay'},{flag:'🇺🇾',dial:'+598',name:'Uruguay'},
+      {flag:'🇨🇷',dial:'+506',name:'Costa Rica'},{flag:'🇸🇻',dial:'+503',name:'El Salvador'},
+      {flag:'🇬🇹',dial:'+502',name:'Guatemala'},{flag:'🇭🇳',dial:'+504',name:'Honduras'},
+      {flag:'🇳🇮',dial:'+505',name:'Nicaragua'},{flag:'🇵🇦',dial:'+507',name:'Panama'},
+      {flag:'🇩🇴',dial:'+1-809',name:'Dominican Republic'},{flag:'🇵🇷',dial:'+1-787',name:'Puerto Rico'},
+      {flag:'🇨🇺',dial:'+53',name:'Cuba'},{flag:'🇯🇲',dial:'+1-876',name:'Jamaica'},
+      {flag:'🇹🇹',dial:'+1-868',name:'Trinidad and Tobago'},{flag:'🇧🇸',dial:'+1-242',name:'Bahamas'},
+      {flag:'🇧🇧',dial:'+1-246',name:'Barbados'},{flag:'🇭🇹',dial:'+509',name:'Haiti'},
+      {flag:'🇳🇬',dial:'+234',name:'Nigeria'},{flag:'🇿🇦',dial:'+27',name:'South Africa'},
+      {flag:'🇪🇬',dial:'+20',name:'Egypt'},{flag:'🇰🇪',dial:'+254',name:'Kenya'},
+      {flag:'🇬🇭',dial:'+233',name:'Ghana'},{flag:'🇪🇹',dial:'+251',name:'Ethiopia'},
+      {flag:'🇹🇿',dial:'+255',name:'Tanzania'},{flag:'🇺🇬',dial:'+256',name:'Uganda'},
+      {flag:'🇩🇿',dial:'+213',name:'Algeria'},{flag:'🇲🇦',dial:'+212',name:'Morocco'},
+      {flag:'🇹🇳',dial:'+216',name:'Tunisia'},{flag:'🇱🇾',dial:'+218',name:'Libya'},
+      {flag:'🇸🇩',dial:'+249',name:'Sudan'},{flag:'🇸🇸',dial:'+211',name:'South Sudan'},
+      {flag:'🇸🇴',dial:'+252',name:'Somalia'},{flag:'🇩🇯',dial:'+253',name:'Djibouti'},
+      {flag:'🇪🇷',dial:'+291',name:'Eritrea'},{flag:'🇦🇴',dial:'+244',name:'Angola'},
+      {flag:'🇲🇿',dial:'+258',name:'Mozambique'},{flag:'🇿🇲',dial:'+260',name:'Zambia'},
+      {flag:'🇿🇼',dial:'+263',name:'Zimbabwe'},{flag:'🇲🇼',dial:'+265',name:'Malawi'},
+      {flag:'🇧🇼',dial:'+267',name:'Botswana'},{flag:'🇳🇦',dial:'+264',name:'Namibia'},
+      {flag:'🇱🇸',dial:'+266',name:'Lesotho'},{flag:'🇸🇿',dial:'+268',name:'Eswatini'},
+      {flag:'🇨🇩',dial:'+243',name:'DR Congo'},{flag:'🇨🇬',dial:'+242',name:'Congo'},
+      {flag:'🇬🇦',dial:'+241',name:'Gabon'},{flag:'🇬🇶',dial:'+240',name:'Equatorial Guinea'},
+      {flag:'🇨🇲',dial:'+237',name:'Cameroon'},{flag:'🇨🇫',dial:'+236',name:'CAR'},
+      {flag:'🇹🇩',dial:'+235',name:'Chad'},{flag:'🇳🇪',dial:'+227',name:'Niger'},
+      {flag:'🇲🇱',dial:'+223',name:'Mali'},{flag:'🇧🇫',dial:'+226',name:'Burkina Faso'},
+      {flag:'🇸🇳',dial:'+221',name:'Senegal'},{flag:'🇧🇯',dial:'+229',name:'Benin'},
+      {flag:'🇹🇬',dial:'+228',name:'Togo'},{flag:'🇨🇮',dial:'+225',name:"Côte d'Ivoire"},
+      {flag:'🇬🇳',dial:'+224',name:'Guinea'},{flag:'🇬🇼',dial:'+245',name:'Guinea-Bissau'},
+      {flag:'🇸🇱',dial:'+232',name:'Sierra Leone'},{flag:'🇱🇷',dial:'+231',name:'Liberia'},
+      {flag:'🇷🇼',dial:'+250',name:'Rwanda'},{flag:'🇧🇮',dial:'+257',name:'Burundi'},
+      {flag:'🇲🇬',dial:'+261',name:'Madagascar'},{flag:'🇲🇺',dial:'+230',name:'Mauritius'},
+      {flag:'🇰🇲',dial:'+269',name:'Comoros'},{flag:'🇨🇻',dial:'+238',name:'Cape Verde'},
+      {flag:'🇸🇹',dial:'+239',name:'São Tomé and Príncipe'},{flag:'🇸🇨',dial:'+248',name:'Seychelles'},
+      {flag:'🇬🇲',dial:'+220',name:'Gambia'},{flag:'🇲🇷',dial:'+222',name:'Mauritania'},
+      {flag:'🇫🇯',dial:'+679',name:'Fiji'},{flag:'🇵🇬',dial:'+675',name:'Papua New Guinea'},
+      {flag:'🇸🇧',dial:'+677',name:'Solomon Islands'},{flag:'🇻🇺',dial:'+678',name:'Vanuatu'},
+      {flag:'🇼🇸',dial:'+685',name:'Samoa'},{flag:'🇹🇴',dial:'+676',name:'Tonga'},
+      {flag:'🇰🇮',dial:'+686',name:'Kiribati'},{flag:'🇫🇲',dial:'+691',name:'Micronesia'},
+      {flag:'🇲🇭',dial:'+692',name:'Marshall Islands'},{flag:'🇵🇼',dial:'+680',name:'Palau'},
+      {flag:'🇳🇷',dial:'+674',name:'Nauru'},{flag:'🇹🇻',dial:'+688',name:'Tuvalu'},
+      {flag:'🇦🇿',dial:'+994',name:'Azerbaijan'},{flag:'🇬🇪',dial:'+995',name:'Georgia'},
+      {flag:'🇦🇲',dial:'+374',name:'Armenia'},{flag:'🇦🇫',dial:'+93',name:'Afghanistan'},
+      {flag:'🇹🇲',dial:'+993',name:'Turkmenistan'},{flag:'🇺🇿',dial:'+998',name:'Uzbekistan'},
+      {flag:'🇰🇬',dial:'+996',name:'Kyrgyzstan'},{flag:'🇹🇯',dial:'+992',name:'Tajikistan'},
+      {flag:'🇱🇮',dial:'+423',name:'Liechtenstein'},{flag:'🇸🇲',dial:'+378',name:'San Marino'},
+      {flag:'🇦🇩',dial:'+376',name:'Andorra'},{flag:'🇲🇪',dial:'+382',name:'Montenegro'},
+      {flag:'🇧🇦',dial:'+387',name:'Bosnia and Herzegovina'},{flag:'🇦🇱',dial:'+355',name:'Albania'},
+      {flag:'🇲🇰',dial:'+389',name:'North Macedonia'},{flag:'🇱🇺',dial:'+352',name:'Luxembourg'},
+      {flag:'🇧🇾',dial:'+375',name:'Belarus'},{flag:'🇲🇩',dial:'+373',name:'Moldova'},
     ];
     var selectedDial = {'login':'+1','reg':'+1'};
 
@@ -264,7 +299,31 @@
     function toggleCountryList(prefix){
       var list = document.getElementById(prefix + 'CountryList');
       if(!list) return;
-      list.style.display = list.style.display === 'none' ? 'block' : 'none';
+      var isOpen = list.style.display === 'block';
+      // Close all other dropdowns first
+      var allLists = document.querySelectorAll('.phone-dropdown');
+      for(var i=0;i<allLists.length;i++) allLists[i].style.display = 'none';
+      if(isOpen) return;
+      // Position fixed relative to trigger button
+      var btn = document.querySelector('#' + prefix + 'PhoneSection .phone-country');
+      if(!btn) return;
+      var rect = btn.getBoundingClientRect();
+      var ddW = Math.min(340, window.innerWidth - 24);
+      var ddH = Math.min(300, window.innerHeight - 80);
+      // Check if dropdown would go off-screen bottom → open upward
+      var spaceBelow = window.innerHeight - rect.bottom;
+      var topPos;
+      if(spaceBelow < ddH + 10 && rect.top > ddH + 10){
+        topPos = rect.top - ddH - 4;
+      } else {
+        topPos = rect.bottom + 4;
+      }
+      list.style.position = 'fixed';
+      list.style.top = topPos + 'px';
+      list.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - ddW - 12)) + 'px';
+      list.style.width = ddW + 'px';
+      list.style.maxHeight = ddH + 'px';
+      list.style.display = 'block';
     }
     function selectCountry(prefix, dial, flag){
       document.getElementById(prefix + 'CountryFlag').textContent = flag;
