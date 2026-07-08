@@ -988,42 +988,49 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         win.classList.toggle('open');
         return;
       }
-      // Mobile: match AI chat behavior exactly
-      var overlay = document.querySelector('.chat-mobile-overlay');
-      if(overlay){
-        // Close - restore chat window to body
-        var fab = document.querySelector('.chat-fab');
-        if(fab) fab.style.display = '';
-        document.body.style.overflow = '';
-        var restore = document.body;
-        restore.appendChild(win);
-        overlay.remove();
-      }else{
-        // Create overlay (matches .ai-chat-section.chat-focused exactly)
-        overlay = document.createElement('div');
-        overlay.className = 'chat-mobile-overlay';
-        var cur = win.parentNode;
-        var ref = win.nextSibling;
-        if(ref) cur.insertBefore(overlay, ref);
-        else cur.appendChild(overlay);
-        overlay.appendChild(win);
-        // Add close button
-        var header = win.querySelector('.chat-header');
-        if(header && !header.querySelector('.chat-focused-close')){
-          var btn = document.createElement('button');
-          btn.className = 'chat-focused-close';
-          btn.innerHTML = '\u2715';
-          btn.onclick = toggleChat;
-          header.appendChild(btn);
-        }
-        document.body.style.overflow = 'hidden';
-        var fab = document.querySelector('.chat-fab');
-        if(fab) fab.style.display = 'none';
-        requestAnimationFrame(function(){
-          var msgs = document.getElementById('chatMsgs');
-          if(msgs) msgs.scrollTop = msgs.scrollHeight;
-        });
+      // Mobile: toggle chat-focused class (same pattern as AI chat's openMobileChat)
+      if(win.classList.contains('chat-focused')){
+        closeMobileSupportChat();
+      } else {
+        openMobileSupportChat();
       }
+    }
+    function openMobileSupportChat(){
+      var win = document.getElementById('chatWindow');
+      win.classList.add('chat-focused');
+      // Create backdrop sibling (blur overlay behind the card)
+      var backdrop = document.createElement('div');
+      backdrop.className = 'support-chat-backdrop';
+      backdrop.onclick = closeMobileSupportChat;
+      win.parentNode.insertBefore(backdrop, win);
+      // Add close button (same as AI chat)
+      var header = win.querySelector('.chat-header');
+      if(header && !header.querySelector('.chat-focused-close')){
+        var btn = document.createElement('button');
+        btn.className = 'chat-focused-close';
+        btn.innerHTML = '✕';
+        btn.onclick = closeMobileSupportChat;
+        header.appendChild(btn);
+      }
+      document.body.style.overflow = 'hidden';
+      var fab = document.querySelector('.chat-fab');
+      if(fab) fab.style.display = 'none';
+      requestAnimationFrame(function(){
+        var msgs = document.getElementById('chatMsgs');
+        if(msgs) msgs.scrollTop = msgs.scrollHeight;
+      });
+    }
+    function closeMobileSupportChat(){
+      var win = document.getElementById('chatWindow');
+      if(!win) return;
+      win.classList.remove('chat-focused');
+      var backdrop = document.querySelector('.support-chat-backdrop');
+      if(backdrop) backdrop.remove();
+      var btn = win.querySelector('.chat-focused-close');
+      if(btn) btn.remove();
+      document.body.style.overflow = '';
+      var fab = document.querySelector('.chat-fab');
+      if(fab) fab.style.display = '';
     }
     // ── Draggable Chat FAB (mobile touch) ──
     (function(){
