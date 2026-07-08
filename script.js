@@ -247,33 +247,16 @@
     }
 
     // ── Auth (Passwordless Email via Auth0) ──
-    function validateEmailInput(prefix){
-      const email=document.getElementById(prefix+'Email').value.trim();
-      const warn=document.getElementById(prefix+'EmailWarning');
-      if(!warn)return;
-      if(!email){
-        warn.style.display='none';
-        return;
-      }
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-        warn.textContent='Please enter a valid email address';
-        warn.style.display='block';
-      }else{
-        warn.style.display='none';
-      }
-    }
     async function sendLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
       const errEl=document.getElementById('loginError');
-      const warn=document.getElementById('loginEmailWarning');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
         const m='Please enter a valid email address';
         showToast(m,'error');
         if(errEl){errEl.textContent=m;errEl.style.display='block'}
-        if(warn){warn.textContent='Please enter a valid email address';warn.style.display='block'}
         return
-      }else if(warn){warn.style.display='none'}
+      }
       const btn=document.getElementById('loginSendBtn');
       btn.disabled=true;btn.textContent='Sending...';
       try{
@@ -322,15 +305,13 @@
     async function sendRegisterCode(){
       const email=document.getElementById('regEmail').value.trim();
       const errEl=document.getElementById('regError');
-      const warn=document.getElementById('regEmailWarning');
       if(errEl){errEl.style.display='none';errEl.textContent=''}
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
         const m='Please enter a valid email address';
         showToast(m,'error');
         if(errEl){errEl.textContent=m;errEl.style.display='block'}
-        if(warn){warn.textContent='Please enter a valid email address';warn.style.display='block'}
         return
-      }else if(warn){warn.style.display='none'}
+      }
       const btn=document.getElementById('regSendBtn');
       btn.disabled=true;btn.textContent='Sending...';
       try{
