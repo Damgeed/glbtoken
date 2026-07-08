@@ -967,15 +967,17 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     // ── Mobile AI Chat popup ──
     function openMobileChat(){
       if(window.innerWidth>768)return;
+      // Close support chat first if open
+      if(document.getElementById('chatWindow').classList.contains('chat-focused')){
+        closeMobileSupportChat();
+      }
       const section=document.querySelector('.ai-chat-section');
       if(!section) return;
       section.classList.add('chat-focused');
-      void section.offsetHeight; // force reflow
+      void section.offsetHeight;
       addCloseBtn(section.querySelector('.chat-header'), closeMobileChat);
       lockBodyScroll(true);
-      // Hide floating support chat
-      const sw=document.getElementById('chatWindow');
-      if(sw) sw.style.display='none';
+      // CSS rule handles hiding support chat: .ai-chat-section.chat-focused ~ .chat-window
       requestAnimationFrame(()=>{
         const msgs=document.getElementById('aiChatMsgs');
         if(msgs) msgs.scrollTop=msgs.scrollHeight;
@@ -987,9 +989,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       section.classList.remove('chat-focused');
       lockBodyScroll(false);
       removeCloseBtn(section.querySelector('.chat-header'));
-      // Restore floating support chat
-      const sw=document.getElementById('chatWindow');
-      if(sw) sw.style.display='';
     }
     // ── Support Chat ──
     function toggleChat(){
@@ -1007,6 +1006,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     }
     function openMobileSupportChat(){
       const win = document.getElementById('chatWindow');
+      // Close AI chat first if open
+      const aiSection=document.querySelector('.ai-chat-section.chat-focused');
+      if(aiSection) closeMobileChat();
       win.classList.add('chat-focused');
       // Backdrop wraps the window (same flexbox centering as AI chat)
       const backdrop = document.createElement('div');
