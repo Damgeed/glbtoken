@@ -175,7 +175,7 @@
     .phone-inner input[type="tel"]{flex:1;min-width:0;border:none!important;background:transparent!important;padding:0.75rem;font-size:0.95rem;color:var(--text);outline:none;box-shadow:none!important;letter-spacing:0.5px}
     .phone-inner input[type="tel"]:focus{border:none!important;box-shadow:none!important}
     .phone-inner input[type="tel"]::placeholder{letter-spacing:0;opacity:0.45}
-    .phone-dropdown{position:absolute;top:calc(100% + 4px);left:0;z-index:100;min-width:300px;width:100%;max-height:240px;overflow-y:auto;overflow-x:hidden;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.4);padding:4px 0}
+    .phone-dropdown{position:absolute;top:calc(100% + 4px);left:0;z-index:100;min-width:300px;width:100%;max-height:240px;overflow-y:auto;overflow-x:hidden;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,0.4);padding:4px 0}
     .phone-dropdown .country-opt{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.85rem;cursor:pointer;font-size:0.9rem;color:var(--text);transition:background 0.1s;border-radius:6px;margin:1px 4px}
     .phone-dropdown .country-opt:hover{background:rgba(244,180,0,0.1)}
     .phone-dropdown .country-opt.active{font-weight:600;color:var(--primary);background:rgba(244,180,0,0.07)}
