@@ -127,16 +127,16 @@
     <button class="auth-oauth-btn" style="width:100%;margin-bottom:0.75rem" onclick="togglePhone('reg')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Continue with Phone</button>
     <div id="regPhoneSection" style="display:none;margin:0 0 0.75rem 0">
       <div class="auth-field"><label>Phone</label>
-        <div class="phone-input-wrapper">
-          <div class="country-picker">
-            <button class="country-trigger" onclick="toggleCountryList('reg')" type="button">
+        <div class="phone-wrap">
+          <div class="phone-inner">
+            <button class="phone-country" onclick="toggleCountryList('reg')" type="button">
               <span id="regCountryFlag">🇺🇸</span>
               <span id="regCountryDial">+1</span>
-              <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z" fill="currentColor"/></svg>
+              <svg width="8" height="5" viewBox="0 0 8 5"><path d="M0 0l4 5 4-5z" fill="currentColor"/></svg>
             </button>
-            <div class="country-list" id="regCountryList" style="display:none"></div>
+            <input type="tel" id="regPhone" placeholder="Phone number" autocomplete="tel">
           </div>
-          <input type="tel" id="regPhone" placeholder="Phone number" autocomplete="tel">
+          <div class="phone-dropdown" id="regCountryList" style="display:none"></div>
         </div>
       </div>
       <div class="auth-field" id="regSmsCodeGroup" style="display:none"><label>SMS Code</label><input type="text" id="regSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"></div>
@@ -176,8 +176,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=127"></script>
-<script data-cfasync="false" src="script.js?v=127"></script>
+<script src="translations.js?v=128"></script>
+<script data-cfasync="false" src="script.js?v=128"></script>
 
 <script>
 (function(){

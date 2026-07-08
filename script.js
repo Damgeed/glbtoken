@@ -280,15 +280,15 @@
       for(var i=0;i<COUNTRY_CODES.length;i++){
         var c = COUNTRY_CODES[i];
         var sel = c.dial === selectedDial[prefix] ? ' class="country-opt active"' : ' class="country-opt"';
-        html += '<div' + sel + ' onclick="selectCountry(\'' + prefix + '\',\'' + c.dial + '\',\'' + c.flag + '\')">' + c.flag + ' ' + c.name + ' <span class="country-dial">' + c.dial + '</span></div>';
+        html += '<div' + sel + ' onclick="selectCountry(\'' + prefix + '\',\'' + c.dial + '\',\'' + c.flag + '\')"><span>' + c.flag + ' ' + c.name + '</span> <span class="country-dial">' + c.dial + '</span></div>';
       }
       list.innerHTML = html;
     }
     // Close country dropdown on click outside
     document.addEventListener('click',function(e){
-      var cp = e.target.closest('.country-picker');
+      var cp = e.target.closest('.phone-wrap');
       if(!cp){
-        var lists = document.querySelectorAll('.country-list');
+        var lists = document.querySelectorAll('.phone-dropdown');
         for(var i=0;i<lists.length;i++) lists[i].style.display = 'none';
       }
     });
