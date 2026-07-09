@@ -78,7 +78,7 @@
     .mobile-overlay .mobile-auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;padding:0 0}
     .mobile-auth-btn{display:flex;align-items:center;justify-content:center;padding:0.65rem 0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:600;text-align:center;transition:all 0.2s}
     .mobile-auth-btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-    .mobile-account-card{border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:0.25rem 0;margin:0.25rem 0 0.5rem;background:var(--bg-alt)}
+    .mobile-account-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.35rem 0;margin:0.5rem 0 0.75rem;background:var(--card);border-top:2px solid var(--primary)}
     .mobile-account-card a{padding:0.6rem 0.75rem;font-size:0.9rem}
     .mobile-account-card a:first-child{margin-top:0.25rem}
     .mobile-account-card .mobile-account-signout{border-top:1px solid var(--border-light);margin-top:0.25rem;padding-top:0.25rem}
@@ -724,6 +724,10 @@
 .article-content td{color:var(--text-secondary)}
 .article-content img{max-width:100%;border-radius:var(--radius-sm);margin:1rem 0;border:1px solid var(--border-light)}
 .article-content hr{border:none;border-top:1px solid var(--hr-color);margin:1.5rem 0}
+
+/* Blog article page width consistency */
+.blog-article-page .container{max-width:920px!important}
+@media(max-width:768px){.blog-article-page .container{max-width:100%!important}}
 
 /* Copy button animation */
 .copying{animation:copyPulse 0.3s ease}
