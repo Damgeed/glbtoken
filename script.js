@@ -500,6 +500,85 @@
       if(!token)return;
       try{const d=await api('GET','/api/auth/me');userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth()}catch(e){}
     }
+
+    // ── Settings Profile ──
+    async function loadProfile(){
+      if(!token)return;
+      try{
+        const d=await api('GET','/api/user/profile');
+        var nameInp=document.getElementById('settingsName');
+        var emailInp=document.getElementById('settingsEmail');
+        var tzInp=document.getElementById('settingsTz');
+        if(nameInp) nameInp.value=d.name||userData.name||'User';
+        if(emailInp) emailInp.value=d.email||userData.email||'';
+        if(tzInp&&d.timezone) tzInp.value=d.timezone;
+      }catch(e){}
+    }
+    async function saveProfile(){
+      if(!token){showToast('Please sign in first','error');return}
+      var name=document.getElementById('settingsName');
+      var tz=document.getElementById('settingsTz');
+      if(!name){showToast('Settings form not found','error');return}
+      try{
+        await api('PUT','/api/user/profile',{name:name.value.trim(),timezone:tz?tz.value:''});
+        userData.name=name.value.trim();
+        localStorage.setItem('gt_user',JSON.stringify(userData));
+        applyAuth();
+        showToast('Profile saved','success');
+      }catch(e){showToast(e.message||'Failed to save profile','error')}
+    }
+    async function updatePassword(){
+      if(!token){showToast('Please sign in first','error');return}
+      var cur=document.getElementById('settingsCurPw');
+      var nw=document.getElementById('settingsNewPw');
+      if(!cur||!nw||!cur.value||!nw.value){showToast('Fill in both password fields','error');return}
+      if(nw.value.length<6){showToast('New password must be at least 6 characters','error');return}
+      try{
+        await api('PUT','/api/user/password',{current_password:cur.value,new_password:nw.value});
+        cur.value='';nw.value='';
+        showToast('Password updated','success');
+      }catch(e){showToast(e.message||'Failed to update password','error')}
+    }
+    // ── History / Transactions ──
+    async function loadTransactions(){
+      if(!token)return;
+      var depBody=document.getElementById('txDepositBody');
+      var conBody=document.getElementById('txConsumptionBody');
+      if(!depBody&&!conBody)return;
+      try{
+        var txns=await api('GET','/api/transactions');
+        if(!txns||!txns.length){depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No transactions yet</td></tr>';return}
+        var depRows='', conRows='';
+        txns.forEach(function(t){
+          var date=t.created_at?new Date(t.created_at).toLocaleDateString() : '-';
+          var amtClass=t.type==='deposit'?'green':'red';
+          var amtSign=t.type==='deposit'?'+':'-';
+          var amount='<span class="amount '+amtClass+'">'+amtSign+Math.abs(t.amount).toFixed(2)+'</span>';
+          var row='<tr><td>'+date+'</td><td>'+(t.description||t.type)+'</td><td>'+amount+'</td><td>'+escapeHtml(t.status||'completed')+'</td></tr>';
+          if(t.type==='deposit'||t.type==='topup') depRows+=row; else conRows+=row;
+        });
+        depBody.innerHTML=depRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No deposits yet</td></tr>';
+        conBody.innerHTML=conRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No consumption yet</td></tr>';
+      }catch(e){
+        depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">Failed to load transactions</td></tr>';
+      }
+    }
+    // ── Notifications ──
+    function dismissNotif(el){
+      el.closest('.notif-item').remove();
+    }
+    function markAllRead(){
+      var items=document.querySelectorAll('.notif-item .notif-dot');
+      items.forEach(function(d){d.style.display='none'});
+      showToast('All marked as read','info');
+    }
+    // ── Billing ──
+    function addPaymentMethod(){
+      showToast('Payment method management coming soon','info');
+    }
+    function viewAllInvoices(){
+      showToast('Invoice history coming soon','info');
+    }
     // ── Auth0 Social Login Callback ──
     async function handleAuth0Callback(){
       // Called on /auth/callback page — no nav/toast DOM elements here

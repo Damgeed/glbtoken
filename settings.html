@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=138" />
+  <link rel="stylesheet" href="style.css?v=139" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -101,24 +101,24 @@
         <div class="dash-card">
           <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">👤 Profile</h3>
           <div style="display:flex;flex-direction:column;gap:0.75rem">
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Full Name</label><input type="text" value="User" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Email</label><input type="email" value="user@glbtoken.com" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
+            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Full Name</label><input type="text" id="settingsName" value="User" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
+            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Email</label><input type="email" id="settingsEmail" value="user@glbtoken.com" disabled style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem;opacity:0.6"></div>
             <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Timezone</label>
-              <select style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"><option>UTC+0 (GMT)</option><option>UTC+1 (CET)</option><option>UTC+8 (SGT)</option><option>UTC-5 (EST)</option></select></div>
-            <button class="btn-primary" style="width:100%;margin-top:0.5rem">Save Changes</button>
+              <select id="settingsTz" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"><option value="UTC+0">UTC+0 (GMT)</option><option value="UTC+1">UTC+1 (CET)</option><option value="UTC+8">UTC+8 (SGT)</option><option value="UTC-5">UTC-5 (EST)</option></select></div>
+            <button class="btn-primary" onclick="saveProfile()" style="width:100%;margin-top:0.5rem">Save Changes</button>
           </div>
         </div>
         <div class="dash-card">
           <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">🔐 Security</h3>
           <div style="display:flex;flex-direction:column;gap:0.75rem">
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Current Password</label><input type="password" placeholder="Enter current password" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">New Password</label><input type="password" placeholder="Enter new password" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
+            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Current Password</label><input type="password" id="settingsCurPw" placeholder="Enter current password" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
+            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">New Password</label><input type="password" id="settingsNewPw" placeholder="Enter new password" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
             <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-alt);border-radius:var(--radius-sm)">
               <span style="font-size:1.5rem">🔑</span>
               <div><div style="font-weight:600;font-size:0.85rem">Two-Factor Auth</div><div style="font-size:0.75rem;color:var(--text-muted)">Add an extra layer of security</div></div>
-              <button class="btn-secondary" style="margin-left:auto;padding:0.4rem 1rem;font-size:0.8rem">Enable</button>
+              <button class="btn-secondary" onclick="showToast('2FA coming soon','info')" style="margin-left:auto;padding:0.4rem 1rem;font-size:0.8rem">Enable</button>
             </div>
-            <button class="btn-secondary" style="width:100%;margin-top:0.5rem">Update Password</button>
+            <button class="btn-secondary" onclick="updatePassword()" style="width:100%;margin-top:0.5rem">Update Password</button>
           </div>
         </div>
       </div>
@@ -144,7 +144,8 @@
   </div>
 
 <script src="translations.js?v=136"></script>
-<script data-cfasync="false" src="script.js?v=138"></script>
+<script data-cfasync="false" src="script.js?v=139"></script>
+<script>if(localStorage.getItem('gt_token')){setTimeout(loadProfile,100)}</script>
 
 <script>
 (function(){

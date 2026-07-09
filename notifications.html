@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=138" />
+  <link rel="stylesheet" href="style.css?v=139" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -98,23 +98,25 @@
       <span class="section-label">Alerts</span>
       <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">Notifications</h2>
       <div style="margin-top:1.5rem" class="notif-grid">
-        <div class="dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
+        <div class="notif-item dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
           <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem">💰</div>
           <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">Top-up Confirmed</div><div style="font-size:0.8rem;color:var(--text-muted)">2 min ago · $50 added · 55,000 tokens credited</div></div>
-          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
+          <span class="notif-dot" style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0"></span>
+          <button onclick="dismissNotif(this)" style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
         </div>
-        <div class="dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
+        <div class="notif-item dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
           <div style="width:40px;height:40px;border-radius:10px;background:var(--destructive-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem">⚠️</div>
           <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">Low Balance Warning</div><div style="font-size:0.8rem;color:var(--text-muted)">1 hour ago · Your balance is below 1,000 tokens</div></div>
-          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
+          <span class="notif-dot" style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0"></span>
+          <button onclick="dismissNotif(this)" style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
         </div>
-        <div class="dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;opacity:0.6">
+        <div class="notif-item dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;opacity:0.6">
           <div style="width:40px;height:40px;border-radius:10px;background:var(--success-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem">✅</div>
           <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">API Key Created</div><div style="font-size:0.8rem;color:var(--text-muted)">3 days ago · "Production API" key was generated</div></div>
-          <button style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
+          <button onclick="dismissNotif(this)" style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
         </div>
       </div>
-      <div style="text-align:center;margin-top:1rem"><button class="btn-secondary" style="font-size:0.85rem">Mark All as Read</button></div>
+      <div style="text-align:center;margin-top:1rem"><button class="btn-secondary" onclick="markAllRead()" style="font-size:0.85rem">Mark All as Read</button></div>
     </div></div><footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
@@ -137,7 +139,7 @@
   </div>
 
 <script src="translations.js?v=136"></script>
-<script data-cfasync="false" src="script.js?v=138"></script>
+<script data-cfasync="false" src="script.js?v=139"></script>
 
 <script>
 (function(){
