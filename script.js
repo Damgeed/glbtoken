@@ -490,11 +490,15 @@
       });
     }
     function logoutUser(){
-      token='';userData={};
-      localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
-      localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
-      localStorage.removeItem('gt_keys');
-      applyAuth();showToast('Signed out','info');showPage('home');
+      // Show confirmation dialog instead of immediate logout
+      showConfirm('Sign out?','Are you sure you want to sign out?',function(){
+        token='';userData={};
+        localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+        localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
+        localStorage.removeItem('gt_keys');
+        applyAuth();
+        window.location.href='/';
+      });
     }
     async function refreshMe(){
       if(!token)return;
@@ -672,36 +676,7 @@
         var ma=document.getElementById('mAvatar');if(ma)ma.textContent=initial;
         var mn=document.getElementById('mName');if(mn)mn.textContent=displayName;
         var me=document.getElementById('mEmail');if(me)me.textContent=userData.email||'';
-        // ── "Sign Out [name]" in nav (dynamic, injects after navGuest) ──
-        var so = document.getElementById('navSignedIn');
-        if(!so){
-          so = document.createElement('div');
-          so.id = 'navSignedIn';
-          so.style.cssText = 'display:none;align-items:center;gap:0.6rem;flex-shrink:0';
-          var guest = document.getElementById('navGuest');
-          if(guest && guest.parentNode) guest.parentNode.insertBefore(so, guest.nextSibling);
-        }
-        so.style.display = 'flex';
-        so.innerHTML = '<a onclick="logoutUser()" style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;color:var(--text,#e0e0e0);text-decoration:none;font-size:0.85rem;font-weight:500;white-space:nowrap;padding:0.35rem 0.6rem;border:1px solid var(--border,#3a3a4e);border-radius:8px;transition:all 0.2s">Sign Out ' + escapeHtml(displayName) + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a>';
-        var soMobile = document.getElementById('navSignedInMobile');
-        if(!soMobile && document.querySelector('.mobile-right-group')){
-          soMobile = document.createElement('div');
-          soMobile.id = 'navSignedInMobile';
-          soMobile.style.cssText = 'display:none;align-items:center;margin-left:0;flex-shrink:0';
-          var mobileGroup = document.querySelector('.mobile-right-group');
-          mobileGroup.insertBefore(soMobile, mobileGroup.firstChild);
-        }
-        if(soMobile && window.innerWidth <= 768){
-          soMobile.style.display = 'flex';
-          soMobile.innerHTML = '<span style="color:var(--text,#e0e0e0);font-size:0.75rem;font-weight:500;white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(displayName) + '</span>';
-        } else if(soMobile) {
-          soMobile.style.display = 'none';
-        }
       } else {
-        var so = document.getElementById('navSignedIn');
-        if(so) so.style.display = 'none';
-        var soMobile = document.getElementById('navSignedInMobile');
-        if(soMobile) soMobile.style.display = 'none';
       }
       updateBalance();
     }
@@ -1477,7 +1452,40 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       t.textContent=msg;t.className='toast '+(type||'info');t.classList.add('show');
       clearTimeout(t._timeout);t._timeout=setTimeout(function(){t.classList.remove('show')},3000);
     }
-    function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+
+    // ── Themed confirmation dialog ──
+    function showConfirm(title, msg, onConfirm){
+      var existing=document.getElementById('confirmModal');
+      if(existing)existing.remove();
+      var m=document.createElement('div');
+      m.id='confirmModal';
+      m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+      var theme=document.documentElement.className;
+      var isDark=theme==='dark';
+      var cardBg=isDark?'#1e1f29':'#ffffff';
+      var textClr=isDark?'#f8f8f2':'#1a1a2e';
+      var muted=isDark?'#6272a4':'#666';
+      var border=isDark?'#3a3a4e':'#ddd';
+      m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+        +'<div style="font-size:2rem;margin-bottom:0.75rem">🚪</div>'
+        +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+title+'</h3>'
+        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">'+msg+'</p>'
+        +'<div style="display:flex;gap:0.75rem">'
+        +'<button id="confirmCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
+        +'<button id="confirmOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Sign Out</button>'
+        +'</div></div>';
+      document.body.appendChild(m);
+      // Style keyframes if not present
+      if(!document.getElementById('confirmModalStyle')){
+        var s=document.createElement('style');s.id='confirmModalStyle';
+        s.textContent='@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}';
+        document.head.appendChild(s);
+      }
+      document.getElementById('confirmCancelBtn').onclick=function(){m.remove()};
+      document.getElementById('confirmOkBtn').onclick=function(){m.remove();if(onConfirm)onConfirm()};
+      // Close on backdrop click
+      m.onclick=function(e){if(e.target===m)m.remove()};
+    }
     function toggleMobile(){
       const overlay = document.getElementById('mobileOverlay');
       const backdrop = document.getElementById('mobileBackdrop');
