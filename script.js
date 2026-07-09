@@ -641,13 +641,17 @@
       document.getElementById('navUser').style.display=loggedIn?'flex':'none';
       document.getElementById('navBalance').style.display=loggedIn?'inline-block':'none';
       // Mobile menu sync
-      document.getElementById('mGuest').style.display=loggedIn?'none':'block';
-      document.getElementById('mUser').style.display=loggedIn?'block':'none';
+      var mg=document.getElementById('mobileGuestSection');
+      var mu=document.getElementById('mobileUserSection');
+      if(mg)mg.style.display=loggedIn?'none':'block';
+      if(mu)mu.style.display=loggedIn?'block':'none';
       // Toggle Dashboard vs API/Dev in nav
       document.getElementById('navApiLink').style.display=loggedIn?'none':'inline-block';
       document.getElementById('navDashLink').style.display=loggedIn?'inline-block':'none';
-      document.getElementById('mNavApiLink').style.display=loggedIn?'none':'block';
-      document.getElementById('mNavDashLink').style.display=loggedIn?'block':'none';
+      var mal=document.getElementById('mNavApiLink');
+      if(mal)mal.style.display=loggedIn?'none':'block';
+      var mdl=document.getElementById('mNavDashLink');
+      if(mdl)mdl.style.display=loggedIn?'block':'none';
       // API doc page: show Go to Dashboard button when logged in
       const goBtn=document.getElementById('apiGoToDashBtn');
       if(goBtn)goBtn.style.display=loggedIn?'inline-flex':'none';
@@ -665,9 +669,9 @@
         document.getElementById('ddAvatar').textContent=initial;document.getElementById('dropName').textContent=displayName;
         document.getElementById('dropEmail').textContent=userData.email||'';
         // Mobile sync
-        document.getElementById('mAvatar').textContent=initial;
-        document.getElementById('mName').textContent=displayName;
-        document.getElementById('mEmail').textContent=userData.email||'';
+        var ma=document.getElementById('mAvatar');if(ma)ma.textContent=initial;
+        var mn=document.getElementById('mName');if(mn)mn.textContent=displayName;
+        var me=document.getElementById('mEmail');if(me)me.textContent=userData.email||'';
         // ── "Sign Out [name]" in nav (dynamic, injects after navGuest) ──
         var so = document.getElementById('navSignedIn');
         if(!so){
@@ -705,7 +709,7 @@
       const b=userData.token_balance||0;
       document.getElementById('navBalance').textContent=b.toLocaleString()+' Tokens';
       document.getElementById('ddBalance').textContent=b.toLocaleString()+' GT';
-      document.getElementById('mBalance').textContent=b.toLocaleString();
+      var mb=document.getElementById('mBalance');if(mb)mb.textContent=b.toLocaleString();
       const db=document.getElementById('dashBalance');
       if(db)db.textContent=b.toLocaleString();
       const du=document.getElementById('dashUsd');
@@ -1717,5 +1721,17 @@ document.addEventListener('click', function(e) {
       }
     }
   });
+})();
+
+// ── Auto-init auth UI on every page load ──
+(function(){
+  var t = localStorage.getItem('gt_token');
+  if(t){
+    try{var ud = JSON.parse(localStorage.getItem('gt_user') || '{}');}catch(e){ud={};}
+    // Re-initialize module-level vars
+    token = t;
+    userData = ud;
+    if(typeof applyAuth === 'function') applyAuth();
+  }
 })();
 
