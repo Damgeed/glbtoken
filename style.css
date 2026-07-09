@@ -726,9 +726,10 @@
 .article-content hr{border:none;border-top:1px solid var(--hr-color);margin:1.5rem 0}
 
 /* Blog article page width consistency */
-.blog-article-page .container{max-width:920px!important}
-.blog-article-page .dash-card,.blog-article-page .blog-article{max-width:860px;margin-left:auto;margin-right:auto}
+.blog-article-page .container{max-width:1120px!important}
+.blog-article-page .dash-card,.blog-article-page .blog-article{max-width:1040px;margin-left:auto;margin-right:auto}
 @media(max-width:768px){.blog-article-page .container{max-width:100%!important}.blog-article-page .dash-card,.blog-article-page .blog-article{max-width:100%}}
+@media(max-width:600px){.blog-article-page .dash-page{padding:1rem 0 1.5rem}.blog-article-page .section-title{font-size:1.5rem}.blog-article-page .dash-card p,.blog-article-page .dash-card li,.blog-article-page .article-content p,.blog-article-page .article-content li,.blog-article-page .blog-article p,.blog-article-page .blog-article li{font-size:1rem!important;line-height:1.7!important}}
 
 /* Copy button animation */
 .copying{animation:copyPulse 0.3s ease}
