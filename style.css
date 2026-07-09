@@ -420,7 +420,18 @@
     .loading-dots span:nth-child(2){animation-delay:0.2s}
     .loading-dots span:nth-child(3){animation-delay:0.4s}
     @keyframes dot{0%,80%,100%{opacity:0.3}40%{opacity:1}}
-    .modal-overlay{position:fixed;inset:0;z-index:150;background:hsla(224 44% 5% / 0.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center}
+    /* ── Z-index Tiers ──
+       0   : Background (stars, hero gradients)
+       2   : Carousel navigation arrows
+       50  : Navbar (sticky)
+       100 : Dropdown menus, language menus
+       190 : Chat FAB (floating action button)
+       199 : Chat window, mobile backdrop (appear above content)
+       200 : Modal overlays, mobile slide-out overlay
+       201-202 : Hamburger toggle buttons
+       299-300 : Toast notifications, phone dropdowns, focused overlays
+    */
+    .modal-overlay{position:fixed;inset:0;z-index:200;background:hsla(224 44% 5% / 0.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center}
     .modal-overlay.open{display:flex}
     html.light .modal-overlay{background:hsla(40 20% 50% / 0.3)}
     .modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;max-width:480px;width:90%;max-height:85vh;overflow-y:auto;position:relative}

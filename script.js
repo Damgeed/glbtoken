@@ -215,7 +215,12 @@
     
     // ── Escape HTML (XSS prevention) ──
     function escapeHtml(str){
-      if(typeof str !== 'string') return str || '';
+      if(typeof str !== 'string'){
+        if(str==null||str===false) return '';
+        if(typeof str==='number'||typeof str==='boolean') return String(str);
+        if(Array.isArray(str)) str=str.join('');
+        else str=String(str);
+      }
       var d = document.createElement('div');
       d.appendChild(document.createTextNode(str));
       return d.innerHTML;
@@ -577,7 +582,7 @@
           var amtClass=t.type==='deposit'?'green':'red';
           var amtSign=t.type==='deposit'?'+':'-';
           var amount='<span class="amount '+amtClass+'">'+amtSign+Math.abs(t.amount).toFixed(2)+'</span>';
-          var row='<tr><td>'+date+'</td><td>'+(t.description||t.type)+'</td><td>'+amount+'</td><td>'+escapeHtml(t.status||'completed')+'</td></tr>';
+          var row='<tr><td>'+date+'</td><td>'+escapeHtml(t.description||t.type)+'</td><td>'+amount+'</td><td>'+escapeHtml(t.status||'completed')+'</td></tr>';
           if(t.type==='deposit'||t.type==='topup') depRows+=row; else conRows+=row;
         });
         depBody.innerHTML=depRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No deposits yet</td></tr>';
@@ -793,7 +798,7 @@
           actCount.textContent=d.recent_activity.length+' items';
           act.innerHTML=d.recent_activity.map(a=>{
             const isDeposit=a.type==='deposit';
-            return `<div class="dash-activity-item"><div class="icon ${isDeposit?'gold':'green'}" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:${isDeposit?'var(--primary-subtle)':'var(--success-subtle)'}">${isDeposit?'💰':'🤖'}</div><div class="info" style="flex:1"><div class="title" style="font-size:0.85rem;font-weight:500">${a.model||a.payment_method||a.type}</div><div class="time" style="font-size:0.75rem;color:var(--text-muted)">${a.created_at?new Date(a.created_at).toLocaleDateString():''}</div></div><div class="val" style="font-size:0.85rem;font-weight:600;color:${isDeposit?'var(--primary)':'var(--destructive)'}">${isDeposit?'+':''}${a.tokens||0}</div></div>`
+            return `<div class="dash-activity-item"><div class="icon ${isDeposit?'gold':'green'}" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:${isDeposit?'var(--primary-subtle)':'var(--success-subtle)'}">${isDeposit?'💰':'🤖'}</div><div class="info" style="flex:1"><div class="title" style="font-size:0.85rem;font-weight:500">${escapeHtml(a.model||a.payment_method||a.type)}</div><div class="time" style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(a.created_at?new Date(a.created_at).toLocaleDateString():'')}</div></div><div class="val" style="font-size:0.85rem;font-weight:600;color:${isDeposit?'var(--primary)':'var(--destructive)'}">${isDeposit?'+':''}${a.tokens||0}</div></div>`
           }).join('');
         }else{
           actCount.textContent='0 items';

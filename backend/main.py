@@ -74,6 +74,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'self' https://www.google.com; object-src 'none'"
         return response
 
 app.add_middleware(SecurityHeadersMiddleware)
@@ -1498,7 +1499,11 @@ def seed_models():
 # ── Health ──
 # ── Auto-Pull Models (manual trigger) ──
 @app.post("/api/models/pull")
-def trigger_model_pull(api_key: str = ""):
+def trigger_model_pull(authorization: str = Header(None)):
+    # Extract API key from Authorization: Bearer <token>
+    api_key = ""
+    if authorization and authorization.startswith("Bearer "):
+        api_key = authorization.removeprefix("Bearer ")
     glbtoken_secret = os.environ.get("GLBTOKEN_SECRET")
     if not glbtoken_secret or api_key != glbtoken_secret:
         raise HTTPException(status_code=403, detail="Invalid API key")
@@ -1516,15 +1521,19 @@ async def admin_sync_users(
     request: Request,
     user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
-    api_key: str = "",
+    authorization: str = Header(None),
 ):
     """Sync all existing users to New API. Admin-only. Dry-run supported.
     
-    Authentication: Requires admin JWT OR api_key=GLBTOKEN_SECRET.
+    Authentication: Requires admin JWT OR api_key=GLBTOKEN_SECRET via Authorization header.
     """
+    # Extract API key from Authorization: Bearer <token>
+    api_key = ""
+    if authorization and authorization.startswith("Bearer "):
+        api_key = authorization.removeprefix("Bearer ")
     # Allow GLBTOKEN_SECRET as alternative auth (for automated calls)
-    glbtoken_secret = os.environ.get("GLBTOKEN_SECRET", "")
-    if api_key != glbtoken_secret:
+    glbtoken_secret = os.environ.get("GLBTOKEN_SECRET")
+    if not glbtoken_secret or api_key != glbtoken_secret:
         if not user or not user.is_admin:
             raise HTTPException(status_code=403, detail="Admin access required")
 
