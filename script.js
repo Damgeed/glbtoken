@@ -500,6 +500,25 @@
         window.location.href='/';
       });
     }
+    // ── Contact Form ──
+    async function sendContact(){
+      var name=document.getElementById('contactName');
+      var email=document.getElementById('contactEmail');
+      var msg=document.getElementById('contactMsg');
+      if(!name||!email||!msg){showToast('Contact form not found','error');return}
+      var n=name.value.trim(), e=email.value.trim(), m=msg.value.trim();
+      if(!n){showToast('Please enter your name','error');name.focus();return}
+      if(!e||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast('Please enter a valid email','error');email.focus();return}
+      if(!m||m.length<10){showToast('Message must be at least 10 characters','error');msg.focus();return}
+      var btn=document.querySelector('.info-card button.btn-primary');
+      if(btn){btn.disabled=true;btn.textContent='Sending...'}
+      try{
+        await api('POST','/api/contact',{name:n,email:e,message:m});
+        showToast('Message sent! We\'ll get back to you soon.','success');
+        name.value='';email.value='';msg.value='';
+      }catch(err){showToast(err.message||'Failed to send message','error')}
+      finally{if(btn){btn.disabled=false;btn.textContent='Send Message'}}
+    }
     async function refreshMe(){
       if(!token)return;
       try{const d=await api('GET','/api/auth/me');userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth()}catch(e){}

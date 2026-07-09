@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="style.css?v=144" />
+<link rel="stylesheet" href="style.css?v=146" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -124,9 +124,9 @@
     <h3 style="font-size:1rem;font-weight:600;margin:0 0 0.5rem">Social</h3>
     <p style="font-size:0.85rem;color:var(--text-secondary);margin:0 0 0.75rem">Follow us for updates, announcements, and community support.</p>
     <div style="display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap">
-      <a href="#" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.8rem;text-decoration:none">🐦 X / Twitter</a>
-      <a href="#" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.8rem;text-decoration:none">💬 Discord</a>
-      <a href="#" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.8rem;text-decoration:none">📘 Blog</a>
+      <a href="https://x.com/glbtoken" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.8rem;text-decoration:none">🐦 X / Twitter</a>
+      <a href="https://discord.gg/glbtoken" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.8rem;text-decoration:none">💬 Discord</a>
+      <a href="blog.html" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.8rem;text-decoration:none">📘 Blog</a>
     </div>
   </div>
 </div>
@@ -146,6 +146,16 @@
       <span><strong>Live Chat (Human)</strong></span>
       <span>Mon–Fri, 08:00–18:00 UTC+0</span>
     </div>
+  </div>
+</div>
+
+<div class="info-card" style="margin-bottom:2.5rem">
+  <h3 style="font-size:1rem;font-weight:600;margin:0 0 1rem">✉️ Send Us a Message</h3>
+  <div style="max-width:500px;margin:0 auto">
+    <div style="margin-bottom:0.75rem"><input type="text" id="contactName" placeholder="Your name" style="width:100%;padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem"></div>
+    <div style="margin-bottom:0.75rem"><input type="email" id="contactEmail" placeholder="Your email" style="width:100%;padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem"></div>
+    <div style="margin-bottom:0.75rem"><textarea id="contactMsg" placeholder="How can we help?" rows="4" style="width:100%;padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem;resize:vertical;font-family:inherit"></textarea></div>
+    <button class="btn-primary" onclick="sendContact()" style="width:100%;padding:0.75rem;font-size:0.9rem">Send Message</button>
   </div>
 </div>
 
@@ -181,7 +191,7 @@
 </div>
 </div>
 <script src="translations.js?v=136"></script>
-<script data-cfasync="false" src="script.js?v=145"></script>
+<script data-cfasync="false" src="script.js?v=146"></script>
 
 <script>
 (function(){

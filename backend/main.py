@@ -156,6 +156,11 @@ class InitiatePaymentRequest(BaseModel):
     payment_method: str = "stripe"
     email: str = ""
 
+class ContactRequest(BaseModel):
+    name: str
+    email: str
+    message: str
+
 # ── Email Config ──
 def send_email(to: str, subject: str, body: str) -> bool:
     smtp_host = os.getenv("SMTP_HOST", "")
@@ -1572,6 +1577,28 @@ async def admin_sync_users(
         "errors": (res.errors[:20] if res and res.errors else []),
         "message": f"Synced {res.created} user(s), {res.failed} failed." if res else "Sync completed",
     }
+
+# ── Contact Form ──
+@app.post("/api/contact")
+@limiter.limit("3/minute")
+async def contact_form(req: ContactRequest, request: Request):
+    name = req.name.strip()
+    email = req.email.strip()
+    message = req.message.strip()
+    if not name or not email or len(message) < 10:
+        raise HTTPException(status_code=400, detail="Invalid form data")
+    if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
+        raise HTTPException(status_code=400, detail="Invalid email")
+    try:
+        send_email(
+            to="contact@glbtoken.com",
+            subject=f"[GlbTOKEN Contact] {name}",
+            body=f"From: {name} ({email})\n\n{message}"
+        )
+    except Exception as e:
+        print(f"⚠️  Contact email send failed: {e}")
+    print(f"📬 Contact form: {name} <{email}>: {message[:100]}...")
+    return {"status": "ok", "message": "Message received. We'll get back to you soon."}
 
 @app.get("/api/health")
 async def health():

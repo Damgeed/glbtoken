@@ -346,6 +346,11 @@
     .chat-msg .bubble{padding:0.625rem 0.875rem;border-radius:var(--radius-sm);font-size:0.85rem;line-height:1.5}
     .chat-msg.ai .bubble{background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text-secondary)}
     .chat-msg.user .bubble{background:var(--primary-subtle);color:var(--text)}
+    .blog-readmore{display:inline-block;margin-top:0.5rem;font-size:0.8rem;color:var(--primary);font-weight:500;text-decoration:none;transition:opacity 0.15s}
+    .blog-readmore:hover{opacity:0.7}
+    .blog-title{font-size:1rem;font-weight:600;margin:0 0 0.25rem}
+    .blog-date{font-size:0.75rem;color:var(--text-muted);margin:0 0 0.5rem}
+    .blog-desc{font-size:0.85rem;color:var(--text-secondary);margin:0;line-height:1.5}
     .chat-window .chat-input{padding:0.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:0.5rem;align-items:center;overflow:hidden;background:var(--bg)}
     .chat-window .chat-input textarea{flex:1;min-width:0;padding:0.75rem 1rem;border-radius:24px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:0.85rem;resize:none;min-height:44px;max-height:120px;font-family:inherit;line-height:1.5;transition:border 0.2s}
     .chat-window .chat-input textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px hsla(44 96% 52% / 0.12)}
