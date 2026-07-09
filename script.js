@@ -213,6 +213,14 @@
       if(m)m.textContent=h.classList.contains('dark')?'🌙':'☀️';
     }
     
+    // ── Escape HTML (XSS prevention) ──
+    function escapeHtml(str){
+      if(typeof str !== 'string') return str || '';
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(str));
+      return d.innerHTML;
+    }
+
     // ── API Helper ──
     let models = [], selectedAmount = 5, selectedPayment = 'stripe';
     let chartInst = null, sparkInst = null, sortDir = 'price_asc';
@@ -885,6 +893,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     function renderModelCards(models){
       const grid=document.getElementById('modelGrid');
       if(!grid)return;
+      const isMobile = window.innerWidth < 768;
       // Group by category
       const groups = {};
       models.forEach(m => {
@@ -892,9 +901,38 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         if (!groups[c]) groups[c] = [];
         groups[c].push(m);
       });
+      function buildCard(m, pmeta){
+        const priceIn = (m.prompt_price * 1000).toFixed(4);
+        const priceOut = (m.completion_price * 1000).toFixed(4);
+        const name = escapeHtml(m.name || m.model_id.split('/').pop());
+        const id = escapeHtml(m.model_id);
+        const prov = escapeHtml(m.provider);
+        const desc = m.description ? escapeHtml(m.description) : '';
+        const ver = m.version ? `<span class="mc-version">v${escapeHtml(m.version)}</span>` : '';
+        const bg = pmeta ? pmeta.bg : 'var(--primary-subtle)';
+        const clr = pmeta ? pmeta.color : 'var(--primary)';
+        const brd = pmeta ? pmeta.border : 'hsla(44,96%,52%,0.2)';
+        const clrIcon = pmeta ? pmeta.color : 'var(--primary)';
+        const catTag = pmeta ? `<span class="mc-cat-tag" style="background:${bg};color:${clr}">${pmeta.icon} ${escapeHtml(pmeta.label)}</span>` : '';
+        return `<div class="model-card">
+          <div class="mc-top">
+            <span class="mc-badge" style="background:${bg};color:${clr};border-color:${brd}">${prov}</span>
+            ${catTag}
+          </div>
+          <h4 class="mc-name">${name}</h4>
+          <div class="mc-id">${id}</div>
+          ${ver}
+          ${desc ? `<div class="mc-desc">${desc}</div>` : ''}
+          <div class="mc-meta">
+            <span title="Context window">📐 ${(m.context_length/1000).toFixed(0)}K</span>
+            <span title="Input price">⬇️ $${priceIn}/1K</span>
+            <span title="Output price">⬆️ $${priceOut}/1K</span>
+          </div>
+        </div>`;
+      }
       let html = '';
+      // Render in predefined order
       CATEGORY_ORDER.forEach(clabel => {
-        // Find matching internal key
         let key = null;
         for (const [k, v] of Object.entries(CATEGORY_META)) {
           if (v.label === clabel) { key = k; break; }
@@ -905,31 +943,18 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const meta = getCatMeta(key);
         html += `<div class="cat-header" style="--cat-color:${meta.color};--cat-bg:${meta.bg};--cat-border:${meta.border}">
           <span class="cat-icon">${meta.icon}</span>
-          <span class="cat-name">${meta.label}</span>
+          <span class="cat-name">${escapeHtml(meta.label)}</span>
           <span class="cat-count">${items.length}</span>
-          ${meta.desc ? `<span class="cat-desc">${meta.desc}</span>` : ''}
+          ${meta.desc ? `<span class="cat-desc">${escapeHtml(meta.desc)}</span>` : ''}
         </div>`;
-        html += `<div class="cat-body">`;
-        html += items.map(m => {
-          const pmeta = getCatMeta(m.category);
-          const priceIn = (m.prompt_price * 1000).toFixed(4);
-          const priceOut = (m.completion_price * 1000).toFixed(4);
-          return `<div class="model-card">
-            <div class="mc-top">
-              <span class="mc-badge" style="background:${pmeta.bg};color:${pmeta.color};border-color:${pmeta.border}">${m.provider}</span>
-              <span class="mc-cat-tag" style="background:${pmeta.bg};color:${pmeta.color}">${pmeta.icon} ${pmeta.label}</span>
-            </div>
-            <h4 class="mc-name">${m.name || m.model_id.split('/').pop()}</h4>
-            <div class="mc-id">${m.model_id}</div>
-            ${m.version ? `<span class="mc-version">v${m.version}</span>` : ''}
-            ${m.description ? `<div class="mc-desc">${m.description}</div>` : ''}
-            <div class="mc-meta">
-              <span title="Context window">📐 ${(m.context_length/1000).toFixed(0)}K</span>
-              <span title="Input price">⬇️ \$${priceIn}/1K</span>
-              <span title="Output price">⬆️ \$${priceOut}/1K</span>
-            </div>
-          </div>`;
-        }).join('');
+        html += '<div class="cat-body">';
+        if (isMobile && items.length > 6) {
+          html += items.slice(0, 6).map(m => buildCard(m, getCatMeta(m.category))).join('');
+          html += `<div class="cat-more-wrap" style="display:none">${items.slice(6).map(m => buildCard(m, getCatMeta(m.category))).join('')}</div>`;
+          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show ${items.length - 6} more ▾</button>`;
+        } else {
+          html += items.map(m => buildCard(m, getCatMeta(m.category))).join('');
+        }
         html += '</div>';
         delete groups[key];
       });
@@ -938,30 +963,34 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const meta = getCatMeta(c);
         html += `<div class="cat-header" style="--cat-color:${meta.color};--cat-bg:${meta.bg};--cat-border:${meta.border}">
           <span class="cat-icon">${meta.icon}</span>
-          <span class="cat-name">${meta.label}</span>
+          <span class="cat-name">${escapeHtml(meta.label)}</span>
           <span class="cat-count">${groups[c].length}</span>
         </div>`;
-        html += `<div class="cat-body">`;
-        html += groups[c].map(m => {
-          const priceIn = (m.prompt_price * 1000).toFixed(4);
-          const priceOut = (m.completion_price * 1000).toFixed(4);
-          return `<div class="model-card">
-            <div class="mc-top">
-              <span class="mc-badge" style="background:var(--primary-subtle);color:var(--primary);border-color:hsla(44,96%,52%,0.2)">${m.provider}</span>
-            </div>
-            <h4 class="mc-name">${m.name || m.model_id.split('/').pop()}</h4>
-            <div class="mc-id">${m.model_id}</div>
-            ${m.description ? `<div class="mc-desc">${m.description}</div>` : ''}
-            <div class="mc-meta">
-              <span title="Context window">📐 ${(m.context_length/1000).toFixed(0)}K</span>
-              <span title="Input price">⬇️ \$${priceIn}/1K</span>
-              <span title="Output price">⬆️ \$${priceOut}/1K</span>
-            </div>
-          </div>`;
-        }).join('');
+        html += '<div class="cat-body">';
+        const items = groups[c];
+        if (isMobile && items.length > 6) {
+          html += items.slice(0, 6).map(m => buildCard(m, null)).join('');
+          html += `<div class="cat-more-wrap" style="display:none">${items.slice(6).map(m => buildCard(m, null)).join('')}</div>`;
+          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show ${items.length - 6} more ▾</button>`;
+        } else {
+          html += items.map(m => buildCard(m, null)).join('');
+        }
         html += '</div>';
       });
       grid.innerHTML = html;
+    }
+    function toggleCatMore(btn){
+      const wrap = btn.previousElementSibling;
+      const exp = btn.getAttribute('data-expanded') === 'true';
+      if (exp) {
+        wrap.style.display = 'none';
+        btn.textContent = btn.textContent.replace(/^Show less/, 'Show ' + (wrap.children.length) + ' more') + ' ▾';
+        btn.setAttribute('data-expanded', 'false');
+      } else {
+        wrap.style.display = '';
+        btn.textContent = 'Show less ▴';
+        btn.setAttribute('data-expanded', 'true');
+      }
     }
     function filterByCategory(el) {
       activeCategory = el.getAttribute('data-cat') || '';
