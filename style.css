@@ -730,8 +730,9 @@
 /* Blog article page width consistency */
 .blog-article-page .container{max-width:1280px!important}
 .blog-article-page .dash-card,.blog-article-page .blog-article{max-width:1180px;margin-left:auto;margin-right:auto}
-.blog-article-page .blog-article h1,.blog-article-page .blog-article .article-meta{text-align:center}
+.blog-article-page .blog-article h1{text-align:center}
 .blog-article-page .blog-article .article-meta{justify-content:center}
+.blog-article-page .section-title + p{text-align:center}
 @media(max-width:768px){.blog-article-page .container{max-width:100%!important}.blog-article-page .dash-card,.blog-article-page .blog-article{max-width:100%}}
 @media(max-width:600px){.blog-article-page .dash-page{padding:1rem 0 1.5rem}.blog-article-page .section-title{font-size:1.35rem}.blog-article-page .dash-card p,.blog-article-page .dash-card li,.blog-article-page .article-content p,.blog-article-page .article-content li,.blog-article-page .blog-article p,.blog-article-page .blog-article li{font-size:0.9rem!important;line-height:1.65!important}.blog-article-page .blog-article h1{font-size:1.75rem!important}.blog-article-page .blog-article h2{font-size:1.35rem!important}.blog-article-page .blog-article h3,.blog-article-page .blog-article h4{font-size:1.1rem!important}}
 
