@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Dashboard — GlbTOKEN</title>
-  <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
+  <title>Developer API Launched: 100+ Models, One Endpoint — GlbTOKEN Blog</title>
+  <meta name="description" content="Our OpenAI-compatible API is now live. Generate a key and start building with any model in minutes. Full documentation in the Developer section." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="style.css?v=147" />
 </head>
 <body>
-<script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
@@ -27,7 +26,7 @@
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" id="navDashLink" style="display:none">Dashboard</a>
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
@@ -55,7 +54,7 @@
                 <div class="dd-email" id="dropEmail">user@email.com</div>
               </div>
             </div>
-                                    <div class="dd-items">
+                        <div class="dd-items">
               <a href="dashboard.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
               <a href="billing.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Billing</a>
               <a href="notifications.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Notifications</a>
@@ -99,47 +98,190 @@
     </div>
   </div>
 <div class="dash-page"><div class="container">
-      <div class="dash-header">
-        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
-        <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="document.getElementById('dashApiKeys').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('dashApiKeys').style.outline='2px solid var(--primary)';setTimeout(function(){document.getElementById('dashApiKeys').style.outline='none'},1500)">API Keys</button></div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-balance">
-          <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
-            <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
-          </div>
-          <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
-        </div>
-        <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">$0.00</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">0</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">0</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
-        </div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div></div>
-        <div class="dash-card"><div class="dash-section-title">Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="activityCount">0 items</span></div><div id="dashActivity" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">No activity yet. Buy tokens to get started!</p></div></div>
-      </div>
-      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
-        <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
-        <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
-      </div>
-      <div class="dash-card" style="margin-top:1.25rem" id="dashApiKeys">
-        <div class="dash-section-title">🔑 API Keys <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Manage your API access</span></div>
-        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
-          <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
-          <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
-          <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
-        </div>
-        <div id="dashKeyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
-      </div>
+      <span class="section-label">Blog</span>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">Developer API Launched: 100+ Models, One Endpoint</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem">June 25, 2026 · 5 min read</p>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+
+        <p style="margin-bottom:1rem">We're thrilled to announce the launch of the <strong>GlbTOKEN Developer API</strong> — a single, OpenAI-compatible REST endpoint that gives you access to over 100 AI models from 56 providers with a single API key and a single token balance. No more managing multiple SDKs, juggling separate API keys for each provider, or tracking down credits across a dozen different dashboards.</p>
+
+        <p style="margin-bottom:1rem">Starting today, every GlbTOKEN user can generate an API key from their dashboard and begin building with any model on the platform in under two minutes. The API is fully compatible with the OpenAI SDK, the Anthropic SDK, LangChain, LlamaIndex, and every major AI framework — so there's nothing new to learn.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What Makes the GlbTOKEN API Different?</h3>
+
+        <p style="margin-bottom:1rem">There are plenty of AI API services out there, but GlbTOKEN was designed from day one to solve the problems developers actually face when building production AI applications.</p>
+
+        <p style="margin-bottom:1rem"><strong>1. True Provider Agnosticism</strong></p>
+        <p style="margin-bottom:1rem">Most "unified" APIs still lock you into a single provider's ecosystem. GlbTOKEN doesn't. You can call GPT-5.5 Pro, Claude Sonnet 5, Gemini Ultra, Mistral Large, Llama 4, and dozens of other models — all through the same endpoint, all deducted from the same balance. Need to switch from OpenAI to Anthropic mid-project? Change one string in your code. That's it.</p>
+
+        <p style="margin-bottom:1rem"><strong>2. OpenAI SDK Compatibility</strong></p>
+        <p style="margin-bottom:1rem">We built the GlbTOKEN API to be a drop-in replacement for the OpenAI API. If you already use the OpenAI Python, Node.js, or Go SDK, you can point it at <code>https://api.glbtoken.com/v1</code> and start using any model immediately. No new SDK to install, no unfamiliar method signatures to learn. Here's how it looks in Python:</p>
+
+        <pre style="background:var(--card-bg);padding:1rem;border-radius:8px;overflow-x:auto;margin-bottom:1rem;font-size:0.8rem;line-height:1.5"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.glbtoken.com/v1",
+    api_key="your-glbtoken-api-key"
+)
+
+# Chat completion with any model
+response = client.chat.completions.create(
+    model="gpt-5.5-pro",       # or claude-sonnet-5, gemini-ultra-3, ...
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What's the capital of Rwanda?"}
+    ],
+    temperature=0.7,
+    max_tokens=1024
+)
+print(response.choices[0].message.content)</code></pre>
+
+        <p style="margin-bottom:1rem"><strong>3. Unified Token System</strong></p>
+        <p style="margin-bottom:1rem">Every model on GlbTOKEN is priced in tokens — the same tokens you buy, earn, or top up. One balance works everywhere. When you purchase tokens, they're available instantly across every model and provider. No separate subscriptions, no per-provider credit pools, no expiring credits. You buy once, use anywhere.</p>
+
+        <p style="margin-bottom:1rem"><strong>4. Real-Time Usage Analytics</strong></p>
+        <p style="margin-bottom:1rem">Every API call is logged and visible in your dashboard in real time. You can see which models are consuming the most tokens, track spending by project, set per-key usage limits, and configure webhook alerts when spending crosses defined thresholds. This is especially valuable for teams that need to manage budgets across multiple developers or applications.</p>
+
+        <p style="margin-bottom:1rem"><strong>5. Enterprise-Grade Security</strong></p>
+        <p style="margin-bottom:1rem">All API traffic is encrypted end-to-end with TLS 1.3. API keys are stored as salted hashes and never exposed in plaintext. We support key-scoped permissions (e.g., read-only keys, model-restricted keys, spend-limited keys) so you can issue credentials to team members without compromising your account. We also offer IP whitelisting for API keys on our Pro and Enterprise plans.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Supported Endpoints</h3>
+
+        <p style="margin-bottom:1rem">The initial release of the GlbTOKEN API includes the following endpoints:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Endpoint</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/chat/completions</code></td>
+              <td style="padding:0.5rem">Chat completions with any supported LLM</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/completions</code></td>
+              <td style="padding:0.5rem">Legacy text completions (GPT-3.5 style)</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/embeddings</code></td>
+              <td style="padding:0.5rem">Text embeddings for RAG and vector search</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/models</code></td>
+              <td style="padding:0.5rem">List all available models and their pricing</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem"><code>/v1/audio/transcriptions</code></td>
+              <td style="padding:0.5rem">Speech-to-text via Whisper and other ASR models</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Getting Started in 3 Steps</h3>
+
+        <p style="margin-bottom:1rem">Here's how to start building with the GlbTOKEN API:</p>
+
+        <ol style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Create an account and top up.</strong> Head to <a href="register.html" style="color:var(--primary)">glbtoken.com/register</a> and create an account. Top up your balance with as little as $5. We accept credit/debit cards, Paystack (mobile money), USDT, and BTC.</li>
+          <li style="margin-bottom:0.5rem"><strong>Generate an API key.</strong> From your Dashboard, navigate to the API Keys section and click "Generate New Key." Give it a name (e.g., "Production App" or "Dev Testing") and optionally set a monthly spend limit.</li>
+          <li style="margin-bottom:0.5rem"><strong>Make your first request.</strong> Use the OpenAI SDK (or any HTTP client) to call <code>https://api.glbtoken.com/v1/chat/completions</code> with your key and the model of your choice. That's it.</li>
+        </ol>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Pricing & Free Tier</h3>
+
+        <p style="margin-bottom:1rem">Every new account receives <strong>1,000 free tokens</strong> to test the API. No credit card required. After that, pricing varies by model — but you only pay for what you use, with no monthly minimums or hidden fees. Here are some example rates:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Model</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Input (per 1M tokens)</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Output (per 1M tokens)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">GPT-5.5 Pro</td>
+              <td style="padding:0.5rem">15 Tokens</td>
+              <td style="padding:0.5rem">75 Tokens</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Claude Sonnet 5</td>
+              <td style="padding:0.5rem">12 Tokens</td>
+              <td style="padding:0.5rem">60 Tokens</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Gemini Ultra 3</td>
+              <td style="padding:0.5rem">10 Tokens</td>
+              <td style="padding:0.5rem">40 Tokens</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Mistral Large 3</td>
+              <td style="padding:0.5rem">8 Tokens</td>
+              <td style="padding:0.5rem">24 Tokens</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem">Llama 4 (70B)</td>
+              <td style="padding:0.5rem">2 Tokens</td>
+              <td style="padding:0.5rem">6 Tokens</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-bottom:1rem">1 Token ≈ $0.001 USD. Volume discounts are available at 500K, 1M, and 5M token purchases. Visit our <a href="pricing.html" style="color:var(--primary)">Pricing page</a> for the full breakdown.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What Developers Are Building</h3>
+
+        <p style="margin-bottom:1rem">Since our private beta opened three weeks ago, we've seen an incredible range of applications built on the GlbTOKEN API:</p>
+
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem">A legal tech startup processing 50,000+ contract pages per day using GPT-5.5 Pro for extraction and Claude Sonnet 5 for analysis — switching between models based on the task's requirements with zero code changes.</li>
+          <li style="margin-bottom:0.5rem">An e-commerce platform using Gemini Ultra 3 for product image captioning and Mistral Large 3 for real-time customer support chat, all billed to a single token balance.</li>
+          <li style="margin-bottom:0.5rem">An open-source RAG framework that uses GlbTOKEN embeddings for vector search and any chat model for generation, enabling users to switch models without modifying their pipeline.</li>
+          <li style="margin-bottom:0.5rem">A language-learning app serving users across 40+ countries, using Llama 4 (70B) for cost-effective free-tier responses and GPT-5.5 Pro for premium subscribers — both through the same API key.</li>
+        </ul>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Documentation & Support</h3>
+
+        <p style="margin-bottom:1rem">We've published comprehensive documentation at <a href="apikeys.html" style="color:var(--primary)">docs.glbtoken.com</a> covering every endpoint, model, and feature. The docs include:</p>
+
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem">Quickstart guides for Python, Node.js, Go, and cURL</li>
+          <li style="margin-bottom:0.5rem">Full API reference with request/response schemas</li>
+          <li style="margin-bottom:0.5rem">Model catalog with capabilities, context windows, and pricing</li>
+          <li style="margin-bottom:0.5rem">Migration guides from OpenAI, Anthropic, Google, and others</li>
+          <li style="margin-bottom:0.5rem">Error code reference and troubleshooting guide</li>
+        </ul>
+
+        <p style="margin-bottom:1rem">If you get stuck, our in-app chat connects you with a real engineer — not a bot. We also offer dedicated Slack/Discord support channels for our Pro and Enterprise customers.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What's Next</h3>
+
+        <p style="margin-bottom:1rem">This is just the beginning. Over the coming weeks, we'll be shipping:</p>
+
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Streaming support</strong> — real-time token-by-token responses for chat applications</li>
+          <li style="margin-bottom:0.5rem"><strong>Function calling</strong> — structured output and tool use across all supported models</li>
+          <li style="margin-bottom:0.5rem"><strong>Batch API</strong> — asynchronous batch processing at 50% lower cost</li>
+          <li style="margin-bottom:0.5rem"><strong>Image generation</strong> — DALL·E, Stable Diffusion, and Midjourney through the same API</li>
+          <li style="margin-bottom:0.5rem"><strong>SDK libraries</strong> — first-party Python, Node.js, and Go SDKs with GlbTOKEN-specific features</li>
+        </ul>
+
+        <p style="margin-bottom:1rem">We believe that access to the best AI models should be simple, unified, and affordable. The GlbTOKEN Developer API is our biggest step yet toward that vision. <a href="register.html" style="color:var(--primary)">Sign up today</a>, grab your free 1,000 tokens, and start building.</p>
+
+        <p style="margin-bottom:1rem">If you have questions, feedback, or ideas, we'd love to hear from you. Reach out via the in-app chat or email <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0" />
+
+          <a href="blog.html" style="color:var(--primary);font-size:0.85rem">&larr; Back to Blog</a>
+        </div></div>
     </div></div>
   </div>
 
-  <!-- TOP-UP -->
+  <!-- FOOTER -->
 <footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>

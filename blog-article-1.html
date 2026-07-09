@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Dashboard — GlbTOKEN</title>
-  <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
+  <title>Introducing GlbTOKEN — One Balance for All AI | Blog</title>
+  <meta name="description" content="We're excited to launch GlbTOKEN, the unified token for accessing 100+ AI models. No more juggling subscriptions — one balance, one API, unlimited AI." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -15,19 +15,58 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=147" />
+<style>
+  .blog-article{max-width:800px;margin:0 auto;padding:3rem 0}
+  .blog-article .section-label{margin-bottom:0.5rem}
+  .blog-article h1{font-size:2.5rem;font-weight:800;line-height:1.15;margin:0.5rem 0 0.75rem;letter-spacing:-0.03em}
+  .blog-article .article-meta{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap}
+  .blog-article .article-meta .date{color:var(--text-secondary);font-size:0.9rem}
+  .blog-article .article-meta .tag{display:inline-block;padding:0.25rem 0.75rem;border-radius:999px;background:var(--primary-subtle);color:var(--primary);font-size:0.75rem;font-weight:600;border:1px solid hsla(44 96% 52% / 0.2)}
+  .blog-article .article-hero{width:100%;border-radius:var(--radius-lg);margin-bottom:2.5rem;overflow:hidden;background:var(--card);border:1px solid var(--border);padding:3rem;text-align:center}
+  .blog-article .article-hero .hero-icon{font-size:4rem;margin-bottom:0.5rem;display:block}
+  .blog-article .article-hero .hero-sub{color:var(--text-secondary);font-size:1.05rem;max-width:500px;margin:0.5rem auto 0}
+  .blog-article h2{font-size:1.65rem;font-weight:700;margin:2.5rem 0 1rem;color:var(--text)}
+  .blog-article h3{font-size:1.25rem;font-weight:600;margin:2rem 0 0.75rem;color:var(--text)}
+  .blog-article p{font-size:1.05rem;line-height:1.8;color:var(--text-secondary);margin-bottom:1.25rem}
+  .blog-article p strong,.blog-article h2 strong,.blog-article h3 strong{color:var(--text)}
+  .blog-article ul,.blog-article ol{margin:0 0 1.25rem 1.5rem;color:var(--text-secondary);font-size:1.05rem;line-height:1.8}
+  .blog-article li{margin-bottom:0.5rem}
+  .blog-article li strong{color:var(--text)}
+  .blog-article .highlight-box{padding:1.75rem;border-radius:var(--radius);background:var(--card);border:1px solid var(--border);margin:1.5rem 0 2rem}
+  .blog-article .highlight-box.primary{border-left:3px solid var(--primary);background:var(--primary-subtle)}
+  .blog-article .highlight-box h4{font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)}
+  .blog-article .highlight-box p{font-size:0.95rem;margin-bottom:0}
+  .blog-article hr{border:none;border-top:1px solid var(--hr-color);margin:2rem 0}
+  .blog-article .article-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1.5rem;border-top:1px solid var(--border);margin-top:2.5rem;flex-wrap:wrap;gap:1rem}
+  .blog-article .article-footer .back-link{display:inline-flex;align-items:center;gap:0.5rem;color:var(--primary);font-weight:600;font-size:0.95rem;transition:opacity 0.2s}
+  .blog-article .article-footer .back-link:hover{opacity:0.8}
+  .blog-article .article-footer .share{display:flex;align-items:center;gap:0.75rem;color:var(--text-secondary);font-size:0.85rem}
+  .blog-article .article-footer .share a{color:var(--text-secondary);transition:color 0.2s}
+  .blog-article .article-footer .share a:hover{color:var(--primary)}
+  .blog-article .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin:1.5rem 0}
+  .blog-article .stat-card{padding:1.25rem;border-radius:var(--radius);background:var(--card);border:1px solid var(--border);text-align:center}
+  .blog-article .stat-card .stat-number{font-size:1.75rem;font-weight:800;color:var(--primary);display:block}
+  .blog-article .stat-card .stat-label{font-size:0.8rem;color:var(--text-secondary);margin-top:0.25rem}
+  @media(max-width:768px){
+    .blog-article h1{font-size:1.75rem}
+    .blog-article .article-hero{padding:1.5rem}
+    .blog-article .article-hero .hero-icon{font-size:2.5rem}
+    .blog-article{padding:1.5rem 0}
+    .blog-article .stats-grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
 </head>
 <body>
-<script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
     <div class="nav-center" id="navCenter">
-      <a href="index.html" class="active">Home</a>
+      <a href="index.html">Home</a>
       <a href="pricing.html">Pricing</a>
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" id="navDashLink" style="display:none">Dashboard</a>
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
@@ -55,7 +94,7 @@
                 <div class="dd-email" id="dropEmail">user@email.com</div>
               </div>
             </div>
-                                    <div class="dd-items">
+                        <div class="dd-items">
               <a href="dashboard.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
               <a href="billing.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Billing</a>
               <a href="notifications.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Notifications</a>
@@ -98,48 +137,135 @@
       <a href="#" onclick="logoutUser()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</a>
     </div>
   </div>
-<div class="dash-page"><div class="container">
-      <div class="dash-header">
-        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
-        <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="document.getElementById('dashApiKeys').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('dashApiKeys').style.outline='2px solid var(--primary)';setTimeout(function(){document.getElementById('dashApiKeys').style.outline='none'},1500)">API Keys</button></div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-balance">
-          <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
-            <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
-          </div>
-          <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
-        </div>
-        <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">$0.00</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">0</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">0</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
-        </div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div></div>
-        <div class="dash-card"><div class="dash-section-title">Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="activityCount">0 items</span></div><div id="dashActivity" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">No activity yet. Buy tokens to get started!</p></div></div>
-      </div>
-      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
-        <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
-        <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
-      </div>
-      <div class="dash-card" style="margin-top:1.25rem" id="dashApiKeys">
-        <div class="dash-section-title">🔑 API Keys <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Manage your API access</span></div>
-        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
-          <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
-          <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
-          <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
-        </div>
-        <div id="dashKeyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
-      </div>
-    </div></div>
-  </div>
 
-  <!-- TOP-UP -->
+<!-- ARTICLE CONTENT -->
+<div class="dash-page"><div class="container">
+  <div class="blog-article">
+    <span class="section-label">Company</span>
+    <h1>Introducing GlbTOKEN — One Balance for All AI</h1>
+    <div class="article-meta">
+      <span class="date">July 3, 2026</span>
+      <span class="tag">Launch</span>
+      <span class="tag">Product</span>
+      <span class="tag" style="background:var(--success-subtle);color:var(--success);border-color:hsla(145 62% 42% / 0.2)">Announcement</span>
+    </div>
+
+    <div class="article-hero">
+      <span class="hero-icon">🚀</span>
+      <h2 style="font-size:1.5rem;font-weight:700;margin:0.75rem 0 0.25rem">One Token. Every AI Model. Infinite Possibilities.</h2>
+      <p class="hero-sub">Today we're taking the wraps off GlbTOKEN — a single, unified balance that lets you access over 100 AI models from 56 providers through one API. No more juggling subscriptions, managing multiple credits, or wondering which platform has the model you need.</p>
+    </div>
+
+    <h2>The Problem: AI Subscription Fatigue</h2>
+    <p>If you've been following the AI landscape over the past two years, you've probably felt it: <strong>subscription fatigue</strong>. OpenAI charges a monthly fee. Anthropic has its own plan. Then there's Google, Mistral, Cohere, Meta via various hosting platforms, and a dozen more providers — each with a separate billing system, separate API keys, separate login credentials, and separate credit balances.</p>
+    <p>A developer building AI-powered applications today might maintain five or six different accounts just to run benchmarks, compare outputs, or ensure redundancy when one provider goes down. A power user experimenting with the latest models on the weekend faces the same maze. The overhead isn't just financial — it's cognitive. <strong>You shouldn't need a spreadsheet to manage your AI budget.</strong></p>
+    <p>Even more frustrating: when you prepay for credits on one platform and then decide you'd rather use a different model from a different provider, you're stuck. Your money is locked in. You can't transfer it. You can't use it elsewhere. You're a prisoner of the platform you chose last week.</p>
+
+    <div class="highlight-box primary">
+      <h4>💡 The GlbTOKEN Insight</h4>
+      <p>AI models are becoming commodities — like compute, like storage, like bandwidth. What the market needs isn't another model. It's an <strong>abstraction layer</strong> that lets you spend any AI budget on any AI model, from any provider, through a single integration point.</p>
+    </div>
+
+    <h2>What Is GlbTOKEN?</h2>
+    <p>GlbTOKEN is exactly that abstraction layer. We've built a platform where <strong>one balance works everywhere</strong>. When you buy GlbTOKENs — using local currency, crypto (USDT, BTC), or mobile money — those tokens become your universal AI credit. Every model in our catalog costs a fixed number of tokens per request. You spend from the same balance whether you're calling GPT-5.5, Claude Sonnet 5, Gemini 2.0 Pro, Mistral Large, Llama 4, or any of the 100+ models we support.</p>
+    <p>The economics are simple: <strong>1 GlbTOKEN = 1 unit of AI compute</strong>. Different models consume different numbers of tokens based on their capability and cost. A lightweight model like Llama 3.2 3B costs a fraction of what GPT-5.5 Pro costs. You decide what trade-off between quality and cost makes sense for each task, and you pay only for what you use. No monthly commitments. No idle subscription dollars evaporating at the end of the billing cycle.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-number">100+</span>
+        <span class="stat-label">AI Models</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">56</span>
+        <span class="stat-label">Providers</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">1</span>
+        <span class="stat-label">Unified Balance</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">6</span>
+        <span class="stat-label">Payment Methods</span>
+      </div>
+    </div>
+
+    <h2>Built for Developers, Designers, and Power Users</h2>
+    <p>We designed GlbTOKEN from day one as a <strong>developer-first platform</strong>. Our API is fully compatible with the OpenAI SDK — if you've written code against OpenAI's API, you already know how to use GlbTOKEN. Change the base URL, swap in your GlbTOKEN API key, and you're done. The same code, the same patterns, the same parameters — instant access to every model we support.</p>
+    <p>Here's what you get out of the box:</p>
+    <ul>
+      <li><strong>One API key</strong> — Generate it from your dashboard, use it across all models. Router determines the best endpoint.</li>
+      <li><strong>Zero setup per model</strong> — New models appear in your account automatically. No provisioning, no waiting for approval, no additional billing setup.</li>
+      <li><strong>Real-time usage tracking</strong> — Every request is logged and visible in your dashboard within seconds. See exactly which model, how many tokens consumed, and the cost.</li>
+      <li><strong>Automatic fallback</strong> — If one provider is experiencing an outage, your requests automatically route to the next best model with zero downtime.</li>
+      <li><strong>Team sharing</strong> — Invite team members, set per-user spending limits, and manage the whole team's AI usage from a single parent balance.</li>
+    </ul>
+
+    <h2>Pay Your Way: Local Currency, Crypto, or Card</h2>
+    <p>One of the things we're most proud of is our <strong>payment flexibility</strong>. AI access shouldn't be gated by which bank you use or what country you live in. We currently support:</p>
+    <ul>
+      <li><strong>Credit/debit cards</strong> via Stripe (global) — Visa, Mastercard, AmEx</li>
+      <li><strong>Local African payments</strong> via Paystack — bank transfer, USSD, mobile money in Ghana, Nigeria, Kenya, and South Africa</li>
+      <li><strong>Crypto</strong> — USDT (TRC-20, ERC-20) and BTC</li>
+      <li><strong>Coming soon</strong> — PayPal, Google Pay, Apple Pay, and regional payment methods across Asia and Latin America</li>
+    </ul>
+    <p>No matter how you pay, tokens are credited to your account instantly. <strong>No waiting for confirmations.</strong> No minimum purchase amounts. Buy $5 worth or $5,000 — the experience is the same.</p>
+
+    <div class="highlight-box">
+      <h4>🌍 Global by Design</h4>
+      <p>We've built GlbTOKEN with a <strong>mobile-first, Africa-first</strong> mindset. Over 60% of the world accesses the internet primarily through mobile devices, and the next billion AI users will come from emerging markets. Our platform is fully responsive, works on 2G/3G connections, and supports payment methods that actually work in the regions where AI adoption is growing fastest.</p>
+    </div>
+
+    <h2>What's Under the Hood</h2>
+    <p>We route every request through our intelligent <strong>model routing layer</strong>, which handles provider authentication, rate limiting, retry logic, and response streaming automatically. The routing layer evaluates request parameters, checks provider availability, and selects the optimal endpoint in under 50 milliseconds. Here's the architecture at a high level:</p>
+    <ul>
+      <li><strong>Ingress Layer</strong> — Authentication, rate limiting, and request validation. Every request is verified against your API key and checked against your token balance before it reaches any upstream provider.</li>
+      <li><strong>Router</strong> — Maps model names to provider endpoints. Supports both exact model selection (e.g., <code>gpt-5.5-pro</code>) and semantic fallback chains (e.g., "use GPT-5.5, fall back to Claude Sonnet 5, then Gemini 2.0 Pro").</li>
+      <li><strong>Provider Proxies</strong> — Lightweight adapters that normalize request/response formats across every provider. Every model speaks the same HTTP API to your application.</li>
+      <li><strong>Billing Engine</strong> — Deducts tokens in real time. Supports both prepaid (pay-as-you-go) and reserved (bulk discount) pricing models.</li>
+    </ul>
+    <p>All of this runs on infrastructure that is <strong>SOC 2 Type II compliant</strong>, with end-to-end encryption for all API traffic and database-level data isolation for every account. Your data is yours. We never train on your API traffic.</p>
+
+    <h2>Pricing That Makes Sense</h2>
+    <p>We believe in <strong>radical transparency</strong> when it comes to pricing. Every model on our platform has a published token cost, and we update those costs in real time as provider pricing changes. You'll never be surprised by a bill. Here's the breakdown:</p>
+    <ul>
+      <li><strong>Pay-as-you-go</strong> — Buy tokens at $0.10 each. Each model lists its cost in tokens. A typical GPT-5.5 Pro request might cost 15 tokens. A Llama 3.2 3B request might cost 0.5 tokens. You pay exactly the tokens you use.</li>
+      <li><strong>Volume discounts</strong> — Purchases over $500 receive a 10% bonus in tokens. Over $2,000, a 20% bonus. Over $10,000, contact us for custom pricing.</li>
+      <li><strong>No hidden fees</strong> — No monthly minimums, no inactivity fees, no surprise charges. Tokens never expire as long as your account remains active.</li>
+    </ul>
+    <p>Our pricing page has the full, up-to-date list of model costs. Check it out at <a href="pricing.html" style="color:var(--primary);font-weight:600">glbtoken.com/pricing</a>.</p>
+
+    <hr />
+
+    <h2>What's Next</h2>
+    <p>Today is just the beginning. Our roadmap for the rest of 2026 includes:</p>
+    <ul>
+      <li><strong>Fine-tuning support</strong> — Upload your datasets and fine-tune models from your GlbTOKEN balance.</li>
+      <li><strong>Image, video, and audio models</strong> — Extend beyond text to multimodal AI, all from the same unified balance.</li>
+      <li><strong>Custom model routing rules</strong> — Define your own fallback chains, cost caps, and provider preferences via the dashboard.</li>
+      <li><strong>Native mobile app</strong> — Manage your balance, monitor usage, and generate API keys from your phone.</li>
+      <li><strong>Enterprise SSO</strong> — SAML, OIDC, and SCIM provisioning for organizations.</li>
+    </ul>
+    <p>We're also actively onboarding new providers and models every week. If there's a model you want that we don't have yet, <a href="contact.html" style="color:var(--primary);font-weight:600">let us know</a> — we'll prioritize it.</p>
+
+    <div class="highlight-box primary" style="text-align:center;padding:2rem">
+      <h4 style="font-size:1.15rem;margin-bottom:0.75rem">🎉 Get Started Today</h4>
+      <p style="margin-bottom:1.25rem">Sign up in under 60 seconds. No credit card required to create an account — we'll give you 10 free tokens to test any model in our catalog.</p>
+      <a href="register.html" class="nav-btn" style="display:inline-block;padding:0.7rem 2rem;font-size:1rem">Create Free Account</a>
+    </div>
+
+    <div class="article-footer">
+      <a href="blog.html" class="back-link">← Back to Blog</a>
+      <div class="share">
+        <span>Share:</span>
+        <a href="#" onclick="copyShareLink();return false" title="Copy link">🔗</a>
+        <a href="https://twitter.com/intent/tweet?text=Introducing%20GlbTOKEN%20%E2%80%94%20One%20Balance%20for%20All%20AI&url=https://glbtoken.com/blog-article-1.html" target="_blank" title="Share on Twitter">𝕏</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://glbtoken.com/blog-article-1.html" target="_blank" title="Share on LinkedIn">💼</a>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- FOOTER -->
 <footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
@@ -196,6 +322,17 @@
   document.addEventListener('mouseup', endDrag);
   document.addEventListener('touchend', endDrag);
 })();
+
+function copyShareLink(){
+  const input = document.createElement('input');
+  input.value = window.location.href;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand('copy');
+  document.body.removeChild(input);
+  if(typeof showToast === 'function') showToast('Link copied to clipboard','success');
+  return false;
+}
 </script>
 
 </body>

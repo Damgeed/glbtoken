@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Dashboard — GlbTOKEN</title>
-  <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
+  <title>New Models: GPT-5.5 &amp; Claude Sonnet 5 — GlbTOKEN Blog</title>
+  <meta name="description" content="OpenAI's GPT-5.5 Pro and Anthropic's Claude Sonnet 5 are now live on GlbTOKEN. We break down what's new, benchmark results, and pricing." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="style.css?v=147" />
 </head>
 <body>
-<script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
@@ -27,7 +26,7 @@
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" id="navDashLink" style="display:none">Dashboard</a>
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
@@ -55,7 +54,7 @@
                 <div class="dd-email" id="dropEmail">user@email.com</div>
               </div>
             </div>
-                                    <div class="dd-items">
+                        <div class="dd-items">
               <a href="dashboard.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
               <a href="billing.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Billing</a>
               <a href="notifications.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Notifications</a>
@@ -99,47 +98,169 @@
     </div>
   </div>
 <div class="dash-page"><div class="container">
-      <div class="dash-header">
-        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
-        <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="document.getElementById('dashApiKeys').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('dashApiKeys').style.outline='2px solid var(--primary)';setTimeout(function(){document.getElementById('dashApiKeys').style.outline='none'},1500)">API Keys</button></div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-balance">
-          <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
-            <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
-          </div>
-          <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
-        </div>
-        <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">$0.00</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">0</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">0</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
-        </div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div></div>
-        <div class="dash-card"><div class="dash-section-title">Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="activityCount">0 items</span></div><div id="dashActivity" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">No activity yet. Buy tokens to get started!</p></div></div>
-      </div>
-      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
-        <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
-        <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
-      </div>
-      <div class="dash-card" style="margin-top:1.25rem" id="dashApiKeys">
-        <div class="dash-section-title">🔑 API Keys <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Manage your API access</span></div>
-        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
-          <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
-          <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
-          <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
-        </div>
-        <div id="dashKeyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
-      </div>
+      <span class="section-label">Blog</span>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">New Models Added: GPT-5.5 Pro &amp; Claude Sonnet 5</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem">July 1, 2026 · 6 min read</p>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+
+        <p style="margin-bottom:1rem">We've just added two of the most anticipated AI models to the GlbTOKEN platform: <strong>OpenAI's GPT-5.5 Pro</strong> and <strong>Anthropic's Claude Sonnet 5</strong>. These flagship models represent a significant leap forward in reasoning ability, multilingual performance, and coding capability — and they're available right now through a single API key and a single balance.</p>
+
+        <p style="margin-bottom:1rem">In this article, we dive into what makes each model special, how they compare, and how you can start using them on GlbTOKEN today.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">GPT-5.5 Pro: OpenAI's New Flagship</h3>
+
+        <p style="margin-bottom:1rem">GPT-5.5 Pro is the latest iteration in OpenAI's GPT series, building on the foundation of GPT-5 with substantial improvements across reasoning, factual accuracy, and tool use. It was quietly released in late June 2026 and has quickly become one of the highest-rated models on independent benchmarks.</p>
+
+        <p style="margin-bottom:1rem"><strong>Key improvements in GPT-5.5 Pro:</strong></p>
+
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Advanced Reasoning Pipeline:</strong> GPT-5.5 introduces a two-pass reasoning system that internally verifies its chain-of-thought before generating output. This has reduced logical errors by approximately 40% compared to GPT-5 on complex multi-step problems.</li>
+          <li style="margin-bottom:0.5rem"><strong>256K Token Context Window:</strong> Double the context length of GPT-5, allowing you to process entire codebases, lengthy legal documents, or extended conversation histories in a single pass.</li>
+          <li style="margin-bottom:0.5rem"><strong>Improved Multilingual Support:</strong> Significant gains in non-English languages, particularly Mandarin, Arabic, and Swahili. Benchmarks show a 22% improvement in translation accuracy for low-resource language pairs.</li>
+          <li style="margin-bottom:0.5rem"><strong>Faster Inference:</strong> Thanks to a new sparse attention mechanism, GPT-5.5 Pro delivers responses 1.8x faster than GPT-5 while maintaining the same quality level.</li>
+          <li style="margin-bottom:0.5rem"><strong>Enhanced Tool Use &amp; Function Calling:</strong> GPT-5.5 Pro can now call up to 64 functions in parallel with improved parameter extraction, making it ideal for complex agentic workflows.</li>
+        </ul>
+
+        <p style="margin-bottom:1rem">On standard benchmarks, GPT-5.5 Pro scores 92.4% on MMLU-Pro, 89.1% on HumanEval (Python code generation), and achieves a 96.2% accuracy on GSM-8K (grade-school math). These numbers place it at the top of the leaderboard alongside Claude Sonnet 5.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Claude Sonnet 5: Anthropic's Balanced Powerhouse</h3>
+
+        <p style="margin-bottom:1rem">Anthropic's Claude Sonnet 5 is the company's latest mid-size flagship, sitting between the smaller Haiku and the massive Opus models. It's designed to deliver near-Opus quality at significantly lower cost and latency, making it the ideal workhorse for production applications.</p>
+
+        <p style="margin-bottom:1rem"><strong>Key improvements in Claude Sonnet 5:</strong></p>
+
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Constitutional Reasoning v3:</strong> Claude Sonnet 5 runs on Anthropic's latest constitutional AI framework, which provides more nuanced ethical reasoning while maintaining higher refusal accuracy. The model is 35% less likely to refuse legitimate requests compared to Claude Sonnet 4, while maintaining strong safety guardrails.</li>
+          <li style="margin-bottom:0.5rem"><strong>200K Token Context Window:</strong> Claude Sonnet 5 supports up to 200K tokens of context with near-perfect recall across the entire window. In needle-in-a-haystack tests, it achieves 99.7% recall accuracy.</li>
+          <li style="margin-bottom:0.5rem"><strong>Superior Code Generation &amp; Review:</strong> Claude Sonnet 5 excels at code generation, scoring 90.3% on HumanEval and 87.5% on SWE-bench (real-world software engineering tasks). It's particularly strong at code review, bug detection, and refactoring.</li>
+          <li style="margin-bottom:0.5rem"><strong>Vision &amp; Document Understanding:</strong> The model processes images, PDFs, charts, and diagrams with high accuracy. On DocVQA, it scores 93.7%, making it ideal for document-heavy workflows like invoice processing and contract analysis.</li>
+          <li style="margin-bottom:0.5rem"><strong>Long-Form Writing:</strong> Claude Sonnet 5 produces significantly better long-form content than its predecessor, with improved coherence over 4,000+ word outputs. It's excellent for reports, articles, and creative writing.</li>
+        </ul>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Head-to-Head: Which Model Should You Choose?</h3>
+
+        <p style="margin-bottom:1rem">Both GPT-5.5 Pro and Claude Sonnet 5 are exceptional models, but they have different strengths:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Capability</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--accent)">GPT-5.5 Pro</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--primary)">Claude Sonnet 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Reasoning (MMLU-Pro)</td>
+              <td style="padding:0.5rem">92.4%</td>
+              <td style="padding:0.5rem">91.8%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Code Generation (HumanEval)</td>
+              <td style="padding:0.5rem">89.1%</td>
+              <td style="padding:0.5rem">90.3%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">SWE-bench (Real-world Code)</td>
+              <td style="padding:0.5rem">84.2%</td>
+              <td style="padding:0.5rem">87.5%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Math (GSM-8K)</td>
+              <td style="padding:0.5rem">96.2%</td>
+              <td style="padding:0.5rem">95.1%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Multilingual</td>
+              <td style="padding:0.5rem">Excellent</td>
+              <td style="padding:0.5rem">Very Good</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Long-form Writing</td>
+              <td style="padding:0.5rem">Very Good</td>
+              <td style="padding:0.5rem">Excellent</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem">Context Window</td>
+              <td style="padding:0.5rem">256K tokens</td>
+              <td style="padding:0.5rem">200K tokens</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-bottom:1rem"><strong>Choose GPT-5.5 Pro if</strong> you need the absolute best reasoning and math performance, require a 256K context window for very long documents, or are building multilingual applications targeting non-English audiences.</p>
+
+        <p style="margin-bottom:1rem"><strong>Choose Claude Sonnet 5 if</strong> you're doing heavy code generation and software engineering work, need strong vision and document processing, or want the best long-form writing quality available.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Pricing on GlbTOKEN</h3>
+
+        <p style="margin-bottom:1rem">Both models are available through GlbTOKEN at competitive rates. You pay from your unified token balance — no separate subscriptions needed:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Model</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Input (per 1M tokens)</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Output (per 1M tokens)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">GPT-5.5 Pro</td>
+              <td style="padding:0.5rem">15 Tokens</td>
+              <td style="padding:0.5rem">75 Tokens</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem">Claude Sonnet 5</td>
+              <td style="padding:0.5rem">12 Tokens</td>
+              <td style="padding:0.5rem">60 Tokens</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-bottom:1rem">All pricing is in GlbTOKENs, with 1 Token roughly equivalent to $0.001 USD. Volume discounts are available starting at 500K Tokens purchased. Visit our <a href="pricing.html" style="color:var(--primary)">Pricing page</a> for full details.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">How to Get Started</h3>
+
+        <p style="margin-bottom:1rem">Using GPT-5.5 Pro and Claude Sonnet 5 is as simple as any other model on GlbTOKEN:</p>
+
+        <ol style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Create an account</strong> at <a href="register.html" style="color:var(--primary)">glbtoken.com/register</a> (takes 30 seconds)</li>
+          <li style="margin-bottom:0.5rem"><strong>Top up your balance</strong> via the Buy Tokens page — we accept credit/debit cards, mobile money (Paystack), USDT, and BTC</li>
+          <li style="margin-bottom:0.5rem"><strong>Generate an API key</strong> from the Dashboard and use our OpenAI-compatible endpoint</li>
+          <li style="margin-bottom:0.5rem"><strong>Call the models</strong> using <code>gpt-5.5-pro</code> or <code>claude-sonnet-5</code> as your model identifier</li>
+        </ol>
+
+        <p style="margin-bottom:1rem">Here's a quick example using Python and the OpenAI SDK:</p>
+
+        <pre style="background:var(--card-bg);padding:1rem;border-radius:8px;overflow-x:auto;margin-bottom:1rem;font-size:0.8rem;line-height:1.5"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.glbtoken.com/v1",
+    api_key="your-glbtoken-api-key"
+)
+
+# GPT-5.5 Pro
+response = client.chat.completions.create(
+    model="gpt-5.5-pro",
+    messages=[{"role": "user", "content": "Explain quantum computing in simple terms."}]
+)
+print(response.choices[0].message.content)</code></pre>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What's Next?</h3>
+
+        <p style="margin-bottom:1rem">We're continuing to expand our model catalog. Future additions include Anthropic's Claude Opus 5 (now in beta), Google Gemini 3 Ultra, and several open-weight models from the community. All of these will be available through the same unified API and token balance — because managing AI access shouldn't require a dozen different accounts.</p>
+
+        <p style="margin-bottom:1rem">If you have questions about GPT-5.5 Pro, Claude Sonnet 5, or any other model on the platform, reach out via our in-app chat or email <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>. We'd love to hear what you're building.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0" />
+
+          <a href="blog.html" style="color:var(--primary);font-size:0.85rem">&larr; Back to Blog</a>
+        </div></div>
     </div></div>
   </div>
 
-  <!-- TOP-UP -->
+  <!-- FOOTER -->
 <footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Dashboard — GlbTOKEN</title>
-  <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
+  <title>Paystack Integration: African Payments Now Live — GlbTOKEN Blog</title>
+  <meta name="description" content="GlbTOKEN now supports payments via Paystack. Users in Ghana, Nigeria, Kenya, and South Africa can pay with local currencies using bank transfer, USSD, and mobile money." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="style.css?v=147" />
 </head>
 <body>
-<script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
@@ -27,7 +26,7 @@
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" id="navDashLink" style="display:none">Dashboard</a>
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
@@ -55,7 +54,7 @@
                 <div class="dd-email" id="dropEmail">user@email.com</div>
               </div>
             </div>
-                                    <div class="dd-items">
+                        <div class="dd-items">
               <a href="dashboard.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
               <a href="billing.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Billing</a>
               <a href="notifications.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Notifications</a>
@@ -99,47 +98,159 @@
     </div>
   </div>
 <div class="dash-page"><div class="container">
-      <div class="dash-header">
-        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
-        <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="document.getElementById('dashApiKeys').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('dashApiKeys').style.outline='2px solid var(--primary)';setTimeout(function(){document.getElementById('dashApiKeys').style.outline='none'},1500)">API Keys</button></div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-balance">
-          <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
-            <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
-          </div>
-          <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
-        </div>
-        <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">$0.00</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">0</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">0</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
-        </div>
-      </div>
-      <div class="dash-grid">
-        <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div></div>
-        <div class="dash-card"><div class="dash-section-title">Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="activityCount">0 items</span></div><div id="dashActivity" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">No activity yet. Buy tokens to get started!</p></div></div>
-      </div>
-      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
-        <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
-        <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
-      </div>
-      <div class="dash-card" style="margin-top:1.25rem" id="dashApiKeys">
-        <div class="dash-section-title">🔑 API Keys <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Manage your API access</span></div>
-        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
-          <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
-          <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
-          <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
-        </div>
-        <div id="dashKeyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
-      </div>
+      <span class="section-label">Blog</span>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">Paystack Integration: African Payments Now Live</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem">June 28, 2026 · 5 min read</p>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+
+        <p style="margin-bottom:1rem">We are thrilled to announce that GlbTOKEN now supports <strong>Paystack</strong> — Africa's leading payment gateway — enabling users in <strong>Ghana, Nigeria, Kenya, and South Africa</strong> to purchase tokens using their local currencies. This marks a major step toward our mission of making AI accessible to developers, businesses, and creators across the African continent.</p>
+
+        <p style="margin-bottom:1rem">Starting today, you can fund your GlbTOKEN balance using bank transfers, USSD codes, and mobile money — all processed in your local currency at competitive exchange rates. No credit card required. No international transaction fees. Just a seamless, locally-optimized payment experience.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Why Paystack?</h3>
+
+        <p style="margin-bottom:1rem">Paystack is one of the most trusted payment processors on the African continent, serving over 70,000 businesses across multiple countries. Acquired by Stripe in 2020, Paystack provides enterprise-grade payment infrastructure with deep local integration — supporting each country's preferred payment methods, regulatory frameworks, and banking rails.</p>
+
+        <p style="margin-bottom:1rem">By integrating Paystack, we eliminate the friction that African users traditionally face when trying to access global AI services: foreign exchange barriers, international card requirements, and expensive cross-border transaction fees. Now, whether you're a developer in Lagos, a startup founder in Nairobi, a fintech team in Accra, or a data scientist in Johannesburg, you can top up your GlbTOKEN balance in minutes using the payment method you already use every day.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Supported Countries &amp; Payment Methods</h3>
+
+        <p style="margin-bottom:1rem">Here is a breakdown of the payment options now available by country:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Country</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Currency</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Payment Methods</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Nigeria</td>
+              <td style="padding:0.5rem">NGN (₦)</td>
+              <td style="padding:0.5rem">Bank Transfer, USSD, Debit/Credit Cards, Mobile Money</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Ghana</td>
+              <td style="padding:0.5rem">GHS (₵)</td>
+              <td style="padding:0.5rem">Mobile Money (MTN, Vodafone, AirtelTigo), Bank Transfer, Cards</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Kenya</td>
+              <td style="padding:0.5rem">KES (KSh)</td>
+              <td style="padding:0.5rem">M-Pesa, Bank Transfer, Debit/Credit Cards</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem">South Africa</td>
+              <td style="padding:0.5rem">ZAR (R)</td>
+              <td style="padding:0.5rem">EFT, Debit/Credit Cards, Mobile Money</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-bottom:1rem">We plan to expand to additional African countries — including Egypt, Morocco, Tanzania, and Uganda — in the coming months. If your country isn't listed yet, reach out and let us know; your feedback helps us prioritize.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">How It Works</h3>
+
+        <p style="margin-bottom:1rem">Buying tokens via Paystack is straightforward and takes less than two minutes:</p>
+
+        <ol style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Log in</strong> to your GlbTOKEN account and navigate to the <strong>Buy Tokens</strong> page from your Dashboard or the main navigation.</li>
+          <li style="margin-bottom:0.5rem"><strong>Select your amount</strong> — choose from preset token bundles or enter a custom amount. The equivalent in your local currency will be displayed in real time.</li>
+          <li style="margin-bottom:0.5rem"><strong>Choose Paystack</strong> as your payment method at checkout.</li>
+          <li style="margin-bottom:0.5rem"><strong>Select your country</strong> — Nigeria, Ghana, Kenya, or South Africa — and pick your preferred payment option (bank transfer, USSD, mobile money, or card).</li>
+          <li style="margin-bottom:0.5rem"><strong>Complete the payment</strong> — you'll be redirected to a secure Paystack checkout page. Follow the on-screen instructions for your chosen method. For USSD, you'll receive a code to dial on your phone. For bank transfer, you'll get the account details to send funds to. Mobile money payments are processed instantly.</li>
+          <li style="margin-bottom:0.5rem"><strong>Tokens credited instantly</strong> — once the payment is confirmed, your GlbTOKEN balance updates in real time, and you can start using any of our 100+ AI models immediately.</li>
+        </ol>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Exchange Rates &amp; Fees</h3>
+
+        <p style="margin-bottom:1rem">We use live exchange rates sourced directly from Paystack's settlement partners, ensuring you get competitive, transparent pricing. There are <strong>no hidden fees or surcharges</strong> — the amount you see at checkout is the exact amount you pay. All Paystack transaction fees are absorbed by GlbTOKEN during our launch period.</p>
+
+        <p style="margin-bottom:1rem">Here's a rough guide to how much 1 GlbTOKEN costs in local currencies (rates update in real time on the Buy Tokens page):</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Currency</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">1 Token ≈</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">1,000 Tokens ≈</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">NGN (Nigerian Naira)</td>
+              <td style="padding:0.5rem">₦1.55</td>
+              <td style="padding:0.5rem">₦1,550</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">GHS (Ghanaian Cedi)</td>
+              <td style="padding:0.5rem">₵0.015</td>
+              <td style="padding:0.5rem">₵15</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">KES (Kenyan Shilling)</td>
+              <td style="padding:0.5rem">KSh 0.13</td>
+              <td style="padding:0.5rem">KSh 130</td>
+            </tr>
+            <tr>
+              <td style="padding:0.5rem">ZAR (South African Rand)</td>
+              <td style="padding:0.5rem">R 0.018</td>
+              <td style="padding:0.5rem">R 18</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-bottom:1rem">These rates are indicative and will vary slightly based on the current market rate at the time of your transaction. Visit the <a href="topup.html" style="color:var(--primary)">Buy Tokens</a> page for the exact current rates.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What This Means for African Developers &amp; Businesses</h3>
+
+        <p style="margin-bottom:1rem">The African tech ecosystem is growing rapidly, with startups, fintech companies, and individual developers pushing the boundaries of what's possible with AI. Yet accessing cutting-edge AI models has often required international payment methods that many in Africa simply don't have access to.</p>
+
+        <p style="margin-bottom:1rem">With this Paystack integration, we're removing that barrier. Here are just a few use cases that are now easier than ever:</p>
+
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Fintech startups</strong> building fraud detection systems can call GPT-5.5 Pro or Claude Sonnet 5 directly via our API — no international card needed.</li>
+          <li style="margin-bottom:0.5rem"><strong>EdTech platforms</strong> in Lagos and Nairobi can power AI tutors using local currency top-ups.</li>
+          <li style="margin-bottom:0.5rem"><strong>Content creators</strong> across the continent can generate, translate, and localize content using models that support African languages — all paid for with M-Pesa or mobile money.</li>
+          <li style="margin-bottom:0.5rem"><strong>Enterprise teams</strong> can provision tokens for entire departments via a single Paystack EFT from their corporate bank account in South Africa or Ghana.</li>
+        </ul>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Security &amp; Compliance</h3>
+
+        <p style="margin-bottom:1rem">Paystack is PCI-DSS Level 1 compliant — the highest standard of payment security — and all transactions are encrypted end-to-end. We never store your card or bank details on our servers. Paystack handles all sensitive payment data directly through their secure, tokenized infrastructure.</p>
+
+        <p style="margin-bottom:1rem">Additionally, GlbTOKEN is fully compliant with local financial regulations in each supported country. Our partnership with Paystack ensures that all transactions adhere to the Central Bank of Nigeria (CBN), Bank of Ghana (BoG), Central Bank of Kenya (CBK), and South African Reserve Bank (SARB) guidelines.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Getting Started</h3>
+
+        <p style="margin-bottom:1rem">Ready to buy tokens with your local currency? Here's how:</p>
+
+        <ol style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem"><strong>Create or log in</strong> to your GlbTOKEN account at <a href="register.html" style="color:var(--primary)">glbtoken.com/register</a></li>
+          <li style="margin-bottom:0.5rem">Go to <strong>Buy Tokens</strong> from your Dashboard</li>
+          <li style="margin-bottom:0.5rem">Select <strong>Paystack</strong> at checkout and choose your country</li>
+          <li style="margin-bottom:0.5rem">Pick your payment method — bank transfer, USSD, mobile money, or card</li>
+          <li style="margin-bottom:0.5rem">Complete the payment and start building with AI instantly</li>
+        </ol>
+
+        <p style="margin-bottom:1rem">If you have any questions about the Paystack integration, payment methods in your country, or encounter any issues during checkout, our support team is available via the in-app chat or email at <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>. We're here to help.</p>
+
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What's Next?</h3>
+
+        <p style="margin-bottom:1rem">This is just the beginning of our Africa expansion. In the coming months, we'll be adding support for additional payment methods across more African countries, including direct mobile money integration with providers like MTN MoMo, Airtel Money, and Orange Money. We're also exploring partnerships with local payment processors in North and Central Africa.</p>
+
+        <p style="margin-bottom:1rem">Our goal is simple: make AI accessible to every developer and business on the African continent. With Paystack, we've taken a big step in that direction. Thank you for being part of this journey.</p>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0" />
+
+          <a href="blog.html" style="color:var(--primary);font-size:0.85rem">&larr; Back to Blog</a>
+        </div></div>
     </div></div>
   </div>
 
-  <!-- TOP-UP -->
+  <!-- FOOTER -->
 <footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
