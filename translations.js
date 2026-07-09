@@ -13,6 +13,15 @@ function switchLanguage(lang) {
   location.reload();
 }
 
+// Trigger Google Translate programmatically (called after page loads with saved lang)
+function triggerGoogleTranslate(lang) {
+  var select = document.querySelector('.goog-te-combo');
+  if (select) {
+    select.value = lang;
+    select.dispatchEvent(new Event('change'));
+  }
+}
+
 function translatePage() {
   var walker = document.createTreeWalker(document.body, 4, null, false);
   var nodes = [];
@@ -73,6 +82,8 @@ window.addEventListener('pageshow', function(e) {
     curLang = saved;
     translatePage();
     updateLangUI(saved);
+    // Also trigger Google Translate after a short delay to let the widget load
+    setTimeout(function() { triggerGoogleTranslate(saved); }, 1500);
   }
 });
 
@@ -719,8 +730,7 @@ I18N_MIXED["refund-section-5"] = {
   de: "<strong>Rückbuchungen</strong><br>Rückbuchungen führen zur sofortigen Sperrung des Kontos und zum Verfall aller Token-Guthaben."
 };
 
-I18N_MIXED["auth-header-text"] = {en: 'All API requests require an API key passed via the <code translate="no" style="background:var(--bg-alt);
+I18N_MIXED["auth-header-text"] = {en: 'All API requests require an API key passed via the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> header:', "zh-CN": '所有 API 请求都需要通过 <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> 标头传递 API 密钥：', ru: 'Все API-запросы требуют передачи API-ключа через заголовок <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>:', ja: 'すべてのAPIリクエストには <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> ヘッダーでAPIキーを渡す必要があります：', de: 'Alle API-Anfragen erfordern einen API-Schlüssel, der über den <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>-Header übergeben wird:'};
 I18N_MIXED["read-more"] = {en: "Read more →", "zh-CN": "阅读更多 →", ru: "Читать далее →", ja: "続きを読む →", de: "Weiterlesen →"};
 I18N_MIXED["back-to-blog"] = {en: "← Back to Blog", "zh-CN": "← 返回博客", ru: "← Назад в блог", ja: "← ブログに戻る", de: "← Zurück zum Blog"};
 I18N_MIXED["share-label"] = {en: "Share:", "zh-CN": "分享：", ru: "Поделиться:", ja: "シェア：", de: "Teilen:"};
-padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> header:', "zh-CN": '所有 API 请求都需要通过 <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> 标头传递 API 密钥：', ru: 'Все API-запросы требуют передачи API-ключа через заголовок <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>:', ja: 'すべてのAPIリクエストには <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code> ヘッダーでAPIキーを渡す必要があります：', de: 'Alle API-Anfragen erfordern einen API-Schlüssel, der über den <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px">Authorization</code>-Header übergeben wird:'};
