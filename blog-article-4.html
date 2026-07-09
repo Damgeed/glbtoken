@@ -136,19 +136,19 @@
       <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem" data-i18n="article-4-subtitle">June 25, 2026 · 5 min read</p>
       <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
 
-        <p style="margin-bottom:1rem">We're thrilled to announce the launch of the <strong>GlbTOKEN Developer API</strong> — a single, OpenAI-compatible REST endpoint that gives you access to over 100 AI models from 56 providers with a single API key and a single token balance. No more managing multiple SDKs, juggling separate API keys for each provider, or tracking down credits across a dozen different dashboards.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-1">We're thrilled to announce the launch of the <strong>GlbTOKEN Developer API</strong> — a single, OpenAI-compatible REST endpoint that gives you access to over 100 AI models from 56 providers with a single API key and a single token balance. No more managing multiple SDKs, juggling separate API keys for each provider, or tracking down credits across a dozen different dashboards.</p>
 
-        <p style="margin-bottom:1rem">Starting today, every GlbTOKEN user can generate an API key from their dashboard and begin building with any model on the platform in under two minutes. The API is fully compatible with the OpenAI SDK, the Anthropic SDK, LangChain, LlamaIndex, and every major AI framework — so there's nothing new to learn.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-2">Starting today, every GlbTOKEN user can generate an API key from their dashboard and begin building with any model on the platform in under two minutes. The API is fully compatible with the OpenAI SDK, the Anthropic SDK, LangChain, LlamaIndex, and every major AI framework — so there's nothing new to learn.</p>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What Makes the GlbTOKEN API Different?</h3>
 
-        <p style="margin-bottom:1rem">There are plenty of AI API services out there, but GlbTOKEN was designed from day one to solve the problems developers actually face when building production AI applications.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-3">There are plenty of AI API services out there, but GlbTOKEN was designed from day one to solve the problems developers actually face when building production AI applications.</p>
 
-        <p style="margin-bottom:1rem"><strong>1. True Provider Agnosticism</strong></p>
-        <p style="margin-bottom:1rem">Most "unified" APIs still lock you into a single provider's ecosystem. GlbTOKEN doesn't. You can call GPT-5.5 Pro, Claude Sonnet 5, Gemini Ultra, Mistral Large, Llama 4, and dozens of other models — all through the same endpoint, all deducted from the same balance. Need to switch from OpenAI to Anthropic mid-project? Change one string in your code. That's it.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-4"><strong>1. True Provider Agnosticism</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-5">Most "unified" APIs still lock you into a single provider's ecosystem. GlbTOKEN doesn't. You can call GPT-5.5 Pro, Claude Sonnet 5, Gemini Ultra, Mistral Large, Llama 4, and dozens of other models — all through the same endpoint, all deducted from the same balance. Need to switch from OpenAI to Anthropic mid-project? Change one string in your code. That's it.</p>
 
-        <p style="margin-bottom:1rem"><strong>2. OpenAI SDK Compatibility</strong></p>
-        <p style="margin-bottom:1rem">We built the GlbTOKEN API to be a drop-in replacement for the OpenAI API. If you already use the OpenAI Python, Node.js, or Go SDK, you can point it at <code>https://api.glbtoken.com/v1</code> and start using any model immediately. No new SDK to install, no unfamiliar method signatures to learn. Here's how it looks in Python:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-6"><strong>2. OpenAI SDK Compatibility</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-7">We built the GlbTOKEN API to be a drop-in replacement for the OpenAI API. If you already use the OpenAI Python, Node.js, or Go SDK, you can point it at <code>https://api.glbtoken.com/v1</code> and start using any model immediately. No new SDK to install, no unfamiliar method signatures to learn. Here's how it looks in Python:</p>
 
         <pre style="background:var(--card-bg);padding:1rem;border-radius:8px;overflow-x:auto;margin-bottom:1rem;font-size:0.8rem;line-height:1.5"><code>from openai import OpenAI
 
@@ -169,18 +169,18 @@ response = client.chat.completions.create(
 )
 print(response.choices[0].message.content)</code></pre>
 
-        <p style="margin-bottom:1rem"><strong>3. Unified Token System</strong></p>
-        <p style="margin-bottom:1rem">Every model on GlbTOKEN is priced in tokens — the same tokens you buy, earn, or top up. One balance works everywhere. When you purchase tokens, they're available instantly across every model and provider. No separate subscriptions, no per-provider credit pools, no expiring credits. You buy once, use anywhere.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-8"><strong>3. Unified Token System</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-9">Every model on GlbTOKEN is priced in tokens — the same tokens you buy, earn, or top up. One balance works everywhere. When you purchase tokens, they're available instantly across every model and provider. No separate subscriptions, no per-provider credit pools, no expiring credits. You buy once, use anywhere.</p>
 
-        <p style="margin-bottom:1rem"><strong>4. Real-Time Usage Analytics</strong></p>
-        <p style="margin-bottom:1rem">Every API call is logged and visible in your dashboard in real time. You can see which models are consuming the most tokens, track spending by project, set per-key usage limits, and configure webhook alerts when spending crosses defined thresholds. This is especially valuable for teams that need to manage budgets across multiple developers or applications.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-10"><strong>4. Real-Time Usage Analytics</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-11">Every API call is logged and visible in your dashboard in real time. You can see which models are consuming the most tokens, track spending by project, set per-key usage limits, and configure webhook alerts when spending crosses defined thresholds. This is especially valuable for teams that need to manage budgets across multiple developers or applications.</p>
 
-        <p style="margin-bottom:1rem"><strong>5. Enterprise-Grade Security</strong></p>
-        <p style="margin-bottom:1rem">All API traffic is encrypted end-to-end with TLS 1.3. API keys are stored as salted hashes and never exposed in plaintext. We support key-scoped permissions (e.g., read-only keys, model-restricted keys, spend-limited keys) so you can issue credentials to team members without compromising your account. We also offer IP whitelisting for API keys on our Pro and Enterprise plans.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-12"><strong>5. Enterprise-Grade Security</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-13">All API traffic is encrypted end-to-end with TLS 1.3. API keys are stored as salted hashes and never exposed in plaintext. We support key-scoped permissions (e.g., read-only keys, model-restricted keys, spend-limited keys) so you can issue credentials to team members without compromising your account. We also offer IP whitelisting for API keys on our Pro and Enterprise plans.</p>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Supported Endpoints</h3>
 
-        <p style="margin-bottom:1rem">The initial release of the GlbTOKEN API includes the following endpoints:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-14">The initial release of the GlbTOKEN API includes the following endpoints:</p>
 
         <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
           <thead>
@@ -215,7 +215,7 @@ print(response.choices[0].message.content)</code></pre>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Getting Started in 3 Steps</h3>
 
-        <p style="margin-bottom:1rem">Here's how to start building with the GlbTOKEN API:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-15">Here's how to start building with the GlbTOKEN API:</p>
 
         <ol style="margin-bottom:1rem;padding-left:1.25rem">
           <li style="margin-bottom:0.5rem"><strong>Create an account and top up.</strong> Head to <a href="register.html" style="color:var(--primary)">glbtoken.com/register</a> and create an account. Top up your balance with as little as $5. We accept credit/debit cards, Paystack (mobile money), USDT, and BTC.</li>
@@ -225,7 +225,7 @@ print(response.choices[0].message.content)</code></pre>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Pricing & Free Tier</h3>
 
-        <p style="margin-bottom:1rem">Every new account receives <strong>1,000 free tokens</strong> to test the API. No credit card required. After that, pricing varies by model — but you only pay for what you use, with no monthly minimums or hidden fees. Here are some example rates:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-16">Every new account receives <strong>1,000 free tokens</strong> to test the API. No credit card required. After that, pricing varies by model — but you only pay for what you use, with no monthly minimums or hidden fees. Here are some example rates:</p>
 
         <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
           <thead>
@@ -264,11 +264,11 @@ print(response.choices[0].message.content)</code></pre>
           </tbody>
         </table>
 
-        <p style="margin-bottom:1rem">1 Token ≈ $0.001 USD. Volume discounts are available at 500K, 1M, and 5M token purchases. Visit our <a href="pricing.html" style="color:var(--primary)">Pricing page</a> for the full breakdown.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-17">1 Token ≈ $0.001 USD. Volume discounts are available at 500K, 1M, and 5M token purchases. Visit our <a href="pricing.html" style="color:var(--primary)">Pricing page</a> for the full breakdown.</p>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What Developers Are Building</h3>
 
-        <p style="margin-bottom:1rem">Since our private beta opened three weeks ago, we've seen an incredible range of applications built on the GlbTOKEN API:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-18">Since our private beta opened three weeks ago, we've seen an incredible range of applications built on the GlbTOKEN API:</p>
 
         <ul style="margin-bottom:1rem;padding-left:1.25rem">
           <li style="margin-bottom:0.5rem">A legal tech startup processing 50,000+ contract pages per day using GPT-5.5 Pro for extraction and Claude Sonnet 5 for analysis — switching between models based on the task's requirements with zero code changes.</li>
@@ -279,7 +279,7 @@ print(response.choices[0].message.content)</code></pre>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">Documentation & Support</h3>
 
-        <p style="margin-bottom:1rem">We've published comprehensive documentation at <a href="apikeys.html" style="color:var(--primary)">docs.glbtoken.com</a> covering every endpoint, model, and feature. The docs include:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-19">We've published comprehensive documentation at <a href="apikeys.html" style="color:var(--primary)">docs.glbtoken.com</a> covering every endpoint, model, and feature. The docs include:</p>
 
         <ul style="margin-bottom:1rem;padding-left:1.25rem">
           <li style="margin-bottom:0.5rem">Quickstart guides for Python, Node.js, Go, and cURL</li>
@@ -289,11 +289,11 @@ print(response.choices[0].message.content)</code></pre>
           <li style="margin-bottom:0.5rem">Error code reference and troubleshooting guide</li>
         </ul>
 
-        <p style="margin-bottom:1rem">If you get stuck, our in-app chat connects you with a real engineer — not a bot. We also offer dedicated Slack/Discord support channels for our Pro and Enterprise customers.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-20">If you get stuck, our in-app chat connects you with a real engineer — not a bot. We also offer dedicated Slack/Discord support channels for our Pro and Enterprise customers.</p>
 
         <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)">What's Next</h3>
 
-        <p style="margin-bottom:1rem">This is just the beginning. Over the coming weeks, we'll be shipping:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-21">This is just the beginning. Over the coming weeks, we'll be shipping:</p>
 
         <ul style="margin-bottom:1rem;padding-left:1.25rem">
           <li style="margin-bottom:0.5rem"><strong>Streaming support</strong> — real-time token-by-token responses for chat applications</li>
@@ -303,9 +303,9 @@ print(response.choices[0].message.content)</code></pre>
           <li style="margin-bottom:0.5rem"><strong>SDK libraries</strong> — first-party Python, Node.js, and Go SDKs with GlbTOKEN-specific features</li>
         </ul>
 
-        <p style="margin-bottom:1rem">We believe that access to the best AI models should be simple, unified, and affordable. The GlbTOKEN Developer API is our biggest step yet toward that vision. <a href="register.html" style="color:var(--primary)">Sign up today</a>, grab your free 1,000 tokens, and start building.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-22">We believe that access to the best AI models should be simple, unified, and affordable. The GlbTOKEN Developer API is our biggest step yet toward that vision. <a href="register.html" style="color:var(--primary)">Sign up today</a>, grab your free 1,000 tokens, and start building.</p>
 
-        <p style="margin-bottom:1rem">If you have questions, feedback, or ideas, we'd love to hear from you. Reach out via the in-app chat or email <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-23">If you have questions, feedback, or ideas, we'd love to hear from you. Reach out via the in-app chat or email <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>.</p>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0" />
 
