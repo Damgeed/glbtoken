@@ -247,8 +247,9 @@
     @media(max-width:1200px){.cat-body{grid-template-columns:repeat(4,1fr)}}
     @media(max-width:992px){.cat-body{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:768px){.cat-body{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:600px){.cat-body{grid-template-columns:1fr}}
-    @media(max-width:400px){.cat-body{grid-template-columns:1fr}}
+    @media(max-width:600px){.cat-body{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:400px){.cat-body{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:360px){.cat-body{grid-template-columns:1fr}}
     /* ── Model Cards ── */
     .model-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.15rem 1.25rem;transition:all 0.2s;min-width:0}
     .tm-carousel [style*="overflow-wrap:break-word"]{overflow:hidden}
