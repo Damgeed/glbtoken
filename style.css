@@ -553,22 +553,6 @@
       .trust-badges{gap:0.4rem}
       .trust-badge{font-size:0.7rem;padding:0.25rem 0.5rem}
     }
-  /* ── Google Translate Hide ── */
-  iframe.goog-te-banner-frame,.goog-te-banner-frame,.skiptranslate iframe,.skiptranslate{
-    display:none!important;visibility:hidden!important;height:0!important;max-height:0!important;
-    overflow:hidden!important;position:absolute!important;top:-9999px!important;
-    opacity:0!important;pointer-events:none!important
-  }
-  body{top:0!important;position:inherit!important}
-  .goog-te-combo,#goog-gt-tt,.goog-tooltip,.goog-te-menu-frame,.goog-te-gadget-simple,.goog-te-banner{display:none!important}
-  .goog-te-spinner,.goog-te-spinner *,.goog-te-spinnerbox,
-  .VIpgJd-yAWNEb-LgbsSe,.VIpgJd-yAWNEb-VIpgJd-yAWNEb-hvhMSd,
-  .goog-te-gadget-icon,.skiptranslate.goog-te-gadget,
-  img[src*="translate"],img[src*="cleardot"],
-  [class*="VIpgJd"],[id*="VIpgJd"],
-  iframe[src*="translate.google.com"],
-  .goog-te-spinner svg,.goog-te-spinner svg circle{display:none!important}
-
   /* ── Mobile Carousel Fix ── */
   .tm-carousel .tm-dots{display:flex;justify-content:center;gap:0.5rem;margin-top:0.75rem}
   @media(max-width:768px){
