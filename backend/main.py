@@ -3,7 +3,7 @@ GlbTOKEN Backend — FastAPI Server
 Run: uvicorn main:app --reload
 """
 
-from fastapi import FastAPI, Depends, HTTPException, status, Query, Body, Request
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Body, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.staticfiles import StaticFiles
