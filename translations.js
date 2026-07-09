@@ -13,14 +13,6 @@ function switchLanguage(lang) {
   location.reload();
 }
 
-// Trigger Google Translate programmatically (called after page loads with saved lang)
-function triggerGoogleTranslate(lang) {
-  var select = document.querySelector('.goog-te-combo');
-  if (select) {
-    select.value = lang;
-    select.dispatchEvent(new Event('change'));
-  }
-}
 
 function translatePage() {
   var walker = document.createTreeWalker(document.body, 4, null, false);
@@ -82,8 +74,7 @@ window.addEventListener('pageshow', function(e) {
     curLang = saved;
     translatePage();
     updateLangUI(saved);
-    // Also trigger Google Translate after a short delay to let the widget load
-    setTimeout(function() { triggerGoogleTranslate(saved); }, 1500);
+
   }
 });
 
