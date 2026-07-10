@@ -540,6 +540,9 @@
         if(cfg && cfg.url) {
           sessionStorage.setItem('gt_oauth_cancel','1');
           window.location.href=cfg.url;
+          // iOS: Auth0 login opens as in-page popup (not page nav).
+          // If user dismisses it, kill spinner after 8s safety timeout.
+          setTimeout(function(){ setBtnLoading(btn, false); }, 8000);
         }
         else {
           setBtnLoading(btn, false);
@@ -556,6 +559,9 @@
         if(cfg && cfg.url) {
           sessionStorage.setItem('gt_oauth_cancel','1');
           window.location.href=cfg.url;
+          // iOS: Auth0 login opens as in-page popup (not page nav).
+          // If user dismisses it, kill spinner after 8s safety timeout.
+          setTimeout(function(){ setBtnLoading(btn, false); }, 8000);
         }
         else {
           setBtnLoading(btn, false);
