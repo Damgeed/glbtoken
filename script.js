@@ -293,16 +293,18 @@
         btn.innerHTML = btn.dataset.originalHtml || originalText || '';
       }
     }
-    // Reset any stuck loading buttons when page is restored from bfcache (back/forward swipe)
-    window.addEventListener('pageshow', function(e) {
-      if (e.persisted) {
+    // Reset any stuck loading buttons when page is restored from bfcache (back/forward swipe or tab switch)
+    (function(){
+      function resetStuckButtons() {
         document.querySelectorAll('.btn-loading').forEach(function(el) {
           el.classList.remove('btn-loading');
           el.disabled = false;
           if (el.dataset.originalHtml) el.innerHTML = el.dataset.originalHtml;
         });
       }
-    });
+      window.addEventListener('pageshow', function(e) { resetStuckButtons(); });
+      document.addEventListener('visibilitychange', function() { if (!document.hidden) resetStuckButtons(); });
+    })();
     async function sendLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
@@ -335,7 +337,7 @@
         return
       }
       const btn=document.getElementById('loginVerifyBtn');
-      btn.disabled=true;btn.textContent='Verifying...';
+      setBtnLoading(btn, true, 'Verifying');
       try{
         var data=await api('POST','/api/auth/verify-code',{email:email,code:code});
         token=data.token;userData=data.user;
@@ -382,7 +384,7 @@
         return
       }
       const btn=document.getElementById('regVerifyBtn');
-      btn.disabled=true;btn.textContent='Verifying...';
+      setBtnLoading(btn, true, 'Verifying');
       try{
         var data=await api('POST','/api/auth/verify-code',{email:email,code:code});
         token=data.token;userData=data.user;
@@ -504,7 +506,7 @@
         return;
       }
       var btn = document.getElementById(prefix + 'PhoneVerifyBtn');
-      btn.disabled=true; btn.textContent='Verifying...';
+      setBtnLoading(btn, true, 'Verifying');
       try{
         var data = await api('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
         token=data.token;userData=data.user;
@@ -521,32 +523,32 @@
     }
     function oauthLogin(provider, btn){
       // Show spinner on the clicked button
-      if (btn) { btn.classList.add('btn-loading'); btn.disabled = true; btn.dataset.originalHtml = btn.innerHTML; btn.innerHTML = '<span class=\"btn-spinner\"></span>Connecting...'; }
+      setBtnLoading(btn, true, 'Connecting...');
       // Redirect to Auth0 social login
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
         if(cfg && cfg.url) window.location.href=cfg.url;
         else {
           showToast('Social login unavailable. Try email.','error');
-          if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; btn.innerHTML = btn.dataset.originalHtml || btn.dataset.originalText || 'Google'; }
+          setBtnLoading(btn, false);
         }
       }).catch(function(){
         showToast('Social login unavailable. Try email.','error');
-        if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; btn.innerHTML = btn.dataset.originalHtml || btn.dataset.originalText || 'Google'; }
+        setBtnLoading(btn, false);
       });
     }
     function oauthRegister(provider, btn){
       // Show spinner on the clicked button
-      if (btn) { btn.classList.add('btn-loading'); btn.disabled = true; btn.dataset.originalHtml = btn.innerHTML; btn.innerHTML = '<span class=\"btn-spinner\"></span>Connecting...'; }
+      setBtnLoading(btn, true, 'Connecting...');
       // Redirect to Auth0 social signup
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
         if(cfg && cfg.url) window.location.href=cfg.url;
         else {
           showToast('Social signup unavailable. Try email.','error');
-          if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; btn.innerHTML = btn.dataset.originalHtml || btn.dataset.originalText || 'Google'; }
+          setBtnLoading(btn, false);
         }
       }).catch(function(){
         showToast('Social signup unavailable. Try email.','error');
-        if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; btn.innerHTML = btn.dataset.originalHtml || btn.dataset.originalText || 'Google'; }
+        setBtnLoading(btn, false);
       });
     }
     function logoutUser(){
@@ -571,7 +573,7 @@
       if(!e||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast('Please enter a valid email','error');email.focus();return}
       if(!m||m.length<10){showToast('Message must be at least 10 characters','error');msg.focus();return}
       var btn=document.querySelector('.info-card button.btn-primary');
-      if(btn){btn.disabled=true;btn.textContent='Sending...'}
+      setBtnLoading(btn, true, 'Send Message');
       try{
         await api('POST','/api/contact',{name:n,email:e,message:m});
         showToast('Message sent! We\'ll get back to you soon.','success');
@@ -703,7 +705,7 @@
     async function sendResetLink(){
       var email = document.getElementById('resetEmail').value;
       var btn = document.getElementById('resetSendBtn');
-      if(btn){btn.disabled=true;btn.textContent='Sending...'}
+      setBtnLoading(btn, true, 'Send Reset Link');
       try{
         await api('POST','/api/auth/forgot-password',{email:email});
         showToast('Reset link sent! Check your email.','success');
