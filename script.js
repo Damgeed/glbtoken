@@ -21,12 +21,12 @@
 
     // Clear any stuck spinners from a previous OAuth redirect that was cancelled
     (function(){
+      document.querySelectorAll('.btn-loading').forEach(function(el){
+        el.classList.remove('btn-loading'); el.disabled = false;
+        if (el.dataset.originalHtml) el.innerHTML = el.dataset.originalHtml;
+      });
       if (sessionStorage.getItem('gt_oauth_cancel')) {
         sessionStorage.removeItem('gt_oauth_cancel');
-        document.querySelectorAll('.btn-loading').forEach(function(el){
-          el.classList.remove('btn-loading'); el.disabled = false;
-          if (el.dataset.originalHtml) el.innerHTML = el.dataset.originalHtml;
-        });
       }
     })();
 
@@ -542,11 +542,9 @@
           window.location.href=cfg.url;
         }
         else {
-          showToast('Social login unavailable. Try email.','error');
           setBtnLoading(btn, false);
         }
       }).catch(function(){
-        showToast('Social login unavailable. Try email.','error');
         setBtnLoading(btn, false);
       });
     }
@@ -560,11 +558,9 @@
           window.location.href=cfg.url;
         }
         else {
-          showToast('Social signup unavailable. Try email.','error');
           setBtnLoading(btn, false);
         }
       }).catch(function(){
-        showToast('Social signup unavailable. Try email.','error');
         setBtnLoading(btn, false);
       });
     }
