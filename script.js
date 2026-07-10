@@ -811,14 +811,22 @@
             method:'POST', headers:{'Content-Type':'application/json'},
             body:JSON.stringify({token:idToken})
           }).then(function(r){return r.json()}).then(function(d){
-            if(d.token){
+            if(d && d.token){
               localStorage.setItem('gt_token',d.token);
               localStorage.setItem('gt_user',JSON.stringify(d.user));
               window.location.replace('/dashboard.html');
+            } else {
+              window.location.replace('/login.html?error=' + encodeURIComponent('Invalid server response'));
             }
           }).catch(function(e){
             window.location.replace('/login.html?error=' + encodeURIComponent('Auth0 login failed'));
           });
+          // Safety timeout — if callback doesn't complete in 10s, redirect to login
+          setTimeout(function(){
+            if (!localStorage.getItem('gt_token')) {
+              window.location.replace('/login.html?error=Login+timed+out');
+            }
+          }, 10000);
           return; // Stop further init, redirect is coming
         }
       }
