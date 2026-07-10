@@ -696,7 +696,18 @@
       const goBtn=document.getElementById('apiGoToDashBtn');
       if(goBtn)goBtn.style.display=loggedIn?'inline-flex':'none';
       if(loggedIn){
-        var displayName = userData.name || (userData.email ? userData.email.split('@')[0] : 'User');
+        var displayName = userData.name;
+        if (!displayName) {
+          if (userData.email) {
+            if (userData.email.endsWith('@privaterelay.appleid.com')) {
+              displayName = 'Apple User';
+            } else {
+              displayName = userData.email.split('@')[0];
+            }
+          } else {
+            displayName = 'User';
+          }
+        }
         var du=document.getElementById('dashUserName');if(du)du.textContent=displayName;
         const initial=(displayName||'U')[0].toUpperCase();
         // Update avatar initial without breaking dropdown structure
