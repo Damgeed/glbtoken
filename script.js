@@ -274,6 +274,14 @@
     // ── Auth (Passwordless Email via Auth0) ──
     function setBtnLoading(btn, loading, originalText) {
       if (!btn) return;
+      // Reset all other auth buttons first (prevents multiple spinners at once)
+      document.querySelectorAll('.auth-oauth-btn.btn-loading, .btn-primary.btn-loading').forEach(function(el) {
+        if (el !== btn) {
+          el.classList.remove('btn-loading');
+          el.disabled = false;
+          if (el.dataset.originalHtml) el.innerHTML = el.dataset.originalHtml;
+        }
+      });
       if (loading) {
         btn.dataset.originalHtml = btn.innerHTML;
         btn.classList.add('btn-loading');
