@@ -19,17 +19,15 @@
     let newapiToken = localStorage.getItem('gt_newapi_token') || '';
     let newapiEndpoint = localStorage.getItem('gt_newapi_endpoint') || '';
 
-    let oauthTimeout = null; // tracks iOS safety timeout so we can cancel on re-click
+    let oauthTimeout = null; // tracks iOS safety timeout
 
-    // Clear any stuck spinners from a previous OAuth redirect that was cancelled
+    // Clear any stuck spinners from bfcache / cancelled OAuth
     (function(){
       document.querySelectorAll('.btn-loading').forEach(function(el){
         el.classList.remove('btn-loading'); el.disabled = false;
         if (el.dataset.originalHtml) el.innerHTML = el.dataset.originalHtml;
       });
-      if (sessionStorage.getItem('gt_oauth_cancel')) {
-        sessionStorage.removeItem('gt_oauth_cancel');
-      }
+      sessionStorage.removeItem('gt_oauth_cancel');
     })();
 
     // ── Country Codes for Phone Registration ──
@@ -287,11 +285,10 @@
     // ── Auth (Passwordless Email via Auth0) ──
     function setBtnLoading(btn, loading, originalText) {
       if (!btn) return;
-      // Reset all other auth buttons first (prevents multiple spinners at once)
-      document.querySelectorAll('.auth-oauth-btn.btn-loading, .btn-primary.btn-loading').forEach(function(el) {
+      // Demote other loading buttons first (one spinner at a time)
+      document.querySelectorAll('.btn-loading').forEach(function(el) {
         if (el !== btn) {
-          el.classList.remove('btn-loading');
-          el.disabled = false;
+          el.classList.remove('btn-loading'); el.disabled = false;
           if (el.dataset.originalHtml) el.innerHTML = el.dataset.originalHtml;
         }
       });
@@ -306,7 +303,7 @@
         btn.innerHTML = btn.dataset.originalHtml || originalText || '';
       }
     }
-    // Reset any stuck loading buttons when page is restored from bfcache (back/forward swipe or tab switch)
+    // Bfcache / tab-switch — clear stuck spinners
     (function(){
       function resetStuckButtons() {
         document.querySelectorAll('.btn-loading').forEach(function(el) {
@@ -534,40 +531,18 @@
         btn.disabled=false; btn.textContent= prefix === 'login' ? 'Verify & Sign In' : 'Verify & Create Account';
       }
     }
-    function oauthLogin(provider, btn){
-      // Show spinner on the clicked button
-      if (oauthTimeout) { clearTimeout(oauthTimeout); oauthTimeout = null; }
+    function oauthLogin(provider, btn){ startOAuth(provider, btn); }
+    function oauthRegister(provider, btn){ startOAuth(provider, btn); }
+    function startOAuth(provider, btn){
+      if (oauthTimeout) clearTimeout(oauthTimeout);
       setBtnLoading(btn, true, 'Connecting...');
-      // Redirect to Auth0 social login
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
         if(cfg && cfg.url) {
           sessionStorage.setItem('gt_oauth_cancel','1');
           window.location.href=cfg.url;
-          // iOS: Auth0 login opens as in-page popup (not page nav).
-          // If user dismisses it, kill spinner after 8s safety timeout.
-          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 8000);
-        }
-        else {
-          setBtnLoading(btn, false);
-        }
-      }).catch(function(){
-        setBtnLoading(btn, false);
-      });
-    }
-    function oauthRegister(provider, btn){
-      if (oauthTimeout) { clearTimeout(oauthTimeout); oauthTimeout = null; }
-      // Show spinner on the clicked button
-      setBtnLoading(btn, true, 'Connecting...');
-      // Redirect to Auth0 social signup
-      api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
-        if(cfg && cfg.url) {
-          sessionStorage.setItem('gt_oauth_cancel','1');
-          window.location.href=cfg.url;
-          // iOS: Auth0 login opens as in-page popup (not page nav).
-          // If user dismisses it, kill spinner after 8s safety timeout.
-          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 8000);
-        }
-        else {
+          // iOS: in-page popup — kill spinner on dismiss after 3s
+          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 3000);
+        } else {
           setBtnLoading(btn, false);
         }
       }).catch(function(){
