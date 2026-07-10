@@ -19,6 +19,8 @@
     let newapiToken = localStorage.getItem('gt_newapi_token') || '';
     let newapiEndpoint = localStorage.getItem('gt_newapi_endpoint') || '';
 
+    let oauthTimeout = null; // tracks iOS safety timeout so we can cancel on re-click
+
     // Clear any stuck spinners from a previous OAuth redirect that was cancelled
     (function(){
       document.querySelectorAll('.btn-loading').forEach(function(el){
@@ -294,7 +296,7 @@
         }
       });
       if (loading) {
-        btn.dataset.originalHtml = btn.innerHTML;
+        if (!btn.dataset.originalHtml) btn.dataset.originalHtml = btn.innerHTML;
         btn.classList.add('btn-loading');
         btn.disabled = true;
         btn.innerHTML = '<span class="btn-spinner"></span>' + (originalText || 'Loading...');
@@ -534,6 +536,7 @@
     }
     function oauthLogin(provider, btn){
       // Show spinner on the clicked button
+      if (oauthTimeout) { clearTimeout(oauthTimeout); oauthTimeout = null; }
       setBtnLoading(btn, true, 'Connecting...');
       // Redirect to Auth0 social login
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
@@ -542,7 +545,7 @@
           window.location.href=cfg.url;
           // iOS: Auth0 login opens as in-page popup (not page nav).
           // If user dismisses it, kill spinner after 8s safety timeout.
-          setTimeout(function(){ setBtnLoading(btn, false); }, 8000);
+          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 8000);
         }
         else {
           setBtnLoading(btn, false);
@@ -552,6 +555,7 @@
       });
     }
     function oauthRegister(provider, btn){
+      if (oauthTimeout) { clearTimeout(oauthTimeout); oauthTimeout = null; }
       // Show spinner on the clicked button
       setBtnLoading(btn, true, 'Connecting...');
       // Redirect to Auth0 social signup
@@ -561,7 +565,7 @@
           window.location.href=cfg.url;
           // iOS: Auth0 login opens as in-page popup (not page nav).
           // If user dismisses it, kill spinner after 8s safety timeout.
-          setTimeout(function(){ setBtnLoading(btn, false); }, 8000);
+          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 8000);
         }
         else {
           setBtnLoading(btn, false);
