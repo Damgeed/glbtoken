@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=177" />
+  <link rel="stylesheet" href="style.css?v=178" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -143,7 +143,7 @@
           <div class="phone-dropdown" id="regCountryList" style="display:none"></div>
         </div>
       </div>
-      <div class="auth-field" id="regSmsCodeGroup" style="display:none"><label>SMS Code</label><input type="text" id="regSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"></div>
+      <div class="auth-field" id="regSmsCodeGroup" style="display:none"><label>SMS Code</label><input type="text" id="regSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" oninput="document.getElementById('regPhoneVerifyBtn').disabled=false;document.getElementById('regPhoneVerifyBtn').classList.remove('btn-loading')"></div>
       <button class="btn-primary" style="width:100%" id="regPhoneSendBtn" onclick="sendPhoneCode('reg')">Send Code</button>
       <button class="btn-primary" style="width:100%;display:none" id="regPhoneVerifyBtn" onclick="verifyPhoneCode('reg')">Verify & Create Account</button>
     </div>
@@ -180,8 +180,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=177"></script>
-<script data-cfasync="false" src="script.js?v=177"></script>
+<script src="translations.js?v=178"></script>
+<script data-cfasync="false" src="script.js?v=178"></script>
 
 <script>
 (function(){
