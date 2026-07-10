@@ -1058,7 +1058,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     function renderModelCards(models){
       const grid=document.getElementById('modelGrid');
       if(!grid)return;
-      const isMobile = window.innerWidth < 768;
       // Group by category
       const groups = {};
       models.forEach(m => {
@@ -1113,7 +1112,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
           ${meta.desc ? `<span class="cat-desc">${escapeHtml(meta.desc)}</span>` : ''}
         </div>`;
         html += '<div class="cat-body">';
-        if (isMobile && items.length > 6) {
+        if (items.length > 6) {
           html += items.slice(0, 6).map(m => buildCard(m, getCatMeta(m.category))).join('');
           html += `<div class="cat-more-wrap" style="display:none">${items.slice(6).map(m => buildCard(m, getCatMeta(m.category))).join('')}</div>`;
           html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show ${items.length - 6} more ▾</button>`;
@@ -1133,7 +1132,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         </div>`;
         html += '<div class="cat-body">';
         const items = groups[c];
-        if (isMobile && items.length > 6) {
+        if (items.length > 6) {
           html += items.slice(0, 6).map(m => buildCard(m, null)).join('');
           html += `<div class="cat-more-wrap" style="display:none">${items.slice(6).map(m => buildCard(m, null)).join('')}</div>`;
           html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show ${items.length - 6} more ▾</button>`;
