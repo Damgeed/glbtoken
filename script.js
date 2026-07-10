@@ -3,6 +3,18 @@
       ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
     let token = localStorage.getItem('gt_token') || '';
     let userData = JSON.parse(localStorage.getItem('gt_user') || '{}');
+    // Check JWT expiry client-side — redirect to login if expired
+    if (token) {
+      try {
+        var payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+          localStorage.removeItem('gt_token');
+          localStorage.removeItem('gt_user');
+          token = '';
+          userData = {};
+        }
+      } catch(e) { /* invalid token — will fail backend check anyway */ }
+    }
     let keys = JSON.parse(localStorage.getItem('gt_keys') || '[]');
     let newapiToken = localStorage.getItem('gt_newapi_token') || '';
     let newapiEndpoint = localStorage.getItem('gt_newapi_endpoint') || '';
@@ -1495,8 +1507,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       var border=isDark?'#3a3a4e':'#ddd';
       m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
         +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
-        +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+title+'</h3>'
-        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">'+msg+'</p>'
+        +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
+        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">'+escapeHtml(msg)+'</p>'
         +'<div style="display:flex;gap:0.75rem">'
         +'<button id="confirmCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
         +'<button id="confirmOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Sign Out</button>'
