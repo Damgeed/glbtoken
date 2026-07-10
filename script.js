@@ -488,22 +488,34 @@
         btn.disabled=false; btn.textContent= prefix === 'login' ? 'Verify & Sign In' : 'Verify & Create Account';
       }
     }
-    function oauthLogin(provider){
+    function oauthLogin(provider, btn){
+      // Show loading state on the clicked button
+      if (btn) { btn.disabled = true; btn.innerHTML = 'Connecting...'; }
       // Redirect to Auth0 social login
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
         if(cfg && cfg.url) window.location.href=cfg.url;
-        else showToast('Social login unavailable. Try email/password.','error');
+        else {
+          showToast('Social login unavailable. Try email.','error');
+          if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.originalText || 'Google'; }
+        }
       }).catch(function(){
-        showToast('Social login unavailable. Try email/password.','error');
+        showToast('Social login unavailable. Try email.','error');
+        if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.originalText || 'Google'; }
       });
     }
-    function oauthRegister(provider){
+    function oauthRegister(provider, btn){
+      // Show loading state on the clicked button
+      if (btn) { btn.disabled = true; btn.innerHTML = 'Connecting...'; }
       // Redirect to Auth0 social signup
       api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
         if(cfg && cfg.url) window.location.href=cfg.url;
-        else showToast('Social signup unavailable. Try email/password.','error');
+        else {
+          showToast('Social signup unavailable. Try email.','error');
+          if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.originalText || 'Google'; }
+        }
       }).catch(function(){
-        showToast('Social signup unavailable. Try email/password.','error');
+        showToast('Social signup unavailable. Try email.','error');
+        if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.originalText || 'Google'; }
       });
     }
     function logoutUser(){
@@ -769,7 +781,9 @@
               localStorage.setItem('gt_user',JSON.stringify(d.user));
               window.location.replace('/dashboard.html');
             }
-          }).catch(function(){});
+          }).catch(function(e){
+            window.location.replace('/login.html?error=' + encodeURIComponent('Auth0 login failed'));
+          });
           return; // Stop further init, redirect is coming
         }
       }
