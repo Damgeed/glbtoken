@@ -470,8 +470,9 @@ async def verify_sms_code_endpoint(request: Request, body: dict = Body(...), db:
         payload = verify_auth0_token(tokens["id_token"])
         user_info = get_user_info(payload)
     except Exception as e:
-        print(f"❌ SMS verify error for {phone}: {e}")
-        raise HTTPException(status_code=400, detail="Invalid or expired code. Please try again.")
+        err_msg = str(e)
+        print(f"❌ SMS verify error for {phone}: {err_msg}")
+        raise HTTPException(status_code=400, detail=f"Auth0 error: {err_msg}")
     
     email = user_info.get("email", f"{phone}@phone.glbtoken.io")
     user = db.query(User).filter(User.email == email).first()
