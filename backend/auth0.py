@@ -130,10 +130,10 @@ def verify_sms_code(phone: str, code: str) -> dict:
         raise ValueError("Auth0 not configured")
     url = f"https://{AUTH0_DOMAIN}/oauth/token"
     payload = {
-        "grant_type": "http://auth0.com/oauth/grant-type/passwordless/otp",
-        "realm": "sms",
+        "grant_type": "password",
         "username": phone,
-        "otp": code,
+        "password": code,
+        "realm": "sms",
         "client_id": AUTH0_CLIENT_ID,
         "client_secret": AUTH0_CLIENT_SECRET,
         "scope": "openid email profile phone",
