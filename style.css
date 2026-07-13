@@ -462,6 +462,7 @@
       .hero-grid,.dash-grid{grid-template-columns:1fr}
       .hero h1{font-size:2.5rem}.hero-stats{gap:1.5rem}
       .hero{min-height:40vh;padding:1rem 0}
+      .hero-globe{display:none}
       section{padding:1rem 0}
       .auth-page{padding:1rem 1rem 1.5rem;min-height:auto}
       .auth-page.auth-hero-wrapper{min-height:auto}
