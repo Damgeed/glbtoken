@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=189" />
+  <link rel="stylesheet" href="style.css?v=190" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -115,23 +115,23 @@
             <button class="btn-primary" style="width:100%" onclick="showPaymentModal('custom')" id="customBuyBtn">Buy $50</button></div>
         </div>
       </div>
-      <div id="topupSuccess" style="display:none"><div class="success-page"><div class="success-icon">✅</div><h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem">Payment Successful!</h2><p id="topupSuccessMsg" style="color:var(--text-secondary);margin-bottom:1.5rem"></p><button class="btn-primary" onclick="window.location.href='dashboard.html'">Dashboard</button><button class="btn-secondary" style="margin-left:0.75rem" onclick="window.location.href='apikeys.html'">API Keys</button></div></div>
+      <div id="topupSuccess" style="display:none"><div class="success-page"><div class="success-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem">Payment Successful!</h2><p id="topupSuccessMsg" style="color:var(--text-secondary);margin-bottom:1.5rem"></p><button class="btn-primary" onclick="window.location.href='dashboard.html'">Dashboard</button><button class="btn-secondary" style="margin-left:0.75rem" onclick="window.location.href='apikeys.html'">API Keys</button></div></div>
     </div></div>
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal" onclick="closePaymentModal(event)">
       <div class="modal-box">
         <button class="modal-close" onclick="closePaymentModal()">✕</button>
-        <div style="font-size:2.5rem;margin-bottom:0.75rem">💰</div>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.75rem"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
         <h3 style="font-size:1.25rem;font-weight:700;margin-bottom:0.5rem">Choose Payment Method</h3>
         <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">Amount: <strong id="modalAmount">$5.00</strong></p>
         <div class="payment-grid" style="margin-bottom:1.5rem">
           <div class="payment-card selected" onclick="selectPayment(this,'stripe')">
-            <div class="pc-icon">💳</div>
+            <div class="pc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
             <h4>Stripe</h4>
             <span class="pc-badge stripe">Worldwide</span>
           </div>
           <div class="payment-card" onclick="selectPayment(this,'paystack')">
-            <div class="pc-icon">🔶</div>
+            <div class="pc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
             <h4>Paystack</h4>
             <span class="pc-badge paystack">Africa</span>
           </div>
@@ -167,8 +167,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=189"></script>
-<script data-cfasync="false" src="script.js?v=189"></script>
+<script src="translations.js?v=190"></script>
+<script data-cfasync="false" src="script.js?v=190"></script>
 
 <script>
 (function(){

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=189" />
+  <link rel="stylesheet" href="style.css?v=190" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
 <style>
@@ -170,7 +170,7 @@
     <div class="dash-section-title">Your Presets <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="presetCount">0 saved</span></div>
     <div id="presetsList">
       <div class="presets-empty">
-        <div class="pe-icon">📋</div>
+        <div class="pe-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>
         <h3>No presets yet</h3>
         <p>Create one to save your model configurations.</p>
       </div>
@@ -248,8 +248,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=189"></script>
-<script data-cfasync="false" src="script.js?v=189"></script>
+<script src="translations.js?v=190"></script>
+<script data-cfasync="false" src="script.js?v=190"></script>
 
 <script>
 (function(){
@@ -299,7 +299,7 @@ async function loadPresets(){
     if(!Array.isArray(presets)) presets = [];
     count.textContent = presets.length + ' saved';
     if(presets.length === 0){
-      list.innerHTML = '<div class="presets-empty"><div class="pe-icon">📋</div><h3>No presets yet</h3><p>Create one to save your model configurations.</p></div>';
+      list.innerHTML = '<div class="presets-empty"><div class="pe-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><h3>No presets yet</h3><p>Create one to save your model configurations.</p></div>';
       return;
     }
     var html = '<div class="presets-grid">';
@@ -312,21 +312,21 @@ async function loadPresets(){
       html += '<div class="preset-card">';
       html += '<div class="pc-top"><div><div class="pc-name">' + escapeHtml(p.name) + '</div><div class="pc-model">▸ ' + escapeHtml(p.model) + '</div></div></div>';
       html += '<div class="pc-params">';
-      html += '<span class="pc-param">🌡️ <strong>' + temp + '</strong></span>';
-      html += '<span class="pc-param">🎯 Top P <strong>' + topP + '</strong></span>';
-      html += '<span class="pc-param">📏 Max <strong>' + maxT + '</strong></span>';
+      html += '<span class="pc-param"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg> <strong>' + temp + '</strong></span>';
+      html += '<span class="pc-param"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Top P <strong>' + topP + '</strong></span>';
+      html += '<span class="pc-param"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M2 18V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M2 11h4l2-2 2 2 2-2 2 2 2-2 2 2 4"/></svg> Max <strong>' + maxT + '</strong></span>';
       html += '</div>';
       html += '<div class="pc-preview">' + promptPreview + '</div>';
       html += '<div class="pc-actions">';
-      html += '<button class="pc-edit" onclick="showPresetModal(' + p.id + ')">✏️ Edit</button>';
-      html += '<button class="pc-delete" onclick="deletePreset(' + p.id + ')">🗑️ Delete</button>';
+      html += '<button class="pc-edit" onclick="showPresetModal(' + p.id + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>';
+      html += '<button class="pc-delete" onclick="deletePreset(' + p.id + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Delete</button>';
       html += '</div></div>';
     }
     html += '</div>';
     list.innerHTML = html;
   } catch(e){
     count.textContent = '0 saved';
-    list.innerHTML = '<div class="presets-empty"><div class="pe-icon">⚠️</div><h3>Could not load presets</h3><p>' + escapeHtml(e.message || 'Unknown error') + '</p></div>';
+    list.innerHTML = '<div class="presets-empty"><div class="pe-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>Could not load presets</h3><p>' + escapeHtml(e.message || 'Unknown error') + '</p></div>';
   }
 }
 
