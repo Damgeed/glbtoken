@@ -17,7 +17,37 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
 .card{background:#161822;border:1px solid #2a2b3d;border-radius:12px;padding:2rem;text-align:center;max-width:360px}
 .card p{margin-top:1rem;color:#7f8490;font-size:0.9rem}
 </style>
-<script src="../script.js?v=185"></script>
+<script>
+(function(){
+  var h = window.location.hash.substring(1);
+  if (!h) return;
+  var p = new URLSearchParams(h);
+  var idToken = p.get('id_token');
+  if (!idToken) return;
+  var API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
+  fetch(API_URL + '/api/auth/auth0/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token:idToken})
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d && d.token){
+      localStorage.setItem('gt_token', d.token);
+      localStorage.setItem('gt_user', JSON.stringify(d.user));
+      window.location.replace('/dashboard.html');
+    } else {
+      window.location.replace('/login.html?error=' + encodeURIComponent(d.detail || 'Login failed'));
+    }
+  }).catch(function(e){
+    window.location.replace('/login.html?error=Connection+failed');
+  });
+  setTimeout(function(){
+    if (!localStorage.getItem('gt_token')) {
+      window.location.replace('/login.html?error=Login+timed+out');
+    }
+  }, 12000);
+})();
+</script>
+<script src="../script.js?v=192"></script>
 </head>
 <body>
 <div class="card">
