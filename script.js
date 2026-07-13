@@ -954,6 +954,10 @@
         loadTxTable();
         // Dashboard API Keys
         loadDashKeys();
+        // Request Logs from New API
+        loadRequestLogs();
+        // Available Models from New API
+        loadAvailableModels();
       }catch(e){showToast('Failed to load dashboard','error')}
     }
     async function loadDashKeys(){
@@ -992,6 +996,73 @@
         }
 body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join('');
       }catch(e){}
+    }
+    async function loadRequestLogs(){
+      var container=document.getElementById('dashLogs');
+      if(!container)return;
+      try{
+        var logs=await api('GET','/api/logs?page=1&page_size=20');
+        var countEl=document.getElementById('logCount');
+        if(!logs.items||!logs.items.length){
+          countEl.textContent='0 requests';
+          container.innerHTML='<div class="empty-state" style="padding:1.5rem 1rem"><div class="empty-icon" style="font-size:2rem;opacity:0.35">📋</div><div class="empty-title" style="font-size:0.85rem">No request logs yet</div><div class="empty-desc" style="font-size:0.75rem">Configure New API and make API calls to see logs here.</div></div>';
+          return;
+        }
+        countEl.textContent=logs.total+' requests';
+        container.innerHTML=logs.items.map(function(l){
+          var dt=l.created_at?new Date(l.created_at).toLocaleString():'';
+          var modelName=l.model||l.model_id||'Unknown';
+          var tokens=l.tokens||l.completion_tokens||0;
+          var status=l.status||200;
+          var statusCls=status>=400?'var(--destructive)':'var(--success)';
+          var cost=l.total_amount?'$'+l.total_amount.toFixed(6):'';
+          return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid var(--border);font-size:0.8rem">'+
+            '<span style="width:10px;height:10px;border-radius:50%;background:'+statusCls+';flex-shrink:0"></span>'+
+            '<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(modelName)+'</span>'+
+            '<span style="color:var(--text-muted);font-size:0.75rem">'+escapeHtml(tokens.toLocaleString())+' tok</span>'+
+            (cost?'<span style="color:var(--primary);font-size:0.75rem">'+cost+'</span>':'')+
+            '<span style="color:var(--text-muted);font-size:0.7rem">'+escapeHtml(dt)+'</span>'+
+          '</div>';
+        }).join('');
+      }catch(e){
+        container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem">Failed to load request logs.</p>';
+      }
+    }
+    async function loadAvailableModels(){
+      var container=document.getElementById('dashModelList');
+      var countEl=document.getElementById('modelCountLabel');
+      if(!container)return;
+      try{
+        var result=await api('GET','/api/available-models');
+        var models=result.models||[];
+        if(!models.length){
+          countEl.textContent='0 models';
+          container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">No models available yet. Configure New API.</p>';
+          return;
+        }
+        countEl.textContent=models.length+' models';
+        container.innerHTML=models.map(function(m){
+          var name=m.name||m.model||m.model_id||m.id||'Unknown';
+          var provider=m.provider||'';
+          var icon='🧠';
+          if(name.toLowerCase().includes('gpt')) icon='🤖';
+          else if(name.toLowerCase().includes('claude')) icon='🟣';
+          else if(name.toLowerCase().includes('deepseek')) icon='🔴';
+          else if(name.toLowerCase().includes('llama')) icon='🦙';
+          else if(name.toLowerCase().includes('gemini')) icon='🔵';
+          var tags='';
+          if(m.context_length) tags+='<span style="font-size:0.7rem;padding:1px 6px;border-radius:4px;background:var(--primary-subtle);color:var(--primary)">'+(m.context_length/1000).toFixed(0)+'K</span> ';
+          if(m.prompt_price) tags+='<span style="font-size:0.7rem;padding:1px 6px;border-radius:4px;background:var(--success-subtle);color:var(--success)">$'+(m.prompt_price*1000).toFixed(4)+'/1K</span>';
+          return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;font-size:0.8rem;border-bottom:1px solid var(--border);transition:background 0.2s" onmouseover="this.style.background=\'var(--card-hover)\'" onmouseout="this.style.background=\'\'">'+
+            '<span>'+icon+'</span>'+
+            '<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(name)+'</span>'+
+            (provider?'<span style="color:var(--text-muted);font-size:0.7rem">'+escapeHtml(provider)+'</span>':'')+
+            tags+
+          '</div>';
+        }).join('');
+      }catch(e){
+        container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">Failed to load models.</p>';
+      }
     }
     function initCharts(usage){
       const canvas=document.getElementById('usageChart');

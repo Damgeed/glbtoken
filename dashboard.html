@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=185" />
+  <link rel="stylesheet" href="style.css?v=186" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -144,9 +144,13 @@
       </div>
       <div class="dash-grid">
         <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div><div id="modelRanking" style="margin-top:0.75rem;border-top:1px solid var(--border);padding-top:0.5rem"></div></div>
-        <div class="dash-card"><div class="dash-section-title">Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="activityCount">0 items</span></div><div id="dashActivity" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">No activity yet. Buy tokens to get started!</p></div></div>
+        <div class="dash-card"><div class="dash-section-title">Request Logs <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="logCount">0 requests</span></div><div id="dashLogs" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Connect New API to see request logs.</p></div></div>
       </div>
-      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
+      <div class="dash-card" style="margin-top:1.25rem" id="dashAvailableModels">
+        <div class="dash-section-title">🧠 Your Models <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="modelCountLabel">via New API</span></div>
+        <div id="dashModelList" style="max-height:200px;overflow-y:auto;margin-top:0.25rem"><p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">Connect New API to see available models.</p></div>
+      </div>
+      <div class="dash-card" style="margin-top:1.25rem"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
         <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
       </div>
@@ -184,8 +188,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=185"></script>
-<script data-cfasync="false" src="script.js?v=185"></script>
+<script src="translations.js?v=186"></script>
+<script data-cfasync="false" src="script.js?v=186"></script>
 
 <script>
 (function(){

@@ -1700,6 +1700,36 @@ async def health():
         "newapi_url": os.getenv("NEW_API_BASE_URL", ""),
     }
 
+# ── New API Request Logs ──
+@app.get("/api/logs")
+async def get_logs(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    user: User = Depends(get_current_user),
+):
+    """Fetch request logs from New API for the current user."""
+    if not user.newapi_user_id:
+        return {"total": 0, "items": [], "message": "New API user not linked"}
+    try:
+        logs = await get_user_logs(user.newapi_user_id, page=page, page_size=page_size)
+        return logs
+    except Exception as e:
+        print(f"⚠️ Failed to fetch request logs: {e}")
+        return {"total": 0, "items": [], "message": str(e)}
+
+# ── Available Models from New API ──
+@app.get("/api/available-models")
+async def get_available_models(user: User = Depends(get_current_user)):
+    """Get models accessible to the current user from New API."""
+    if not user.newapi_user_id:
+        return {"models": [], "message": "New API user not linked"}
+    try:
+        models = await get_user_models(user.newapi_user_id)
+        return {"models": models, "count": len(models)}
+    except Exception as e:
+        print(f"⚠️ Failed to fetch available models: {e}")
+        return {"models": [], "message": str(e)}
+
 if __name__ == "__main__":
     import uvicorn
     import sys
