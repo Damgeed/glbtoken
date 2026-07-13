@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Settings — GlbTOKEN</title>
-  <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
+  <title>Model Presets — GlbTOKEN</title>
+  <meta name="description" content="Save and reuse model configurations." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -13,22 +13,77 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=189" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  </head>
+
+<style>
+/* ── Presets page styles ── */
+.presets-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.presets-header h1{font-size:1.5rem;font-weight:700;margin-bottom:0.25rem}
+.presets-header p{font-size:0.85rem;color:var(--text-secondary)}
+.presets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-top:0.5rem}
+.preset-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:all 0.2s;position:relative;display:flex;flex-direction:column}
+.preset-card:hover{border-color:hsla(44 96% 52% / 0.25);box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.preset-card .pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;gap:0.5rem}
+.preset-card .pc-name{font-size:1.05rem;font-weight:700;color:var(--text);word-break:break-word}
+.preset-card .pc-model{display:inline-flex;align-items:center;gap:4px;font-size:0.78rem;padding:0.2rem 0.6rem;border-radius:6px;background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.15);color:var(--primary);font-weight:500;margin-top:0.25rem;word-break:break-word}
+.preset-card .pc-params{margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.5rem}
+.preset-card .pc-param{font-size:0.78rem;color:var(--text-secondary);background:var(--bg-alt);border:1px solid var(--border-light);border-radius:6px;padding:0.25rem 0.55rem;display:flex;align-items:center;gap:4px}
+.preset-card .pc-param strong{color:var(--text);font-weight:600}
+.preset-card .pc-preview{font-size:0.82rem;color:var(--text-muted);margin-top:0.75rem;padding-top:0.65rem;border-top:1px solid var(--border-light);line-height:1.5;max-height:60px;overflow:hidden;position:relative}
+.preset-card .pc-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(transparent,var(--card))}
+.preset-card .pc-actions{display:flex;gap:0.5rem;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border-light)}
+.preset-card .pc-actions button{flex:1;padding:0.5rem;border-radius:var(--radius-sm);font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:center}
+.preset-card .pc-actions .pc-edit{background:var(--primary-subtle);border:1px solid hsla(44 96% 52% / 0.2);color:var(--primary)}
+.preset-card .pc-actions .pc-edit:hover{background:var(--primary);color:#0A0B14}
+.preset-card .pc-actions .pc-delete{background:transparent;border:1px solid var(--border);color:var(--destructive)}
+.preset-card .pc-actions .pc-delete:hover{background:var(--destructive-subtle);border-color:var(--destructive)}
+
+/* ── Preset Modal ── */
+.preset-modal .modal-box{max-width:520px}
+.preset-modal .form-group{margin-bottom:1rem}
+.preset-modal .form-group label{display:block;font-size:0.85rem;font-weight:500;color:var(--text-secondary);margin-bottom:0.35rem}
+.preset-modal .form-group input,.preset-modal .form-group textarea,.preset-modal .form-group select{width:100%;padding:0.65rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem;transition:border 0.2s}
+.preset-modal .form-group input:focus,.preset-modal .form-group textarea:focus,.preset-modal .form-group select:focus{outline:none;border-color:var(--primary)}
+.preset-modal .form-group textarea{min-height:80px;resize:vertical;font-family:inherit;line-height:1.5}
+.preset-modal .slider-row{display:flex;align-items:center;gap:0.75rem}
+.preset-modal .slider-row input[type=range]{flex:1;height:6px;border-radius:3px;background:var(--border);-webkit-appearance:none;appearance:none;outline:none;cursor:pointer}
+.preset-modal .slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--primary);cursor:pointer;border:2px solid var(--card);box-shadow:0 0 6px hsla(44 96% 52% / 0.4)}
+.preset-modal .slider-row input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--primary);cursor:pointer;border:2px solid var(--card)}
+.preset-modal .slider-value{min-width:36px;text-align:center;font-size:0.85rem;font-weight:600;color:var(--primary)}
+.preset-modal .form-actions{display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border-light)}
+.preset-modal .form-actions .btn-primary{padding:0.6rem 1.5rem;font-size:0.9rem}
+.preset-modal .form-actions .btn-secondary{padding:0.6rem 1.5rem;font-size:0.9rem}
+.presets-empty{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
+.presets-empty .pe-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
+.presets-empty h3{font-size:1.1rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.5rem}
+.presets-empty p{font-size:0.9rem;max-width:360px;margin:0 auto}
+@media(max-width:600px){
+  .presets-grid{grid-template-columns:1fr}
+  .preset-card{padding:1rem}
+  .presets-header h1{font-size:1.2rem}
+}
+@media(max-width:480px){
+  .preset-modal .modal-box{padding:1.25rem}
+  .preset-modal .form-actions{flex-direction:column}
+  .preset-modal .form-actions .btn-primary,.preset-modal .form-actions .btn-secondary{width:100%;text-align:center}
+}
+</style>
+</head>
 <body>
 <script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}window.addEventListener('pageshow',function(e){if(e.persisted&&!localStorage.getItem('gt_token')){window.location.replace('login.html')}})</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
+
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
     <div class="nav-center" id="navCenter">
-      <a href="index.html" >Home</a>
+      <a href="index.html">Home</a>
       <a href="pricing.html">Pricing</a>
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="presets.html" class="active">Presets</a>
     </div>
     <div class="nav-right">
         <a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>
@@ -56,7 +111,7 @@
                 <div class="dd-email" id="dropEmail">user@email.com</div>
               </div>
             </div>
-                        <div class="dd-items">
+                                    <div class="dd-items">
               <a href="dashboard.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
               <a href="billing.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Billing</a>
               <a href="notifications.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Notifications</a>
@@ -84,6 +139,7 @@
     <a href="models.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> Models</a>
     <a href="apikeys.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Docs</a>
     <a href="dashboard.html" onclick="closeMobile()" id="mobileDashLink" style="display:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
+    <a href="presets.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V4a2 2 0 012-2h8.5L20 7.5V20a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="14" y2="16"/></svg> Presets</a>
     <hr>
     <div class="m-section-label">Account</div>
     <div class="mobile-auth-grid" id="mobileGuestSection">
@@ -101,53 +157,76 @@
       </div>
     </div>
   </div>
+
 <div class="dash-page"><div class="container">
-      <span class="section-label">Account</span>
-      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">Settings</h2>
-      <div class="settings-grid">
-        <div class="dash-card">
-          <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">👤 Profile</h3>
-          <div style="display:flex;flex-direction:column;gap:0.75rem">
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Full Name</label><input type="text" id="settingsName" value="User" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Email</label><input type="email" id="settingsEmail" value="admin@glbtoken.com" disabled style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem;opacity:0.6"></div>
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Timezone</label>
-              <select id="settingsTz" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"><option value="UTC+0">UTC+0 (GMT)</option><option value="UTC+1">UTC+1 (CET)</option><option value="UTC+8">UTC+8 (SGT)</option><option value="UTC-5">UTC-5 (EST)</option></select></div>
-            <button class="btn-primary" onclick="saveProfile()" style="width:100%;margin-top:0.5rem">Save Changes</button>
-          </div>
-        </div>
-        <div class="dash-card">
-          <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">🔐 Security</h3>
-          <div style="display:flex;flex-direction:column;gap:0.75rem">
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Current Password</label><input type="password" id="settingsCurPw" placeholder="Enter current password" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
-            <div><label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">New Password</label><input type="password" id="settingsNewPw" placeholder="Enter new password" style="width:100%;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border-light);color:var(--text);font-size:0.85rem"></div>
-            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-alt);border-radius:var(--radius-sm)">
-              <span style="font-size:1.5rem">🔑</span>
-              <div><div style="font-weight:600;font-size:0.85rem">Two-Factor Auth</div><div style="font-size:0.75rem;color:var(--text-muted)">Add an extra layer of security</div></div>
-              <button class="btn-secondary" onclick="showToast('2FA coming soon','info')" style="margin-left:auto;padding:0.4rem 1rem;font-size:0.8rem">Enable</button>
-            </div>
-            <button class="btn-secondary" onclick="updatePassword()" style="width:100%;margin-top:0.5rem">Update Password</button>
-          </div>
-        </div>
-        <div class="dash-card">
-          <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">🔔 Notifications</h3>
-          <div style="display:flex;flex-direction:column;gap:0.25rem">
-            <div class="toggle-row">
-              <div><div class="toggle-label">Email Notifications</div><div class="toggle-desc">Receive account &amp; marketing emails</div></div>
-              <label class="toggle-switch"><input type="checkbox" id="notifEmail" /><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div><div class="toggle-label">Low Balance Alerts</div><div class="toggle-desc">Get notified when your balance runs low</div></div>
-              <label class="toggle-switch"><input type="checkbox" id="notifLowBalance" /><span class="toggle-slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div><div class="toggle-label">Login Alerts</div><div class="toggle-desc">Email when a new device signs in</div></div>
-              <label class="toggle-switch"><input type="checkbox" id="notifLogin" /><span class="toggle-slider"></span></label>
-            </div>
-            <button class="btn-primary" onclick="saveNotificationSettings()" style="width:100%;margin-top:0.75rem">Save Notification Preferences</button>
-          </div>
+  <div class="presets-header">
+    <div>
+      <h1>Model Presets</h1>
+      <p>Save and reuse model configurations</p>
+    </div>
+    <button class="btn-primary" onclick="showPresetModal()">+ Create Preset</button>
+  </div>
+  <div class="dash-card">
+    <div class="dash-section-title">Your Presets <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="presetCount">0 saved</span></div>
+    <div id="presetsList">
+      <div class="presets-empty">
+        <div class="pe-icon">📋</div>
+        <h3>No presets yet</h3>
+        <p>Create one to save your model configurations.</p>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Preset Modal -->
+<div class="modal-overlay preset-modal" id="presetModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePresetModal()">✕</button>
+    <h3 id="presetModalTitle">Create Preset</h3>
+    <form id="presetForm" onsubmit="return false">
+      <div class="form-group">
+        <label for="presetName">Name <span style="color:var(--destructive)">*</span></label>
+        <input type="text" id="presetName" placeholder="e.g. Creative Writing" required />
+      </div>
+      <div class="form-group">
+        <label for="presetModel">Model <span style="color:var(--destructive)">*</span></label>
+        <input type="text" id="presetModel" placeholder="e.g. gpt-4o, claude-sonnet-4" required />
+      </div>
+      <div class="form-group">
+        <label for="presetSystemPrompt">System Prompt</label>
+        <textarea id="presetSystemPrompt" placeholder="Optional system prompt for this model..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Temperature: <span style="color:var(--text-muted);font-weight:400">Controls randomness</span></label>
+        <div class="slider-row">
+          <span style="font-size:0.75rem;color:var(--text-muted)">0</span>
+          <input type="range" id="presetTemperature" min="0" max="2" step="0.1" value="0.7" oninput="document.getElementById('tempVal').textContent=parseFloat(this.value).toFixed(1)" />
+          <span style="font-size:0.75rem;color:var(--text-muted)">2</span>
+          <span class="slider-value" id="tempVal">0.7</span>
         </div>
       </div>
-    </div></div><footer><div class="container">
+      <div class="form-group">
+        <label for="presetMaxTokens">Max Tokens <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+        <input type="number" id="presetMaxTokens" placeholder="e.g. 4096" min="1" step="1" />
+      </div>
+      <div class="form-group">
+        <label>Top P: <span style="color:var(--text-muted);font-weight:400">Nucleus sampling</span></label>
+        <div class="slider-row">
+          <span style="font-size:0.75rem;color:var(--text-muted)">0</span>
+          <input type="range" id="presetTopP" min="0" max="1" step="0.05" value="1.0" oninput="document.getElementById('topPVal').textContent=parseFloat(this.value).toFixed(2)" />
+          <span style="font-size:0.75rem;color:var(--text-muted)">1</span>
+          <span class="slider-value" id="topPVal">1.00</span>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" onclick="closePresetModal()">Cancel</button>
+        <button type="button" class="btn-primary" id="presetSaveBtn" onclick="savePreset()">Save Preset</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
       <div class="footer-col"><h4>Product</h4><a href="pricing.html">Pricing</a><a href="models.html">Models</a><a href="apikeys.html">Docs</a></div>
@@ -156,6 +235,7 @@
     </div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
   </div></footer>
+
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
     <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
@@ -170,7 +250,6 @@
 
 <script src="translations.js?v=189"></script>
 <script data-cfasync="false" src="script.js?v=189"></script>
-<script>if(localStorage.getItem('gt_token')){setTimeout(function(){loadProfile();loadSettings()},100)}</script>
 
 <script>
 (function(){
@@ -204,6 +283,148 @@
   document.addEventListener('mouseup', endDrag);
   document.addEventListener('touchend', endDrag);
 })();
+</script>
+
+<script>
+/* ── Presets State ── */
+var editingPresetId = null;
+
+/* ── Load Presets ── */
+async function loadPresets(){
+  var list = document.getElementById('presetsList');
+  var count = document.getElementById('presetCount');
+  if(!list) return;
+  try {
+    var presets = await api('GET','/api/presets');
+    if(!Array.isArray(presets)) presets = [];
+    count.textContent = presets.length + ' saved';
+    if(presets.length === 0){
+      list.innerHTML = '<div class="presets-empty"><div class="pe-icon">📋</div><h3>No presets yet</h3><p>Create one to save your model configurations.</p></div>';
+      return;
+    }
+    var html = '<div class="presets-grid">';
+    for(var i=0;i<presets.length;i++){
+      var p = presets[i];
+      var promptPreview = p.system_prompt ? escapeHtml(p.system_prompt.length > 100 ? p.system_prompt.substring(0,100)+'...' : p.system_prompt) : '<em style="color:var(--text-muted)">No system prompt</em>';
+      var temp = p.temperature != null ? p.temperature.toFixed(1) : '0.7';
+      var topP = p.top_p != null ? p.top_p.toFixed(2) : '1.0';
+      var maxT = p.max_tokens || '—';
+      html += '<div class="preset-card">';
+      html += '<div class="pc-top"><div><div class="pc-name">' + escapeHtml(p.name) + '</div><div class="pc-model">▸ ' + escapeHtml(p.model) + '</div></div></div>';
+      html += '<div class="pc-params">';
+      html += '<span class="pc-param">🌡️ <strong>' + temp + '</strong></span>';
+      html += '<span class="pc-param">🎯 Top P <strong>' + topP + '</strong></span>';
+      html += '<span class="pc-param">📏 Max <strong>' + maxT + '</strong></span>';
+      html += '</div>';
+      html += '<div class="pc-preview">' + promptPreview + '</div>';
+      html += '<div class="pc-actions">';
+      html += '<button class="pc-edit" onclick="showPresetModal(' + p.id + ')">✏️ Edit</button>';
+      html += '<button class="pc-delete" onclick="deletePreset(' + p.id + ')">🗑️ Delete</button>';
+      html += '</div></div>';
+    }
+    html += '</div>';
+    list.innerHTML = html;
+  } catch(e){
+    count.textContent = '0 saved';
+    list.innerHTML = '<div class="presets-empty"><div class="pe-icon">⚠️</div><h3>Could not load presets</h3><p>' + escapeHtml(e.message || 'Unknown error') + '</p></div>';
+  }
+}
+
+/* ── Show Preset Modal (Create or Edit) ── */
+async function showPresetModal(presetId){
+  editingPresetId = null;
+  document.getElementById('presetForm').reset();
+  document.getElementById('presetName').value = '';
+  document.getElementById('presetModel').value = '';
+  document.getElementById('presetSystemPrompt').value = '';
+  document.getElementById('presetTemperature').value = '0.7';
+  document.getElementById('tempVal').textContent = '0.7';
+  document.getElementById('presetMaxTokens').value = '';
+  document.getElementById('presetTopP').value = '1.0';
+  document.getElementById('topPVal').textContent = '1.00';
+  document.getElementById('presetModalTitle').textContent = 'Create Preset';
+  document.getElementById('presetSaveBtn').textContent = 'Save Preset';
+
+  if(presetId){
+    document.getElementById('presetModalTitle').textContent = 'Edit Preset';
+    document.getElementById('presetSaveBtn').textContent = 'Update Preset';
+    try {
+      var p = await api('GET','/api/presets/' + presetId);
+      if(p){
+        editingPresetId = p.id;
+        document.getElementById('presetName').value = p.name || '';
+        document.getElementById('presetModel').value = p.model || '';
+        document.getElementById('presetSystemPrompt').value = p.system_prompt || '';
+        document.getElementById('presetTemperature').value = p.temperature != null ? p.temperature : '0.7';
+        document.getElementById('tempVal').textContent = (p.temperature != null ? parseFloat(p.temperature).toFixed(1) : '0.7');
+        document.getElementById('presetMaxTokens').value = p.max_tokens || '';
+        document.getElementById('presetTopP').value = p.top_p != null ? p.top_p : '1.0';
+        document.getElementById('topPVal').textContent = (p.top_p != null ? parseFloat(p.top_p).toFixed(2) : '1.00');
+      }
+    } catch(e){
+      showToast('Failed to load preset: ' + (e.message || 'Error'), 'error');
+      return;
+    }
+  }
+
+  document.getElementById('presetModal').classList.add('open');
+}
+
+/* ── Close Preset Modal ── */
+function closePresetModal(){
+  document.getElementById('presetModal').classList.remove('open');
+  editingPresetId = null;
+}
+
+/* ── Save Preset (Create or Update) ── */
+async function savePreset(){
+  var name = document.getElementById('presetName').value.trim();
+  var model = document.getElementById('presetModel').value.trim();
+  if(!name){ showToast('Preset name is required','error'); document.getElementById('presetName').focus(); return; }
+  if(!model){ showToast('Model is required','error'); document.getElementById('presetModel').focus(); return; }
+
+  var body = {
+    name: name,
+    model: model,
+    system_prompt: document.getElementById('presetSystemPrompt').value.trim() || null,
+    temperature: parseFloat(document.getElementById('presetTemperature').value),
+    max_tokens: parseInt(document.getElementById('presetMaxTokens').value) || null,
+    top_p: parseFloat(document.getElementById('presetTopP').value)
+  };
+
+  try {
+    if(editingPresetId){
+      await api('PUT','/api/presets/' + editingPresetId, body);
+      showToast('Preset updated successfully','success');
+    } else {
+      await api('POST','/api/presets', body);
+      showToast('Preset created successfully','success');
+    }
+    closePresetModal();
+    loadPresets();
+  } catch(e){
+    showToast(e.message || 'Failed to save preset','error');
+  }
+}
+
+/* ── Delete Preset ── */
+async function deletePreset(id){
+  if(!confirm('Are you sure you want to delete this preset? This cannot be undone.')) return;
+  try {
+    await api('DELETE','/api/presets/' + id);
+    showToast('Preset deleted','success');
+    loadPresets();
+  } catch(e){
+    showToast(e.message || 'Failed to delete preset','error');
+  }
+}
+
+/* ── Auto-load on page load ── */
+document.addEventListener('DOMContentLoaded', function(){
+  if(localStorage.getItem('gt_token')){
+    loadPresets();
+  }
+});
 </script>
 
 </body>

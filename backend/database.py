@@ -118,6 +118,21 @@ class AIModel(Base):
     version = Column(String, default="")
     description = Column(Text, default="")
 
+class Preset(Base):
+    __tablename__ = "presets"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name = Column(String, nullable=False)
+    model = Column(String, nullable=False)
+    system_prompt = Column(Text, nullable=True, default=None)
+    temperature = Column(Float, default=0.7)
+    max_tokens = Column(Integer, nullable=True, default=None)
+    top_p = Column(Float, default=1.0)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", backref="presets")
+
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)
