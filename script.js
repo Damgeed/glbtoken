@@ -572,7 +572,10 @@
     function startOAuth(provider, btn){
       if (oauthTimeout) clearTimeout(oauthTimeout);
       setBtnLoading(btn, true, 'Connecting...');
-      api('GET','/api/auth/auth0/social-url?provider='+provider).then(function(cfg){
+      // Generate CSRF state token
+      var csrfState = Array.from(Array(32), function(){return Math.random().toString(36)[2]}).join('');
+      sessionStorage.setItem('gt_oauth_state', csrfState);
+      api('GET','/api/auth/auth0/social-url?provider='+provider+'&state='+csrfState).then(function(cfg){
         if(cfg && cfg.url) {
           sessionStorage.setItem('gt_oauth_cancel','1');
           window.location.href=cfg.url;
@@ -734,6 +737,19 @@
       const params = new URLSearchParams(hash);
       const idToken = params.get('id_token');
       if(!idToken) return;
+      // Verify CSRF state token
+      const returnedState = params.get('state');
+      const storedState = sessionStorage.getItem('gt_oauth_state');
+      sessionStorage.removeItem('gt_oauth_state');
+      if (returnedState && storedState && returnedState !== storedState) {
+        window.location.href = '/login.html?error=Security+check+failed:+invalid+state';
+        return;
+      }
+      // Clear the hash from URL — removes id_token from browser history
+      if (window.history && window.history.replaceState) {
+        var cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
       try{
         const data = await api('POST','/api/auth/auth0/login', {token: idToken});
         localStorage.setItem('gt_token', data.token);

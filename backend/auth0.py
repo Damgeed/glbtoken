@@ -146,7 +146,7 @@ def verify_sms_code(phone: str, code: str) -> dict:
 
 # ── Social Login Redirect URL ──
 
-def get_social_login_url(provider: str, redirect_uri: str) -> str:
+def get_social_login_url(provider: str, redirect_uri: str, state: str = "") -> str:
     """Build Auth0 authorize URL for a social connection (google-oauth2, github, etc.)."""
     if not is_configured():
         return ""
@@ -168,6 +168,8 @@ def get_social_login_url(provider: str, redirect_uri: str) -> str:
         "connection": connection,
         "nonce": str(int(datetime.now(timezone.utc).timestamp())),
     }
+    if state:
+        params["state"] = state
     return f"https://{AUTH0_DOMAIN}/authorize?{urlencode(params)}"
 
 JWKS_CACHE = None

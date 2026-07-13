@@ -750,12 +750,12 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
     }
 
 @app.get("/api/auth/auth0/social-url")
-def auth0_social_url(provider: str = Query(...)):
+def auth0_social_url(provider: str = Query(...), state: str = Query("")):
     """Get the Auth0 authorize URL for a social login provider."""
     if not is_auth0_configured():
         raise HTTPException(status_code=400, detail="Auth0 not configured")
     redirect_uri = "https://glbtoken.com/auth/callback.html"
-    url = get_social_login_url(provider, redirect_uri)
+    url = get_social_login_url(provider, redirect_uri, state=state)
     if not url:
         raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
     return {"url": url, "redirect_uri": redirect_uri}
