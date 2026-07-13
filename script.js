@@ -745,6 +745,10 @@
         window.location.href = '/login.html?error=' + encodeURIComponent(e.message || 'Auth0 login failed');
       }
     }
+    // Auto-run on callback page
+    if (window.location.pathname.indexOf('/auth/callback.html') !== -1) {
+      handleAuth0Callback();
+    }
 
     // ── Forgot Password ──
     function showForgotPassword(){

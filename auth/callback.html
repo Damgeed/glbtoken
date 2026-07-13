@@ -17,39 +17,7 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
 .card{background:#161822;border:1px solid #2a2b3d;border-radius:12px;padding:2rem;text-align:center;max-width:360px}
 .card p{margin-top:1rem;color:#7f8490;font-size:0.9rem}
 </style>
-<script>
-(function(){
-  var h = window.location.hash.substring(1);
-  if (!h) {
-    // No hash — could be an OAuth error redirect
-    var err = new URLSearchParams(window.location.search).get('error');
-    if (err) {
-      window.location.replace('/login.html?error=' + encodeURIComponent(err));
-    } else {
-      // Still nothing — timed out or direct visit
-      setTimeout(function(){ window.location.replace('/login.html'); }, 2000);
-    }
-    return;
-  }
-  var p = new URLSearchParams(h);
-  var idToken = p.get('id_token');
-  if (!idToken) {
-    // Check for error in hash
-    var oauthErr = p.get('error');
-    if (oauthErr) {
-      window.location.replace('/login.html?error=' + encodeURIComponent(p.get('error_description') || oauthErr));
-    } else {
-      window.location.replace('/login.html?error=No+token+received');
-    }
-    return;
-  }
-  // Redirect browser to Railway callback endpoint — avoids cross-origin fetch failures
-  var API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-    ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
-  window.location.replace(API_URL + '/api/auth/auth0/callback?id_token=' + encodeURIComponent(idToken));
-})();
-</script>
-<script src="../script.js?v=192"></script>
+<script src="../script.js?v=196"></script>
 </head>
 <body>
 <div class="card">
