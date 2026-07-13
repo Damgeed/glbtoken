@@ -14,11 +14,29 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=194" />
+  <link rel="stylesheet" href="style.css?v=195" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
-<script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}window.addEventListener('pageshow',function(e){if(e.persisted&&!localStorage.getItem('gt_token')){window.location.replace('login.html')}})</script>
+<script>
+(function(){
+  // Read token from URL params (redirect from Railway callback)
+  var p = new URLSearchParams(window.location.search);
+  var token = p.get('token');
+  var user = p.get('user');
+  if (token) {
+    localStorage.setItem('gt_token', token);
+    if (user) {
+      try { localStorage.setItem('gt_user', decodeURIComponent(user)); } catch(e) {}
+    }
+    // Clean URL — remove params without refreshing
+    var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
+    window.history.replaceState({}, document.title, clean);
+  }
+  if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}
+})();
+window.addEventListener('pageshow',function(e){if(e.persisted&&!localStorage.getItem('gt_token')){window.location.replace('login.html')}})
+</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
@@ -206,8 +224,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=194"></script>
-<script data-cfasync="false" src="script.js?v=194"></script>
+<script src="translations.js?v=195"></script>
+<script data-cfasync="false" src="script.js?v=195"></script>
 
 <script>
 (function(){

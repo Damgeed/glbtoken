@@ -607,6 +607,62 @@ async def auth0_login(req: Auth0LoginRequest, db: Session = Depends(get_db)):
         "token": token,
     }
 
+@app.get("/api/auth/auth0/callback")
+async def auth0_callback_redirect(id_token: str = Query(...)):
+    """Callback redirect endpoint for social login. Validates Auth0 id_token and redirects to frontend dashboard with JWT."""
+    from starlette.responses import RedirectResponse
+    if not is_auth0_configured():
+        return RedirectResponse(url="https://glbtoken.com/login.html?error=Auth0+not+configured")
+    from urllib.parse import quote
+    try:
+        payload = verify_auth0_token(id_token)
+        info = get_user_info(payload)
+    except ValueError as e:
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Invalid+token:+{quote(str(e))}")
+    from database import User, get_db
+    from sqlalchemy.orm import Session
+    db = next(get_db())
+    try:
+        user = db.query(User).filter(
+            (User.email == info["email"]) | (User.email == "" and 1 == 0)
+        ).first()
+        if not user and info.get("sub"):
+            user = db.query(User).filter(User.google_id == info["sub"]).first()
+        if not user and info["email"]:
+            user = db.query(User).filter(User.email == info["email"]).first()
+        if user:
+            if not user.google_id:
+                user.google_id = info["sub"]
+            user.email_verified = user.email_verified or info["email_verified"]
+            db.commit()
+        else:
+            user = User(
+                name=info["name"],
+                email=info["email"],
+                google_id=info["sub"],
+                token_balance=0,
+                email_verified=info["email_verified"],
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+    except Exception as e:
+        db.close()
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{quote(str(e))}")
+    try:
+        from newapi_integration import create_newapi_user
+        await create_newapi_user(email=info["email"], name=info["name"], quota=0)
+    except Exception as e:
+        print(f"⚠️ New API sync failed for Auth0 callback: {e}")
+    jwt_token = create_access_token({"sub": str(user.id)})
+    from urllib.parse import quote
+    user_json = quote(json.dumps({
+        "id": user.id, "name": user.name, "email": user.email,
+        "token_balance": user.token_balance, "picture": info.get("picture", ""),
+    }))
+    db.close()
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={jwt_token}&user={user_json}")
+
 @app.post("/api/auth/auth0/password-login")
 @limiter.limit("10/minute")
 async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLoginRequest, db: Session = Depends(get_db)):
