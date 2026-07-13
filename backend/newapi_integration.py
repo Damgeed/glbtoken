@@ -109,3 +109,19 @@ async def create_api_token(user_id: int, name: str = "GlbTOKEN") -> dict:
     if not NEW_API_BASE or not ADMIN_TOKEN:
         return {"key": "", "name": name}
     return await _post(f"/api/user/{user_id}/key", {"name": name}, admin=True)
+
+async def get_user_logs(user_id: int, page: int = 1, page_size: int = 20) -> dict:
+    """Fetch request logs for a user from New API."""
+    result = await _get(f"/api/log/?user_id={user_id}&page={page}&page_size={page_size}", admin=True)
+    if "error" in result:
+        return {"total": 0, "items": []}
+    return result
+
+async def get_user_models(user_id: int) -> list:
+    """Get models accessible to a user from New API."""
+    result = await _get(f"/api/user/{user_id}/models", admin=True)
+    if isinstance(result, dict) and "error" in result:
+        return []
+    if isinstance(result, list):
+        return result
+    return result.get("models", []) if isinstance(result, dict) else []

@@ -23,7 +23,8 @@ from auth import (
 )
 from newapi_integration import (
     create_newapi_user, update_user_quota, add_user_quota,
-    get_usage_today, create_api_token, health_check
+    get_usage_today, create_api_token, health_check,
+    get_user_logs, get_user_models
 )
 from auth0 import is_configured as is_auth0_configured, get_config as get_auth0_config, verify_token as verify_auth0_token, get_user_info, password_login as auth0_password_login, signup as auth0_signup, get_social_login_url, send_passwordless_code, verify_passwordless_code, send_sms_code, verify_sms_code
 
