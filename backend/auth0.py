@@ -3,7 +3,7 @@ Handles password grant login, signup, social login, and JWT verification.
 All existing frontend buttons route through Auth0 behind the scenes.
 Gracefully disabled — falls back to custom auth if Auth0 not configured."""
 
-import os, json, requests
+import os, json, requests, time
 from jose import jwt, JWTError
 from datetime import datetime, timezone
 
@@ -170,16 +170,19 @@ def get_social_login_url(provider: str, redirect_uri: str) -> str:
     }
     return f"https://{AUTH0_DOMAIN}/authorize?{urlencode(params)}"
 
-# ── JWT Verification ──
+JWKS_CACHE = None
+JWKS_CACHE_TIME = 0
 
 def _fetch_jwks() -> dict:
-    global JWKS_CACHE
-    if JWKS_CACHE is None and AUTH0_DOMAIN:
+    global JWKS_CACHE, JWKS_CACHE_TIME
+    now = time.time()
+    if AUTH0_DOMAIN and (JWKS_CACHE is None or now - JWKS_CACHE_TIME > 86400):
         try:
             url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
             resp = requests.get(url, timeout=10)
             if resp.status_code == 200:
                 JWKS_CACHE = resp.json()
+                JWKS_CACHE_TIME = now
         except Exception as e:
             print(f"⚠️ Failed to fetch Auth0 JWKS: {e}")
     return JWKS_CACHE or {}

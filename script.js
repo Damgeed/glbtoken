@@ -591,12 +591,12 @@
     }
     // ── Contact Form ──
     async function sendContact(){
-      var name=document.getElementById('contactName');
+      var contactName=document.getElementById('contactName');
       var email=document.getElementById('contactEmail');
       var msg=document.getElementById('contactMsg');
-      if(!name||!email||!msg){showToast('Contact form not found','error');return}
-      var n=name.value.trim(), e=email.value.trim(), m=msg.value.trim();
-      if(!n){showToast('Please enter your name','error');name.focus();return}
+      if(!contactName||!email||!msg){showToast('Contact form not found','error');return}
+      var n=contactName.value.trim(), e=email.value.trim(), m=msg.value.trim();
+      if(!n){showToast('Please enter your name','error');contactName.focus();return}
       if(!e||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast('Please enter a valid email','error');email.focus();return}
       if(!m||m.length<10){showToast('Message must be at least 10 characters','error');msg.focus();return}
       var btn=document.querySelector('.info-card button.btn-primary');
@@ -628,12 +628,12 @@
     }
     async function saveProfile(){
       if(!token){showToast('Please sign in first','error');return}
-      var name=document.getElementById('settingsName');
+      var settingsName=document.getElementById('settingsName');
       var tz=document.getElementById('settingsTz');
-      if(!name){showToast('Settings form not found','error');return}
+      if(!settingsName){showToast('Settings form not found','error');return}
       try{
-        await api('PUT','/api/user/profile',{name:name.value.trim(),timezone:tz?tz.value:''});
-        userData.name=name.value.trim();
+        await api('PUT','/api/user/profile',{name:settingsName.value.trim(),timezone:tz?tz.value:''});
+        userData.name=settingsName.value.trim();
         localStorage.setItem('gt_user',JSON.stringify(userData));
         applyAuth();
         showToast('Profile saved','success');
@@ -1250,8 +1250,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       try{await api('PUT',`/api/keys/${id}`,{is_active:!key.is_active});loadKeys()}catch(e){showToast(e.message,'error')}
     }
     async function deleteKey(id){
-      if(!confirm('Delete this API key? This cannot be undone.'))return;
-      try{await api('DELETE',`/api/keys/${id}`);loadKeys();showToast('Key deleted','info')}catch(e){showToast(e.message,'error')}
+      showConfirm('Delete API Key?','This cannot be undone.',async function(){
+        try{await api('DELETE',`/api/keys/${id}`);loadKeys();showToast('Key deleted','info')}catch(e){showToast(e.message,'error')}
+      });
     }
     function sortKeys(mode){
       const s=[...keys];
@@ -1336,7 +1337,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
           if(typing) typing.remove();
           const aiDiv = document.createElement('div');
           aiDiv.className = 'chat-msg ai';
-          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble" style="color:var(--error)">Connection error. Please try again.</div>';
+          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">Connection error. Please try again.</div>';
           msgs.appendChild(aiDiv);
           msgs.scrollTop = msgs.scrollHeight;
         }

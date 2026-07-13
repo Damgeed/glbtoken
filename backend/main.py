@@ -168,7 +168,7 @@ def send_email(to: str, subject: str, body: str) -> bool:
     smtp_port = int(os.getenv("SMTP_PORT", "587"))
     smtp_user = os.getenv("SMTP_USER", "")
     smtp_pass = os.getenv("SMTP_PASS", "")
-    from_addr = os.getenv("SMTP_FROM", "noreply@glbtoken.io")
+    from_addr = os.getenv("SMTP_FROM", "")
     if not smtp_host:
         print(f"📧 SMTP not configured. Would send email to {to}: {subject}")
         return False
@@ -198,8 +198,8 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
     try:
         if db.query(User).filter(User.email == req.email).first():
             raise HTTPException(status_code=400, detail="Email already registered")
-        if len(req.password) < 6:
-            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        if len(req.password) < 8:
+            raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
         user = User(
             name=req.name,
             email=req.email,
@@ -340,6 +340,7 @@ async def github_callback(req: GithubAuthRequest, db: Session = Depends(get_db))
     try:
         github_user = await verify_github_code(req.code)
     except Exception as e:
+        print(f"❌ GitHub login error: {e}")
         raise HTTPException(status_code=400, detail="GitHub login failed. Please try again.")
     user = db.query(User).filter(
         (User.github_id == github_user["id"]) | (User.email == github_user["email"])
@@ -400,6 +401,7 @@ async def verify_code(request: Request, body: dict = Body(...), db: Session = De
         payload = verify_auth0_token(tokens["id_token"])
         user_info = get_user_info(payload)
     except Exception as e:
+        print(f"❌ Email verify error: {e}")
         raise HTTPException(status_code=400, detail="Invalid or expired code. Please try again.")
     
     # Find or create user
@@ -520,6 +522,7 @@ async def auth0_login(req: Auth0LoginRequest, db: Session = Depends(get_db)):
         payload = verify_auth0_token(req.token)
         info = get_user_info(payload)
     except ValueError as e:
+        print(f"❌ Auth0 token login error: {e}")
         raise HTTPException(status_code=401, detail="Auth0 login failed. Invalid token.")
     # Find or create user by Auth0 sub
     user = db.query(User).filter(
@@ -579,6 +582,7 @@ async def auth0_password_login_endpoint(request: Request, db: Session = Depends(
         payload = verify_auth0_token(tokens["id_token"])
         info = get_user_info(payload)
     except ValueError as e:
+        print(f"❌ Auth0 password login error: {e}")
         raise HTTPException(status_code=401, detail="Auth0 login failed. Invalid token.")
 
     user = db.query(User).filter(User.email == info["email"]).first()
@@ -621,6 +625,7 @@ async def auth0_signup_endpoint(request: Request, db: Session = Depends(get_db))
     try:
         auth0_signup(email, password, name)
     except ValueError as e:
+        print(f"❌ Auth0 signup error: {e}")
         raise HTTPException(status_code=400, detail="Signup failed. Please try again.")
 
     try:
@@ -628,6 +633,7 @@ async def auth0_signup_endpoint(request: Request, db: Session = Depends(get_db))
         payload = verify_auth0_token(tokens["id_token"])
         info = get_user_info(payload)
     except ValueError as e:
+        print(f"❌ Auth0 auto-login error: {e}")
         raise HTTPException(status_code=401, detail="Account created but login failed.")
 
     user = User(
@@ -706,8 +712,8 @@ def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_user)
 def change_password(req: ChangePasswordRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.password_hash or not verify_password(req.current_password, user.password_hash):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
-    if len(req.new_password) < 6:
-        raise HTTPException(status_code=400, detail="New password too short")
+    if len(req.new_password) < 8:
+        raise HTTPException(status_code=400, detail="New password must be at least 8 characters")
     user.password_hash = hash_password(req.new_password)
     db.commit()
     return {"status": "password_updated"}
@@ -734,7 +740,7 @@ def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
     now = datetime.now(timezone.utc)
     if not user.reset_token_expiry or now > user.reset_token_expiry:
         raise HTTPException(status_code=400, detail="Reset token expired")
-    if len(req.new_password) < 6:
+    if len(req.new_password) < 8:
         raise HTTPException(status_code=400, detail="Password too short")
     user.password_hash = hash_password(req.new_password)
     user.reset_token = None
@@ -1041,7 +1047,8 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     sig_header = request.headers.get("stripe-signature", "")
     try:
         event = stripe_lib.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
-    except Exception:
+    except Exception as e:
+        print(f"❌ Stripe webhook error: {e}")
         raise HTTPException(status_code=400, detail="Invalid signature")
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
