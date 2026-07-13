@@ -1502,13 +1502,14 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     function toggleChat(){
       const win = document.getElementById('chatWindow');
       if(!win) return;
-      win.classList.toggle('open');
       if(window.innerWidth > 768){
-        // desktop: already toggled, just handle back-to-top
+        win.classList.toggle('open');
+        // Hide back-to-top when chat is open on desktop
         var btt = document.querySelector('.back-to-top');
         if(btt) btt.style.display = win.classList.contains('open') ? 'none' : '';
         return;
       }
+      // Mobile: use chat-focused (not 'open')
       if(win.classList.contains('chat-focused')){
         closeMobileSupportChat();
       } else {
