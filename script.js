@@ -2065,7 +2065,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     var container = document.getElementById('priceCalculator');
     if(!container) return;
     var fallbackRates = {USD:1,NGN:1540,GHS:15.2,KES:129,GBP:0.79};
-    container.innerHTML = '<div class="calculator-card"><h3 style="font-size:1rem;margin-bottom:1rem;color:var(--text)">💰 Token Price Calculator</h3>' +
+    container.innerHTML = '<div class="calculator-card" style="max-width:420px;margin:1.5rem auto 0"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Token Price Calculator</h3><p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">How many tokens for your money?</p>' +
       '<div class="calc-row"><input type="number" id="calcAmount" placeholder="Enter amount" min="1" value="100" oninput="window.calcUpdate()">' +
       '<select id="calcCurrency" onchange="window.calcUpdate()" style="padding:0.7rem 1rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem">' +
       Object.keys(fallbackRates).map(function(c){return '<option value="' + c + '">' + c + '</option>'}).join('') + '</select>' +
