@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=193" />
+  <link rel="stylesheet" href="style.css?v=194" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -123,6 +123,7 @@
   <div class="auth-hero-card">
     <div class="auth-card">
     <h2>Welcome Back</h2><p class="sub">Sign in to your GlbTOKEN account</p>
+    <div id="loginErrorBanner" style="display:none;background:rgba(255,77,79,0.12);border:1px solid rgba(255,77,79,0.3);border-radius:var(--radius-sm);padding:0.65rem 0.85rem;font-size:0.8rem;color:#FF4D4F;margin-bottom:1rem;text-align:center"></div>
     <div class="auth-field" id="loginEmailGroup"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"></div>
     <div class="auth-field" id="loginCodeGroup" style="display:none"><label>Verification Code</label><input type="text" id="loginCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
     <button class="btn-primary" style="width:100%;margin-top:0.75rem" id="loginSendBtn" onclick="sendLoginCode()">Continue</button>
@@ -180,11 +181,25 @@
     </div>
   </div>
 
-<script src="translations.js?v=193"></script>
-<script data-cfasync="false" src="script.js?v=193"></script>
+<script src="translations.js?v=194"></script>
+<script data-cfasync="false" src="script.js?v=194"></script>
 
 <script>
 (function(){
+  // Display login error from URL parameter
+  var err = new URLSearchParams(window.location.search).get('error');
+  if (err) {
+    var banner = document.getElementById('loginErrorBanner');
+    if (banner) {
+      banner.textContent = decodeURIComponent(err);
+      banner.style.display = 'block';
+      // Clear the error from URL without refreshing
+      if (window.history && window.history.replaceState) {
+        var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.replaceState({}, document.title, url);
+      }
+    }
+  }
   var cw = document.getElementById('chatWindow');
   if(!cw) return;
   var h = cw.querySelector('.chat-header');
