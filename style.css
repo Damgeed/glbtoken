@@ -780,7 +780,7 @@
 .calculator-card .calc-currency .curr-value{font-size:1.1rem;font-weight:700;color:var(--primary)}
 
 @media(max-width:600px){
-  .back-to-top{bottom:1rem;right:1rem;width:36px;height:36px;font-size:1rem}
+  .back-to-top{bottom:1rem;left:1rem;right:auto;width:36px;height:36px;font-size:1rem}
   .empty-state{padding:2rem 1rem}
   .calculator-card .calc-row{flex-direction:column;gap:0.5rem}
   .calculator-card input{min-width:100%}

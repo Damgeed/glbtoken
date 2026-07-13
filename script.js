@@ -891,13 +891,48 @@
         // Show New API connection status
         var newapiStatus = document.getElementById('dashNewapiStatus');
         if(newapiStatus) newapiStatus.textContent = d.newapi_connected ? 'New API Connected' : 'Offline';
-        // Show total tokens consumed from New API data
+        // ── Quota bar (tokens used vs balance) ──
+        var totalConsumed = d.total_tokens_consumed || 0;
+        var balance = d.token_balance || 0;
+        var totalEver = totalConsumed + balance;
+        var usedEl = document.getElementById('usedTokens');
+        var remainEl = document.getElementById('remainingTokens');
+        var quotaBar = document.getElementById('quotaBar');
+        var usageSub = document.getElementById('usageSubtitle');
+        if(usedEl) usedEl.textContent = totalConsumed.toLocaleString();
+        if(remainEl) remainEl.textContent = balance.toLocaleString() + ' remaining';
+        if(quotaBar){
+          var pct = totalEver > 0 ? Math.min(totalConsumed / totalEver * 100, 100) : 0;
+          quotaBar.style.width = pct + '%';
+        }
+        if(usageSub) usageSub.textContent = totalConsumed + ' of ' + totalEver + ' tokens used';
+        // Show total tokens consumed (simplified)
+        var consumedEl = document.getElementById('dashTotalConsumed');
+        if(consumedEl) consumedEl.textContent = totalConsumed.toLocaleString();
+        // Lifetime spend
+        var spendEl = document.getElementById('dashTotalSpentLifetime');
+        if(spendEl) spendEl.textContent = '$' + (d.total_spent || 0).toFixed(2);
+        // Show New API today's usage as stat prompt
         var newapiTotal = d.usage_from_newapi && d.usage_from_newapi.total;
         if(newapiTotal && d.newapi_connected){
-          var consumedEl = document.getElementById('dashTotalConsumed');
-          if(consumedEl) consumedEl.textContent = parseInt(newapiTotal).toLocaleString() + ' tokens today';
+          // Show today's New API usage in the stats area
+          var todayEl = document.getElementById('dashTotalConsumed');
+          if(todayEl) todayEl.textContent = parseInt(newapiTotal).toLocaleString();
         }
         initCharts(d.usage_by_model);
+        // ── Model ranking list ──
+        var rankEl = document.getElementById('modelRanking');
+        if(rankEl && d.usage_by_model && d.usage_by_model.length){
+          var sorted = d.usage_by_model.slice().sort(function(a,b){return b.tokens - a.tokens});
+          var top = sorted.slice(0,5);
+          rankEl.innerHTML = '<div style="font-size:0.8rem;font-weight:600;color:var(--text-muted);margin-bottom:0.4rem">Top Models</div>' +
+            top.map(function(m,i){
+              var pct = sorted[0].tokens > 0 ? (m.tokens / sorted[0].tokens * 100) : 0;
+              return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.25rem 0;font-size:0.8rem"><span style="width:16px;text-align:right;color:var(--text-muted)">' + (i+1) + '.</span><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(m.model) + '</span><span style="color:var(--primary);font-weight:600">' + parseInt(m.tokens).toLocaleString() + '</span></div>';
+            }).join('');
+        } else if(rankEl) {
+          rankEl.innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);text-align:center;padding:0.5rem 0">No model usage data yet</div>';
+        }
         // Activity
         const act=document.getElementById('dashActivity');
         const actCount=document.getElementById('activityCount');
@@ -1403,6 +1438,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const section=document.querySelector('.ai-chat-section');
       if(!section) return;
       section.classList.add('chat-focused');
+      // Hide back-to-top while AI chat is open
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = 'none';
       void section.offsetHeight;
       addCloseBtn(section.querySelector('.chat-header'), closeMobileChat);
       lockBodyScroll(true);
@@ -1416,6 +1454,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const section=document.querySelector('.ai-chat-section');
       if(!section) return;
       section.classList.remove('chat-focused');
+      // Restore back-to-top visibility
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = '';
       lockBodyScroll(false);
       removeCloseBtn(section.querySelector('.chat-header'));
     }
@@ -1423,8 +1464,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     function toggleChat(){
       const win = document.getElementById('chatWindow');
       if(!win) return;
+      win.classList.toggle('open');
       if(window.innerWidth > 768){
-        win.classList.toggle('open');
+        // desktop: already toggled, just handle back-to-top
+        var btt = document.querySelector('.back-to-top');
+        if(btt) btt.style.display = win.classList.contains('open') ? 'none' : '';
         return;
       }
       if(win.classList.contains('chat-focused')){
@@ -1439,6 +1483,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const aiSection=document.querySelector('.ai-chat-section.chat-focused');
       if(aiSection) closeMobileChat();
       win.classList.add('chat-focused');
+      // Hide back-to-top while chat is open
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = 'none';
       // Backdrop wraps the window (same flexbox centering as AI chat)
       const backdrop = document.createElement('div');
       backdrop.className = 'support-chat-backdrop';
@@ -1461,6 +1508,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const win = document.getElementById('chatWindow');
       if(!win) return;
       win.classList.remove('chat-focused');
+      // Restore back-to-top visibility
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = '';
       const backdrop = document.querySelector('.support-chat-backdrop');
       if(backdrop){
         backdrop.parentNode.insertBefore(win, backdrop);

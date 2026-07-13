@@ -121,8 +121,24 @@
           <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
         </div>
       </div>
+      <div class="dash-card" style="margin-top:1.25rem">
+        <div class="dash-section-title">Token Usage <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="usageSubtitle">Loading...</span></div>
+        <div style="margin:0.75rem 0 0.5rem">
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.4rem">
+            <span style="color:var(--text-muted)"><span id="usedTokens">0</span> used</span>
+            <span style="color:var(--text-muted)" id="remainingTokens">0 remaining</span>
+          </div>
+          <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden;position:relative">
+            <div id="quotaBar" style="height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,var(--primary),#00D68F);transition:width 0.6s ease"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.25rem">
+          <div style="font-size:0.8rem;color:var(--text-muted)">⚡ <span id="dashTotalConsumed">0</span> tokens consumed</div>
+          <div style="font-size:0.8rem;color:var(--text-muted)">📊 <span id="dashTotalSpentLifetime">$0.00</span> lifetime spend</div>
+        </div>
+      </div>
       <div class="dash-grid">
-        <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div></div>
+        <div class="dash-card"><div class="dash-section-title">Usage by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">All time</span></div><div class="chart-container"><canvas id="usageChart"></canvas></div><div id="modelRanking" style="margin-top:0.75rem;border-top:1px solid var(--border);padding-top:0.5rem"></div></div>
         <div class="dash-card"><div class="dash-section-title">Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="activityCount">0 items</span></div><div id="dashActivity" class="dash-activity"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">No activity yet. Buy tokens to get started!</p></div></div>
       </div>
       <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="history.html" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
