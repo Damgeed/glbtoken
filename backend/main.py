@@ -41,6 +41,15 @@ async def lifespan(app: FastAPI):
     # Startup
     init_db()
     seed_models()
+    # Auto-migrate: add missing columns
+    try:
+        from database import engine
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS settings TEXT DEFAULT '{}'"))
+            conn.commit()
+    except Exception as e:
+        print(f"⚠️ Migration error (non-critical): {e}")
     try:
         auto_pull_models()
     except Exception as e:

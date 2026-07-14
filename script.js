@@ -2202,7 +2202,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     (function(){
       const params = new URLSearchParams(window.location.search);
       const err = params.get('error');
-      if(err) showToast(decodeURIComponent(err), 'error');
+      if(err) { try { showToast(decodeURIComponent(err), 'error'); } catch(e) { showToast('Login error', 'error'); } }
     })();
     // ── Mobile AI Chat popup ──
     function openMobileChat(){
