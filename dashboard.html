@@ -14,41 +14,65 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=203" />
+  <link rel="stylesheet" href="style.css?v=204" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
 <script>
 (function(){
   try {
-    // Parse token from URL params (redirect from Railway callback)
+    var debug = [];
+    debug.push('1. script start');
     var params = new URLSearchParams(window.location.search);
     var tok = params.get('token');
+    debug.push('2. token param: ' + (tok ? tok.substring(0,20) + '...' : 'null'));
+    debug.push('3. url: ' + window.location.href.substring(0,100));
+    
     if (tok) {
       localStorage.setItem('gt_token', tok);
+      debug.push('4. stored gt_token');
       var u = params.get('user');
-      if (u) { try { localStorage.setItem('gt_user', decodeURIComponent(u)); } catch(e) {} }
-      // Store state from query if present (defense in depth)
-      var st = params.get('state');
-      if (st) sessionStorage.setItem('gt_oauth_state', st);
+      if (u) { try { localStorage.setItem('gt_user', decodeURIComponent(u)); debug.push('5. stored user'); } catch(e) { debug.push('5. user error: ' + e.message); } }
     }
-    // Auth check — redirect to login if no token
-    if (!localStorage.getItem('gt_token')) {
+    
+    var stored = localStorage.getItem('gt_token');
+    debug.push('6. stored check: ' + (stored ? 'yes (' + stored.substring(0,20) + '...)' : 'NO'));
+    
+    if (!stored) {
+      debug.push('7. NO TOKEN — redirecting to login');
+      console.log('[GT-DEBUG] ' + debug.join(' | '));
       window.location.replace('login.html');
       return;
     }
-    // Clean URL — remove sensitive params
+    
+    debug.push('7. TOKEN OK — cleaning URL');
     var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
     window.history.replaceState({}, document.title, clean);
+    console.log('[GT-DEBUG] ' + debug.join(' | '));
   } catch(e) {
-    console.error('Dashboard init error:', e);
+    console.error('[GT-DEBUG] FATAL:', e.message);
     if (!localStorage.getItem('gt_token')) {
       window.location.replace('login.html');
     }
   }
 })();
+
+// pageshow handler — also check URL
 window.addEventListener('pageshow',function(e){
-  if(e.persisted && !localStorage.getItem('gt_token')){
+  var token = localStorage.getItem('gt_token');
+  if (!token) {
+    // Try URL params as fallback (bfcache case)
+    var p = new URLSearchParams(window.location.search);
+    var t = p.get('token');
+    if (t) {
+      localStorage.setItem('gt_token', t);
+      token = t;
+      var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
+      window.history.replaceState({}, document.title, clean);
+      console.log('[GT-DEBUG] pageshow: recovered token from URL');
+    }
+  }
+  if (e.persisted && !token) {
     window.location.replace('login.html');
   }
 });
@@ -500,8 +524,8 @@ window.addEventListener('pageshow',function(e){
     </div>
   </div>
 
-<script src="translations.js?v=203"></script>
-<script data-cfasync="false" src="script.js?v=203"></script>
+<script src="translations.js?v=204"></script>
+<script data-cfasync="false" src="script.js?v=204"></script>
 
 <script>
 (function(){

@@ -787,7 +787,7 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
     }))
     db.close()
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={quote(jwt_token)}&user={user_json}")
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={quote(jwt_token, safe='')}&user={user_json}")
 
 @app.post("/api/auth/auth0/password-login")
 @limiter.limit("10/minute")
