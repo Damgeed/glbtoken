@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=215" />
+  <link rel="stylesheet" href="style.css?v=216" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
@@ -165,14 +165,28 @@ function showDashSection(section) {
   document.querySelectorAll('.dash-sidebar-item').forEach(function(i) { i.classList.remove('active'); });
   var link = document.querySelector('.dash-sidebar-item[data-section="' + section + '"]');
   if (link) link.classList.add('active');
+  // Update URL hash for direct navigation
+  if (window.history && window.history.replaceState) {
+    var hash = section === 'overview' ? '' : '#' + section;
+    if (window.location.hash !== hash) {
+      window.history.replaceState(null, '', window.location.pathname + hash);
+    }
+  }
   // Close sidebar on mobile after selection
   var sb = document.getElementById('dashSidebar');
   if (sb && window.innerWidth < 768) sb.classList.remove('open');
-  // Auto-load billing data when billing section is shown
+  // Auto-load section data
   if (section === 'billing' && typeof loadBillingPage === 'function') {
     setTimeout(loadBillingPage, 50);
   }
 }
+// Auto-open section from URL hash on page load
+(function() {
+  var hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById('section-' + hash)) {
+    showDashSection(hash);
+  }
+})();
 function toggleDashSidebar() {
   document.getElementById('dashSidebar').classList.toggle('open');
 }
@@ -209,7 +223,7 @@ function toggleDashSidebar() {
         </div>
         <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -1883,8 +1897,8 @@ function applyFilters(){
     </div>
   </div>
 
-<script src="translations.js?v=215"></script>
-<script data-cfasync="false" src="script.js?v=215"></script>
+<script src="translations.js?v=216"></script>
+<script data-cfasync="false" src="script.js?v=216"></script>
 
 <script>
 (function(){
