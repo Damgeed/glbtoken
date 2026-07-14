@@ -1289,6 +1289,33 @@ TRANS["Copy it now — you won't see it again."] = {en: "Copy it now — you won
 TRANS["Key created!"] = {en: "Key created!", "zh-CN": "密钥已创建！", ru: "Ключ создан!", ja: "キーを作成しました！", de: "Schlüssel erstellt!"};
 TRANS["You are a member of this organization. You can leave at any time."] = {en: "You are a member of this organization. You can leave at any time.", "zh-CN": "您是此组织的成员。您可以随时离开。", ru: "Вы являетесь членом этой организации. Вы можете покинуть ее в любое время.", ja: "あなたはこの組織のメンバーです。いつでも退会できます。", de: "Sie sind Mitglied dieser Organisation. Sie können jederzeit austreten."};
 
+// ── Auto-translated dashboard/i18n texts ──
+TRANS["+ Top Up"] = {en: "+ Top Up", "zh-CN": "+ 充值", ru: "+ Пополнить", ja: "+ チャージ", de: "+ Aufladen"};
+TRANS["Top Up"] = {en: "Top Up", "zh-CN": "充值", ru: "Пополнить", ja: "チャージ", de: "Aufladen"};
+TRANS["Delete"] = {en: "Delete", "zh-CN": "删除", ru: "Удалить", ja: "削除", de: "Löschen"};
+TRANS["Invite Member"] = {en: "Invite Member", "zh-CN": "邀请成员", ru: "Пригласить участника", ja: "メンバーを招待", de: "Mitglied einladen"};
+TRANS["Your Presets"] = {en: "Your Presets", "zh-CN": "您的预设", ru: "Ваши пресеты", ja: "あなたのプリセット", de: "Ihre Voreinstellungen"};
+TRANS["via New API"] = {en: "via New API", "zh-CN": "通过 New API", ru: "через New API", ja: "New API経由", de: "über New API"};
+TRANS["events"] = {en: "events", "zh-CN": "事件", ru: "события", ja: "イベント", de: "Ereignisse"};
+TRANS["Type your message here..."] = {en: "Type your message here...", "zh-CN": "在此输入您的消息...", ru: "Введите сообщение...", ja: "メッセージを入力...", de: "Geben Sie Ihre Nachricht ein..."};
+TRANS["Toggle sidebar"] = {en: "Toggle sidebar", "zh-CN": "切换侧边栏", ru: "Переключить боковую панель", ja: "サイドバー切替", de: "Seitenleiste umschalten"};
+TRANS["Save and reuse model configurations"] = {en: "Save and reuse model configurations", "zh-CN": "保存并复用模型配置", ru: "Сохраняйте и используйте конфигурации моделей", ja: "モデル設定を保存して再利用", de: "Modellkonfigurationen speichern und wiederverwenden"};
+TRANS["Create one to save your model configurations."] = {en: "Create one to save your model configurations.", "zh-CN": "创建一个以保存您的模型配置。", ru: "Создайте один, чтобы сохранить конфигурации моделей.", ja: "作成してモデル設定を保存しましょう。", de: "Erstellen Sie eine, um Ihre Modellkonfigurationen zu speichern."};
+TRANS["(optional)"] = {en: "(optional)", "zh-CN": "（可选）", ru: "(необязательно)", ja: "（オプション）", de: "(optional)"};
+TRANS["+ Create Preset"] = {en: "+ Create Preset", "zh-CN": "+ 创建预设", ru: "+ Создать пресет", ja: "+ プリセット作成", de: "+ Voreinstellung erstellen"};
+TRANS["Your balance is below 1,000 tokens"] = {en: "Your balance is below 1,000 tokens", "zh-CN": "您的余额低于 1,000 个代币", ru: "Ваш баланс ниже 1 000 токенов", ja: "残高が1,000トークンを下回っています", de: "Ihr Guthaben liegt unter 1.000 Tokens"};
+TRANS["Pending"] = {en: "Pending", "zh-CN": "待处理", ru: "В ожидании", ja: "保留中", de: "Ausstehend"};
+TRANS["Active"] = {en: "Active", "zh-CN": "活跃", ru: "Активен", ja: "アクティブ", de: "Aktiv"};
+TRANS["Inactive"] = {en: "Inactive", "zh-CN": "不活跃", ru: "Неактивен", ja: "非アクティブ", de: "Inaktiv"};
+TRANS["Showing 0 entries"] = {en: "Showing 0 entries", "zh-CN": "显示 0 条记录", ru: "Показано 0 записей", ja: "0件を表示", de: "Zeige 0 Einträge"};
+TRANS["Buy $5"] = {en: "Buy $5", "zh-CN": "购买 $5", ru: "Купить $5", ja: "$5購入", de: "Kaufen $5"};
+TRANS["Buy $20"] = {en: "Buy $20", "zh-CN": "购买 $20", ru: "Купить $20", ja: "$20購入", de: "Kaufen $20"};
+TRANS["Buy $50"] = {en: "Buy $50", "zh-CN": "购买 $50", ru: "Купить $50", ja: "$50購入", de: "Kaufen $50"};
+TRANS["Buy $100"] = {en: "Buy $100", "zh-CN": "购买 $100", ru: "Купить $100", ja: "$100購入", de: "Kaufen $100"};
+TRANS["Twitter"] = {en: "Twitter", "zh-CN": "Twitter", ru: "Twitter", ja: "Twitter", de: "Twitter"};
+TRANS["WhatsApp"] = {en: "WhatsApp", "zh-CN": "WhatsApp", ru: "WhatsApp", ja: "WhatsApp", de: "WhatsApp"};
+TRANS["Telegram"] = {en: "Telegram", "zh-CN": "Telegram", ru: "Telegram", ja: "Telegram", de: "Telegram"};
+
 (function() {
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
