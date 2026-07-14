@@ -1205,6 +1205,38 @@ TRANS["Generate your first API key from the Dashboard after signing up."] = {en:
 TRANS["Or browse all models on the Models page."] = {en: "Or browse all models on the Models page.", "zh-CN": "或在模型页面浏览所有模型。", ru: "Или просмотрите все модели на странице «Модели».", ja: "またはモデルページですべてのモデルを参照。", de: "Oder durchsuchen Sie alle Modelle auf der Modelle-Seite."};
 TRANS["Just now"] = {en: "Just now", "zh-CN": "刚刚", ru: "Только что", ja: "たった今", de: "Gerade eben"};
 
+// ── Auto-translated dashboard/i18n texts ──
+TRANS["0 remaining"] = {en: "0 remaining", "zh-CN": "剩余 0", ru: "осталось 0", ja: "残り 0", de: "0 übrig"};
+TRANS["12 members"] = {en: "12 members", "zh-CN": "12 名成员", ru: "12 участников", ja: "12名のメンバー", de: "12 Mitglieder"};
+TRANS["24/7 — instant"] = {en: "24/7 — instant", "zh-CN": "24/7 — 即时", ru: "24/7 — мгновенно", ja: "24時間365日 — 即時", de: "24/7 — sofort"};
+TRANS["30d"] = {en: "30d", "zh-CN": "30天", ru: "30д", ja: "30日", de: "30T"};
+TRANS["90d"] = {en: "90d", "zh-CN": "90天", ru: "90д", ja: "90日", de: "90T"};
+TRANS["A-Z"] = {en: "A-Z", "zh-CN": "A-Z", ru: "А-Я", ja: "A-Z", de: "A-Z"};
+TRANS["All Models"] = {en: "All Models", "zh-CN": "所有模型", ru: "Все модели", ja: "全モデル", de: "Alle Modelle"};
+TRANS["Code generation test"] = {en: "Code generation test", "zh-CN": "代码生成测试", ru: "Тест генерации кода", ja: "コード生成テスト", de: "Code-Generierungstest"};
+TRANS["Cost"] = {en: "Cost", "zh-CN": "成本", ru: "Стоимость", ja: "コスト", de: "Kosten"};
+TRANS["GLB-ABCD"] = {en: "GLB-ABCD", "zh-CN": "GLB-ABCD", ru: "GLB-ABCD", ja: "GLB-ABCD", de: "GLB-ABCD"};
+TRANS["Get Started Today"] = {en: "Get Started Today", "zh-CN": "立即开始", ru: "Начните сегодня", ja: "今すぐ始める", de: "Noch heute starten"};
+TRANS["Global by Design"] = {en: "Global by Design", "zh-CN": "全球化设计", ru: "Глобальный дизайн", ja: "グローバル設計", de: "Global von Grund auf"};
+TRANS["Mon–Fri, 08:00–18:00 UTC+0"] = {en: "Mon–Fri, 08:00–18:00 UTC+0", "zh-CN": "周一至周五 08:00–18:00 UTC+0", ru: "Пн–Пт, 08:00–18:00 UTC+0", ja: "月–金 08:00–18:00 UTC+0", de: "Mo–Fr, 08:00–18:00 UTC+0"};
+TRANS["Payment Method"] = {en: "Payment Method", "zh-CN": "支付方式", ru: "Способ оплаты", ja: "支払い方法", de: "Zahlungsmethode"};
+TRANS["Pricing That Makes Sense"] = {en: "Pricing That Makes Sense", "zh-CN": "合理的定价", ru: "Разумные цены", ja: "納得の料金設定", de: "Preise, die Sinn ergeben"};
+TRANS["Quick Links"] = {en: "Quick Links", "zh-CN": "快速链接", ru: "Быстрые ссылки", ja: "クイックリンク", de: "Schnelllinks"};
+TRANS["Receipt"] = {en: "Receipt", "zh-CN": "收据", ru: "Квитанция", ja: "領収書", de: "Quittung"};
+TRANS["Refresh"] = {en: "Refresh", "zh-CN": "刷新", ru: "Обновить", ja: "更新", de: "Aktualisieren"};
+TRANS["Send Message"] = {en: "Send Message", "zh-CN": "发送消息", ru: "Отправить сообщение", ja: "メッセージを送信", de: "Nachricht senden"};
+TRANS["Send Us a Message"] = {en: "Send Us a Message", "zh-CN": "给我们发消息", ru: "Отправьте нам сообщение", ja: "メッセージを送る", de: "Senden Sie uns eine Nachricht"};
+TRANS["Share:"] = {en: "Share:", "zh-CN": "分享：", ru: "Поделиться:", ja: "共有：", de: "Teilen:"};
+TRANS["Support Hours & Response Times"] = {en: "Support Hours & Response Times", "zh-CN": "支持时间与响应速度", ru: "Часы работы и время ответа", ja: "サポート時間と応答時間", de: "Support-Zeiten & Antwortzeiten"};
+TRANS["Tokens Added"] = {en: "Tokens Added", "zh-CN": "添加代币", ru: "Добавлено токенов", ja: "追加トークン", de: "Hinzugefügte Tokens"};
+TRANS["Translation comparison"] = {en: "Translation comparison", "zh-CN": "翻译对比", ru: "Сравнение переводов", ja: "翻訳比較", de: "Übersetzungsvergleich"};
+TRANS["Try AI"] = {en: "Try AI", "zh-CN": "试用 AI", ru: "Попробовать ИИ", ja: "AIを試す", de: "KI testen"};
+TRANS["What's Next"] = {en: "What's Next", "zh-CN": "后续计划", ru: "Что дальше", ja: "今後の予定", de: "Wie geht's weiter"};
+TRANS["What's Under the Hood"] = {en: "What's Under the Hood", "zh-CN": "技术架构", ru: "Что под капотом", ja: "内部構造", de: "Unter der Haube"};
+TRANS["← Back to Blog"] = {en: "← Back to Blog", "zh-CN": "← 返回博客", ru: "← Назад в блог", ja: "← ブログに戻る", de: "← Zurück zum Blog"};
+TRANS["↑ Oldest"] = {en: "↑ Oldest", "zh-CN": "↑ 最早", ru: "↑ Старейшие", ja: "↑ 最古順", de: "↑ Älteste"};
+TRANS["↓ Newest"] = {en: "↓ Newest", "zh-CN": "↓ 最新", ru: "↓ Новейшие", ja: "↓ 最新順", de: "↓ Neueste"};
+
 (function() {
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
