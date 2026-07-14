@@ -880,37 +880,6 @@
       const page=location.hash.replace('#','')||'home';
       showPage(page);
     });
-    // ── Handle Auth0 callback (redirect from /auth/callback.html) ──
-    (function(){
-      var h = window.location.hash.substring(1);
-      if (h && !token) {
-        var p = new URLSearchParams(h);
-        var idToken = p.get('id_token');
-        if (idToken) {
-          fetch(API_URL + '/api/auth/auth0/login', {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({token:idToken})
-          }).then(function(r){return r.json()}).then(function(d){
-            if(d && d.token){
-              localStorage.setItem('gt_token',d.token);
-              localStorage.setItem('gt_user',JSON.stringify(d.user));
-              window.location.replace('/dashboard.html');
-            } else {
-              window.location.replace('/login.html?error=' + encodeURIComponent('Invalid server response'));
-            }
-          }).catch(function(e){
-            window.location.replace('/login.html?error=' + encodeURIComponent('Auth0 login failed'));
-          });
-          // Safety timeout — if callback doesn't complete in 10s, redirect to login
-          setTimeout(function(){
-            if (!localStorage.getItem('gt_token')) {
-              window.location.replace('/login.html?error=Login+timed+out');
-            }
-          }, 10000);
-          return; // Stop further init, redirect is coming
-        }
-      }
-    })();
     // ── Mobile keyboard retention for chat send button ──
     // Handled via onmousedown="event.preventDefault()" + type="button" in HTML
     // ── Init auth ──
