@@ -100,12 +100,26 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
+    max_age=60,  # Low max-age to prevent stale preflight cache
 )
 
 # ── Security Headers ──
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except Exception as e:
+            from starlette.responses import JSONResponse
+            response = JSONResponse(
+                status_code=500,
+                content={"detail": "Internal server error"}
+            )
+            print(f"⚠️ Unhandled exception: {e}")
+        # Always add CORS headers, even on 500 errors
+        origin = request.headers.get("origin")
+        if origin:
+            response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
