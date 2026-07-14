@@ -26,106 +26,139 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
 </div>
 <script>
 (function() {
-  var auth0Domain = null;
-  var auth0ClientId = null;
   var API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
 
-  // Step 1: Read authorization code from URL query params
-  var params = new URLSearchParams(window.location.search);
-  var code = params.get('code');
-  var returnedState = params.get('state');
-  var error = params.get('error');
+  // ====== DETECT AUTH FLOW TYPE ======
+  // Auth0 can use either PKCE code flow (?code=xxx) or implicit flow (#id_token=xxx)
+  // We auto-detect and handle both.
 
+  var queryParams = new URLSearchParams(window.location.search);
+  var hashParams = window.location.hash ? new URLSearchParams(window.location.hash.substring(1)) : null;
+  
+  var code = queryParams.get('code');
+  var idToken = hashParams ? hashParams.get('id_token') : null;
+  var error = queryParams.get('error') || (hashParams ? hashParams.get('error') : null);
+  var returnedState = queryParams.get('state') || (hashParams ? hashParams.get('state') : null);
+  var codeVerifier = sessionStorage.getItem('gt_code_verifier');
+  var storedState = sessionStorage.getItem('gt_oauth_state');
+
+  // Handle Auth0 error response
   if (error) {
     window.location.replace('/login.html?error=' + encodeURIComponent(error));
     return;
   }
 
-  if (!code) {
-    window.location.replace('/login.html?error=no_auth_code');
-    return;
-  }
-
-  // Step 2: Verify CSRF state
-  var storedState = sessionStorage.getItem('gt_oauth_state');
-  sessionStorage.removeItem('gt_oauth_state');
+  // Verify CSRF state for both flows
   if (storedState && returnedState && returnedState !== storedState) {
     window.location.replace('/login.html?error=state_mismatch');
     return;
   }
+  sessionStorage.removeItem('gt_oauth_state');
 
-  // Step 3: Read stored PKCE verifier
-  var codeVerifier = sessionStorage.getItem('gt_code_verifier');
-  sessionStorage.removeItem('gt_code_verifier');
-  if (!codeVerifier) {
-    window.location.replace('/login.html?error=no_code_verifier');
+  // ====== FLOW A: PKCE Code Flow (?code=xxx) ======
+  if (code) {
+    sessionStorage.removeItem('gt_code_verifier');
+    if (!codeVerifier) {
+      window.location.replace('/login.html?error=no_code_verifier');
+      return;
+    }
+
+    // Get Auth0 config, exchange code, then POST id_token to Railway
+    fetch(API_URL + '/api/auth/auth0/config', {method:'GET', headers:{'Content-Type':'application/json'}})
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) {
+      if (!cfg.configured || !cfg.domain || !cfg.client_id) {
+        window.location.replace('/login.html?error=Auth0+not+configured');
+        return null;
+      }
+      return fetch('https://' + cfg.domain + '/oauth/token', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          grant_type: 'authorization_code',
+          client_id: cfg.client_id,
+          code: code,
+          code_verifier: codeVerifier,
+          redirect_uri: window.location.origin + '/auth/callback.html'
+        })
+      });
+    })
+    .then(function(r) {
+      if (!r) return null;
+      if (!r.ok) return r.json().then(function(e) { throw new Error(e.error_description || 'Token exchange failed'); });
+      return r.json();
+    })
+    .then(function(tokens) {
+      if (!tokens || !tokens.id_token) return null;
+      return tokens.id_token;
+    })
+    .then(function(idToken) {
+      if (!idToken) return null;
+      return fetch(API_URL + '/api/auth/auth0/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({token: idToken})
+      });
+    })
+    .then(function(r) {
+      if (!r) return;
+      if (!r.ok) return r.json().then(function(e) { throw new Error(e.detail || 'Login failed'); });
+      return r.json();
+    })
+    .then(function(data) {
+      if (data && data.token) {
+        localStorage.setItem('gt_token', data.token);
+        if (data.user) localStorage.setItem('gt_user', JSON.stringify(data.user));
+        window.location.replace(window.location.origin + '/dashboard.html');
+      } else if (data) {
+        window.location.replace('/login.html?error=Invalid+server+response');
+      }
+    })
+    .catch(function(e) {
+      window.location.replace('/login.html?error=' + encodeURIComponent(e.message || 'Login failed'));
+    });
     return;
   }
 
-  // Step 4: Get Auth0 config from Railway (needs domain + client_id)
-  fetch(API_URL + '/api/auth/auth0/config', {
-    method: 'GET',
-    headers: {'Content-Type': 'application/json'}
-  }).then(function(r) { return r.json(); }).then(function(cfg) {
-    if (!cfg.configured || !cfg.domain || !cfg.client_id) {
-      window.location.replace('/login.html?error=Auth0+not+configured');
-      return null;
-    }
-    auth0Domain = cfg.domain;
-    auth0ClientId = cfg.client_id;
+  // ====== FLOW B: Implicit Flow (#id_token=xxx) ======
+  if (idToken) {
+    // Clear hash from URL
+    history.replaceState(null, document.title, window.location.pathname + window.location.search);
 
-    // Step 5: Exchange authorization code for tokens via Auth0
-    return fetch('https://' + auth0Domain + '/oauth/token', {
+    // Store id_token in sessionStorage for redundancy, POST to Railway directly
+    sessionStorage.setItem('gt_temp_token', idToken);
+    sessionStorage.setItem('gt_auth_pending', Date.now().toString());
+
+    // POST id_token to Railway to exchange for JWT
+    fetch(API_URL + '/api/auth/auth0/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        grant_type: 'authorization_code',
-        client_id: auth0ClientId,
-        code: code,
-        code_verifier: codeVerifier,
-        redirect_uri: window.location.origin + '/auth/callback.html'
-      })
+      body: JSON.stringify({token: idToken})
+    })
+    .then(function(r) {
+      if (!r.ok) return r.json().then(function(e) { throw new Error(e.detail || 'Auth0 login failed'); });
+      return r.json();
+    })
+    .then(function(data) {
+      if (data && data.token) {
+        localStorage.setItem('gt_token', data.token);
+        if (data.user) localStorage.setItem('gt_user', JSON.stringify(data.user));
+        sessionStorage.removeItem('gt_temp_token');
+        sessionStorage.removeItem('gt_auth_pending');
+        window.location.replace(window.location.origin + '/dashboard.html');
+      } else {
+        window.location.replace('/login.html?error=Invalid+server+response');
+      }
+    })
+    .catch(function(e) {
+      window.location.replace('/login.html?error=' + encodeURIComponent(e.message || 'Login failed'));
     });
-  }).then(function(r) {
-    if (!r) return null;
-    if (!r.ok) {
-      return r.json().then(function(e) {
-        throw new Error(e.error_description || 'Token exchange failed');
-      });
-    }
-    return r.json();
-  }).then(function(tokens) {
-    if (!tokens || !tokens.id_token) return;
-    
-    // Step 6: Exchange Auth0 id_token for GlbTOKEN JWT via Railway
-    return fetch(API_URL + '/api/auth/auth0/login', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({token: tokens.id_token})
-    });
-  }).then(function(r) {
-    if (!r) return;
-    if (!r.ok) {
-      return r.json().then(function(e) {
-        throw new Error(e.detail || 'Login failed');
-      });
-    }
-    return r.json();
-  }).then(function(data) {
-    if (!data) return;
-    if (data && data.token) {
-      localStorage.setItem('gt_token', data.token);
-      if (data.user) localStorage.setItem('gt_user', JSON.stringify(data.user));
-      // Clean URL before redirect
-      var clean = window.location.origin + '/dashboard.html';
-      window.location.replace(clean);
-    } else {
-      window.location.replace('/login.html?error=Invalid+server+response');
-    }
-  }).catch(function(e) {
-    window.location.replace('/login.html?error=' + encodeURIComponent(e.message || 'Login failed'));
-  });
+    return;
+  }
+
+  // ====== NO AUTH DATA FOUND ======
+  window.location.replace('/login.html?error=no_auth_response');
 })();
 </script>
 </body>
