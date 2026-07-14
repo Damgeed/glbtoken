@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Redirecting — GlbTOKEN</title>
 <meta name="robots" content="noindex,nofollow" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://glbtoken-backend-production.up.railway.app; img-src 'self'; font-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://glbtoken-backend-production.up.railway.app https://*.auth0.com; img-src 'self'; font-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png" />
@@ -26,49 +26,106 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
 </div>
 <script>
 (function() {
+  var auth0Domain = null;
+  var auth0ClientId = null;
   var API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
 
-  // Parse Auth0 response from URL hash fragment
-  var hash = window.location.hash;
-  if (!hash || hash.indexOf('id_token=') === -1) {
-    window.location.replace('login.html?error=no_auth_response');
+  // Step 1: Read authorization code from URL query params
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get('code');
+  var returnedState = params.get('state');
+  var error = params.get('error');
+
+  if (error) {
+    window.location.replace('/login.html?error=' + encodeURIComponent(error));
     return;
   }
 
-  var params = new URLSearchParams(hash.substring(1));
-  var idToken = params.get('id_token');
-  // Also grab access_token if present (some providers send it)
-  var accessToken = params.get('access_token');
-  var state = params.get('state');
-
-  if (!idToken) {
-    window.location.replace('login.html?error=no_id_token');
+  if (!code) {
+    window.location.replace('/login.html?error=no_auth_code');
     return;
   }
 
-  // CSRF check: verify state against sessionStorage
-  if (state) {
-    var expectedState = sessionStorage.getItem('gt_oauth_state');
-    if (expectedState && state !== expectedState) {
-      window.location.replace('login.html?error=state_mismatch');
-      return;
+  // Step 2: Verify CSRF state
+  var storedState = sessionStorage.getItem('gt_oauth_state');
+  sessionStorage.removeItem('gt_oauth_state');
+  if (storedState && returnedState && returnedState !== storedState) {
+    window.location.replace('/login.html?error=state_mismatch');
+    return;
+  }
+
+  // Step 3: Read stored PKCE verifier
+  var codeVerifier = sessionStorage.getItem('gt_code_verifier');
+  sessionStorage.removeItem('gt_code_verifier');
+  if (!codeVerifier) {
+    window.location.replace('/login.html?error=no_code_verifier');
+    return;
+  }
+
+  // Step 4: Get Auth0 config from Railway (needs domain + client_id)
+  fetch(API_URL + '/api/auth/auth0/config', {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'}
+  }).then(function(r) { return r.json(); }).then(function(cfg) {
+    if (!cfg.configured || !cfg.domain || !cfg.client_id) {
+      window.location.replace('/login.html?error=Auth0+not+configured');
+      return null;
     }
-    sessionStorage.removeItem('gt_oauth_state');
-  }
+    auth0Domain = cfg.domain;
+    auth0ClientId = cfg.client_id;
 
-  // Clear hash from URL
-  history.replaceState(null, document.title, window.location.pathname + window.location.search);
-
-  // ====== DUAL PATH REDUNDANCY ======
-  // Path A: Store id_token in sessionStorage as fallback (survives Railway redirect round-trip)
-  sessionStorage.setItem('gt_temp_token', idToken);
-  if (accessToken) sessionStorage.setItem('gt_temp_access_token', accessToken);
-  sessionStorage.setItem('gt_auth_pending', Date.now().toString());
-
-  // Path B: Redirect to Railway callback endpoint as PRIMARY path
-  // Railway validates token and redirects to dashboard.html?token=JWT
-  window.location.replace(API_URL + '/api/auth/auth0/callback?id_token=' + encodeURIComponent(idToken));
+    // Step 5: Exchange authorization code for tokens via Auth0
+    return fetch('https://' + auth0Domain + '/oauth/token', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        grant_type: 'authorization_code',
+        client_id: auth0ClientId,
+        code: code,
+        code_verifier: codeVerifier,
+        redirect_uri: window.location.origin + '/auth/callback.html'
+      })
+    });
+  }).then(function(r) {
+    if (!r) return null;
+    if (!r.ok) {
+      return r.json().then(function(e) {
+        throw new Error(e.error_description || 'Token exchange failed');
+      });
+    }
+    return r.json();
+  }).then(function(tokens) {
+    if (!tokens || !tokens.id_token) return;
+    
+    // Step 6: Exchange Auth0 id_token for GlbTOKEN JWT via Railway
+    return fetch(API_URL + '/api/auth/auth0/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token: tokens.id_token})
+    });
+  }).then(function(r) {
+    if (!r) return;
+    if (!r.ok) {
+      return r.json().then(function(e) {
+        throw new Error(e.detail || 'Login failed');
+      });
+    }
+    return r.json();
+  }).then(function(data) {
+    if (!data) return;
+    if (data && data.token) {
+      localStorage.setItem('gt_token', data.token);
+      if (data.user) localStorage.setItem('gt_user', JSON.stringify(data.user));
+      // Clean URL before redirect
+      var clean = window.location.origin + '/dashboard.html';
+      window.location.replace(clean);
+    } else {
+      window.location.replace('/login.html?error=Invalid+server+response');
+    }
+  }).catch(function(e) {
+    window.location.replace('/login.html?error=' + encodeURIComponent(e.message || 'Login failed'));
+  });
 })();
 </script>
 </body>

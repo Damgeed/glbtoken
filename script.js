@@ -575,18 +575,60 @@
     function startOAuth(provider, btn){
       if (oauthTimeout) clearTimeout(oauthTimeout);
       setBtnLoading(btn, true, 'Connecting...');
-      // Generate CSRF state token
-      var csrfState = Array.from(Array(32), function(){return Math.random().toString(36)[2]}).join('');
-      sessionStorage.setItem('gt_oauth_state', csrfState);
-      api('GET','/api/auth/auth0/social-url?provider='+provider+'&state='+csrfState).then(function(cfg){
-        if(cfg && cfg.url) {
-          sessionStorage.setItem('gt_oauth_cancel','1');
-          window.location.href=cfg.url;
-          // iOS: in-page popup — kill spinner on dismiss after 3s
-          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 3000);
-        } else {
+      // Get Auth0 config
+      api('GET', '/api/auth/auth0/config').then(function(cfg){
+        if (!cfg || !cfg.configured) {
           setBtnLoading(btn, false);
+          showToast('Auth0 not configured', 'error');
+          return;
         }
+        // Generate PKCE code verifier and challenge
+        function dec2hex(dec) { return ('0' + dec.toString(16)).substr(-2); }
+        function generateCodeVerifier() {
+          var arr = new Uint8Array(32);
+          crypto.getRandomValues(arr);
+          return btoa(String.fromCharCode.apply(null, arr))
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+        function sha256(plain) {
+          var encoder = new TextEncoder();
+          return crypto.subtle.digest('SHA-256', encoder.encode(plain));
+        }
+        function base64url(arr) {
+          return btoa(String.fromCharCode.apply(null, new Uint8Array(arr)))
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+        var verifier = generateCodeVerifier();
+        sha256(verifier).then(function(hash) {
+          var challenge = base64url(hash);
+          // Store state and verifier
+          sessionStorage.setItem('gt_code_verifier', verifier);
+          var csrfState = Array.from(Array(32), function(){return Math.random().toString(36)[2]}).join('');
+          sessionStorage.setItem('gt_oauth_state', csrfState);
+          
+          // Build Auth0 authorize URL directly (PKCE code flow)
+          var connectionMap = {
+            google: 'google-oauth2',
+            github: 'github',
+            microsoft: 'windowslive',
+            apple: 'apple'
+          };
+          var connection = connectionMap[provider] || provider;
+          var redirectUri = window.location.origin + '/auth/callback.html';
+          var authUrl = 'https://' + cfg.domain + '/authorize?' +
+            'response_type=code' +
+            '&client_id=' + encodeURIComponent(cfg.client_id) +
+            '&redirect_uri=' + encodeURIComponent(redirectUri) +
+            '&scope=openid%20email%20profile' +
+            '&connection=' + encodeURIComponent(connection) +
+            '&state=' + encodeURIComponent(csrfState) +
+            '&code_challenge=' + challenge +
+            '&code_challenge_method=S256';
+          
+          sessionStorage.setItem('gt_oauth_cancel', '1');
+          window.location.href = authUrl;
+          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 3000);
+        });
       }).catch(function(){
         setBtnLoading(btn, false);
       });
