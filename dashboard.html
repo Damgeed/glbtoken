@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=216" />
+  <link rel="stylesheet" href="style.css?v=217" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
@@ -322,24 +322,24 @@ function toggleDashSidebar() {
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">—</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
           <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
         </div>
         <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">$0.00</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">0</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashTotalRequests">0</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">0</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">—</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashKeyCount">—</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashDaysActive">—</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
         </div>
       </div>
       <div class="dash-card" style="margin-top:1.25rem">
         <div class="dash-section-title">Token Usage <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="usageSubtitle">Loading...</span></div>
         <div style="margin:0.75rem 0 0.5rem">
           <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.4rem">
-            <span style="color:var(--text-muted)"><span id="usedTokens">0</span> used</span>
+            <span style="color:var(--text-muted)"><span id="usedTokens">—</span> used</span>
             <span style="color:var(--text-muted)" id="remainingTokens">0 remaining</span>
           </div>
           <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden;position:relative">
@@ -347,7 +347,7 @@ function toggleDashSidebar() {
           </div>
         </div>
         <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.25rem">
-          <div style="font-size:0.8rem;color:var(--text-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span id="dashTotalConsumed">0</span> tokens consumed</div>
+          <div style="font-size:0.8rem;color:var(--text-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span id="dashTotalConsumed">—</span> tokens consumed</div>
           <div style="font-size:0.8rem;color:var(--text-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> <span id="dashTotalSpentLifetime">$0.00</span> lifetime spend</div>
         </div>
       </div>
@@ -1897,8 +1897,8 @@ function applyFilters(){
     </div>
   </div>
 
-<script src="translations.js?v=216"></script>
-<script data-cfasync="false" src="script.js?v=216"></script>
+<script src="translations.js?v=217"></script>
+<script data-cfasync="false" src="script.js?v=217"></script>
 
 <script>
 (function(){
