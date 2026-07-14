@@ -36,17 +36,44 @@ from slowapi.errors import RateLimitExceeded
 
 limiter = Limiter(key_func=get_remote_address)
 
+from urllib.parse import quote as _url_quote
+
+def _safe_error(msg: str) -> str:
+    """Sanitize and truncate exception messages for URL-safe redirects."""
+    msg = str(msg)
+    # Only first line (SQL traces span multiple lines)
+    first_line = msg.split('\n')[0].strip()
+    # Truncate to 200 chars maximum
+    if len(first_line) > 200:
+        first_line = first_line[:197] + '...'
+    return _url_quote(first_line)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     init_db()
     seed_models()
-    # Auto-migrate: add missing columns
+    # Auto-migrate: add all potentially missing columns
     try:
-        from database import engine
-        from sqlalchemy import text
+        from database import engine, User
+        from sqlalchemy import inspect, text
+        inspector = inspect(engine)
+        existing_columns = {c['name'] for c in inspector.get_columns('users')}
+        all_columns = {
+            'newapi_user_id': 'INTEGER',
+            'newapi_token': 'VARCHAR',
+            'settings': "TEXT DEFAULT '{}'",
+            'referral_code': 'VARCHAR',
+            'referral_earnings': "FLOAT DEFAULT 0.0",
+            'referred_by': 'VARCHAR',
+        }
         with engine.connect() as conn:
-            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS settings TEXT DEFAULT '{}'"))
+            for col_name, col_type in all_columns.items():
+                if col_name not in existing_columns:
+                    sql = text(f'ALTER TABLE users ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}')
+                    conn.execute(sql)
+                    print(f"✅ Added missing column: {col_name}")
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (non-critical): {e}")
@@ -753,7 +780,7 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
         payload = verify_auth0_token(id_token)
         info = get_user_info(payload)
     except ValueError as e:
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Invalid+token:+{quote(str(e))}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Invalid+token:+{_safe_error(e)}")
     from database import User, get_db
     from sqlalchemy.orm import Session
     db = next(get_db())
@@ -783,26 +810,24 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
             db.refresh(user)
     except Exception as e:
         db.close()
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{quote(str(e))}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}")
     try:
         from newapi_integration import create_newapi_user
         await create_newapi_user(email=info["email"], name=info["name"], quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 callback: {e}")
     jwt_token = create_access_token({"sub": str(user.id)})
-    from urllib.parse import quote
-    user_json = quote(json.dumps({
+    user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
     }))
     db.close()
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={quote(jwt_token, safe='')}&user={user_json}")
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&user={user_json}")
 
 @app.get("/api/auth/auth0/pkce-callback")
 async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query(...), state: str = Query(None)):
     """Server-side PKCE callback: exchange Auth0 code for tokens, then redirect to dashboard with JWT."""
     from starlette.responses import RedirectResponse
-    from urllib.parse import quote
     if not is_auth0_configured():
         return RedirectResponse(url="https://glbtoken.com/login.html?error=Auth0+not+configured")
     try:
@@ -814,7 +839,7 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
         payload = verify_auth0_token(id_token)
         info = get_user_info(payload)
     except ValueError as e:
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={quote(str(e))}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
     from database import User, get_db
     from sqlalchemy.orm import Session
     db = next(get_db())
@@ -844,22 +869,21 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
             db.refresh(user)
     except Exception as e:
         db.close()
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{quote(str(e))}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}")
     try:
         from newapi_integration import create_newapi_user
         await create_newapi_user(email=info["email"], name=info["name"], quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 PKCE: {e}")
     jwt_token = create_access_token({"sub": str(user.id)})
-    user_json = quote(json.dumps({
+    user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
     }))
     db.close()
-    # Add timestamp to prevent bfcache from serving stale dashboard
     import time
     ts = int(time.time() * 1000)
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={quote(jwt_token, safe='')}&user={user_json}&_ts={ts}")
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&user={user_json}&_ts={ts}")
 
 @app.post("/api/auth/auth0/password-login")
 @limiter.limit("10/minute")
