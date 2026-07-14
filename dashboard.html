@@ -14,24 +14,45 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=202" />
+  <link rel="stylesheet" href="style.css?v=203" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
 <script>
 (function(){
-  var p = new URLSearchParams(window.location.search);
-  var tok = p.get('token');
-  if (tok) {
-    localStorage.setItem('gt_token', tok);
-    var u = p.get('user');
-    if (u) { try { localStorage.setItem('gt_user', decodeURIComponent(u)); } catch(e) {} }
+  try {
+    // Parse token from URL params (redirect from Railway callback)
+    var params = new URLSearchParams(window.location.search);
+    var tok = params.get('token');
+    if (tok) {
+      localStorage.setItem('gt_token', tok);
+      var u = params.get('user');
+      if (u) { try { localStorage.setItem('gt_user', decodeURIComponent(u)); } catch(e) {} }
+      // Store state from query if present (defense in depth)
+      var st = params.get('state');
+      if (st) sessionStorage.setItem('gt_oauth_state', st);
+    }
+    // Auth check — redirect to login if no token
+    if (!localStorage.getItem('gt_token')) {
+      window.location.replace('login.html');
+      return;
+    }
+    // Clean URL — remove sensitive params
     var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
     window.history.replaceState({}, document.title, clean);
+  } catch(e) {
+    console.error('Dashboard init error:', e);
+    if (!localStorage.getItem('gt_token')) {
+      window.location.replace('login.html');
+    }
   }
 })();
+window.addEventListener('pageshow',function(e){
+  if(e.persisted && !localStorage.getItem('gt_token')){
+    window.location.replace('login.html');
+  }
+});
 </script>
-<script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}window.addEventListener('pageshow',function(e){if(e.persisted&&!localStorage.getItem('gt_token')){window.location.replace('login.html')}})</script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
@@ -479,8 +500,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=202"></script>
-<script data-cfasync="false" src="script.js?v=202"></script>
+<script src="translations.js?v=203"></script>
+<script data-cfasync="false" src="script.js?v=203"></script>
 
 <script>
 (function(){

@@ -46,12 +46,12 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
 
   // CSRF check: verify state against sessionStorage
   if (state) {
-    var expectedState = sessionStorage.getItem('gt_auth0_state');
+    var expectedState = sessionStorage.getItem('gt_oauth_state');
     if (expectedState && state !== expectedState) {
       window.location.replace('login.html?error=state_mismatch');
       return;
     }
-    sessionStorage.removeItem('gt_auth0_state');
+    sessionStorage.removeItem('gt_oauth_state');
   }
 
   // Clear hash from URL
