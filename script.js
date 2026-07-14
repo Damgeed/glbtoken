@@ -627,7 +627,7 @@
           
           sessionStorage.setItem('gt_oauth_cancel', '1');
           window.location.href = authUrl;
-          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 3000);
+          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 6000);
         });
       }).catch(function(){
         setBtnLoading(btn, false);

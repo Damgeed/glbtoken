@@ -64,9 +64,24 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
       return;
     }
 
-    // Get Auth0 config, exchange code, then POST id_token to Railway
-    fetch(API_URL + '/api/auth/auth0/config', {method:'GET', headers:{'Content-Type':'application/json'}})
-    .then(function(r) { return r.json(); })
+    // Get Auth0 config from Railway with retry
+    var configAttempts = 0;
+    function fetchConfig() {
+      configAttempts++;
+      return fetch(API_URL + '/api/auth/auth0/config', {method:'GET', headers:{'Content-Type':'application/json'}})
+        .then(function(r) {
+          if (!r.ok) throw new Error('Config fetch failed (HTTP ' + r.status + ')');
+          return r.json();
+        })
+        .catch(function(e) {
+          if (configAttempts < 2) {
+            // Wait 2s and retry once
+            return new Promise(function(resolve) { setTimeout(resolve, 2000); }).then(fetchConfig);
+          }
+          throw e;
+        });
+    }
+    fetchConfig()
     .then(function(cfg) {
       if (!cfg.configured || !cfg.domain || !cfg.client_id) {
         window.location.replace('/login.html?error=Auth0+not+configured');
