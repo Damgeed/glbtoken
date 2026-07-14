@@ -1316,7 +1316,17 @@ TRANS["Twitter"] = {en: "Twitter", "zh-CN": "Twitter", ru: "Twitter", ja: "Twitt
 TRANS["WhatsApp"] = {en: "WhatsApp", "zh-CN": "WhatsApp", ru: "WhatsApp", ja: "WhatsApp", de: "WhatsApp"};
 TRANS["Telegram"] = {en: "Telegram", "zh-CN": "Telegram", ru: "Telegram", ja: "Telegram", de: "Telegram"};
 
-(function() {
+
+
+// ── Auto-translated dashboard/i18n texts ──
+TRANS["RPM"] = {en: "RPM", "zh-CN": "RPM", ru: "RPM", ja: "RPM", de: "RPM"};
+TRANS["TPM"] = {en: "TPM", "zh-CN": "TPM", ru: "TPM", ja: "TPM", de: "TPM"};
+TRANS["Name  *"] = {en: "Name  *", "zh-CN": "名称  *", ru: "Имя  *", ja: "名前  *", de: "Name  *"};
+TRANS["Model  *"] = {en: "Model  *", "zh-CN": "模型  *", ru: "Модель  *", ja: "モデル  *", de: "Modell  *"};
+TRANS["Invoices  0"] = {en: "Invoices  0", "zh-CN": "发票  0", ru: "Счета  0", ja: "請求書  0", de: "Rechnungen  0"};
+TRANS["What's Next?"] = {en: "What's Next?", "zh-CN": "后续计划?", ru: "Что дальше?", ja: "今後の予定?", de: "Wie geht's weiter?"};
+TRANS["Amount:  $5.00"] = {en: "Amount:  $5.00", "zh-CN": "金额:  $5.00", ru: "Сумма:  $5.00", ja: "金額:  $5.00", de: "Betrag:  $5.00"};
+TRANS["Your Presets  0 saved"] = {en: "Your Presets  0 saved", "zh-CN": "您的预设  0 saved", ru: "Ваши пресеты  0 saved", ja: "あなたのプリセット  0 saved", de: "Ihre Voreinstellungen  0 saved"};(function() {
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
     curLang = saved;
