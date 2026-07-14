@@ -1350,6 +1350,27 @@ TRANS["Temperature:"] = {en: "Temperature:", "zh-CN": "温度：", ru: "Темп
 TRANS["Top P:"] = {en: "Top P:", "zh-CN": "Top P：", ru: "Top P:", ja: "Top P：", de: "Top P:"};
 TRANS["Send a message..."] = {en: "Send a message...", "zh-CN": "发送消息...", ru: "Отправить сообщение...", ja: "メッセージを送信...", de: "Nachricht senden..."};
 
+
+// ── Auto-translated dashboard/i18n texts ──
+TRANS["0 saved"] = {en: "0 saved", "zh-CN": "已保存 0 个", ru: "0 сохранено", ja: "0 保存済み", de: "0 gespeichert"};
+TRANS["AI Payment Platform"] = {en: "AI Payment Platform", "zh-CN": "AI 支付平台", ru: "Платформа ИИ-платежей", ja: "AI決済プラットフォーム", de: "KI-Zahlungsplattform"};
+TRANS["Always set max_tokens to control costs."] = {en: "Always set max_tokens to control costs.", "zh-CN": "始终设置 max_tokens 以控制成本。", ru: "Всегда устанавливайте max_tokens для контроля расходов.", ja: "常に max_tokens を設定してコストを管理。", de: "Immer max_tokens setzen, um Kosten zu kontrollieren."};
+TRANS["Check your Dashboard for real-time token consumption."] = {en: "Check your Dashboard for real-time token consumption.", "zh-CN": "在控制台查看实时代币消耗。", ru: "Проверяйте панель управления для отслеживания расхода токенов в реальном времени.", ja: "ダッシュボードでリアルタイムのトークン消費を確認。", de: "Prüfen Sie das Dashboard für Echtzeit-Token-Verbrauch."};
+TRANS["Completing sign in..."] = {en: "Completing sign in...", "zh-CN": "正在完成登录...", ru: "Завершение входа...", ja: "サインイン中...", de: "Anmeldung wird abgeschlossen..."};
+TRANS["Copy Code"] = {en: "Copy Code", "zh-CN": "复制代码", ru: "Копировать код", ja: "コードをコピー", de: "Code kopieren"};
+TRANS["Cost:"] = {en: "Cost:", "zh-CN": "费用：", ru: "Стоимость:", ja: "コスト：", de: "Kosten:"};
+TRANS["Generate new API keys from your Dashboard and revoke old ones."] = {en: "Generate new API keys from your Dashboard and revoke old ones.", "zh-CN": "从控制台生成新的 API 密钥并撤销旧的密钥。", ru: "Создавайте новые API-ключи из панели управления и отзывайте старые.", ja: "ダッシュボードから新しいAPIキーを生成し、古いキーを取り消します。", de: "Generieren Sie neue API-Schlüssel im Dashboard und widerrufen Sie alte."};
+TRANS["Helps track usage and limit blast radius."] = {en: "Helps track usage and limit blast radius.", "zh-CN": "有助于跟踪使用情况并限制影响范围。", ru: "Помогает отслеживать использование и ограничивать радиус поражения.", ja: "使用状況の追跡と影響範囲の制限に役立ちます。", de: "Hilft, die Nutzung zu verfolgen und den Schadensradius zu begrenzen."};
+TRANS["Monitor usage"] = {en: "Monitor usage", "zh-CN": "监控用量", ru: "Отслеживание использования", ja: "使用状況を監視", de: "Nutzung überwachen"};
+TRANS["Pricing page"] = {en: "Pricing page", "zh-CN": "定价页面", ru: "Страница цен", ja: "料金ページ", de: "Preisseite"};
+TRANS["Set max tokens"] = {en: "Set max tokens", "zh-CN": "设置最大代币数", ru: "Установить макс. токенов", ja: "最大トークンを設定", de: "Max-Token setzen"};
+TRANS["Top up before your balance runs out to avoid service interruption."] = {en: "Top up before your balance runs out to avoid service interruption.", "zh-CN": "在余额耗尽前充值，避免服务中断。", ru: "Пополняйте баланс до его истощения, чтобы избежать перерыва в обслуживании.", ja: "残高がなくなる前にチャージして、サービスの中断を防ぎましょう。", de: "Laden Sie Ihr Guthaben auf, bevor es aufgebraucht ist, um Serviceunterbrechungen zu vermeiden."};
+TRANS["Total:"] = {en: "Total:", "zh-CN": "总计：", ru: "Итого:", ja: "合計：", de: "Gesamt:"};
+TRANS["| 1,000 GT = $1 USD"] = {en: "| 1,000 GT = $1 USD", "zh-CN": "| 1,000 GT = 1 美元", ru: "| 1 000 GT = 1 доллар США", ja: "| 1,000 GT = 1米ドル", de: "| 1.000 GT = 1 USD"};
+TRANS["© 2026 GlbTOKEN"] = {en: "© 2026 GlbTOKEN", "zh-CN": "© 2026 GlbTOKEN", ru: "© 2026 GlbTOKEN", ja: "© 2026 GlbTOKEN", de: "© 2026 GlbTOKEN"};
+TRANS["↑ All time"] = {en: "↑ All time", "zh-CN": "↑ 全部时间", ru: "↑ За всё время", ja: "↑ 全期間", de: "↑ Gesamter Zeitraum"};
+TRANS["↑ Lifetime"] = {en: "↑ Lifetime", "zh-CN": "↑ 累计", ru: "↑ За всё время", ja: "↑ 累計", de: "↑ Gesamtnutzung"};
+TRANS["↑ Total calls"] = {en: "↑ Total calls", "zh-CN": "↑ 总调用", ru: "↑ Всего вызовов", ja: "↑ 総呼び出し", de: "↑ Gesamte Aufrufe"};
 (function() {
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
