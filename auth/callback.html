@@ -69,10 +69,6 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
   // ====== FLOW B: Implicit Flow (#id_token=xxx) ======
   if (idToken) {
     history.replaceState(null, document.title, window.location.pathname + window.location.search);
-
-    sessionStorage.setItem('gt_temp_token', idToken);
-    sessionStorage.setItem('gt_auth_pending', Date.now().toString());
-
     // Redirect to Railway callback endpoint (server-side validation)
     window.location.replace(API_URL + '/api/auth/auth0/callback?id_token=' + encodeURIComponent(idToken));
     return;

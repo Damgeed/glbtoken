@@ -14,145 +14,36 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=212" />
+  <link rel="stylesheet" href="style.css?v=213" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
 <script>
 (function() {
-  // ====== THREE-PATH TOKEN RECOVERY ======
-  
-  function exchangeToken(idToken, callback) {
-    // Exchange an Auth0 id_token for a GlbTOKEN JWT via Railway
-    var API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
-    
-    // Try fetch with retry
-    function attempt(retriesLeft) {
-      var controller = new AbortController();
-      var timeout = setTimeout(function() { controller.abort(); }, 15000);
-      
-      fetch(API_URL + '/api/auth/auth0/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({token: idToken}),
-        signal: controller.signal
-      }).then(function(r) {
-        clearTimeout(timeout);
-        if (!r.ok) {
-          return r.json().then(function(e) { throw new Error(e.detail || 'Auth0 error'); });
-        }
-        return r.json();
-      }).then(function(d) {
-        if (d && d.token) {
-          callback(null, d);
-        } else {
-          callback(new Error('Invalid server response'), null);
-        }
-      }).catch(function(e) {
-        clearTimeout(timeout);
-        if (e.name === 'AbortError') {
-          callback(new Error('Request timed out'), null);
-        } else if (retriesLeft > 0) {
-          // Retry with backoff
-          setTimeout(function() { attempt(retriesLeft - 1); }, 1000 * (4 - retriesLeft));
-        } else {
-          callback(e, null);
-        }
-      });
-    }
-    attempt(3);
-  }
-  
-  // Path A: Read token from URL query params (Railway redirect path)
+  // ====== ATOMIC TOKEN RECOVERY ======
+  // Path A: Read token from URL query params (Railway redirect)
   var params = new URLSearchParams(window.location.search);
   var urlToken = params.get('token');
   var urlUser = params.get('user');
-  
+
   if (urlToken) {
     localStorage.setItem('gt_token', urlToken);
     if (urlUser) {
       try { localStorage.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
     }
-    // Clean URL
+    // Clean URL immediately — remove token from address bar
     var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
     window.history.replaceState({}, document.title, clean);
-    // Token stored — auth check below will pass
-  } else {
-    // Path B: Check sessionStorage for id_token (callback.html fallback)
-    var tempToken = sessionStorage.getItem('gt_temp_token');
-    var authPending = sessionStorage.getItem('gt_auth_pending');
-    
-    if (tempToken && authPending) {
-      // Exchange the id_token for a JWT
-      exchangeToken(tempToken, function(err, data) {
-        sessionStorage.removeItem('gt_temp_token');
-        sessionStorage.removeItem('gt_temp_access_token');
-        sessionStorage.removeItem('gt_auth_pending');
-        
-        if (!err && data && data.token) {
-          localStorage.setItem('gt_token', data.token);
-          if (data.user) {
-            localStorage.setItem('gt_user', JSON.stringify(data.user));
-          }
-          // Reload to pick up stored token
-          window.location.reload();
-        } else {
-          // Path C failed too — redirect to login
-          var errorMsg = err ? encodeURIComponent(err.message) : 'Login failed';
-          window.location.replace('login.html?error=' + errorMsg);
-        }
-      });
-      return; // Wait for async exchange
-    }
   }
-  
+
   // Auth check
   var token = localStorage.getItem('gt_token');
   if (!token) {
     window.location.replace('login.html');
     return;
   }
-  
-  // Clean URL if token came from query params (already done above, but also catches pageshow)
-  if (window.location.search.indexOf('token=') !== -1) {
-    var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
-    window.history.replaceState({}, document.title, clean);
-  }
 })();
 
-// pageshow handler for bfcache — triple redundancy
-window.addEventListener('pageshow', function(e) {
-  var token = localStorage.getItem('gt_token');
-  
-  if (!token && e.persisted) {
-    // Try Path A: URL params
-    var p = new URLSearchParams(window.location.search);
-    var t = p.get('token');
-    if (t) {
-      localStorage.setItem('gt_token', t);
-      var u = p.get('user');
-      if (u) { try { localStorage.setItem('gt_user', decodeURIComponent(u)); } catch(e) {} }
-      var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
-      window.history.replaceState({}, document.title, clean);
-      token = t;
-    }
-    
-    // Try Path B: sessionStorage fallback
-    if (!token) {
-      var tempToken = sessionStorage.getItem('gt_temp_token');
-      if (tempToken) {
-        // Can't do async exchange in pageshow, so reload to trigger inline script
-        window.location.reload();
-        return;
-      }
-    }
-    
-    if (!token) {
-      window.location.replace('login.html');
-    }
-  }
-});
 </script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
 <nav class="navbar"><div class="container navbar-inner">
@@ -601,8 +492,8 @@ window.addEventListener('pageshow', function(e) {
     </div>
   </div>
 
-<script src="translations.js?v=212"></script>
-<script data-cfasync="false" src="script.js?v=212"></script>
+<script src="translations.js?v=213"></script>
+<script data-cfasync="false" src="script.js?v=213"></script>
 
 <script>
 (function(){

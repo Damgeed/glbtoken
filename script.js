@@ -603,7 +603,7 @@
           var challenge = base64url(hash);
           // Store state and verifier
           sessionStorage.setItem('gt_code_verifier', verifier);
-          var csrfState = Array.from(Array(32), function(){return Math.random().toString(36)[2]}).join('');
+          var csrfState = Array.from(new Uint8Array(32), function(b){ return b.toString(36)[2] || '0'; }).join('').substring(0, 32);
           sessionStorage.setItem('gt_oauth_state', csrfState);
           
           // Build Auth0 authorize URL directly (PKCE code flow)

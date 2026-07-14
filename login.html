@@ -6,6 +6,7 @@
   <title>Login — GlbTOKEN</title>
   <meta name="description" content="Buy GlbTOKEN using local currency or crypto. Spend across 100+ AI models." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://glbtoken-backend-production.up.railway.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
@@ -14,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=212" />
+  <link rel="stylesheet" href="style.css?v=213" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -189,8 +190,8 @@
     </div>
   </div>
 
-<script src="translations.js?v=212"></script>
-<script data-cfasync="false" src="script.js?v=212"></script>
+<script src="translations.js?v=213"></script>
+<script data-cfasync="false" src="script.js?v=213"></script>
 
 <script>
 (function(){
@@ -201,8 +202,7 @@
     if (banner) {
       try {
         var msg = decodeURIComponent(err);
-        // Show only the first line of error (not full SQL trace)
-        banner.textContent = msg.split('\\n')[0];
+        banner.textContent = msg;
       } catch(e) {
         banner.textContent = 'An error occurred. Please try again.';
       }
