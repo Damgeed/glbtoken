@@ -1343,7 +1343,14 @@ TRANS["🤖 Model"] = {en: "🤖 Model", "zh-CN": "🤖 模型", ru: "🤖 Мо�
 TRANS["✅ Success"] = {en: "✅ Success", "zh-CN": "✅ 成功", ru: "✅ Успешно", ja: "✅ 成功", de: "✅ Erfolg"};
 TRANS["❌ Failed"] = {en: "❌ Failed", "zh-CN": "❌ 失败", ru: "❌ Ошибка", ja: "❌ 失敗", de: "❌ Fehlgeschlagen"};
 TRANS["~0 tokens"] = {en: "~0 tokens", "zh-CN": "~0 代币", ru: "~0 токенов", ja: "~0 トークン", de: "~0 Tokens"};
-TRANS["Glb  TOKEN"] = {en: "Glb  TOKEN", "zh-CN": "Glb  TOKEN", ru: "Glb  TOKEN", ja: "Glb  TOKEN", de: "Glb  TOKEN"};(function() {
+TRANS["Glb  TOKEN"] = {en: "Glb  TOKEN", "zh-CN": "Glb  TOKEN", ru: "Glb  TOKEN", ja: "Glb  TOKEN", de: "Glb  TOKEN"};
+
+// ── Auto-translated dashboard/i18n texts ──
+TRANS["Temperature:"] = {en: "Temperature:", "zh-CN": "温度：", ru: "Температура:", ja: "温度：", de: "Temperatur:"};
+TRANS["Top P:"] = {en: "Top P:", "zh-CN": "Top P：", ru: "Top P:", ja: "Top P：", de: "Top P:"};
+TRANS["Send a message..."] = {en: "Send a message...", "zh-CN": "发送消息...", ru: "Отправить сообщение...", ja: "メッセージを送信...", de: "Nachricht senden..."};
+
+(function() {
   var saved = localStorage.getItem('gt_lang');
   if (saved && saved !== 'en') {
     curLang = saved;
