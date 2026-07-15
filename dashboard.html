@@ -428,7 +428,11 @@ function toggleDashSidebar() {
       <div class="dash-sidebar-label">Team</div>
       <a class="dash-sidebar-item" data-section="team" onclick="showDashSection('team')">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Team &amp; Referrals
+        Team
+      </a>
+      <a class="dash-sidebar-item" data-section="referral" onclick="showDashSection('referral')">
+        <svg viewBox="0 0 24 24"><path d="M17 20l5-5-5-5"/><path d="M7 4l-5 5 5 5"/><path d="M14 4l-4 16"/></svg>
+        Referrals
       </a>
     </div>
   </div>
@@ -1466,6 +1470,8 @@ function applyFilters(){
       </div>
 
       <!-- ===== REFERRAL SECTION ===== -->
+    </div>
+    <div class="dash-section" id="section-referral">
 
       <!-- Referral Hero -->
       <div class="dash-header" style="margin-top:2rem">
