@@ -17,35 +17,13 @@
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
   transition: background 0.4s, border-color 0.4s;
-}
-
-/* Edge fade overlays — stable, don't move with content, works on ALL browsers */
-.ticker-bar::before,
-.ticker-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 80px;
-  z-index: 50;
-  pointer-events: none;
-  transition: background 0.4s;
-}
-
-.ticker-bar::before {
-  left: 0;
-  background: linear-gradient(90deg, 
-    color-mix(in srgb, var(--card) 95%, var(--primary)) 0%,
-    var(--card) 30%,
-    transparent 100%);
-}
-
-.ticker-bar::after {
-  right: 0;
-  background: linear-gradient(270deg,
-    color-mix(in srgb, var(--card) 95%, var(--primary)) 0%,
-    var(--card) 30%,
-    transparent 100%);
+  /* Edge fade — stable, doesn't move with content */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 2.5%, #000 97.5%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 2.5%, #000 97.5%, transparent 100%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-composite: add;
+  mask-composite: add;
 }
 
 .ticker-track {
@@ -140,10 +118,8 @@
 @media (max-width: 768px) {
   .ticker-bar {
     height: 32px;
-  }
-  .ticker-bar::before,
-  .ticker-bar::after {
-    width: 40px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 1%, #000 3%, #000 97%, transparent 99%);
+    mask-image: linear-gradient(90deg, transparent 1%, #000 3%, #000 97%, transparent 99%);
   }
   .ticker-item {
     padding: 0 14px;
@@ -158,10 +134,8 @@
 @media (max-width: 480px) {
   .ticker-bar {
     height: 28px;
-  }
-  .ticker-bar::before,
-  .ticker-bar::after {
-    width: 30px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 2%, #000 4%, #000 96%, transparent 98%);
+    mask-image: linear-gradient(90deg, transparent 2%, #000 4%, #000 96%, transparent 98%);
   }
   .ticker-item {
     padding: 0 10px;
