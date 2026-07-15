@@ -229,7 +229,6 @@ body{background:var(--bg)}
   .billing-summary-grid{grid-template-columns:repeat(3,1fr);gap:0.4rem}
   .dash-section .dash-card[style*="margin-top"]{margin-top:0.75rem!important}
   .dash-section .dash-card[style*="margin-bottom"]{margin-bottom:0.75rem!important}
-  #section-apikeys .section-title{font-size:1.3rem!important}
   #section-apikeys .section-label{font-size:0.65rem!important}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
   #referral-share-charts{grid-template-columns:1fr 1fr!important;gap:1rem}
@@ -753,10 +752,12 @@ function toggleDashSidebar() {
     <!-- ===== API KEYS SECTION ===== -->
     <div class="dash-section" id="section-apikeys">
 
-      <div style="text-align:center;margin-bottom:2rem">
-        <span class="section-label">Developer</span>
-        <h2 class="section-title" style="font-size:1.75rem">API Keys</h2>
-        <p style="color:var(--text-secondary);margin:0.5rem auto 0;font-size:0.9rem">Generate and manage your API keys for programmatic access.</p>
+      <div class="dash-header">
+        <div class="dash-welcome">
+          <span class="section-label">Developer</span>
+          <h1>API Keys</h1>
+          <p>Generate and manage your API keys for programmatic access.</p>
+        </div>
       </div>
 
       <!-- Key Management Card -->
