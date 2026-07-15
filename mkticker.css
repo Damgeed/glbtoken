@@ -1,6 +1,6 @@
-/* ── Ticker (KAIEX pattern: pure CSS animation) ── */
+/* ── Ticker (KAIEX pattern) ── */
 
-/* Ticker bar: visible container */
+/* Ticker bar: visible container with backdrop blur */
 .ticker-bar {
   width: 100%;
   overflow: hidden;
@@ -8,17 +8,22 @@
   display: flex;
   align-items: center;
   z-index: 49;
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
+  background: rgba(11, 18, 36, 0.8);
+  border-bottom: 1px solid #1e293b;
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 53px;
 }
 
 /* Inner wrapper: animated track */
 .ticker-inner {
   display: flex;
-  gap: 32px;
+  gap: 48px;
   white-space: nowrap;
-  animation: tickerScroll 40s linear infinite;
-  padding: 0 8px;
+  animation: tickerScroll 35s linear infinite;
+  padding: 0 16px;
+  font-family: 'JetBrains Mono', 'Inter', monospace;
+  font-size: 11px;
 }
 
 @keyframes tickerScroll {
@@ -29,28 +34,27 @@
 /* Ticker items */
 .ticker-item {
   display: flex;
-  gap: 4px;
+  gap: 8px;
   align-items: center;
-  font-size: 0.65rem;
   font-weight: 600;
-  color: var(--text);
+  color: #e2e8f0;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .ticker-item .ticker-label {
-  color: var(--text-muted);
+  color: #64748b;
   font-weight: 500;
 }
 
 .ticker-item .ticker-value {
-  color: var(--primary);
+  color: #e2e8f0;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.ticker-item .ticker-up   { color: var(--success, #00D68F); }
-.ticker-item .ticker-down { color: var(--destructive, #FF6B6B); }
+.ticker-item .ticker-up   { color: #22c55e; }
+.ticker-item .ticker-down { color: #ef4444; }
 
 .ticker-item .ticker-dot {
   width: 4px;
@@ -63,15 +67,13 @@
 }
 
 @media (max-width: 768px) {
-  .ticker-bar { height: 22px; }
-  .ticker-inner { gap: 20px; animation-duration: 30s; }
-  .ticker-item { font-size: 0.55rem; }
+  .ticker-bar { height: 22px; top: 48px; }
+  .ticker-inner { gap: 32px; font-size: 10px; animation-duration: 30s; }
   .ticker-item .ticker-dot { width: 2px; height: 2px; }
 }
 
 @media (max-width: 480px) {
-  .ticker-bar { height: 20px; }
-  .ticker-inner { gap: 14px; animation-duration: 25s; }
-  .ticker-item { font-size: 0.5rem; }
+  .ticker-bar { height: 20px; top: 48px; }
+  .ticker-inner { gap: 24px; font-size: 9px; animation-duration: 25s; }
   .ticker-item .ticker-dot { width: 2px; height: 2px; margin: 0 1px; }
 }
