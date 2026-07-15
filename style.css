@@ -246,7 +246,6 @@
 .dash-sidebar-toggle:hover .drag-line{opacity:1;background:var(--primary)}
 .dash-sidebar-toggle .toggle-label{font-size:0.6rem;color:var(--primary);writing-mode:vertical-rl;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;opacity:0.6;margin-top:0.15rem}
 .dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
-/* Hide back-to-top on dashboard */
 @media(max-width:768px){
   .dash-content{padding:1rem}
 }
