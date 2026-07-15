@@ -14,7 +14,7 @@
 }
 
 .ticker-bar{width:100%;background:var(--card);border-bottom:1px solid var(--border);overflow:hidden;height:32px;display:flex;align-items:center;z-index:49}
-.ticker-track{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 40s linear infinite;will-change:transform}
+.ticker-track{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 60s linear infinite;will-change:transform}
 .ticker-track:hover{animation-play-state:paused}
 .ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 24px;font-size:0.78rem;font-weight:500;color:var(--text);border-right:1px solid var(--border);height:32px;flex-shrink:0}
 .ticker-item .ticker-label{color:var(--text-muted);font-weight:400}
