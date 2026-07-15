@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=225" />
-  <style>
+<style>
   .blog-article{margin:0 auto;padding:0 0 3rem}
   .blog-article .section-label{margin-bottom:0.5rem}
   .blog-article h1{font-size:2.5rem;font-weight:800;line-height:1.15;margin:0.5rem 0 0.75rem;letter-spacing:-0.03em;text-align:center}
@@ -56,11 +56,10 @@
   }
 </style>
 
-      
-</head>
+  </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
-<header class="site-header"><nav class="navbar"><div class="container navbar-inner">
+<nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
     <div class="nav-center" id="navCenter">
       <a href="index.html">Home</a>
@@ -114,8 +113,7 @@
     <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
             </div></nav>
-  </header>
-<div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobile()"></div>
+  <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobile()"></div>
   <div class="mobile-overlay" id="mobileOverlay">
     <div class="m-close"><button onclick="closeMobile()">✕</button></div>
         <a href="/" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg> Home</a>
@@ -138,6 +136,7 @@
         <a href="topup.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Buy Tokens</a>
         <div class="mobile-account-signout"><a href="javascript:void(0)" onclick="closeMobile();setTimeout(function(){logoutUser()},250)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</a></div>
       </div>
+    </div>
   </div>
 
 <!-- ARTICLE CONTENT -->
@@ -263,6 +262,7 @@
         <a href="https://twitter.com/intent/tweet?text=Introducing%20GlbTOKEN%20%E2%80%94%20One%20Balance%20for%20All%20AI&url=https://glbtoken.com/blog-article-1.html" target="_blank" title="Share on Twitter">𝕏</a>
         <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://glbtoken.com/blog-article-1.html" target="_blank" title="Share on LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></a>
       </div>
+    </div>
   </div>
 </div></div>
 
@@ -275,7 +275,6 @@
       <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><a href="contact.html">Contact support</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
     </div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
-  </div>
   </div></footer>
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
@@ -286,6 +285,7 @@
     <div class="chat-input">
       <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
       <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
+    </div>
   </div>
 
 <script src="translations.js?v=225"></script>
@@ -336,6 +336,5 @@ function copyShareLink(){
 }
 </script>
 
-      
 </body>
 </html>

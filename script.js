@@ -2221,6 +2221,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const section=document.querySelector('.ai-chat-section');
       if(!section) return;
       section.classList.add('chat-focused');
+      // Hide back-to-top while AI chat is open
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = 'none';
       void section.offsetHeight;
       addCloseBtn(section.querySelector('.chat-header'), closeMobileChat);
       lockBodyScroll(true);
@@ -2234,6 +2237,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const section=document.querySelector('.ai-chat-section');
       if(!section) return;
       section.classList.remove('chat-focused');
+      // Restore back-to-top visibility
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = '';
       lockBodyScroll(false);
       removeCloseBtn(section.querySelector('.chat-header'));
     }
@@ -2243,6 +2249,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       if(!win) return;
       if(window.innerWidth > 768){
         win.classList.toggle('open');
+        // Hide back-to-top when chat is open on desktop
+        var btt = document.querySelector('.back-to-top');
         if(btt) btt.style.display = win.classList.contains('open') ? 'none' : '';
         return;
       }
@@ -2259,6 +2267,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const aiSection=document.querySelector('.ai-chat-section.chat-focused');
       if(aiSection) closeMobileChat();
       win.classList.add('chat-focused');
+      // Hide back-to-top while chat is open
+      var btt = document.querySelector('.back-to-top');
       if(btt) btt.style.display = 'none';
       // Backdrop wraps the window (same flexbox centering as AI chat)
       const backdrop = document.createElement('div');
@@ -2282,6 +2292,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       const win = document.getElementById('chatWindow');
       if(!win) return;
       win.classList.remove('chat-focused');
+      // Restore back-to-top visibility
+      var btt = document.querySelector('.back-to-top');
+      if(btt) btt.style.display = '';
       const backdrop = document.querySelector('.support-chat-backdrop');
       if(backdrop){
         backdrop.parentNode.insertBefore(win, backdrop);
@@ -2532,7 +2545,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
   }
   // ── Back to Top ──
   function initBackToTop(){
+    if(document.querySelector('.back-to-top')) return;
     var btn = document.createElement('button');
+    btn.className = 'back-to-top';
     btn.innerHTML = '↑';
     btn.onclick = function(){window.scrollTo({top:0,behavior:'smooth'})};
     document.body.appendChild(btn);
@@ -2627,6 +2642,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
   }
   // ── Init all UI enhancements ──
   document.addEventListener('DOMContentLoaded',function(){
+    initBackToTop();
     if(document.getElementById('priceCalculator')) initPriceCalculator();
     hidePageLoader();
   });
