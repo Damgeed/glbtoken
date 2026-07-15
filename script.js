@@ -2,8 +2,7 @@
     const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
     let token = localStorage.getItem('gt_token') || '';
-    let userData = {};
-    try { userData = JSON.parse(localStorage.getItem('gt_user') || '{}'); } catch(e) { userData = {}; }
+    let userData = JSON.parse(localStorage.getItem('gt_user') || '{}');
     // Check JWT expiry client-side — redirect to login if expired
     if (token) {
       try {
