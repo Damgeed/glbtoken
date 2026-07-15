@@ -849,13 +849,6 @@
 .filter-chip-remove{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:0.75rem;line-height:1;transition:all 0.15s}
 .filter-chip-remove:hover{background:var(--destructive-subtle);color:var(--destructive)}
 
-/* ── Ticker Bar ── */
-.ticker-bar{display:flex;align-items:center;gap:1.5rem;padding:0.5rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;white-space:nowrap;font-size:0.8rem;color:var(--text-secondary);animation:tickerScroll 20s linear infinite}
-.ticker-bar:hover{animation-play-state:paused}
-.ticker-item{display:inline-flex;align-items:center;gap:6px}
-.ticker-item strong{color:var(--primary)}
-@keyframes tickerScroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-
 /* ── Alert Row ── */
 .alert-row{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid var(--border-light);flex-wrap:wrap}
 .alert-row:last-child{border-bottom:none;padding-bottom:0}
