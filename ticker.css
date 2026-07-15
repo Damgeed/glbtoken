@@ -12,6 +12,12 @@
 /* Duplicate the items in HTML with data-clone for seamless loop */
 .ticker-sep{color:color-mix(in srgb, var(--primary) 30%, transparent);font-size:0.7rem;padding:0 4px}
 @media(max-width:768px){
-  .ticker-bar{height:28px}
-  .ticker-item{font-size:0.7rem;padding:0 14px}
+  .ticker-bar{height:26px}
+  .ticker-item{font-size:0.65rem;padding:0 10px;gap:4px}
+  .ticker-item .ticker-dot{width:3px;height:3px}
+}
+@media(max-width:480px){
+  .ticker-bar{height:24px}
+  .ticker-item{font-size:0.6rem;padding:0 8px;gap:3px}
+  .ticker-item .ticker-dot{width:3px;height:3px;margin:0 1px}
 }
