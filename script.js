@@ -2417,7 +2417,8 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     }
 
     // ── Themed confirmation dialog ──
-    function showConfirm(title, msg, onConfirm){
+    function showConfirm(title, msg, onConfirm, confirmText){
+      confirmText = confirmText || 'Confirm';
       var existing=document.getElementById('confirmModal');
       if(existing)existing.remove();
       var m=document.createElement('div');
@@ -2430,12 +2431,12 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       var muted=isDark?'#6272a4':'#666';
       var border=isDark?'#3a3a4e':'#ddd';
       m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
-        +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'
+        +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
         +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
         +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">'+escapeHtml(msg)+'</p>'
         +'<div style="display:flex;gap:0.75rem">'
         +'<button id="confirmCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
-        +'<button id="confirmOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Sign Out</button>'
+        +'<button id="confirmOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">'+escapeHtml(confirmText)+'</button>'
         +'</div></div>';
       document.body.appendChild(m);
       // Style keyframes if not present
@@ -2448,6 +2449,58 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       document.getElementById('confirmOkBtn').onclick=function(){m.remove();if(onConfirm)onConfirm()};
       // Close on backdrop click
       m.onclick=function(e){if(e.target===m)m.remove()};
+    }
+    // ── Themed alert dialog ──
+    function showAlert(title, msg){
+      var existing=document.getElementById('alertModal');
+      if(existing)existing.remove();
+      var m=document.createElement('div');
+      m.id='alertModal';
+      m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+      var theme=document.documentElement.className;
+      var isDark=theme==='dark';
+      var cardBg=isDark?'#1e1f29':'#ffffff';
+      var textClr=isDark?'#f8f8f2':'#1a1a2e';
+      var muted=isDark?'#6272a4':'#666';
+      var border=isDark?'#3a3a4e':'#ddd';
+      m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+        +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+        +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
+        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.25rem;line-height:1.5">'+escapeHtml(msg)+'</p>'
+        +'<button id="alertOkBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">OK</button>'
+        +'</div></div>';
+      document.body.appendChild(m);
+      document.getElementById('alertOkBtn').onclick=function(){m.remove()};
+      m.onclick=function(e){if(e.target===m)m.remove()};
+    }
+    // ── Themed prompt dialog ──
+    function showPrompt(title, placeholder, onSubmit){
+      var existing=document.getElementById('promptModal');
+      if(existing)existing.remove();
+      var m=document.createElement('div');
+      m.id='promptModal';
+      m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+      var theme=document.documentElement.className;
+      var isDark=theme==='dark';
+      var cardBg=isDark?'#1e1f29':'#ffffff';
+      var textClr=isDark?'#f8f8f2':'#1a1a2e';
+      var muted=isDark?'#6272a4':'#666';
+      var border=isDark?'#3a3a4e':'#ddd';
+      m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:380px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+        +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
+        +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
+        +'<input id="promptInput" type="text" placeholder="'+escapeHtml(placeholder||'')+'" style="width:100%;padding:0.65rem 0.75rem;border-radius:10px;border:1px solid '+border+';background:'+cardBg+';color:'+textClr+';font-size:0.9rem;margin:.75rem 0 1rem;box-sizing:border-box;outline:none" />'
+        +'<div style="display:flex;gap:0.75rem">'
+        +'<button id="promptCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
+        +'<button id="promptOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Create</button>'
+        +'</div></div>';
+      document.body.appendChild(m);
+      var input = document.getElementById('promptInput');
+      input.focus();
+      document.getElementById('promptCancelBtn').onclick=function(){m.remove()};
+      document.getElementById('promptOkBtn').onclick=function(){m.remove(); var v=input.value.trim(); if(v)onSubmit(v);};
+      m.onclick=function(e){if(e.target===m)m.remove()};
+      input.addEventListener('keydown',function(e){if(e.key==='Enter'){m.remove();var v=input.value.trim();if(v)onSubmit(v);}});
     }
     function toggleMobile(){
       const overlay = document.getElementById('mobileOverlay');

@@ -1788,7 +1788,7 @@ function applyFilters(){
 </div>
 
 <button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
 </button>
 
   <!-- TOP-UP -->
@@ -2106,18 +2106,18 @@ function updateRole(select, memberId){
   console.log('Updated role for '+memberId+' to '+role);
 }
 function removeMember(memberId){
-  if(confirm('Remove this member from the organization?')){
-    var row = event.target.closest('tr');
+  showConfirm('Remove Member', 'Remove this member from the organization?', function(){
+    var row = document.querySelector('#teamMembersBody tr[data-member="'+memberId+'"]');
     if(row) row.style.opacity = '0.3';
     setTimeout(function(){
       if(row) row.remove();
     }, 300);
-  }
+  }, 'Remove');
 }
 function sendInvite(){
   var email = document.getElementById('inviteEmail').value.trim();
   if(!email || !email.includes('@')){
-    alert('Please enter a valid email address.');
+    showAlert('Invalid Email', 'Please enter a valid email address.');
     return;
   }
   var role = document.getElementById('inviteRole').value;
@@ -2134,15 +2134,14 @@ function cancelInvite(btn){
   if(item) item.remove();
 }
 function leaveOrg(){
-  if(confirm('Are you sure you want to leave this organization?')){
-    alert('You have left the organization.');
-  }
+  showConfirm('Leave Organization', 'Are you sure you want to leave this organization?', function(){
+    showAlert('Left Organization', 'You have left the organization.');
+  }, 'Leave');
 }
 function showCreateOrgModal(){
-  var name = prompt('Enter organization name:');
-  if(name && name.trim()){
-    alert('Organization "'+name.trim()+'" created!');
-  }
+  showPrompt('Create Organization', 'Enter organization name', function(name){
+    showAlert('Organization Created', 'Organization "'+name+'" created!');
+  });
 }
 
 // ===== Referral Functions =====
@@ -2257,14 +2256,14 @@ function switchConversation(el){
   clearChat();
 }
 function deleteConvItem(btn){
-  if(confirm('Delete this conversation?')){
+  showConfirm('Delete Conversation', 'Delete this conversation?', function(){
     var item = btn.closest('.playground-history-item');
     if(item){
       var next = item.nextElementSibling || item.previousElementSibling;
       item.remove();
       if(next) { next.click(); } else { clearChat(); }
     }
-  }
+  }, 'Delete');
 }
 function clearChat(){
   var chat = document.getElementById('chatMessages');
