@@ -16,7 +16,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=225" />
-  <link rel="stylesheet" href="mkticker.css?v=257" />
+  <style>
+     1|/* ── Ticker [1784098545] ── */
+     2|
+     3|/* Site header: sticky container for nav + ticker */
+     4|.site-header {
+     5|  position: sticky;
+     6|  top: 0;
+     7|  z-index: 50;
+     8|}
+     9|
+    10|/* Nav inside header — header handles sticky, nav stays in flow */
+    11|.site-header > .navbar {
+    12|  position: relative !important;
+    13|  top: auto !important;
+    14|}
+    15|
+    16|.ticker-bar{width:100%;overflow:hidden;height:26px;position:relative;z-index:49;white-space:nowrap}
+    17|.ticker-item{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;padding:0 16px;font-size:0.65rem;font-weight:500;color:var(--text);height:22px}
+    18|.ticker-item .ticker-label{color:var(--text-muted);font-weight:400}
+    19|.ticker-item .ticker-value{color:var(--primary);font-weight:600;font-variant-numeric:tabular-nums}
+    20|.ticker-item .ticker-up{color:var(--success,#00D68F)}
+    21|.ticker-item .ticker-down{color:var(--destructive,#FF6B6B)}
+    22|.ticker-item .ticker-dot{width:4px;height:4px;border-radius:50%;background:#26a69a;display:inline-block;margin:0 2px;opacity:0.8}
+    23|@media(max-width:768px){
+    24|  .ticker-bar{height:22px}
+    25|  .ticker-item{font-size:0.55rem;padding:0 8px;gap:3px;height:18px}
+    26|  .ticker-item .ticker-dot{width:2px;height:2px}
+    27|}
+    28|@media(max-width:480px){
+    29|  .ticker-bar{height:20px}
+    30|  .ticker-item{font-size:0.5rem;padding:0 6px;gap:2px;height:16px}
+    31|  .ticker-item .ticker-dot{width:2px;height:2px;margin:0 1px}
+    32|}
+    33|
+</style>
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -237,6 +271,50 @@
 })();
 </script>
 
-  <script src="mkticker.js?v=257"></script>
+  <script>
+/* ── Ticker: zero DOM reflow, each item wraps independently ── */
+(function(){
+  var bar = document.getElementById('tickerBar');
+  if (!bar) return;
+
+  var items = Array.from(bar.children);
+  if (items.length === 0) return;
+
+  var speed = 0.2;
+
+  var widths = items.map(function(item) { return item.offsetWidth || 80; });
+  var scrollOffset = 0;
+  var cum = 0;
+  var cumPos = widths.map(function(w) { var c = cum; cum += w; return c; });
+  var totalWidth = cum;
+
+  if (totalWidth === 0) {
+    requestAnimationFrame(function initLate() {
+      widths = items.map(function(item) { return item.offsetWidth || 80; });
+      cum = 0; cumPos = widths.map(function(w) { var c = cum; cum += w; return c; });
+      totalWidth = cum;
+      if (totalWidth > 0) start();
+    });
+    return;
+  }
+
+  function start() {
+    function tick() {
+      scrollOffset += speed;
+      for (var i = 0; i < items.length; i++) {
+        var pos = cumPos[i] - scrollOffset;
+        if (pos < -widths[i]) pos += totalWidth;
+        items[i].style.left = pos + 'px';
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  items.forEach(function(item, i) { item.style.left = cumPos[i] + 'px'; });
+  start();
+})();
+
+</script>
 </body>
 </html>
