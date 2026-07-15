@@ -1,0 +1,110 @@
+/* ── Site Header: single sticky container ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Nav inside header → header handles sticky, nav stays in flow */
+.site-header > .navbar {
+  position: relative !important;
+  top: auto !important;
+}
+
+/* ── Professional Ticker Bar ── */
+.ticker-bar {
+  width: 100%;
+  height: 36px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 28px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  height: 36px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.ticker-label {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: color 0.3s;
+}
+
+.ticker-value {
+  color: var(--primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  transition: color 0.3s;
+}
+
+/* Gold accent for financial values */
+.ticker-item[data-ticker="balance"] .ticker-value,
+.ticker-item[data-ticker="spent"] .ticker-value {
+  color: var(--secondary, #F4B400);
+}
+
+/* Status dot */
+.ticker-status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.ticker-status-dot.live {
+  background: #22c55e;
+  animation: tpulse 2s ease-in-out infinite;
+}
+
+.ticker-status-dot.standby {
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+@keyframes tpulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .ticker-bar { height: 30px; }
+  .ticker-item { padding: 0 16px; gap: 6px; height: 30px; font-size: 0.72rem; }
+  .ticker-label { font-size: 0.6rem; }
+  .ticker-value { font-size: 0.72rem; }
+  .ticker-status-dot { width: 5px; height: 5px; }
+}
+
+@media (max-width: 480px) {
+  .ticker-bar { height: 28px; }
+  .ticker-item { padding: 0 12px; gap: 5px; height: 28px; font-size: 0.66rem; }
+  .ticker-label { font-size: 0.55rem; }
+  .ticker-value { font-size: 0.66rem; }
+}
