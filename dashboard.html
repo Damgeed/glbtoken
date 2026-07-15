@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=226" />
+  <link rel="stylesheet" href="style.css?v=225" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
@@ -1705,7 +1705,7 @@ function applyFilters(){
   </div>
 
 <script src="translations.js?v=225"></script>
-<script data-cfasync="false" src="script.js?v=226"></script>
+<script data-cfasync="false" src="script.js?v=225"></script>
 
 <script>
 (function(){
@@ -2200,11 +2200,6 @@ function sendPlaygroundMessage(){
   document.getElementById('playgroundSendBtn').disabled = true;
   updateTokenEstimate();
   chat.scrollTop = chat.scrollHeight;
-  // Mobile keyboard retention — refocus input so keyboard stays open
-  if(window.innerWidth <= 768){
-    input.focus({preventScroll:true});
-    requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-  }
   showTypingIndicator();
   setTimeout(function(){
     removeTypingIndicator();
@@ -2283,19 +2278,6 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
-<!-- v=226 DIAGNOSTIC: dashboard loaded -->
-<script>
-(function(){
-  var info = document.createElement('div');
-  info.id = 'hermesDiag';
-  info.style.cssText = 'display:none';
-  info.setAttribute('data-version', '226');
-  info.setAttribute('data-loaded', 'true');
-  info.setAttribute('data-token', localStorage.getItem('gt_token') ? 'present' : 'missing');
-  info.setAttribute('data-hash', window.location.hash || 'none');
-  document.body.appendChild(info);
-  console.log('[HERMES] v=226 loaded. Token: ' + (localStorage.getItem('gt_token') ? 'present' : 'missing'));
-})();
-</script>
-
+  
 </body>
+</html>
