@@ -227,28 +227,25 @@
     .dash-stat-card .chg.up{color:var(--success)}
     .dash-section-title{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
 
-/* ── Dashboard Sidebar Navigation (New API style) ── */
+/* ── Dashboard Sidebar Navigation ── */
 .dash-layout{display:flex;min-height:calc(100vh - 64px);margin-top:64px}
-.dash-sidebar{width:240px;min-width:240px;background:var(--card);border-right:1px solid var(--border);padding:0.75rem 0;overflow-y:auto;position:sticky;top:64px;height:calc(100vh - 64px)}
-.dash-sidebar-section{margin-bottom:0.25rem}
-.dash-sidebar-label{padding:0.5rem 1.25rem 0.35rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);opacity:0.6;border-top:1px solid var(--border);margin-top:0.25rem}
-.dash-sidebar-section:first-child .dash-sidebar-label{border-top:none;margin-top:0}
-.dash-sidebar-item{display:flex;align-items:center;gap:0.625rem;padding:0.4rem 1.25rem;font-size:0.82rem;color:var(--text);text-decoration:none;border-left:3px solid transparent;transition:all 0.15s ease;cursor:pointer;position:relative}
-.dash-sidebar-item:hover{background:rgba(244,180,0,0.06);color:#F4B400}
-.dash-sidebar-item.active{background:rgba(244,180,0,0.08);color:#F4B400;border-left-color:#F4B400;font-weight:500}
-.dash-sidebar-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;stroke-width:2;fill:none;opacity:0.7}
-.dash-sidebar-item.active svg,.dash-sidebar-item:hover svg{opacity:1}
+.dash-sidebar{width:240px;min-width:240px;background:var(--card);border-right:1px solid var(--border);padding:1.25rem 0;overflow-y:auto;position:sticky;top:64px;height:calc(100vh - 64px)}
+.dash-sidebar-section{margin-bottom:1.25rem}
+.dash-sidebar-label{padding:0.25rem 1.25rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.25rem}
+.dash-sidebar-item{display:flex;align-items:center;gap:0.625rem;padding:0.5rem 1.25rem;font-size:0.85rem;color:var(--text);text-decoration:none;border-left:3px solid transparent;transition:all 0.2s;cursor:pointer}
+.dash-sidebar-item:hover{background:var(--bg-alt);color:var(--primary)}
+.dash-sidebar-item.active{background:var(--bg-alt);color:var(--primary);border-left-color:var(--primary)}
+.dash-sidebar-item svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;stroke-width:2;fill:none}
 .dash-content{flex:1;padding:1.5rem 2rem;overflow-y:auto}
 .dash-section{display:none}
 .dash-section.active{display:block}
-/* Mobile sidebar toggle — floating FAB style */
-.dash-sidebar-toggle{display:none;position:fixed;bottom:1.25rem;right:1.25rem;z-index:60;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F4B400,#e6a800);color:#111;align-items:center;justify-content:center;font-size:1.15rem;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(244,180,0,0.35);transition:all 0.2s ease}
-.dash-sidebar-toggle:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(244,180,0,0.45)}
+/* Mobile sidebar toggle */
+.dash-sidebar-toggle{display:none}
 @media(max-width:768px){
   .dash-layout{flex-direction:column;margin-top:0}
-  .dash-sidebar{width:260px;min-width:auto;position:fixed;left:-100%;top:64px;z-index:50;transition:left 0.3s ease;height:calc(100vh - 64px);box-shadow:4px 0 24px rgba(0,0,0,0.15)}
+  .dash-sidebar{width:100%;min-width:auto;position:fixed;left:-100%;top:64px;z-index:50;transition:left 0.3s;height:calc(100vh - 64px)}
   .dash-sidebar.open{left:0}
-  .dash-sidebar-toggle{display:flex}
+  .dash-sidebar-toggle{display:flex;position:fixed;bottom:1rem;right:1rem;z-index:60;width:48px;height:48px;border-radius:50%;background:var(--primary);color:#000;align-items:center;justify-content:center;font-size:1.25rem;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
   .dash-content{padding:1rem}
 }
     

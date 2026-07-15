@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=225" />
+  <link rel="stylesheet" href="style.css?v=215" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
@@ -165,28 +165,14 @@ function showDashSection(section) {
   document.querySelectorAll('.dash-sidebar-item').forEach(function(i) { i.classList.remove('active'); });
   var link = document.querySelector('.dash-sidebar-item[data-section="' + section + '"]');
   if (link) link.classList.add('active');
-  // Update URL hash for direct navigation
-  if (window.history && window.history.replaceState) {
-    var hash = section === 'overview' ? '' : '#' + section;
-    if (window.location.hash !== hash) {
-      window.history.replaceState(null, '', window.location.pathname + hash);
-    }
-  }
   // Close sidebar on mobile after selection
   var sb = document.getElementById('dashSidebar');
   if (sb && window.innerWidth < 768) sb.classList.remove('open');
-  // Auto-load section data
+  // Auto-load billing data when billing section is shown
   if (section === 'billing' && typeof loadBillingPage === 'function') {
     setTimeout(loadBillingPage, 50);
   }
 }
-// Auto-open section from URL hash on page load
-(function() {
-  var hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById('section-' + hash)) {
-    showDashSection(hash);
-  }
-})();
 function toggleDashSidebar() {
   document.getElementById('dashSidebar').classList.toggle('open');
 }
@@ -223,7 +209,7 @@ function toggleDashSidebar() {
         </div>
         <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
+            <div class="dropdown-header">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -275,15 +261,6 @@ function toggleDashSidebar() {
 <div class="dash-layout">
   <!-- ===== LEFT SIDEBAR ===== -->
   <div class="dash-sidebar" id="dashSidebar">
-    <!-- CHAT -->
-    <div class="dash-sidebar-section">
-      <div class="dash-sidebar-label">Chat</div>
-      <a class="dash-sidebar-item" data-section="playground" onclick="showDashSection('playground')">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Playground
-      </a>
-    </div>
-    <!-- GENERAL -->
     <div class="dash-sidebar-section">
       <div class="dash-sidebar-label">General</div>
       <a class="dash-sidebar-item active" data-section="overview" onclick="showDashSection('overview')">
@@ -294,10 +271,13 @@ function toggleDashSidebar() {
         <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
         API Keys
       </a>
+      <a class="dash-sidebar-item" data-section="usage" onclick="showDashSection('usage')">
+        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Usage &amp; History
+      </a>
     </div>
-    <!-- PERSONAL -->
     <div class="dash-sidebar-section">
-      <div class="dash-sidebar-label">Personal</div>
+      <div class="dash-sidebar-label">Account</div>
       <a class="dash-sidebar-item" data-section="billing" onclick="showDashSection('billing')">
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         Billing
@@ -306,25 +286,16 @@ function toggleDashSidebar() {
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Settings
       </a>
-      <a class="dash-sidebar-item" data-section="usage" onclick="showDashSection('usage')">
-        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        Usage &amp; History
-      </a>
     </div>
-    <!-- ADMIN -->
     <div class="dash-sidebar-section">
-      <div class="dash-sidebar-label">Admin</div>
-      <a class="dash-sidebar-item" data-section="overview" onclick="showDashSection('overview');setTimeout(function(){document.getElementById('dashCostBreakdown')?.scrollIntoView({behavior:'smooth',block:'start'})},100)">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Logs
-      </a>
-    </div>
-    <!-- TEAM -->
-    <div class="dash-sidebar-section">
-      <div class="dash-sidebar-label">Team</div>
+      <div class="dash-sidebar-label">Tools</div>
       <a class="dash-sidebar-item" data-section="team" onclick="showDashSection('team')">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         Team &amp; Referrals
+      </a>
+      <a class="dash-sidebar-item" data-section="playground" onclick="showDashSection('playground')">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Playground
       </a>
     </div>
   </div>
@@ -332,29 +303,29 @@ function toggleDashSidebar() {
     <div class="dash-section active" id="section-overview">
       <div class="dash-header">
         <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
-        <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="showPage('apikeys')">API Keys</button></div>
+        <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="document.getElementById('dashApiKeys').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('dashApiKeys').style.outline='2px solid var(--primary)';setTimeout(function(){document.getElementById('dashApiKeys').style.outline='none'},1500)">API Keys</button></div>
       </div>
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">—</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
           <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
         </div>
         <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">—</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">—</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">—</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">$0.00</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">0</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalRequests">0</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashKeyCount">0</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashDaysActive">0</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
         </div>
       </div>
       <div class="dash-card" style="margin-top:1.25rem">
         <div class="dash-section-title">Token Usage <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="usageSubtitle">Loading...</span></div>
         <div style="margin:0.75rem 0 0.5rem">
           <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.4rem">
-            <span style="color:var(--text-muted)"><span id="usedTokens">—</span> used</span>
+            <span style="color:var(--text-muted)"><span id="usedTokens">0</span> used</span>
             <span style="color:var(--text-muted)" id="remainingTokens">0 remaining</span>
           </div>
           <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden;position:relative">
@@ -362,7 +333,7 @@ function toggleDashSidebar() {
           </div>
         </div>
         <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.25rem">
-          <div style="font-size:0.8rem;color:var(--text-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span id="dashTotalConsumed">—</span> tokens consumed</div>
+          <div style="font-size:0.8rem;color:var(--text-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span id="dashTotalConsumed">0</span> tokens consumed</div>
           <div style="font-size:0.8rem;color:var(--text-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> <span id="dashTotalSpentLifetime">$0.00</span> lifetime spend</div>
         </div>
       </div>
@@ -400,7 +371,44 @@ function toggleDashSidebar() {
         <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
       </div>
-      <!-- ── ADMIN CARDS: Cost, Errors, Response Time, Speed ── -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashApiKeys">
+        <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> API Keys <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Manage your API access</span></div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
+          <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
+          <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
+          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
+        </div>
+        <div id="dashKeyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
+      </div>
+
+      <!-- ===== 13 NEW DASHBOARD SECTIONS ===== -->
+
+      <!-- 13. Real-Time Usage Ticker -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashRealTimeTicker">
+        <div class="dash-section-title" style="font-size:0.85rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Live Usage
+        </div>
+        <div id="tickerContent" style="display:flex;gap:2rem;flex-wrap:wrap;font-size:0.9rem;padding:0.25rem 0">
+          <span><span style="color:var(--text-muted)">Today:</span> <strong id="tickerCalls">0</strong> calls</span>
+          <span><span style="color:var(--text-muted)">|</span> <strong id="tickerTokens">0</strong> tokens</span>
+          <span><span style="color:var(--text-muted)">| $</span><strong id="tickerSpent">0.00</strong> spent</span>
+        </div>
+      </div>
+
+      <!-- 12. Recent Activity Widget (compact, last 5) -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashRecentActivity">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Recent Activity <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5 entries</span>
+        </div>
+        <div id="dashRecentActivityList" class="dash-activity">
+          <p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading recent activity...</p>
+        </div>
+      </div>
+
+      <!-- 1. Cost Breakdown by Model -->
       <div class="dash-card" style="margin-top:1.25rem" id="dashCostBreakdown">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -413,6 +421,8 @@ function toggleDashSidebar() {
         </div>
         <div class="chart-container" style="height:200px"><canvas id="costByModelChart"></canvas></div>
       </div>
+
+      <!-- 2. Error Rate Monitoring -->
       <div class="dash-card" style="margin-top:1.25rem" id="dashErrorRate">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -425,6 +435,8 @@ function toggleDashSidebar() {
         </div>
         <div class="chart-container" style="height:180px"><canvas id="errorRateChart"></canvas></div>
       </div>
+
+      <!-- 3. Response Time by Model -->
       <div class="dash-card" style="margin-top:1.25rem" id="dashResponseTime">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -439,6 +451,8 @@ function toggleDashSidebar() {
           </table>
         </div>
       </div>
+
+      <!-- 6. Model Speed Comparison -->
       <div class="dash-card" style="margin-top:1.25rem" id="dashSpeedComparison">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
@@ -452,6 +466,171 @@ function toggleDashSidebar() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <!-- 7. Usage Heatmap -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashUsageHeatmap">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Usage Heatmap <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">7 days × 24 hours</span>
+        </div>
+        <div style="overflow-x:auto;padding:0.25rem 0">
+          <div id="heatmapGrid" style="display:grid;grid-template-columns:repeat(24,1fr);gap:2px;min-width:600px;height:auto">
+            <!-- 7 rows x 24 cols = 168 cells, generated by JS --></div>
+          <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);justify-content:flex-end">
+            <span>Less</span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#1a1a2e"></span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#2a2a4e"></span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#4a3a2e"></span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#8a6a2e"></span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#d4a030"></span>
+            <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#ffc107"></span>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Cost Projection -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashCostProjection">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Cost Projection <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Spend forecast</span>
+        </div>
+        <div class="dash-grid" style="margin-bottom:0">
+          <div class="dash-stat-card">
+            <div class="num" id="cpLast30">$0.00</div>
+            <div class="lbl">Last 30 Days</div>
+            <div class="chg" style="color:var(--text-muted)">Actual spend</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="num" id="cpProjected">$0.00</div>
+            <div class="lbl">Projected Monthly</div>
+            <div class="chg up" id="cpTrend">↑ Estimate</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="num" id="cpDailyAvg">$0.00</div>
+            <div class="lbl">Daily Avg</div>
+            <div class="chg" style="color:var(--text-muted)">Per day</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. API Key Usage Breakdown -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashKeyUsageBreakdown">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          API Key Usage Breakdown <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Per-key metrics</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tx-table" id="keyUsageTable">
+            <thead><tr><th>Key Prefix</th><th>Model</th><th>Call Count</th><th>Tokens Used</th><th>Est. Cost</th></tr></thead>
+            <tbody id="keyUsageBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">Loading key usage data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 8. Spending Alerts -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashSpendingAlerts">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Spending Alerts <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Configure thresholds</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;padding:0.25rem 0">
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;min-width:200px">
+              <span style="font-size:0.85rem;color:var(--text-muted)">Daily spend exceeds</span>
+              <input type="number" id="alertDailyThreshold" value="50" min="1" step="5" style="width:70px;padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem" />
+              <span style="font-size:0.8rem;color:var(--text-muted)">$</span>
+            </label>
+            <label class="switch" style="position:relative;display:inline-block;width:36px;height:20px">
+              <input type="checkbox" id="alertDailyToggle" onchange="toggleAlert('daily')" style="opacity:0;width:0;height:0" />
+              <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:20px;transition:0.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:0.3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;min-width:200px">
+              <span style="font-size:0.85rem;color:var(--text-muted)">Monthly spend exceeds</span>
+              <input type="number" id="alertMonthlyThreshold" value="500" min="1" step="50" style="width:70px;padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem" />
+              <span style="font-size:0.8rem;color:var(--text-muted)">$</span>
+            </label>
+            <label class="switch" style="position:relative;display:inline-block;width:36px;height:20px">
+              <input type="checkbox" id="alertMonthlyToggle" onchange="toggleAlert('monthly')" style="opacity:0;width:0;height:0" />
+              <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:20px;transition:0.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:0.3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;min-width:200px">
+              <span style="font-size:0.85rem;color:var(--text-muted)">Error rate above</span>
+              <input type="number" id="alertErrorThreshold" value="10" min="1" max="100" step="1" style="width:70px;padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem" />
+              <span style="font-size:0.8rem;color:var(--text-muted)">%</span>
+            </label>
+            <label class="switch" style="position:relative;display:inline-block;width:36px;height:20px">
+              <input type="checkbox" id="alertErrorToggle" onchange="toggleAlert('error')" style="opacity:0;width:0;height:0" />
+              <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:20px;transition:0.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:0.3s"></span>
+            </label>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="saveAlertSettings()" style="margin-top:0.5rem;padding:0.5rem 1.25rem;font-size:0.85rem">Save Alert Settings</button>
+      </div>
+
+      <!-- 11. Monthly Report Summary -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashMonthlyReport">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Monthly Report Summary <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="monthlyReportPeriod">This month vs last month</span>
+        </div>
+        <div class="dash-grid" style="margin-bottom:0">
+          <div class="dash-stat-card">
+            <div class="num" id="mrTotalSpend">$0.00</div>
+            <div class="lbl">Total Spend</div>
+            <div class="chg up" id="mrSpendChange">↑ 0%</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="num" id="mrTotalCalls">0</div>
+            <div class="lbl">Total Calls</div>
+            <div class="chg up" id="mrCallsChange">↑ 0%</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="num" id="mrAvgCost">$0.00</div>
+            <div class="lbl">Avg Cost / Call</div>
+            <div class="chg up" id="mrAvgCostChange">↑ 0%</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="num" id="mrTopModel">—</div>
+            <div class="lbl">Most Used Model</div>
+            <div class="chg" style="color:var(--text-muted)">This month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Data Export -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashDataExport">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Data Export <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Download reports</span>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;padding:0.25rem 0">
+          <button class="btn-primary" onclick="exportData('usage')" style="padding:0.5rem 1.25rem;font-size:0.85rem">📥 Export Usage (CSV)</button>
+          <button class="btn-secondary" onclick="exportData('logs')" style="padding:0.5rem 1.25rem;font-size:0.85rem">📥 Export Logs (CSV)</button>
+          <button class="btn-secondary" onclick="exportData('billing')" style="padding:0.5rem 1.25rem;font-size:0.85rem">📥 Export Billing (CSV)</button>
+        </div>
+      </div>
+
+      <!-- 10. Saved Filters -->
+      <div class="dash-card" style="margin-top:1.25rem" id="dashSavedFilters">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Saved Filters <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Quick presets</span>
+        </div>
+        <div id="savedFiltersList" style="padding:0.25rem 0">
+          <p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">No saved filters yet.</p>
+        </div>
+        <button class="btn-primary" onclick="saveCurrentFilter()" style="margin-top:0.25rem;padding:0.5rem 1.25rem;font-size:0.85rem">💾 Save Current Filter</button>
       </div>
 
     </div>
@@ -1680,9 +1859,7 @@ function applyFilters(){
   </div>
 </div>
 
-<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Toggle sidebar">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-</button>
+<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Toggle sidebar">☰</button>
 
   <!-- TOP-UP -->
 <footer><div class="container">
@@ -1706,8 +1883,8 @@ function applyFilters(){
     </div>
   </div>
 
-<script src="translations.js?v=225"></script>
-<script data-cfasync="false" src="script.js?v=225"></script>
+<script src="translations.js?v=215"></script>
+<script data-cfasync="false" src="script.js?v=215"></script>
 
 <script>
 (function(){

@@ -1506,14 +1506,7 @@
         // Usage Analytics with filters
         loadUsageAnalytics(usageDays, usageModel, usageMode);
         populateModelFilter();
-      }catch(e){
-        // Show error state in dashboard overview
-        var actEl = document.getElementById('dashActivity');
-        if(actEl) actEl.innerHTML = '<div class=\"empty-state\" style=\"padding:2rem 1rem;text-align:center\"><div class=\"empty-icon\" style=\"font-size:2.5rem;opacity:0.35\">⚠️</div><div class=\"empty-title\" style=\"font-size:0.95rem;margin-bottom:0.25rem\">Could not load dashboard data</div><div class=\"empty-desc\" style=\"font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem\">The server is not responding. Try refreshing or check back later.</div><button class=\"btn-primary\" onclick=\"loadDashboard()\" style=\"padding:0.5rem 1.25rem;font-size:0.85rem\">↻ Retry</button></div>';
-        var usageEl = document.getElementById('usageSubtitle');
-        if(usageEl) usageEl.textContent = 'Data unavailable';
-        console.warn('Dashboard load failed:', e.message || e);
-      }
+      }catch(e){showToast('Failed to load dashboard','error')}
     }
     async function loadDashKeys(){
       if(!token)return;
