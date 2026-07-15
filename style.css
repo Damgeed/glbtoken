@@ -244,9 +244,6 @@
 /* Mobile sidebar toggle — floating FAB style */
 .dash-sidebar-toggle{display:none;position:fixed;bottom:1.25rem;right:1.25rem;z-index:60;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#F4B400,#e6a800);color:#111;align-items:center;justify-content:center;font-size:1.15rem;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(244,180,0,0.35);transition:all 0.2s ease}
 .dash-sidebar-toggle:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(244,180,0,0.45)}
-/* Loading pulse animation for dashboard placeholders */
-@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
-.loading-pulse{display:inline-block;animation:pulse 1.5s ease-in-out infinite}
 @media(max-width:768px){
   .dash-layout{flex-direction:column;margin-top:0}
   .dash-sidebar{width:260px;min-width:auto;position:fixed;left:-100%;top:64px;z-index:50;transition:left 0.3s ease;height:calc(100vh - 64px);box-shadow:4px 0 24px rgba(0,0,0,0.15)}
