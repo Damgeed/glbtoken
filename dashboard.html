@@ -301,7 +301,6 @@ function showDashSection(section) {
   if (hash && document.getElementById('section-' + hash)) {
     showDashSection(hash);
   }
-  initBackToTop();
 })();
 function toggleDashSidebar() {
   var sb = document.getElementById('dashSidebar');
@@ -1624,6 +1623,7 @@ function applyFilters(){
 
 <script src="translations.js?v=224"></script>
 <script data-cfasync="false" src="script.js?v=224"></script>
+<script>initBackToTop();</script>
 
 <script>
 (function(){
