@@ -26,7 +26,7 @@
     });
   }
 
-  var speed = 0.4; // px per frame
+  var speed = 0.2; // px per frame
 
   function tick() {
     bar.scrollLeft += speed;
