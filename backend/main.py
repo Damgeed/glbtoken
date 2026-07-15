@@ -54,13 +54,16 @@ async def lifespan(app: FastAPI):
     # Startup
     init_db()
     seed_models()
-    # Auto-migrate: add all potentially missing columns
+    # Auto-migrate: add all potentially missing columns across ALL tables
     try:
-        from database import engine, User
+        from database import engine, User, ApiKey, Transaction
         from sqlalchemy import inspect, text
+        from sqlalchemy.exc import OperationalError
         inspector = inspect(engine)
-        existing_columns = {c['name'] for c in inspector.get_columns('users')}
-        all_columns = {
+        
+        # ── Users table ──
+        existing_user_cols = {c['name'] for c in inspector.get_columns('users')}
+        user_columns = {
             'newapi_user_id': 'INTEGER',
             'newapi_token': 'VARCHAR',
             'settings': "TEXT DEFAULT '{}'",
@@ -68,12 +71,38 @@ async def lifespan(app: FastAPI):
             'referral_earnings': "FLOAT DEFAULT 0.0",
             'referred_by': 'VARCHAR',
         }
+        # ── Transactions table ──
+        existing_txn_cols = {c['name'] for c in inspector.get_columns('transactions')}
+        transaction_columns = {
+            'currency': "VARCHAR DEFAULT 'USD'",
+            'payment_method': 'VARCHAR DEFAULT ""',
+            'model_used': 'VARCHAR DEFAULT ""',
+            'payment_ref': 'VARCHAR',
+        }
+        # ── API Keys table ──
+        existing_key_cols = {c['name'] for c in inspector.get_columns('api_keys')}
+        apikey_columns = {
+            'permissions': "VARCHAR DEFAULT 'read_write'",
+            'last_used': 'TIMESTAMP',
+            'request_count': "INTEGER DEFAULT 0",
+        }
+        
+        tables_to_migrate = [
+            ('users', existing_user_cols, user_columns),
+            ('transactions', existing_txn_cols, transaction_columns),
+            ('api_keys', existing_key_cols, apikey_columns),
+        ]
+        
         with engine.connect() as conn:
-            for col_name, col_type in all_columns.items():
-                if col_name not in existing_columns:
-                    sql = text(f'ALTER TABLE users ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}')
-                    conn.execute(sql)
-                    print(f"✅ Added missing column: {col_name}")
+            for table_name, existing, columns in tables_to_migrate:
+                for col_name, col_type in columns.items():
+                    if col_name not in existing:
+                        try:
+                            sql = text(f'ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}')
+                            conn.execute(sql)
+                            print(f"✅ Added missing column: {table_name}.{col_name}")
+                        except Exception as e2:
+                            print(f"⚠️ Could not add {table_name}.{col_name}: {e2}")
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (non-critical): {e}")
@@ -1118,113 +1147,134 @@ async def get_dashboard(
     db: Session = Depends(get_db),
     days: int = Query(7, ge=1, le=90, description="Number of days of data to return"),
 ):
-    # Usage by model (last N days)
-    since_dashboard = datetime.now(timezone.utc) - timedelta(days=days)
-    usage = db.query(Transaction.model_used, func.sum(Transaction.tokens)).filter(
-        Transaction.user_id == user.id,
-        Transaction.type == "consumption",
-        Transaction.created_at >= since_dashboard,
-    ).group_by(Transaction.model_used).all()
-    
-    # Recent transactions
-    recent = db.query(Transaction).filter(
-        Transaction.user_id == user.id
-    ).order_by(desc(Transaction.created_at)).limit(5).all()
-    
-    # API key count
-    key_count = db.query(ApiKey).filter(
-        ApiKey.user_id == user.id, ApiKey.is_active == True
-    ).count()
-    
-    # ── New API usage data ──
-    newapi_usage = {}
-    newapi_connected = False
     try:
-        if user.newapi_user_id:
-            newapi_usage = await get_usage_today(user.newapi_user_id)
-            if newapi_usage and "error" not in newapi_usage:
-                newapi_connected = True
-    except Exception as e:
-        print(f"⚠️ New API usage fetch failed: {e}")
-    
-    # Calculate active days from registration
-    days_active = 0
-    if user.created_at:
-        days_active = (datetime.now(timezone.utc) - user.created_at).days or 1
-    
-    # Total consumption from local DB (fallback when New API not connected)
-    total_consumption = db.query(func.sum(Transaction.tokens)).filter(
-        Transaction.user_id == user.id,
-        Transaction.type == "consumption"
-    ).scalar() or 0
+        # Usage by model (last N days)
+        since_dashboard = datetime.now(timezone.utc) - timedelta(days=days)
+        usage = db.query(Transaction.model_used, func.sum(Transaction.tokens)).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "consumption",
+            Transaction.created_at >= since_dashboard,
+        ).group_by(Transaction.model_used).all()
+        
+        # Recent transactions
+        recent = db.query(Transaction).filter(
+            Transaction.user_id == user.id
+        ).order_by(desc(Transaction.created_at)).limit(5).all()
+        
+        # API key count
+        key_count = db.query(ApiKey).filter(
+            ApiKey.user_id == user.id, ApiKey.is_active == True
+        ).count()
+        
+        # ── New API usage data ──
+        newapi_usage = {}
+        newapi_connected = False
+        try:
+            if user.newapi_user_id:
+                newapi_usage = await get_usage_today(user.newapi_user_id)
+                if newapi_usage and "error" not in newapi_usage:
+                    newapi_connected = True
+        except Exception as e:
+            print(f"⚠️ New API usage fetch failed: {e}")
+        
+        # Calculate active days from registration
+        days_active = 0
+        if user.created_at:
+            days_active = (datetime.now(timezone.utc) - user.created_at).days or 1
+        
+        # Total consumption from local DB (fallback when New API not connected)
+        total_consumption = db.query(func.sum(Transaction.tokens)).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "consumption"
+        ).scalar() or 0
 
-    # ── Daily usage for last N days ──
-    daily_usage = db.query(
-        func.date(Transaction.created_at),
-        func.sum(Transaction.tokens),
-        func.count(Transaction.id)
-    ).filter(
-        Transaction.user_id == user.id,
-        Transaction.type == "consumption",
-        Transaction.created_at >= since_dashboard
-    ).group_by(func.date(Transaction.created_at)).order_by(func.date(Transaction.created_at)).all()
+        # ── Daily usage for last N days ──
+        daily_usage = db.query(
+            func.date(Transaction.created_at),
+            func.sum(Transaction.tokens),
+            func.count(Transaction.id)
+        ).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "consumption",
+            Transaction.created_at >= since_dashboard
+        ).group_by(func.date(Transaction.created_at)).order_by(func.date(Transaction.created_at)).all()
 
-    daily_labels = []
-    daily_values = []
-    daily_requests = []
-    for i in range(days - 1, -1, -1):
-        d = (datetime.now(timezone.utc) - timedelta(days=i)).strftime("%Y-%m-%d")
-        daily_labels.append(d)
-        found = None
-        for row in daily_usage:
-            row_date = row[0]
-            if hasattr(row_date, 'strftime'):
-                row_date_str = row_date.strftime("%Y-%m-%d")
+        daily_labels = []
+        daily_values = []
+        daily_requests = []
+        for i in range(days - 1, -1, -1):
+            d = (datetime.now(timezone.utc) - timedelta(days=i)).strftime("%Y-%m-%d")
+            daily_labels.append(d)
+            found = None
+            for row in daily_usage:
+                row_date = row[0]
+                if hasattr(row_date, 'strftime'):
+                    row_date_str = row_date.strftime("%Y-%m-%d")
+                else:
+                    row_date_str = str(row_date)
+                if row_date_str == d:
+                    found = row
+                    break
+            if found:
+                daily_values.append(float(found[1]))
+                daily_requests.append(int(found[2]))
             else:
-                row_date_str = str(row_date)
-            if row_date_str == d:
-                found = row
-                break
-        if found:
-            daily_values.append(float(found[1]))
-            daily_requests.append(int(found[2]))
-        else:
-            daily_values.append(0)
-            daily_requests.append(0)
+                daily_values.append(0)
+                daily_requests.append(0)
 
-    # ── Total request count ──
-    total_requests = db.query(func.count(Transaction.id)).filter(
-        Transaction.user_id == user.id,
-        Transaction.type == "consumption"
-    ).scalar() or 0
+        # ── Total request count ──
+        total_requests = db.query(func.count(Transaction.id)).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "consumption"
+        ).scalar() or 0
 
-    return {
-        "token_balance": user.token_balance,
-        "total_spent": user.total_spent,
-        "models_used": len(usage),
-        "api_keys_active": key_count,
-        "days_active": days_active,
-        "total_tokens_consumed": float(total_consumption),
-        "total_requests": total_requests,
-        "daily_usage": {"labels": daily_labels, "values": daily_values, "requests": daily_requests},
-        "newapi_connected": newapi_connected,
-        "usage_by_model": [
-            {"model": m[0] or "Unknown", "tokens": float(m[1])} for m in usage
-        ],
-        "usage_from_newapi": newapi_usage,
-        "recent_activity": [
-            {
-                "type": t.type,
-                "model": t.model_used,
-                "tokens": t.tokens,
-                "payment_method": t.payment_method,
-                "amount": t.amount,
-                "created_at": t.created_at.isoformat() if t.created_at else None,
-            }
-            for t in recent
-        ],
-        "newapi": newapi_usage,
-    }
+        return {
+            "token_balance": user.token_balance,
+            "total_spent": user.total_spent,
+            "models_used": len(usage),
+            "api_keys_active": key_count,
+            "days_active": days_active,
+            "total_tokens_consumed": float(total_consumption),
+            "total_requests": total_requests,
+            "daily_usage": {"labels": daily_labels, "values": daily_values, "requests": daily_requests},
+            "newapi_connected": newapi_connected,
+            "usage_by_model": [
+                {"model": m[0] or "Unknown", "tokens": float(m[1])} for m in usage
+            ],
+            "usage_from_newapi": newapi_usage,
+            "recent_activity": [
+                {
+                    "type": t.type,
+                    "model": t.model_used,
+                    "tokens": t.tokens,
+                    "payment_method": t.payment_method,
+                    "amount": t.amount,
+                    "created_at": t.created_at.isoformat() if t.created_at else None,
+                }
+                for t in recent
+            ],
+            "newapi": newapi_usage,
+        }
+    except Exception as e:
+        print(f"⚠️ Dashboard endpoint error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "token_balance": user.token_balance if hasattr(user, 'token_balance') else 0,
+            "total_spent": 0,
+            "models_used": 0,
+            "api_keys_active": 0,
+            "days_active": 1,
+            "total_tokens_consumed": 0,
+            "total_requests": 0,
+            "daily_usage": {"labels": [], "values": [], "requests": []},
+            "newapi_connected": False,
+            "usage_by_model": [],
+            "usage_from_newapi": {},
+            "recent_activity": [],
+            "newapi": {},
+            "error": str(e)[:200],
+        }
 
 # ── API Key Routes ──
 @app.get("/api/keys")
