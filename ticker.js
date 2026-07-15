@@ -1,24 +1,40 @@
-/* ── Ticker: scrollLeft (no wrapper) ── */
+/* ── Ticker: seamless loop, items re-enter from right ── */
 (function(){
   var bar = document.getElementById('tickerBar');
   if (!bar) return;
 
-  // Duplicate items for seamless loop
+  // Compute half-width before cloning (items already rendered in DOM)
   var items = Array.from(bar.children);
+  var halfWidth = 0;
+  var hasWidth = items.length > 0 && items[0].offsetWidth > 0;
+  if (hasWidth) {
+    items.forEach(function(item) { halfWidth += item.offsetWidth; });
+  }
+
+  // Duplicate for seamless play — the cloned set acts as a buffer
   items.forEach(function(item) {
     bar.appendChild(item.cloneNode(true));
   });
 
-  var speed = 0.4; // px per frame (~24px/s at 60fps)
+  // If widths weren't ready, compute after layout
+  if (!hasWidth) {
+    requestAnimationFrame(function(){
+      var all = Array.from(bar.children);
+      var half = Math.floor(all.length / 2);
+      halfWidth = 0;
+      for (var i = 0; i < half; i++) halfWidth += all[i].offsetWidth;
+    });
+  }
+
+  var speed = 0.4; // px per frame
 
   function tick() {
     bar.scrollLeft += speed;
 
-    // Recycle: when first item is fully off-screen left, move it to end
-    var first = bar.children[0];
-    if (first && bar.scrollLeft >= first.offsetWidth) {
-      bar.scrollLeft -= first.offsetWidth;
-      bar.appendChild(first);
+    // When the first set has fully scrolled past, snap back to start
+    // The cloned second set is identical — no visible jump
+    if (halfWidth > 0 && bar.scrollLeft >= halfWidth) {
+      bar.scrollLeft -= halfWidth;
     }
 
     requestAnimationFrame(tick);
@@ -43,7 +59,7 @@
   };
 
   function updateTicker(){
-    bar = document.getElementById('tickerBar');
+    var bar = document.getElementById('tickerBar');
     if (!bar) return;
     Array.from(bar.children).forEach(function(el){
       var key = el.getAttribute('data-ticker');

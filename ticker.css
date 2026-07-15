@@ -13,7 +13,7 @@
   top: auto !important;
 }
 
-.ticker-bar{width:100%;background:var(--card);border-bottom:1px solid var(--border);overflow:hidden;height:26px;display:flex;align-items:center;z-index:49;white-space:nowrap}
+.ticker-bar{width:100%;background:var(--card);overflow:hidden;height:26px;display:flex;align-items:center;z-index:49;white-space:nowrap}
 .ticker-item{display:inline-flex;align-items:center;gap:4px;padding:0 16px;font-size:0.65rem;font-weight:500;color:var(--text);height:26px;flex-shrink:0}
 .ticker-item .ticker-label{color:var(--text-muted);font-weight:400}
 .ticker-item .ticker-value{color:var(--primary);font-weight:600;font-variant-numeric:tabular-nums}
