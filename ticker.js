@@ -1,4 +1,4 @@
-/* ── Ticker Data Updater + Smooth Infinite Scroll ── */
+/* ── Ticker: Continuous Loop (Item Recycling) ── */
 (function(){
   'use strict';
 
@@ -14,7 +14,6 @@
     status: '○ Standby'
   };
 
-  // ─── Update DOM values ───
   function updateTicker(){
     document.querySelectorAll('.ticker-item').forEach(function(el){
       var key = el.getAttribute('data-ticker');
@@ -33,26 +32,28 @@
     });
   }
 
-  // ─── Smooth Infinite Scroll (no snap) ───
+  // ─── Continuous Loop (no snap, no duplicate) ───
   var ticker = (function(){
-    var track, bar, pos = 0, speed = 0, running = false, rafId = null, halfW = 0;
+    var track, bar, pos = 0, speed = 0, running = false, rafId = null;
 
-    function measure(){
-      if(!track || !bar) return;
-      // Width of ONE full set of items (half the track since content is duplicated)
-      halfW = track.scrollWidth / 2;
-      if(halfW <= 0) halfW = 1000; // fallback
-      // Speed: ~35px/s on desktop, ~25px/s on tablet, ~18px/s on phone
+    function setSpeed(){
       var w = window.innerWidth;
-      speed = w > 768 ? 0.58 : (w > 480 ? 0.42 : 0.3);
+      speed = w > 768 ? 0.6 : (w > 480 ? 0.45 : 0.3);
     }
 
     function frame(){
       if(!running) return;
       pos += speed;
-      if(pos >= halfW) pos = 0;
+
+      // Recycle: when first item scrolls off the left edge,
+      // move it to the end so content is always visible
+      var first = track.firstElementChild;
+      if(first && pos >= first.offsetWidth){
+        track.appendChild(first);
+        pos -= first.offsetWidth;
+      }
+
       track.style.transform = 'translateX(' + (-pos) + 'px)';
-      track.style.willChange = 'transform';
       rafId = requestAnimationFrame(frame);
     }
 
@@ -61,11 +62,8 @@
       track = document.getElementById('tickerTrack');
       bar = document.querySelector('.ticker-bar');
       if(!track || !bar) return;
-      // Init: reset transform for clean start
-      track.style.transform = 'translateX(0)';
-      track.style.transition = 'none';
       running = true;
-      measure();
+      setSpeed();
       frame();
     }
 
@@ -74,30 +72,23 @@
       if(rafId) { cancelAnimationFrame(rafId); rafId = null; }
     }
 
-    function handleResize(){
-      measure();
+    function resize(){
+      setSpeed();
     }
 
-    // Public
-    return {
-      start: start,
-      stop: stop,
-      resize: handleResize
-    };
+    return { start: start, stop: stop, resize: resize };
   })();
 
   // ─── Data Refresh ───
   function refreshTickerData(){
     var token = localStorage.getItem('gt_token');
 
-    // Update from userData if available (inline data from page)
     if(typeof userData !== 'undefined' && userData && userData.token_balance !== undefined){
       tickerVals['balance'] = (userData.token_balance || 0) + ' GT';
       tickerVals['spent'] = '$' + (userData.total_spent || 0).toFixed(2);
       updateTicker();
     }
 
-    // Fetch from API
     if(token){
       try {
         fetch('https://glbtoken-backend-production.up.railway.app/api/dashboard?days=1', {
@@ -126,18 +117,13 @@
     ticker.start();
     refreshTickerData();
     window.addEventListener('resize', ticker.resize);
-    // Pause/resume on hover
     var bar = document.querySelector('.ticker-bar');
     if(bar){
       bar.addEventListener('mouseenter', ticker.stop);
       bar.addEventListener('mouseleave', ticker.start);
-      // Touch pause for mobile
       bar.addEventListener('touchstart', ticker.stop);
       bar.addEventListener('touchend', function(){ setTimeout(ticker.start, 500); });
     }
-    // Re-measure after fonts/images load
-    setTimeout(ticker.resize, 1000);
-    setTimeout(ticker.resize, 3000);
   }
 
   if(document.readyState === 'loading'){
