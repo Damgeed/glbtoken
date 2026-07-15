@@ -21,7 +21,7 @@
 .ticker-item .ticker-value{color:var(--primary);font-weight:600;font-variant-numeric:tabular-nums}
 .ticker-item .ticker-up{color:var(--success,#00D68F)}
 .ticker-item .ticker-down{color:var(--destructive,#FF6B6B)}
-.ticker-item .ticker-dot{width:4px;height:4px;border-radius:50%;background:var(--primary);display:inline-block;margin:0 2px;opacity:0.5}
+.ticker-item .ticker-dot{width:4px;height:4px;border-radius:50%;background:#26a69a;display:inline-block;margin:0 2px;opacity:0.8}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @media(max-width:768px){
   .ticker-bar{height:22px}
