@@ -1,28 +1,4 @@
-/* ── Ticker: per-item recycling ── */
-(function(){
-  var bar = document.getElementById('tickerBar');
-  if (!bar) return;
-
-  var speed = 0.1; // px per frame (slower on desktop)
-
-  function tick() {
-    bar.scrollLeft += speed;
-
-    // As soon as the first item fully exits left, move it to the end
-    // It immediately pops up on the right
-    var first = bar.children[0];
-    if (first && bar.scrollLeft >= first.offsetWidth) {
-      bar.scrollLeft -= first.offsetWidth;
-      bar.appendChild(first);
-    }
-
-    requestAnimationFrame(tick);
-  }
-
-  tick();
-})();
-
-/* ── Ticker Data Updater ── */
+/* ── Ticker Data Updater (animation is pure CSS) ── */
 (function(){
   var tickerVals = {};
 
