@@ -1,25 +1,58 @@
-/* ── Ticker: per-item recycling ── */
+/* ── Ticker: zero DOM reflow, each item wraps independently ── */
 (function(){
   var bar = document.getElementById('tickerBar');
   if (!bar) return;
 
+  var items = Array.from(bar.children);
+  if (items.length === 0) return;
+
   var speed = 0.2; // px per frame
 
-  function tick() {
-    bar.scrollLeft += speed;
+  // Measure each item
+  var widths = items.map(function(item) { return item.offsetWidth || 80; });
+  var scrollOffset = 0;
 
-    // As soon as the first item fully exits left, move it to the end
-    // It immediately pops up on the right
-    var first = bar.children[0];
-    if (first && bar.scrollLeft >= first.offsetWidth) {
-      bar.scrollLeft -= first.offsetWidth;
-      bar.appendChild(first);
-    }
+  // Pre-calc cumulative positions
+  var cum = 0;
+  var cumPos = widths.map(function(w) { var c = cum; cum += w; return c; });
+  var totalWidth = cum;
 
-    requestAnimationFrame(tick);
+  // Safety: if items are zero-width (not rendered yet), wait for layout
+  if (totalWidth === 0) {
+    requestAnimationFrame(function initLate() {
+      widths = items.map(function(item) { return item.offsetWidth || 80; });
+      cum = 0;
+      cumPos = widths.map(function(w) { var c = cum; cum += w; return c; });
+      totalWidth = cum;
+      if (totalWidth > 0) start();
+    });
+    return;
   }
 
-  tick();
+  function start() {
+    function tick() {
+      scrollOffset += speed;
+
+      for (var i = 0; i < items.length; i++) {
+        var pos = cumPos[i] - scrollOffset;
+        // When this item fully exits left, wrap it to the right
+        if (pos < -widths[i]) {
+          pos += totalWidth;
+        }
+        items[i].style.left = pos + 'px';
+      }
+
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  // Initial positions
+  items.forEach(function(item, i) {
+    item.style.left = cumPos[i] + 'px';
+  });
+
+  start();
 })();
 
 /* ── Ticker Data Updater ── */
