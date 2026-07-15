@@ -132,6 +132,7 @@
             </div></nav>
   </header>
 <div class="ticker-bar" id="tickerBar">
+      <div class="ticker-inner">
       <span class="ticker-item" data-ticker="balance"><span class="ticker-label">Balance</span><span class="ticker-dot"></span><span class="ticker-value">0 GT</span></span>
       <span class="ticker-item" data-ticker="spent"><span class="ticker-label">Spent</span><span class="ticker-dot"></span><span class="ticker-value">$0.00</span></span>
       <span class="ticker-item" data-ticker="models"><span class="ticker-label">Models</span><span class="ticker-dot"></span><span class="ticker-value">0</span></span>
@@ -331,6 +332,7 @@ async function loadPresets(){
       html += '<span class="pc-param"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Top P <strong>' + topP + '</strong></span>';
       html += '<span class="pc-param"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M2 18V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M2 11h4l2-2 2 2 2-2 2 2 2-2 2 2 4"/></svg> Max <strong>' + maxT + '</strong></span>';
       html += '</div>
+  </div>
     </div>';
       html += '<div class="pc-preview">' + promptPreview + '</div>';
       html += '<div class="pc-actions">';

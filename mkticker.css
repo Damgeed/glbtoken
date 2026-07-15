@@ -1,37 +1,41 @@
-/* ── Ticker ── */
-/* STYLING: preserved from v=265 — DO NOT CHANGE visual appearance */
+/* ── Ticker (KAIEX pattern: pure CSS animation) ── */
 
-/* Site header: sticky for nav only */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-/* Nav inside header — header handles sticky */
-.site-header > .navbar {
-  position: relative !important;
-  top: auto !important;
-}
-
+/* Ticker bar: visible container */
 .ticker-bar {
   width: 100%;
   overflow: hidden;
   height: 26px;
-  display: block;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
   z-index: 49;
-  line-height: 26px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
 }
 
+/* Inner wrapper: animated track */
+.ticker-inner {
+  display: flex;
+  gap: 32px;
+  white-space: nowrap;
+  animation: tickerScroll 40s linear infinite;
+  padding: 0 8px;
+}
+
+@keyframes tickerScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Ticker items */
 .ticker-item {
-  display: inline-block;
-  padding: 0 16px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text);
-  height: 26px;
-  line-height: 26px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .ticker-item .ticker-label {
@@ -59,13 +63,15 @@
 }
 
 @media (max-width: 768px) {
-  .ticker-bar { height: 22px; line-height: 22px; }
-  .ticker-item { font-size: 0.55rem; padding: 0 8px; }
+  .ticker-bar { height: 22px; }
+  .ticker-inner { gap: 20px; animation-duration: 30s; }
+  .ticker-item { font-size: 0.55rem; }
   .ticker-item .ticker-dot { width: 2px; height: 2px; }
 }
 
 @media (max-width: 480px) {
-  .ticker-bar { height: 20px; line-height: 20px; }
-  .ticker-item { font-size: 0.5rem; padding: 0 6px; }
+  .ticker-bar { height: 20px; }
+  .ticker-inner { gap: 14px; animation-duration: 25s; }
+  .ticker-item { font-size: 0.5rem; }
   .ticker-item .ticker-dot { width: 2px; height: 2px; margin: 0 1px; }
 }

@@ -1,26 +1,4 @@
-/* ── Ticker: scrollLeft recycling, structured items for styling ── */
-(function(){
-  var bar = document.getElementById('tickerBar');
-  if (!bar) return;
-
-  var speed = 0.1; // px per frame
-
-  function tick() {
-    bar.scrollLeft += speed;
-
-    var first = bar.children[0];
-    if (first && bar.scrollLeft >= first.offsetWidth) {
-      bar.scrollLeft -= first.offsetWidth;
-      bar.appendChild(first);
-    }
-
-    requestAnimationFrame(tick);
-  }
-
-  tick();
-})();
-
-/* ── Ticker Data Updater ── */
+/* ── Ticker Data Updater (animation is pure CSS) ── */
 (function(){
   var tickerVals = {};
 
@@ -38,7 +16,9 @@
   function updateTicker(){
     var bar = document.getElementById('tickerBar');
     if (!bar) return;
-    Array.from(bar.children).forEach(function(el){
+    var inner = bar.querySelector('.ticker-inner');
+    if (!inner) return;
+    Array.from(inner.children).forEach(function(el){
       var key = el.getAttribute('data-ticker');
       if (!key) return;
       var val = tickerVals[key] || defaults[key] || '—';
