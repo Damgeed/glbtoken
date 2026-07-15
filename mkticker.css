@@ -1,92 +1,41 @@
-/* ── Ticker ── */
+/* ── Ticker: flat text, no wrappers ── */
 
-/* Site header: sticky for nav only, ticker is outside */
+/* Site header: sticky for nav only */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
 }
-
-/* Nav inside header — header handles sticky */
 .site-header > .navbar {
   position: relative !important;
   top: auto !important;
 }
 
-/* Bar: visible container — clips overflowing items */
+/* Bar: just text, no spans */
 .ticker-bar {
   width: 100%;
   overflow: hidden;
   height: 26px;
+  line-height: 26px;
   z-index: 49;
   white-space: nowrap;
   display: block;
-  line-height: 26px;
-}
-
-/* Ticker items — no wrapper, direct children of bar */
-.ticker-item {
-  display: inline-block;
-  padding: 0 16px;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text);
-  height: 26px;
-  line-height: 26px;
-  white-space: nowrap;
-}
-
-.ticker-item .ticker-label {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.ticker-item .ticker-value {
-  color: var(--primary);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-.ticker-item .ticker-up   { color: var(--success, #00D68F); }
-.ticker-item .ticker-down { color: var(--destructive, #FF6B6B); }
-
-.ticker-item .ticker-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #26a69a;
-  display: inline-block;
-  margin: 0 2px;
-  opacity: 0.8;
 }
 
 @media (max-width: 768px) {
   .ticker-bar {
     height: 22px;
     line-height: 22px;
-  }
-  .ticker-item {
     font-size: 0.55rem;
-    padding: 0 8px;
-  }
-  .ticker-item .ticker-dot {
-    width: 2px;
-    height: 2px;
   }
 }
-
 @media (max-width: 480px) {
   .ticker-bar {
     height: 20px;
     line-height: 20px;
-  }
-  .ticker-item {
     font-size: 0.5rem;
-    padding: 0 6px;
-  }
-  .ticker-item .ticker-dot {
-    width: 2px;
-    height: 2px;
-    margin: 0 1px;
   }
 }
