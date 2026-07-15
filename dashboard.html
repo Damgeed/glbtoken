@@ -560,7 +560,7 @@ function toggleDashSidebar() {
           <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg" style="color:var(--text-muted)">Avg cost/call</div></div>
           <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg" style="color:var(--text-muted)">Per request</div></div>
         </div>
-        <div class="chart-container" style="height:200px"><canvas id="costByModelChart"></canvas></div>
+        <div class="chart-container" style="min-height:0"><canvas id="costByModelChart"></canvas></div>
       </div>
       <div class="dash-card" style="margin-top:1.25rem" id="dashErrorRate">
         <div class="dash-section-title">
@@ -572,7 +572,7 @@ function toggleDashSidebar() {
           <div class="dash-stat-card"><div class="num" id="erErrorRate">0%</div><div class="lbl">Error Rate</div><div class="chg" style="color:var(--text-muted)">Percentage</div></div>
           <div class="dash-stat-card"><div class="num" id="erLastError">—</div><div class="lbl">Last Error</div><div class="chg" style="color:var(--text-muted)">Time</div></div>
         </div>
-        <div class="chart-container" style="height:180px"><canvas id="errorRateChart"></canvas></div>
+        <div class="chart-container" style="min-height:0"><canvas id="errorRateChart"></canvas></div>
       </div>
       <div class="dash-card" style="margin-top:1.25rem" id="dashResponseTime">
         <div class="dash-section-title">
