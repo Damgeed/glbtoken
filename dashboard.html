@@ -185,9 +185,6 @@ body{background:var(--bg)}
 .tx-table td{padding:0.6rem 0.5rem;border-bottom:1px solid var(--border);color:var(--text)}
 .tx-table tr:last-child td{border-bottom:none}
 .tx-table tr:hover td{background:var(--bg-alt)}
-.billing-page-header{margin-bottom:1.5rem}
-.billing-page-header h2{font-size:1.75rem;font-weight:700;margin-bottom:0.25rem;letter-spacing:-0.02em}
-.billing-page-header p{font-size:0.85rem;color:var(--text-secondary);margin-bottom:0}
 .dash-activity{display:flex;flex-direction:column;gap:0.5rem}
 .dash-activity .activity-item{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);transition:background 0.2s;font-size:0.82rem}
 .dash-activity .activity-item:hover{background:var(--bg-alt)}
@@ -223,7 +220,6 @@ body{background:var(--bg)}
   .tx-table th,.tx-table td{padding:0.3rem 0.25rem}
   .chart-container{height:120px}
   .dash-header .btn-primary,.dash-header .btn-secondary{font-size:0.72rem;padding:0.35rem 0.6rem}
-  .billing-page-header h2{font-size:1.1rem}
   .billing-stat-card{padding:0.5rem 0.35rem}
   .billing-stat-card .num{font-size:0.9rem}
   .billing-summary-grid{grid-template-columns:repeat(3,1fr);gap:0.4rem}
@@ -596,10 +592,12 @@ function toggleDashSidebar() {
     <!-- ===== BILLING SECTION ===== -->
     <div class="dash-section" id="section-billing">
 
-      <div class="billing-page-header" style="margin-bottom:0.5rem">
-        <span class="section-label">Payments</span>
-        <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.25rem">Billing</h2>
-        <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0">Manage invoices, payment methods, and billing summary.</p>
+      <div class="dash-header">
+        <div class="dash-welcome">
+          <span class="section-label" style="margin:0 0 0.5rem">Payments</span>
+          <h1>Billing</h1>
+          <p>Manage invoices, payment methods, and billing summary.</p>
+        </div>
       </div>
 
       <!-- ── Billing Summary ── -->
@@ -676,8 +674,12 @@ function toggleDashSidebar() {
     <!-- ===== SETTINGS SECTION ===== -->
     <div class="dash-section" id="section-settings">
 
-      <span class="section-label">Account</span>
-      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">Settings</h2>
+      <div class="dash-header">
+        <div class="dash-welcome">
+          <span class="section-label" style="margin:0 0 0.5rem">Account</span>
+          <h1>Settings</h1>
+        </div>
+      </div>
       <div class="settings-grid">
         <div class="dash-card">
           <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
