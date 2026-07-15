@@ -34,7 +34,6 @@
   color: var(--text);
   height: 36px;
   flex-shrink: 0;
-  border-right: 1px solid var(--border);
   transition: color 0.3s, border-color 0.3s;
 }
 
