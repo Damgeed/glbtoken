@@ -1,17 +1,140 @@
-/* ── Wall Street Ticker ── */
-.ticker-bar{width:100%;background:linear-gradient(90deg,#1a1a2e,#0d0d1a);border-bottom:1px solid rgba(244,180,0,0.15);overflow:hidden;height:32px;display:flex;align-items:center;position:relative;z-index:49}
-.ticker-track{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 40s linear infinite;will-change:transform}
-.ticker-track:hover{animation-play-state:paused}
-.ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 24px;font-size:0.78rem;font-weight:500;color:#f8f8f2;border-right:1px solid rgba(244,180,0,0.12);height:32px;flex-shrink:0}
-.ticker-item .ticker-label{color:rgba(248,248,242,0.5);font-weight:400}
-.ticker-item .ticker-value{color:#F4B400;font-weight:600;font-variant-numeric:tabular-nums}
-.ticker-item .ticker-up{color:#00D68F}
-.ticker-item .ticker-down{color:#FF6B6B}
-.ticker-item .ticker-dot{width:4px;height:4px;border-radius:50%;background:#F4B400;display:inline-block;margin:0 2px;opacity:0.5}
-@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-/* Duplicate the items in HTML with data-clone for seamless loop */
-.ticker-sep{color:rgba(244,180,0,0.3);font-size:0.7rem;padding:0 4px}
-@media(max-width:768px){
-  .ticker-bar{height:28px}
-  .ticker-item{font-size:0.7rem;padding:0 14px}
+/* ── Premium Seamless Ticker ── */
+.ticker-bar {
+  width: 100%;
+  height: 34px;
+  position: sticky;
+  top: 64px;
+  z-index: 49;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+/* Edge fade overlays — theme-aware, don't move with content */
+.ticker-bar::before,
+.ticker-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 50;
+  pointer-events: none;
+  transition: background 0.3s;
+}
+
+.ticker-bar::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--card) 0%, transparent 100%);
+}
+
+.ticker-bar::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--card) 0%, transparent 100%);
+}
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  animation: tickerScroll 50s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+  height: 34px;
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+  border-right: 1px solid var(--border);
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.ticker-label {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.3s;
+}
+
+.ticker-value {
+  color: var(--primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  transition: color 0.3s;
+}
+
+/* Gold accent for financial values */
+.ticker-item[data-ticker="balance"] .ticker-value,
+.ticker-item[data-ticker="spent"] .ticker-value {
+  color: var(--secondary, #F4B400);
+}
+
+/* Pulsing status dot */
+.ticker-status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.ticker-status-dot.live {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+  animation: tickerPulse 2s ease-in-out infinite;
+}
+
+.ticker-status-dot.standby {
+  background: var(--text-muted);
+  opacity: 0.45;
+}
+
+@keyframes tickerPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .ticker-bar { height: 30px; }
+  .ticker-bar::before,
+  .ticker-bar::after { width: 30px; }
+  .ticker-item { padding: 0 14px; gap: 5px; height: 30px; font-size: 0.7rem; }
+  .ticker-label { font-size: 0.6rem; }
+  .ticker-value { font-size: 0.72rem; }
+}
+
+@media (max-width: 480px) {
+  .ticker-bar { height: 28px; }
+  .ticker-bar::before,
+  .ticker-bar::after { width: 20px; }
+  .ticker-item { padding: 0 10px; gap: 4px; height: 28px; font-size: 0.65rem; }
+  .ticker-label { font-size: 0.55rem; }
+  .ticker-value { font-size: 0.68rem; }
+  .ticker-status-dot { width: 5px; height: 5px; }
 }
