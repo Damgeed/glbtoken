@@ -1,90 +1,77 @@
-/* ── Ticker: Continuous Item-Recycling Loop ── */
+/* ── Ticker: scrollLeft on bar, no wrapper ── */
 (function(){
   'use strict';
 
-  var tickerVals = {};
-  var defaults = {
-    balance: '0 GT',
-    spent: '$0.00',
-    models: '0',
-    requests: '0',
-    keys: '0',
-    days: '0',
-    consumed: '0',
-    status: '○ Standby'
+  var vals = {};
+  var defs = {
+    balance: '0 GT', spent: '$0.00', models: '0',
+    requests: '0', keys: '0', days: '0',
+    consumed: '0', status: '○ Standby'
   };
 
-  function updateTicker(){
+  function update(){
     document.querySelectorAll('.ticker-item').forEach(function(el){
-      var key = el.getAttribute('data-ticker');
-      if(!key) return;
-      var val = tickerVals[key] || defaults[key] || '—';
-      var vEl = el.querySelector('.ticker-value');
-      if(!vEl) return;
-      if(key === 'status') {
-        var isLive = val.indexOf('Live') > -1;
-        vEl.innerHTML = isLive
+      var k = el.getAttribute('data-ticker');
+      if(!k) return;
+      var v = vals[k] || defs[k] || '—';
+      var ve = el.querySelector('.ticker-value');
+      if(!ve) return;
+      if(k === 'status') {
+        var live = v.indexOf('Live') > -1;
+        ve.innerHTML = live
           ? '<span class="ticker-status-dot live"></span>● Live'
           : '<span class="ticker-status-dot standby"></span>○ Standby';
         return;
       }
-      vEl.textContent = val;
+      ve.textContent = v;
     });
   }
 
-  // ─── Continuous Recycling Loop ───
-  var ticker = (function(){
-    var track, bar, pos = 0, speed = 0, running = false, rafId = null, last = 0;
+  // ─── scrollLeft-based loop (no wrapper div) ───
+  var tick = (function(){
+    var bar, speed = 0.6, running = false, raf = null;
 
     function setSpeed(){
       var w = window.innerWidth;
       speed = w > 768 ? 0.6 : (w > 480 ? 0.45 : 0.3);
     }
 
-    function frame(now){
+    function frame(){
       if(!running) return;
-      pos += speed;
+      bar.scrollLeft += speed;
 
-      // Recycle: move first item to end when it scrolls past left edge
-      var first = track.firstElementChild;
-      if(first && pos >= first.offsetWidth){
-        track.appendChild(first);
-        pos -= first.offsetWidth;
+      var first = bar.firstElementChild;
+      if(first && bar.scrollLeft >= first.offsetWidth){
+        bar.appendChild(first);
+        bar.scrollLeft -= first.offsetWidth;
       }
 
-      track.style.transform = 'translateX(' + (-pos) + 'px)';
-      rafId = requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
     }
 
     function start(){
       if(running) return;
-      track = document.getElementById('tickerTrack');
-      bar = document.querySelector('.ticker-bar');
-      if(!track || !bar) return;
-      pos = 0;
-      track.style.transform = 'translateX(0)';
+      bar = document.getElementById('tickerBar');
+      if(!bar) return;
+      bar.scrollLeft = 0;
       running = true;
       setSpeed();
-      rafId = requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
     }
 
-    function stop(){
-      running = false;
-      if(rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    }
-
+    function stop(){ running = false; if(raf) cancelAnimationFrame(raf); }
     function resize(){ setSpeed(); }
 
     return { start: start, stop: stop, resize: resize };
   })();
 
-  // ─── Data Refresh ───
-  function refreshTickerData(){
+  // ─── Data ───
+  function refresh(){
     var token = localStorage.getItem('gt_token');
     if(typeof userData !== 'undefined' && userData && userData.token_balance !== undefined){
-      tickerVals['balance'] = (userData.token_balance || 0) + ' GT';
-      tickerVals['spent'] = '$' + (userData.total_spent || 0).toFixed(2);
-      updateTicker();
+      vals['balance'] = (userData.token_balance || 0) + ' GT';
+      vals['spent'] = '$' + (userData.total_spent || 0).toFixed(2);
+      update();
     }
     if(token){
       try {
@@ -92,28 +79,27 @@
           headers: {'Authorization': 'Bearer ' + token}
         }).then(function(r){ return r.json(); }).then(function(d){
           if(d && !d.error){
-            tickerVals['balance'] = (d.token_balance || 0) + ' GT';
-            tickerVals['spent'] = '$' + (d.total_spent || 0).toFixed(2);
-            tickerVals['models'] = d.models_used || 0;
-            tickerVals['requests'] = d.total_requests || 0;
-            tickerVals['keys'] = d.api_keys_active || 0;
-            tickerVals['days'] = d.days_active || 0;
-            tickerVals['consumed'] = (d.total_tokens_consumed || 0).toLocaleString();
-            tickerVals['status'] = d.newapi_connected ? 'Live' : 'Standby';
-            updateTicker();
+            vals['balance'] = (d.token_balance || 0) + ' GT';
+            vals['spent'] = '$' + (d.total_spent || 0).toFixed(2);
+            vals['models'] = d.models_used || 0;
+            vals['requests'] = d.total_requests || 0;
+            vals['keys'] = d.api_keys_active || 0;
+            vals['days'] = d.days_active || 0;
+            vals['consumed'] = (d.total_tokens_consumed || 0).toLocaleString();
+            vals['status'] = d.newapi_connected ? 'Live' : 'Standby';
+            update();
           }
         }).catch(function(){});
       } catch(e){}
     }
-    setTimeout(refreshTickerData, 30000);
+    setTimeout(refresh, 30000);
   }
 
-  // ─── Init ───
   function init(){
-    ticker.start();
-    refreshTickerData();
-    window.addEventListener('resize', ticker.resize);
-    setTimeout(function(){ ticker.resize(); }, 2000);
+    tick.start();
+    refresh();
+    window.addEventListener('resize', tick.resize);
+    setTimeout(function(){ tick.resize(); }, 2000);
   }
 
   if(document.readyState === 'loading'){

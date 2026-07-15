@@ -16,7 +16,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=225" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <link rel="stylesheet" href="ticker.css?v=237" />
+    <link rel="stylesheet" href="ticker.css?v=238" />
 </head>
 <body>
 <script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}window.addEventListener('pageshow',function(e){if(e.persisted&&!localStorage.getItem('gt_token')){window.location.replace('login.html')}})</script>
@@ -74,8 +74,7 @@
     <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
             </div></nav>
-    <div class="ticker-bar">
-    <div class="ticker-track" id="tickerTrack">
+    <div class="ticker-bar" id="tickerBar">
       <span class="ticker-item" data-ticker="balance"><span class="ticker-label">BALANCE</span><span class="ticker-value">0 GT</span></span>
       <span class="ticker-item" data-ticker="spent"><span class="ticker-label">SPENT</span><span class="ticker-value">$0.00</span></span>
       <span class="ticker-item" data-ticker="models"><span class="ticker-label">MODELS</span><span class="ticker-value">0</span></span>
@@ -84,8 +83,7 @@
       <span class="ticker-item" data-ticker="days"><span class="ticker-label">DAYS ACTIVE</span><span class="ticker-value">0</span></span>
       <span class="ticker-item" data-ticker="consumed"><span class="ticker-label">TOKENS</span><span class="ticker-value">0</span></span>
       <span class="ticker-item" data-ticker="status"><span class="ticker-label">NETWORK</span><span class="ticker-value"><span class="ticker-status-dot standby"></span>○ Standby</span></span>
-    </div>
-  </div></header>
+    </div></header>
   <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobile()"></div>
   <div class="mobile-overlay" id="mobileOverlay">
     <div class="m-close"><button onclick="closeMobile()">✕</button></div>
@@ -421,6 +419,6 @@ function applyFilters(){
 })();
 </script>
 
-    <script src="ticker.js?v=237"></script>
+    <script src="ticker.js?v=238"></script>
 </body>
 </html>
