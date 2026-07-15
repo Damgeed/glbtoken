@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=224" />
+  <link rel="stylesheet" href="style.css?v=236" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
@@ -282,6 +282,9 @@ function showDashSection(section) {
   if (section === 'billing' && typeof loadBillingPage === 'function') {
     setTimeout(loadBillingPage, 50);
   }
+  // Scroll section content to top
+  var content = document.querySelector('.dash-content');
+  if(content) content.scrollTop = 0;
 }
 // Auto-open section from URL hash on page load
 (function() {
