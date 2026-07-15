@@ -309,7 +309,6 @@ function showDashSection(section) {
   if (hash && document.getElementById('section-' + hash)) {
     showDashSection(hash);
   }
-  initBackToTop();
 })();
 function toggleDashSidebar() {
   var sb = document.getElementById('dashSidebar');
@@ -326,6 +325,33 @@ function toggleDashSidebar() {
     if(toggle) toggle.classList.toggle('hidden', !sb.classList.contains('collapsed'));
   }
 }
+// Drag gesture: swipe from left edge to open, tap outside to close
+(function(){
+  var startX = 0;
+  document.addEventListener('touchstart', function(e){
+    startX = e.touches[0].clientX;
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(window.innerWidth >= 768) return;
+    var sb = document.getElementById('dashSidebar');
+    var toggle = document.getElementById('dashSidebarToggle');
+    if(sb.classList.contains('open')){
+      // Close if tapping outside the sidebar
+      if(startX > 200 && startX < window.innerWidth){
+        sb.classList.remove('open');
+        if(toggle) toggle.classList.remove('hidden');
+      }
+    } else {
+      // Open if swiping from left edge
+      if(startX <= 20 && startX > 0){
+        if(!sb.classList.contains('open')){
+          sb.classList.add('open');
+          if(toggle) toggle.classList.add('hidden');
+        }
+      }
+    }
+  }, {passive:true});
+})();
 
 </script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -468,7 +494,7 @@ function toggleDashSidebar() {
       </a>
     </div>
   </div>
-  <div class="dash-sidebar-backdrop"></div>
+  <div class="dash-sidebar-backdrop" onclick="toggleDashSidebar()"></div>
   <div class="dash-content">
     <div class="dash-section active" id="section-overview">
       <div class="dash-header">
