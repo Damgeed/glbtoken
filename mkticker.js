@@ -1,4 +1,27 @@
-/* ── Ticker Data Updater (animation is pure CSS) ── */
+/* ── Ticker: scrollLeft recycling, no wrapper ── */
+(function(){
+  var bar = document.getElementById('tickerBar');
+  if (!bar) return;
+
+  var speed = 0.1; // px per frame
+
+  function tick() {
+    bar.scrollLeft += speed;
+
+    // First item fully exited left? Move it to end
+    var first = bar.children[0];
+    if (first && bar.scrollLeft >= first.offsetWidth) {
+      bar.scrollLeft -= first.offsetWidth;
+      bar.appendChild(first);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  tick();
+})();
+
+/* ── Ticker Data Updater ── */
 (function(){
   var tickerVals = {};
 

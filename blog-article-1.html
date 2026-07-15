@@ -114,8 +114,9 @@
     <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
             </div></nav>
-  <div class="ticker-bar" id="tickerBar">
-      <div class="ticker-track">
+  </header>
+<div class="ticker-bar" id="tickerBar">
+      
       <span class="ticker-item" data-ticker="balance"><span class="ticker-label">Balance</span><span class="ticker-dot"></span><span class="ticker-value">0 GT</span></span>
       <span class="ticker-item" data-ticker="spent"><span class="ticker-label">Spent</span><span class="ticker-dot"></span><span class="ticker-value">$0.00</span></span>
       <span class="ticker-item" data-ticker="models"><span class="ticker-label">Models</span><span class="ticker-dot"></span><span class="ticker-value">0</span></span>
@@ -156,7 +157,6 @@
         <a href="topup.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Buy Tokens</a>
         <div class="mobile-account-signout"><a href="javascript:void(0)" onclick="closeMobile();setTimeout(function(){logoutUser()},250)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</a></div>
       </div>
-    </div>
   </div>
 
 <!-- ARTICLE CONTENT -->
@@ -282,7 +282,6 @@
         <a href="https://twitter.com/intent/tweet?text=Introducing%20GlbTOKEN%20%E2%80%94%20One%20Balance%20for%20All%20AI&url=https://glbtoken.com/blog-article-1.html" target="_blank" title="Share on Twitter">𝕏</a>
         <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://glbtoken.com/blog-article-1.html" target="_blank" title="Share on LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></a>
       </div>
-    </div>
   </div>
 </div></div>
 
@@ -295,7 +294,6 @@
       <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><a href="contact.html">Contact support</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
     </div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
-    </div>
   </div></footer>
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
@@ -306,7 +304,6 @@
     <div class="chat-input">
       <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
       <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
-    </div>
   </div>
 
 <script src="translations.js?v=225"></script>

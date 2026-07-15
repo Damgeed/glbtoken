@@ -1,49 +1,39 @@
 /* ── Ticker ── */
 
-/* Site header: sticky container for nav + ticker */
+/* Site header: sticky for nav only, ticker is outside */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
 }
 
-/* Nav inside header — header handles sticky, nav stays in flow */
+/* Nav inside header — header handles sticky */
 .site-header > .navbar {
   position: relative !important;
   top: auto !important;
 }
 
-/* Bar: visible container — clips the scrolling track */
+/* Bar: visible container — clips overflowing items */
 .ticker-bar {
   width: 100%;
   overflow: hidden;
   height: 26px;
   z-index: 49;
+  white-space: nowrap;
+  display: block;
   line-height: 26px;
 }
 
-/* Track: holds all items, twice as wide as one set for seamless loop */
-.ticker-track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: ticker-scroll 40s linear infinite;
-}
-
-@keyframes ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* Ticker items */
+/* Ticker items — no wrapper, direct children of bar */
 .ticker-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-block;
   padding: 0 16px;
   font-size: 0.65rem;
   font-weight: 600;
   color: var(--text);
   height: 26px;
+  line-height: 26px;
+  white-space: nowrap;
 }
 
 .ticker-item .ticker-label {
@@ -75,13 +65,9 @@
     height: 22px;
     line-height: 22px;
   }
-  .ticker-track {
-    animation-duration: 40s;
-  }
   .ticker-item {
     font-size: 0.55rem;
     padding: 0 8px;
-    gap: 3px;
   }
   .ticker-item .ticker-dot {
     width: 2px;
@@ -94,13 +80,9 @@
     height: 20px;
     line-height: 20px;
   }
-  .ticker-track {
-    animation-duration: 30s;
-  }
   .ticker-item {
     font-size: 0.5rem;
     padding: 0 6px;
-    gap: 2px;
   }
   .ticker-item .ticker-dot {
     width: 2px;
