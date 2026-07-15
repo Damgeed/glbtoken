@@ -1,6 +1,6 @@
 /* ── Ticker: per-item recycling ── */
 (function(){
-  var bar = document.getElementById('tickerBar');
+  var bar = document.querySelector('.ticker-bar');
   if (!bar) return;
 
   var speed = 0.1; // px per frame (slower on desktop)
@@ -38,14 +38,14 @@
   };
 
   function updateTicker(){
-    var bar = document.getElementById('tickerBar');
+    var bar = document.querySelector('.ticker-bar');
     if (!bar) return;
+    var labelMap = {balance:'Balance',spent:'Spent',models:'Models',requests:'API Calls',keys:'Active Keys',days:'Days Active',consumed:'Tokens Used',status:'New API'};
     Array.from(bar.children).forEach(function(el){
       var key = el.getAttribute('data-ticker');
       if (!key) return;
       var val = tickerVals[key] || defaults[key] || '—';
-      var vEl = el.querySelector('.ticker-value');
-      if (vEl) vEl.textContent = val;
+      el.textContent = (labelMap[key] || key) + ' • ' + val;
     });
   }
 
