@@ -1,0 +1,5 @@
+# Cloudflare Pages cache headers
+/ticker.css
+  Cache-Control: no-cache, no-store, must-revalidate
+/ticker.js
+  Cache-Control: no-cache, no-store, must-revalidate
