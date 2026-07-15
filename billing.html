@@ -15,8 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=225" />
-  <link rel="stylesheet" href="ticker.css?v=235" />
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
 .billing-grid{display:grid;gap:1.25rem;margin-top:1.25rem}
@@ -116,19 +115,7 @@
     <button class="lang-btn-mobile notranslate" onclick="toggleLangMenu()" id="langBtnMobile" title="Translate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg></button>
     <button class="hamburger" id="hamburgerBtn" onclick="toggleMobile()"><span></span><span></span><span></span></button>
     </div>
-            </div></nav>
-        <div class="ticker-bar">
-    <div class="ticker-track" id="tickerTrack">
-      <span class="ticker-item" data-ticker="balance"><span class="ticker-label">BALANCE</span><span class="ticker-value">0 GT</span></span>
-      <span class="ticker-item" data-ticker="spent"><span class="ticker-label">SPENT</span><span class="ticker-value">$0.00</span></span>
-      <span class="ticker-item" data-ticker="models"><span class="ticker-label">MODELS</span><span class="ticker-value">0</span></span>
-      <span class="ticker-item" data-ticker="requests"><span class="ticker-label">API CALLS</span><span class="ticker-value">0</span></span>
-      <span class="ticker-item" data-ticker="keys"><span class="ticker-label">ACTIVE KEYS</span><span class="ticker-value">0</span></span>
-      <span class="ticker-item" data-ticker="days"><span class="ticker-label">DAYS ACTIVE</span><span class="ticker-value">0</span></span>
-      <span class="ticker-item" data-ticker="consumed"><span class="ticker-label">TOKENS</span><span class="ticker-value">0</span></span>
-      <span class="ticker-item" data-ticker="status"><span class="ticker-label">NETWORK</span><span class="ticker-value"><span class="ticker-status-dot standby"></span>○ Standby</span></span>
-    </div>
-  </div></header>
+            </div></nav></header>
   <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobile()"></div>
   <div class="mobile-overlay" id="mobileOverlay">
     <div class="m-close"><button onclick="closeMobile()">✕</button></div>
@@ -454,6 +441,5 @@ if(localStorage.getItem('gt_token')){
 })();
 </script>
 
-  <script src="ticker.js?v=233"></script>
-</body>
+  </body>
 </html>
