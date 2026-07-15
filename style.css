@@ -240,11 +240,10 @@
 .dash-section{display:none}
 .dash-section.active{display:block}
 /* Mobile sidebar toggle */
-.dash-sidebar-toggle{display:none;background:linear-gradient(90deg,var(--card) 0%,color-mix(in srgb,var(--card) 97%,var(--primary)) 100%);border:1px solid var(--border);border-left:none;border-right:2px solid var(--primary);color:var(--text);cursor:pointer;padding:1.25rem 0.5rem;align-items:center;justify-content:center;font-size:1rem;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;border-radius:0 10px 10px 0;transition:all 0.25s;flex-direction:column;gap:0.5rem;box-shadow:3px 0 12px rgba(244,180,0,0.08)}
-.dash-sidebar-toggle:hover{color:var(--primary);border-color:var(--primary);padding-left:0.75rem;box-shadow:3px 0 16px rgba(244,180,0,0.2)}
-.dash-sidebar-toggle .drag-line{width:4px;height:16px;border-radius:3px;background:var(--primary);opacity:0.5;transition:all 0.2s}
-.dash-sidebar-toggle:hover .drag-line{opacity:1;background:var(--primary)}
-.dash-sidebar-toggle .toggle-label{font-size:0.6rem;color:var(--primary);writing-mode:vertical-rl;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;opacity:0.6;margin-top:0.15rem}
+.dash-sidebar-toggle{display:none;background:var(--card);border:2px solid var(--primary);border-left:none;color:var(--primary);cursor:pointer;width:32px;height:40px;align-items:center;justify-content:center;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;border-radius:0 20px 20px 0;transition:all 0.25s;box-shadow:3px 0 12px rgba(244,180,0,0.12)}
+.dash-sidebar-toggle:hover{background:color-mix(in srgb,var(--card) 90%,var(--primary));padding-left:2px;box-shadow:3px 0 16px rgba(244,180,0,0.25)}
+.dash-sidebar-toggle svg{width:16px;height:16px;transition:transform 0.2s;margin-left:3px}
+.dash-sidebar-toggle:hover svg{transform:translateX(3px)}
 .dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
 @media(max-width:768px){
   .dash-content{padding:1rem}

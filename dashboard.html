@@ -198,7 +198,7 @@ body{background:var(--bg)}
   .dash-sidebar.open{left:0}
   .dash-sidebar.open+.dash-sidebar-backdrop{display:block}
   .dash-sidebar-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:99;backdrop-filter:blur(2px)}
-  .dash-sidebar-toggle{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;padding:1rem 0.4rem;border-radius:0 10px 10px 0;border:1px solid var(--border);border-left:none;border-right:2px solid var(--primary);background:linear-gradient(90deg,var(--card) 0%,color-mix(in srgb,var(--card) 97%,var(--primary)) 100%);color:var(--text);cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:0.4rem;box-shadow:3px 0 12px rgba(244,180,0,0.08);transition:all 0.25s}
+  .dash-sidebar-toggle{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;width:32px;height:40px;border-radius:0 20px 20px 0;border:2px solid var(--primary);border-left:none;background:var(--card);color:var(--primary);cursor:pointer;align-items:center;justify-content:center;box-shadow:3px 0 12px rgba(244,180,0,0.12);transition:all 0.25s}
   .dash-content{padding:1rem;margin-left:0}
   .dash-header{flex-direction:column;text-align:center;gap:0.75rem}
   .settings-grid{grid-template-columns:1fr}
@@ -1788,10 +1788,8 @@ function applyFilters(){
   </div>
 </div>
 
-<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open sidebar menu">
-  <span class="drag-line"></span>
-  <span class="drag-line"></span>
-  <span class="toggle-label">Menu</span>
+<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
 </button>
 
   <!-- TOP-UP -->
