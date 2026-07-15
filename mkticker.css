@@ -26,7 +26,7 @@
 .ticker-track {
   display: inline-block;
   white-space: nowrap;
-  animation: ticker-scroll 60s linear infinite;
+  animation: ticker-scroll 50s linear infinite;
 }
 
 @keyframes ticker-scroll {
