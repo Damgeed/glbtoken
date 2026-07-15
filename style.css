@@ -240,7 +240,13 @@
 .dash-section{display:none}
 .dash-section.active{display:block}
 /* Mobile sidebar toggle */
-.dash-sidebar-toggle{display:none}
+.dash-sidebar-toggle{display:none;background:var(--card);border:1px solid var(--border);border-right:none;color:var(--text-muted);cursor:pointer;padding:1rem 0.35rem;align-items:center;justify-content:center;font-size:1rem;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;border-radius:8px 0 0 8px;transition:all 0.25s;flex-direction:column;gap:0.35rem;box-shadow:-2px 0 8px rgba(0,0,0,0.12)}
+.dash-sidebar-toggle:hover{color:var(--primary);border-color:var(--primary);padding-right:0.5rem}
+.dash-sidebar-toggle svg.drag-icon{width:4px;height:24px}
+.dash-sidebar-toggle .drag-line{width:3px;height:14px;border-radius:2px;background:var(--text-muted);transition:background 0.2s}
+.dash-sidebar-toggle:hover .drag-line{background:var(--primary)}
+.dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
+/* Hide back-to-top on dashboard */
 @media(max-width:768px){
   .dash-content{padding:1rem}
 }
