@@ -2542,11 +2542,21 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     var btn = document.createElement('button');
     btn.className = 'back-to-top';
     btn.innerHTML = '↑';
-    btn.onclick = function(){window.scrollTo({top:0,behavior:'smooth'})};
+    btn.onclick = function(){
+      var dc = document.querySelector('.dash-content');
+      if(dc) { dc.scrollTo({top:0,behavior:'smooth'}); }
+      else { window.scrollTo({top:0,behavior:'smooth'}); }
+    };
     document.body.appendChild(btn);
-    window.addEventListener('scroll',function(){
-      btn.classList.toggle('visible',window.scrollY > 400);
-    });
+    // Listen on the scrollable container (window or .dash-content)
+    function onScroll(){
+      var scrollY = window.scrollY || (document.querySelector('.dash-content') || {}).scrollTop || 0;
+      btn.classList.toggle('visible', scrollY > 400);
+    }
+    window.addEventListener('scroll', onScroll);
+    // Also listen on dash-content for dashboard pages
+    var dc = document.querySelector('.dash-content');
+    if(dc) dc.addEventListener('scroll', onScroll);
   }
   // ── Page Loading Progress ──
   function showPageLoader(){

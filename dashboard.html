@@ -159,7 +159,6 @@ body{background:var(--bg)}
 .dash-card:hover{border-color:color-mix(in srgb,var(--border) 70%,var(--primary));box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 .dash-section-title{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;color:var(--text);letter-spacing:-0.01em}
 .dash-section-title svg{flex-shrink:0}
-.section-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);margin-bottom:0.25rem;display:block}
 .section-title{font-size:1.75rem;font-weight:700;margin:0 0 0.25rem;letter-spacing:-0.02em}
 .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;margin-top:1rem}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--border)}
@@ -198,7 +197,7 @@ body{background:var(--bg)}
   .dash-sidebar.open{left:0}
   .dash-sidebar.open+.dash-sidebar-backdrop{display:block}
   .dash-sidebar-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:99;backdrop-filter:blur(2px)}
-  .dash-sidebar-toggle{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;width:32px;height:40px;border-radius:0 20px 20px 0;border:2px solid var(--primary);border-left:none;background:var(--card);color:var(--primary);cursor:pointer;align-items:center;justify-content:center;box-shadow:3px 0 12px rgba(244,180,0,0.12);transition:all 0.25s}
+  .dash-sidebar-toggle{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;width:32px;height:40px;border-radius:0 20px 20px 0;border:2px solid var(--primary);border-left:none;background:var(--card);color:var(--primary);cursor:pointer;align-items:center;justify-content:center;box-shadow:3px 0 12px rgba(244,180,0,0.12);transition:all 0.25s;opacity:1;pointer-events:auto}
   .dash-content{padding:1rem;margin-left:0}
   .dash-header{flex-direction:column;text-align:center;gap:0.75rem}
   .settings-grid{grid-template-columns:1fr}

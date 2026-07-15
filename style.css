@@ -240,10 +240,10 @@
 .dash-section{display:none}
 .dash-section.active{display:block}
 /* Mobile sidebar toggle */
-.dash-sidebar-toggle{display:none;background:var(--card);border:2px solid var(--primary);border-left:none;color:var(--primary);cursor:pointer;width:32px;height:40px;align-items:center;justify-content:center;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;border-radius:0 20px 20px 0;transition:all 0.25s;box-shadow:3px 0 12px rgba(244,180,0,0.12)}
-.dash-sidebar-toggle:hover{background:color-mix(in srgb,var(--card) 90%,var(--primary));padding-left:2px;box-shadow:3px 0 16px rgba(244,180,0,0.25)}
-.dash-sidebar-toggle svg{width:16px;height:16px;transition:transform 0.2s;margin-left:3px}
-.dash-sidebar-toggle:hover svg{transform:translateX(3px)}
+.dash-sidebar-toggle{display:flex;background:var(--card);border:2px solid var(--primary);border-left:none;color:var(--primary);cursor:pointer;width:24px;height:32px;align-items:center;justify-content:center;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;border-radius:0 16px 16px 0;transition:all 0.25s;box-shadow:3px 0 12px rgba(244,180,0,0.12);opacity:0;pointer-events:none}
+.dash-sidebar-toggle:hover{background:color-mix(in srgb,var(--card) 90%,var(--primary));box-shadow:3px 0 16px rgba(244,180,0,0.25)}
+.dash-sidebar-toggle svg{width:14px;height:14px;transition:transform 0.2s;margin-left:2px}
+.dash-sidebar-toggle:hover svg{transform:translateX(2px)}
 .dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
 @media(max-width:768px){
   .dash-content{padding:1rem}
