@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=225" />
+  <link rel="stylesheet" href="style.css?v=226" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <style>
 /* ── Billing page extras ── */
@@ -334,27 +334,36 @@ function toggleDashSidebar() {
         <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
         <div style="display:flex;gap:0.75rem"><button class="btn-primary" onclick="showPage('topup')">+ Top Up</button><button class="btn-secondary" onclick="showPage('apikeys')">API Keys</button></div>
       </div>
+      <!-- Dashboard connection status banner (hidden by default, shown on API failure) -->
+      <div id="dashErrorBanner" style="display:none;margin-bottom:1rem;padding:1rem 1.25rem;border-radius:10px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);text-align:center">
+        <div style="font-size:1.1rem;font-weight:600;color:#FF6B6B;margin-bottom:0.25rem">⚠️ Could not load dashboard data</div>
+        <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem">The server is not responding. This may be due to a backend update that needs to be redeployed.</div>
+        <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+          <button class="btn-primary" onclick="loadDashboard()" style="padding:0.6rem 1.5rem;font-size:0.85rem">↻ Retry</button>
+          <button class="btn-secondary" onclick="window.open('https://railway.app/project/glbtoken-backend','_blank')" style="padding:0.6rem 1.5rem;font-size:0.85rem">⚡ Redeploy Backend</button>
+        </div>
+      </div>
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">—</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance"><span class="loading-pulse" style="display:inline-block;width:60px;height:24px;border-radius:4px;background:var(--border);animation:pulse 1.5s ease-in-out infinite"></span></span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
           <div class="actions"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
         </div>
         <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">—</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashKeyCount">—</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
-          <div class="dash-stat-card"><div class="num" id="dashDaysActive">—</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalSpent"><span class="loading-pulse" style="display:inline-block;width:50px;height:20px;border-radius:4px;background:var(--border);animation:pulse 1.5s ease-in-out infinite"></span></div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashModelsUsed"><span class="loading-pulse" style="display:inline-block;width:30px;height:20px;border-radius:4px;background:var(--border);animation:pulse 1.5s ease-in-out infinite"></span></div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalRequests"><span class="loading-pulse" style="display:inline-block;width:40px;height:20px;border-radius:4px;background:var(--border);animation:pulse 1.5s ease-in-out infinite"></span></div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashKeyCount"><span class="loading-pulse" style="display:inline-block;width:20px;height:20px;border-radius:4px;background:var(--border);animation:pulse 1.5s ease-in-out infinite"></span></div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashDaysActive"><span class="loading-pulse" style="display:inline-block;width:30px;height:20px;border-radius:4px;background:var(--border);animation:pulse 1.5s ease-in-out infinite"></span></div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
         </div>
       </div>
       <div class="dash-card" style="margin-top:1.25rem">
         <div class="dash-section-title">Token Usage <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="usageSubtitle">Loading...</span></div>
         <div style="margin:0.75rem 0 0.5rem">
           <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.4rem">
-            <span style="color:var(--text-muted)"><span id="usedTokens">—</span> used</span>
+            <span style="color:var(--text-muted)"><span id="usedTokens"><span class="loading-pulse" style="display:inline-block;width:40px;height:16px;border-radius:3px;background:var(--border);animation:pulse 1.5s ease-in-out infinite;vertical-align:middle"></span></span> used</span>
             <span style="color:var(--text-muted)" id="remainingTokens">0 remaining</span>
           </div>
           <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden;position:relative">
@@ -1706,8 +1715,8 @@ function applyFilters(){
     </div>
   </div>
 
-<script src="translations.js?v=225"></script>
-<script data-cfasync="false" src="script.js?v=225"></script>
+<script src="translations.js?v=226"></script>
+<script data-cfasync="false" src="script.js?v=226"></script>
 
 <script>
 (function(){
