@@ -632,6 +632,7 @@ var moreData = [
 ];
 
 var loadedCount = 8;
+var backupMoreData = []; // saved before load for Show Less
 
 function getFlag(location){
   var map={'US':'🇺🇸','UK':'🇬🇧','DE':'🇩🇪','JP':'🇯🇵','KR':'🇰🇷','CA':'🇨🇦','AU':'🇦🇺','FR':'🇫🇷','IN':'🇮🇳','SG':'🇸🇬'};
@@ -663,6 +664,11 @@ function loadMoreHistory(){
   var remaining = moreData.length;
   var toLoad = Math.min(8, remaining);
 
+  // Save backup on first load
+  if(backupMoreData.length === 0){
+    backupMoreData = moreData.slice();
+  }
+
   for(var i = 0; i < toLoad; i++){
     tbody.insertAdjacentHTML('beforeend', renderHistoryRow(moreData[i]));
     loadedCount++;
@@ -671,10 +677,35 @@ function loadMoreHistory(){
   document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
 
   if(moreData.length === 0){
-    btn.disabled = true;
-    btn.textContent = 'All entries loaded';
-    btn.style.opacity = '0.5';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 12 15 18 9"/></svg> Show Less';
+    btn.onclick = showLessHistory;
+    btn.disabled = false;
+    btn.style.opacity = '';
   }
+}
+
+function showLessHistory(){
+  var btn = document.getElementById('loadMoreBtn');
+  var tbody = document.getElementById('historyBody');
+
+  // Restore tbody to initial 8 rows
+  tbody.innerHTML = '';
+  historyData.forEach(function(item){
+    tbody.insertAdjacentHTML('beforeend', renderHistoryRow(item));
+  });
+
+  // Restore moreData from backup
+  moreData = backupMoreData.slice();
+  backupMoreData = [];
+  loadedCount = 8;
+
+  document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
+
+  // Reset button back to Load More
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="7 13 12 18 17 13"/><polyline points="12 18 12 6"/></svg> Load More';
+  btn.onclick = loadMoreHistory;
+  btn.disabled = false;
+  btn.style.opacity = '';
 }
 
 function applyFilters(){
