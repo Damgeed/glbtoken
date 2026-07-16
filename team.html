@@ -390,7 +390,7 @@ function toggleDashSidebar() {
           <p>Manage organizations, members, and roles</p>
         </div>
         <div><button class="btn-primary" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
-      </div>
+      
 
       <!-- Org Selector -->
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem" id="orgSelector">
@@ -411,7 +411,7 @@ function toggleDashSidebar() {
               <span id="orgPlanBadge" style="background:rgba(244,180,0,0.15);color:#F4B400;padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem">Pro Plan</span>
             </div>
           </div>
-        </div>
+        
         <div style="display:flex;align-items:center;gap:0.5rem">
           <span id="orgRoleBadge" style="background:rgba(79,195,247,0.15);color:#4FC3F7;padding:0.25rem 0.75rem;border-radius:6px;font-size:0.8rem;font-weight:500">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px">
@@ -419,7 +419,7 @@ function toggleDashSidebar() {
             </svg>
             Owner
           </span>
-        </div>
+        
       </div>
 
       <!-- Usage Stats -->
@@ -572,18 +572,17 @@ function toggleDashSidebar() {
       <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><a href="contact.html">Contact support</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
   </div></footer>
-
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
     <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
     <div class="chat-msgs" id="chatMsgs">
       <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
-    
+  </div>
     <div class="chat-input">
       <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
-      <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
+      <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>  </div>
     
-  
+  </div>
 
 <script src="translations.js?v=224"></script>
 <script data-cfasync="false" src="script.js?v=224"></script>
