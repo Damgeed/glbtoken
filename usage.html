@@ -57,78 +57,6 @@
   .tx-table{font-size:0.75rem}
   .tx-table th,.tx-table td{padding:0.4rem 0.3rem}
 }
-/* Playground-specific styles */
-.playground-page{display:flex;height:calc(100vh - 112px);position:relative;background:var(--bg);overflow:hidden}
-.playground-sidebar{width:280px;min-width:280px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
-.playground-main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
-.playground-new-btn{display:flex;align-items:center;gap:0.5rem;padding:0.75rem 1rem;margin:0.75rem;border-radius:8px;background:var(--primary);color:#0A0B14;font-weight:600;font-size:0.85rem;cursor:pointer;border:none;transition:opacity 0.2s}
-.playground-new-btn:hover{opacity:0.9}
-.playground-history{flex:1;overflow-y:auto;padding:0.5rem 0.75rem}
-.playground-history-item{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border-radius:8px;cursor:pointer;transition:background 0.2s;font-size:0.82rem;color:var(--text);position:relative}
-.playground-history-item:hover{background:var(--bg-alt)}
-.playground-history-item.active{background:var(--bg-alt);border-left:3px solid var(--primary)}
-.playground-history-item .delete-conv{position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);opacity:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.25rem;border-radius:4px;transition:all 0.2s}
-.playground-history-item:hover .delete-conv{opacity:1}
-.playground-history-item .delete-conv:hover{background:rgba(255,107,107,0.15);color:#FF6B6B}
-.playground-history-item .conv-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.playground-history-item .conv-date{font-size:0.7rem;color:var(--text-muted);white-space:nowrap}
-.playground-chat{flex:1;overflow-y:auto;padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem}
-.playground-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:2rem}
-.playground-empty svg{margin-bottom:1.5rem;opacity:0.3}
-.playground-empty h2{margin:0 0 0.5rem;font-size:1.25rem;color:var(--text)}
-.playground-empty p{margin:0 0 1.5rem;font-size:0.9rem;color:var(--text-muted);max-width:400px}
-.playground-suggestions{display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;max-width:500px}
-.playground-suggestion{background:var(--bg-alt);border:1px solid var(--border);border-radius:20px;padding:0.5rem 1rem;font-size:0.82rem;color:var(--text-muted);cursor:pointer;transition:all 0.2s}
-.playground-suggestion:hover{background:var(--card);border-color:var(--primary);color:var(--text)}
-.playground-msg{display:flex;gap:0.75rem;max-width:85%;animation:fadeIn 0.3s ease}
-.playground-msg.user{flex-direction:row-reverse;align-self:flex-end}
-.playground-msg.ai{flex-direction:row;align-self:flex-start}
-.playground-msg .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0}
-.playground-msg.user .avatar{background:linear-gradient(135deg,#F4B400,#FF6B6B);color:#fff}
-.playground-msg.ai .avatar{background:linear-gradient(135deg,#4FC3F7,#00D68F);color:#fff}
-.playground-msg .bubble-group{display:flex;flex-direction:column;gap:0.25rem}
-.playground-msg.user .bubble-group{align-items:flex-end}
-.playground-msg.ai .bubble-group{align-items:flex-start}
-.playground-msg .bubble{padding:0.75rem 1rem;border-radius:12px;font-size:0.88rem;line-height:1.5;word-wrap:break-word;white-space:pre-wrap}
-.playground-msg.user .bubble{background:var(--primary);color:#0A0B14;border-bottom-right-radius:4px}
-.playground-msg.ai .bubble{background:var(--bg-alt);border:1px solid var(--border);border-bottom-left-radius:4px}
-.playground-msg .msg-meta{display:flex;gap:0.5rem;font-size:0.72rem;color:var(--text-muted);margin-top:0.2rem}
-.playground-msg.user .msg-meta{justify-content:flex-end}
-.playground-msg.ai .msg-meta{justify-content:flex-start}
-.playground-msg .model-badge{background:rgba(79,195,247,0.15);color:#4FC3F7;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.7rem}
-.playground-input-area{border-top:1px solid var(--border);padding:1rem 2rem;background:var(--card)}
-.playground-input-row{display:flex;gap:0.5rem;align-items:flex-end;max-width:900px;margin:0 auto}
-.playground-input-row textarea{flex:1;padding:0.75rem 1rem;border-radius:12px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.88rem;resize:none;min-height:48px;max-height:150px;font-family:inherit;line-height:1.4}
-.playground-input-row textarea:focus{outline:none;border-color:var(--primary)}
-.playground-send-btn{width:48px;height:48px;border-radius:12px;background:var(--primary);color:#0A0B14;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity 0.2s;flex-shrink:0}
-.playground-send-btn:hover{opacity:0.9}
-.playground-send-btn:disabled{opacity:0.4;cursor:not-allowed}
-.playground-toolbar{display:flex;gap:0.5rem;align-items:center;max-width:900px;margin:0.75rem auto 0;padding-top:0.5rem;border-top:1px solid var(--border)}
-.playground-model-select{padding:0.35rem 0.6rem;border-radius:6px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem;max-width:220px}
-.playground-params-toggle{background:none;border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.6rem;font-size:0.78rem;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:0.3rem;white-space:nowrap}
-.playground-params-toggle:hover{background:var(--bg-alt);color:var(--text)}
-.playground-params-panel{max-width:900px;margin:0.75rem auto 0;background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:1rem;display:none;flex-wrap:wrap;gap:1rem}
-.playground-params-panel.open{display:flex}
-.playground-param{display:flex;flex-direction:column;gap:0.25rem;min-width:160px;flex:1}
-.playground-param label{font-size:0.75rem;color:var(--text-muted)}
-.playground-param input[type="range"]{width:100%;accent-color:var(--primary);height:4px;cursor:pointer}
-.playground-param .param-value{font-size:0.85rem;color:var(--text);font-weight:500}
-.playground-param input[type="number"]{padding:0.3rem 0.5rem;border-radius:4px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:0.8rem;width:80px}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.playground-typing .bubble::after{content:'...';animation:typing 1.5s infinite}
-@keyframes typing{0%,100%{opacity:0.3}50%{opacity:1}}
-.playground-sidebar-toggle{display:none;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.25rem}
-@media(max-width:768px){
-  .playground-sidebar{display:none;position:absolute;z-index:10;height:100%;width:260px;min-width:260px}
-  .playground-sidebar.open{display:flex}
-  .playground-chat{padding:1rem}
-  .playground-msg{max-width:95%}
-  .playground-input-area{padding:0.75rem 1rem}
-  .playground-params-panel{flex-direction:column}
-  .playground-main{height:100%}
-  .sidebar-mobile-toggle{display:flex!important}
-}
-.sidebar-mobile-toggle{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:0.5rem;margin-right:0.5rem;align-items:center;justify-content:center}
 
 /* ── Professional Dashboard Styling ── */
 body{background:var(--bg)}
@@ -166,9 +94,6 @@ body{background:var(--bg)}
 .dash-stat-card .chg.up{color:var(--success)}
 .dash-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:all 0.2s}
 .dash-card:hover{border-color:color-mix(in srgb,var(--border) 70%,var(--primary));box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-/* Logs grid: 2x2 for admin cards */
-.logs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
-@media(max-width:768px){.logs-grid{grid-template-columns:1fr;gap:0.75rem}}
 .dash-section-title{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;color:var(--text);letter-spacing:-0.01em}
 .dash-section-title svg{flex-shrink:0}
 .section-title{font-size:1.75rem;font-weight:700;margin:0 0 0.25rem;letter-spacing:-0.02em}
@@ -253,6 +178,9 @@ body{background:var(--bg)}
   #section-referral .dash-stat-card .chg{font-size:0.6rem}
   #section-team .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
 }
+
+/* Usage section visible by default */
+#section-usage{display:block}
 </style>
   </head>
 <body>
@@ -282,45 +210,6 @@ body{background:var(--bg)}
   }
 })();
 
-function showDashSection(section) {
-  document.querySelectorAll('.dash-section').forEach(function(s) { s.classList.remove('active'); });
-  var el = document.getElementById('section-' + section);
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.dash-sidebar-item').forEach(function(i) { i.classList.remove('active'); });
-  var link = document.querySelector('.dash-sidebar-item[data-section="' + section + '"]');
-  if (link) link.classList.add('active');
-  // Update URL hash for direct navigation
-  if (window.history && window.history.replaceState) {
-    var hash = section === 'overview' ? '' : '#' + section;
-    if (window.location.hash !== hash) {
-      window.history.replaceState(null, '', window.location.pathname + hash);
-    }
-  }
-  // Close sidebar on mobile after selection
-  var sb = document.getElementById('dashSidebar');
-  if (sb && window.innerWidth < 768) {
-    sb.classList.remove('open');
-    var toggle = document.getElementById('dashSidebarToggle');
-    if(toggle) toggle.classList.remove('hidden');
-  }
-  // Auto-load section data
-  if (section === 'billing' && typeof loadBillingPage === 'function') {
-    setTimeout(loadBillingPage, 50);
-  }
-  // Scroll section content to top
-  var content = document.querySelector('.dash-content');
-  if(content) content.scrollTop = 0;
-  window.scrollTo(0, 0);
-  document.documentElement.scrollTop = 0;
-  document.body.scrollTop = 0;
-}
-// Auto-open section from URL hash on page load
-(function() {
-  var hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById('section-' + hash)) {
-    showDashSection(hash);
-  }
-})();
 function toggleDashSidebar() {
   var sb = document.getElementById('dashSidebar');
   var toggle = document.getElementById('dashSidebarToggle');
@@ -336,9 +225,9 @@ function toggleDashSidebar() {
     if(toggle) toggle.classList.toggle('hidden', !sb.classList.contains('collapsed'));
   }
 }
-
 </script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
+
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
     <div class="nav-center" id="navCenter">
@@ -369,7 +258,7 @@ function toggleDashSidebar() {
         </div>
         <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <a class="dropdown-header" href="settings.html" style="display:block;text-decoration:none;color:inherit;cursor:pointer">
+            <div class="dropdown-header" onclick="window.location.href='dashboard.html';return false" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -379,7 +268,7 @@ function toggleDashSidebar() {
                                     <div class="dd-items">
               <a href="dashboard.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
-              <a onclick="showPage('topup')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Buy Tokens</a>
+              <a href="topup.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Buy Tokens</a>
             </div>
             <div class="dd-footer">
               <a onclick="logoutUser()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</a>
@@ -418,6 +307,11 @@ function toggleDashSidebar() {
       </div>
     </div>
   </div>
+
+<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
+  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
+</button>
+
 <div class="dash-layout">
   <!-- ===== LEFT SIDEBAR ===== -->
   <div class="dash-sidebar" id="dashSidebar">
@@ -656,6 +550,66 @@ function toggleDashSidebar() {
   </div>
 </div>
 
+<footer><div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
+      <div class="footer-col"><h4>Product</h4><a href="pricing.html">Pricing</a><a href="models.html">Models</a><a href="apikeys.html">Docs</a></div>
+      <div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="blog.html">Blog</a></div>
+      <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><a href="contact.html">Contact support</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
+  </div></footer>
+
+<button class="chat-fab" onclick="toggleChat()">💬</button>
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
+    
+    <div class="chat-input">
+      <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
+      <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
+    
+  
+
+<script src="translations.js?v=224"></script>
+<script data-cfasync="false" src="script.js?v=224"></script>
+
+<script>
+(function(){
+  var cw = document.getElementById('chatWindow');
+  if(!cw) return;
+  var h = cw.querySelector('.chat-header');
+  if(!h) return;
+  var offX, offY, dragging = false;
+  function startDrag(e){
+    if(e.target.tagName === 'BUTTON') return;
+    dragging = true; cw.classList.add('dragging');
+    var r = cw.getBoundingClientRect();
+    var cx = e.clientX || (e.touches && e.touches[0].clientX);
+    var cy = e.clientY || (e.touches && e.touches[0].clientY);
+    offX = cx - r.left; offY = cy - r.top;
+    e.preventDefault();
+  }
+  function moveDrag(e){
+    if(!dragging) return;
+    var cx = e.clientX || (e.touches && e.touches[0].clientX);
+    var cy = e.clientY || (e.touches && e.touches[0].clientY);
+    cw.style.left = (cx - offX) + 'px';
+    cw.style.top = (cy - offY) + 'px';
+    cw.style.right = 'auto'; cw.style.bottom = 'auto';
+  }
+  function endDrag(){if(dragging){dragging=false;cw.classList.remove('dragging')}}
+  h.addEventListener('mousedown', startDrag);
+  h.addEventListener('touchstart', startDrag, {passive:false});
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, {passive:false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+})();
+</script>
+
+<!-- ── Usage Script ── -->
 <script>
 // ===== Login History data & functions (for Usage & History section) =====
 var historyData = [
@@ -767,68 +721,6 @@ function applyFilters(){
     document.getElementById('historyCount').textContent = 'Showing '+filtered.length+' entries';
   }
 }
-</script>
-
-<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
-</button>
-
-<footer><div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
-      <div class="footer-col"><h4>Product</h4><a href="pricing.html">Pricing</a><a href="models.html">Models</a><a href="apikeys.html">Docs</a></div>
-      <div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="blog.html">Blog</a></div>
-      <div class="footer-col"><h4>Contact</h4><a href="faq.html">FAQ</a><a href="contact.html">Contact support</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="refund.html">Refund</a></div>
-    </div>
-    <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
-  </div></footer>
-<button class="chat-fab" onclick="toggleChat()">💬</button>
-  <div class="chat-window" id="chatWindow">
-    <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
-    <div class="chat-msgs" id="chatMsgs">
-      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
-    </div>
-    <div class="chat-input">
-      <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
-      <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
-    </div>
-  </div>
-
-<script src="translations.js?v=224"></script>
-<script data-cfasync="false" src="script.js?v=224"></script>
-
-<script>
-(function(){
-  var cw = document.getElementById('chatWindow');
-  if(!cw) return;
-  var h = cw.querySelector('.chat-header');
-  if(!h) return;
-  var offX, offY, dragging = false;
-  function startDrag(e){
-    if(e.target.tagName === 'BUTTON') return;
-    dragging = true; cw.classList.add('dragging');
-    var r = cw.getBoundingClientRect();
-    var cx = e.clientX || (e.touches && e.touches[0].clientX);
-    var cy = e.clientY || (e.touches && e.touches[0].clientY);
-    offX = cx - r.left; offY = cy - r.top;
-    e.preventDefault();
-  }
-  function moveDrag(e){
-    if(!dragging) return;
-    var cx = e.clientX || (e.touches && e.touches[0].clientX);
-    var cy = e.clientY || (e.touches && e.touches[0].clientY);
-    cw.style.left = (cx - offX) + 'px';
-    cw.style.top = (cy - offY) + 'px';
-    cw.style.right = 'auto'; cw.style.bottom = 'auto';
-  }
-  function endDrag(){if(dragging){dragging=false;cw.classList.remove('dragging')}}
-  h.addEventListener('mousedown', startDrag);
-  h.addEventListener('touchstart', startDrag, {passive:false});
-  document.addEventListener('mousemove', moveDrag);
-  document.addEventListener('touchmove', moveDrag, {passive:false});
-  document.addEventListener('mouseup', endDrag);
-  document.addEventListener('touchend', endDrag);
-})();
 </script>
 
 </body>
