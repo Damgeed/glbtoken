@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlbTOKEN — Global Coverage Map</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a12;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
+  .container {
+    width: 100%;
+    max-width: 1300px;
+    padding: 30px 20px;
+    position: relative;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f0c040, #d4a017, #f0c040);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    text-shadow: 0 0 60px rgba(212, 160, 23, 0.3);
+  }
+  .header .subtitle {
+    color: rgba(255,255,255,0.6);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .map-wrapper {
+    position: relative;
+    width: 100%;
+    background: radial-gradient(ellipse at 50% 40%, #0f1420 0%, #0a0a12 70%);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 160, 23, 0.15);
+    box-shadow: 0 0 80px rgba(212, 160, 23, 0.05), inset 0 0 80px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .map-wrapper svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 35px;
+    padding: 20px 30px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(212, 160, 23, 0.12);
+    border-radius: 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .legend-dot.gold { background: #d4a017; box-shadow: 0 0 10px rgba(212,160,23,0.6); }
+  .legend-dot.blue  { background: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+  .legend-line {
+    width: 30px;
+    height: 2px;
+    flex-shrink: 0;
+  }
+  .legend-line.gold { background: linear-gradient(90deg, transparent, #d4a017); }
+  .legend-line.cyan  { background: linear-gradient(90deg, transparent, #22d3ee); }
+  .legend-label strong {
+    color: #fff;
+    font-weight: 600;
+  }
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+  }
+  .stat-card {
+    text-align: center;
+  }
+  .stat-card .number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #d4a017;
+    text-shadow: 0 0 20px rgba(212,160,23,0.3);
+  }
+  .stat-card .label {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.8rem; }
+    .legend { gap: 15px; padding: 15px; }
+    .legend-item { font-size: 0.75rem; }
+    .stats-row { gap: 20px; }
+    .stat-card .number { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>GlbTOKEN</h1>
+    <div class="subtitle">Global Coverage &amp; Infrastructure</div>
+  </div>
+
+  <div class="map-wrapper">
+    <svg viewBox="0 0 1200 680" xmlns="http://www.w3.org/2000/svg" style="background: transparent;">
+      <defs>
+        <!-- Glow filters -->
+        <filter id="glow-gold" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="pulse" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow-line">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+
+        <!-- Radial gradient for dots -->
+        <radialGradient id="dot-gold" cx="50%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="#fff8dc"/>
+          <stop offset="40%" stop-color="#f0c040"/>
+          <stop offset="100%" stop-color="#b8860b"/>
+        </radialGradient>
+        <radialGradient id="dot-cyan" cx="50%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="#e0ffff"/>
+          <stop offset="40%" stop-color="#22d3ee"/>
+          <stop offset="100%" stop-color="#0891b2"/>
+        </radialGradient>
+        <radialGradient id="dot-blue" cx="50%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="#dbeafe"/>
+          <stop offset="40%" stop-color="#3b82f6"/>
+          <stop offset="100%" stop-color="#1d4ed8"/>
+        </radialGradient>
+
+        <!-- Grid pattern -->
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(212,160,23,0.04)" stroke-width="0.5"/>
+        </pattern>
+
+        <!-- Animated pulse circle -->
+        <style>
+          @keyframes pulse-ring {
+            0%   { opacity: 0.6; transform-origin: center; r: 4; }
+            50%  { opacity: 0.2; transform-origin: center; r: 14; }
+            100% { opacity: 0;   transform-origin: center; r: 20; }
+          }
+          @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+          }
+          @keyframes dash-flow {
+            to { stroke-dashoffset: -100; }
+          }
+          .pulse-ring { animation: pulse-ring 3s ease-out infinite; }
+          .twinkle   { animation: twinkle 2s ease-in-out infinite; }
+          .dash-flow { animation: dash-flow 8s linear infinite; }
+          .globe-land { fill: rgba(255,255,255,0.04); stroke: rgba(212,160,23,0.12); stroke-width: 0.6; }
+          .globe-land:hover { fill: rgba(212,160,23,0.08); stroke: rgba(212,160,23,0.25); }
+          .ocean      { fill: rgba(0,0,0,0.2); }
+        </style>
+      </defs>
+
+      <!-- Background -->
+      <rect width="1200" height="680" fill="url(#grid)" />
+
+      <!-- Grid lines (longitude / latitude hints) -->
+      <g opacity="0.08">
+        <line x1="200" y1="0" x2="200" y2="680" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="400" y1="0" x2="400" y2="680" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="600" y1="0" x2="600" y2="680" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="800" y1="0" x2="800" y2="680" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="1000" y1="0" x2="1000" y2="680" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="0" y1="170" x2="1200" y2="170" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="0" y1="340" x2="1200" y2="340" stroke="#d4a017" stroke-width="0.3"/>
+        <line x1="0" y1="510" x2="1200" y2="510" stroke="#d4a017" stroke-width="0.3"/>
+      </g>
+
+      <!-- ====== SIMPLIFIED WORLD MAP ====== -->
+      <g class="ocean">
+        <!-- Ocean is transparent, land masses below -->
+      </g>
+
+      <!-- North America -->
+      <g class="globe-land">
+        <!-- Main continent -->
+        <path d="M140,260 L160,240 L190,225 L220,220 L260,230 L280,225 L300,220 L320,225 L330,235
+                 L325,250 L310,260 L305,275 L300,290 L310,300 L320,310 L325,325 L320,340
+                 L310,350 L290,355 L275,360 L260,365 L250,370 L240,375 L230,380 L220,385
+                 L210,390 L200,395 L190,400 L180,405 L170,400 L165,390 L160,380 L155,370
+                 L150,360 L145,350 L140,340 L135,325 L130,310 L128,295 L130,280 L135,270 Z"
+              fill="currentColor"/>
+        <!-- Greenland -->
+        <path d="M290,185 L305,180 L320,185 L325,200 L320,215 L305,220 L290,215 L285,200 Z"
+              fill="currentColor"/>
+        <!-- Central America -->
+        <path d="M210,390 L220,395 L225,405 L220,415 L210,420 L200,415 L195,405 L200,395 Z"
+              fill="currentColor"/>
+        <!-- Caribbean islands -->
+        <ellipse cx="235" cy="410" rx="6" ry="3" fill="currentColor"/>
+        <ellipse cx="250" cy="405" rx="4" ry="2" fill="currentColor"/>
+      </g>
+
+      <!-- South America -->
+      <g class="globe-land">
+        <path d="M240,425 L250,420 L265,415 L280,420 L290,430 L295,450 L290,470 L285,490
+                 L280,510 L275,530 L270,545 L260,560 L250,570 L240,575 L230,570 L225,555
+                 L220,535 L218,515 L220,495 L225,475 L230,455 L235,440 Z"
+              fill="currentColor"/>
+      </g>
+
+      <!-- Europe -->
+      <g class="globe-land">
+        <path d="M460,200 L470,190 L485,185 L500,188 L510,195 L515,210 L510,225 L500,235
+                 L490,240 L480,242 L470,240 L462,235 L458,220 Z"
+              fill="currentColor"/>
+        <!-- UK / Ireland -->
+        <path d="M450,205 L455,200 L462,205 L458,215 L450,212 Z" fill="currentColor"/>
+        <!-- Scandinavia -->
+        <path d="M490,175 L500,170 L510,175 L515,190 L505,195 L495,190 Z" fill="currentColor"/>
+        <!-- Eastern Europe -->
+        <path d="M515,200 L530,195 L545,200 L555,210 L550,225 L535,235 L520,230 L515,215 Z"
+              fill="currentColor"/>
+        <!-- Mediterranean / Southern Europe -->
+        <path d="M510,240 L520,245 L530,250 L525,260 L515,265 L505,260 L500,250 Z"
+              fill="currentColor"/>
+      </g>
+
+      <!-- Africa -->
+      <g class="globe-land">
+        <path d="M470,300 L485,290 L500,288 L515,290 L530,295 L545,305 L550,320 L545,340
+                 L540,360 L535,380 L530,400 L520,420 L510,435 L500,445 L490,450 L480,445
+                 L470,435 L462,420 L455,400 L450,380 L448,360 L450,340 L455,320 L462,305 Z"
+              fill="currentColor"/>
+      </g>
+
+      <!-- Asia -->
+      <g class="globe-land">
+        <path d="M555,200 L570,190 L590,185 L610,188 L630,195 L650,200 L670,210 L690,220
+                 L710,230 L725,240 L735,255 L730,270 L720,280 L710,290 L700,300 L690,310
+                 L680,320 L670,330 L660,340 L650,345 L640,350 L630,355 L620,355 L610,350
+                 L600,345 L590,340 L580,335 L570,330 L560,325 L555,310 L550,295 L548,280
+                 L548,265 L550,250 L552,235 L555,220 Z"
+              fill="currentColor"/>
+        <!-- India subcontinent -->
+        <path d="M640,340 L650,335 L665,340 L675,355 L670,375 L660,390 L645,395 L635,385 L630,365 Z"
+              fill="currentColor"/>
+        <!-- Southeast Asia -->
+        <path d="M680,370 L690,365 L705,370 L715,385 L710,400 L695,410 L680,405 L675,390 Z"
+              fill="currentColor"/>
+        <!-- Japan / Korea -->
+        <path d="M730,285 L738,280 L745,285 L748,300 L742,310 L735,305 L730,295 Z"
+              fill="currentColor"/>
+        <!-- Middle East -->
+        <path d="M555,295 L565,290 L575,295 L580,310 L570,325 L560,320 L552,310 Z"
+              fill="currentColor"/>
+      </g>
+
+      <!-- Australia -->
+      <g class="globe-land">
+        <path d="M810,450 L830,440 L855,438 L875,445 L890,460 L895,480 L885,500 L860,510
+                 L835,508 L815,500 L805,485 L805,465 Z"
+              fill="currentColor"/>
+        <!-- New Zealand -->
+        <path d="M910,500 L915,495 L920,500 L918,515 L912,518 L908,510 Z" fill="currentColor"/>
+      </g>
+
+      <!-- Antarctica hint -->
+      <g class="globe-land" opacity="0.5">
+        <path d="M200,650 L300,645 L400,648 L500,650 L600,648 L700,650 L800,645 L900,648 L1000,650 L1000,670 L200,670 Z"
+              fill="currentColor"/>
+      </g>
+
+      <!-- ====== CONNECTING LINES ====== -->
+      <g filter="url(#glow-line)" opacity="0.5">
+        <!-- NA to Africa -->
+        <path d="M250,300 Q400,380 500,370" fill="none" stroke="#d4a017" stroke-width="0.8"
+              stroke-dasharray="4,6" class="dash-flow"/>
+        <!-- Africa to Asia -->
+        <path d="M500,370 Q580,350 650,320" fill="none" stroke="#d4a017" stroke-width="0.8"
+              stroke-dasharray="4,6" class="dash-flow"/>
+        <!-- Asia to Australia -->
+        <path d="M650,320 Q740,400 850,480" fill="none" stroke="#d4a017" stroke-width="0.8"
+              stroke-dasharray="4,6" class="dash-flow"/>
+        <!-- NA to Europe -->
+        <path d="M250,300 Q380,240 480,230" fill="none" stroke="#22d3ee" stroke-width="0.8"
+              stroke-dasharray="4,6" class="dash-flow"/>
+        <!-- Europe to Asia -->
+        <path d="M480,230 Q580,220 670,240" fill="none" stroke="#22d3ee" stroke-width="0.8"
+              stroke-dasharray="4,6" class="dash-flow"/>
+        <!-- SA to Africa -->
+        <path d="M255,490 Q370,430 500,370" fill="none" stroke="#3b82f6" stroke-width="0.8"
+              stroke-dasharray="4,6" class="dash-flow"/>
+      </g>
+
+      <!-- ====== GOLD DOTS FOR REGIONS ====== -->
+
+      <!-- North America — Stripe (USD) — San Francisco -->
+      <circle cx="125" cy="310" r="6" fill="url(#dot-gold)" filter="url(#glow-gold)"/>
+      <circle cx="125" cy="310" r="4" fill="#d4a017" opacity="0.8"/>
+      <circle cx="125" cy="310" r="14" fill="none" stroke="#d4a017" stroke-width="0.8"
+              opacity="0.4" class="pulse-ring"/>
+      <text x="115" y="295" fill="#d4a017" font-size="9" font-weight="600"
+            text-anchor="end" filter="url(#glow-gold)">NORTH AMERICA</text>
+      <text x="115" y="335" fill="rgba(255,255,255,0.5)" font-size="7"
+            text-anchor="end">Stripe · USD</text>
+
+      <!-- Africa — Paystack (NGN, GHS, KES) — Nigeria area -->
+      <circle cx="530" cy="380" r="6" fill="url(#dot-gold)" filter="url(#glow-gold)"/>
+      <circle cx="530" cy="380" r="4" fill="#d4a017" opacity="0.8"/>
+      <circle cx="530" cy="380" r="14" fill="none" stroke="#d4a017" stroke-width="0.8"
+              opacity="0.4" class="pulse-ring" style="animation-delay: 1s;"/>
+      <text x="530" y="365" fill="#d4a017" font-size="9" font-weight="600"
+            text-anchor="start" filter="url(#glow-gold)">AFRICA</text>
+      <text x="530" y="400" fill="rgba(255,255,255,0.5)" font-size="7"
+            text-anchor="start">Paystack · NGN · GHS · KES</text>
+
+      <!-- Global Crypto — centered in Atlantic -->
+      <circle cx="370" cy="350" r="7" fill="url(#dot-cyan)" filter="url(#glow-cyan)"/>
+      <circle cx="370" cy="350" r="5" fill="#22d3ee" opacity="0.8"/>
+      <circle cx="370" cy="350" r="18" fill="none" stroke="#22d3ee" stroke-width="0.8"
+              opacity="0.3" class="pulse-ring" style="animation-delay: 0.5s;"/>
+      <text x="370" y="332" fill="#22d3ee" font-size="9" font-weight="600"
+            text-anchor="middle" filter="url(#glow-cyan)">GLOBAL CRYPTO</text>
+      <text x="370" y="375" fill="rgba(255,255,255,0.5)" font-size="7"
+            text-anchor="middle">USDT · BTC · ETH</text>
+
+      <!-- AI Servers — multiple small dots across the world -->
+      <!-- USA server cluster -->
+      <circle cx="200" cy="270" r="4" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.7"/>
+      <circle cx="215" cy="280" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.5"/>
+      <circle cx="190" cy="285" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.5"/>
+
+      <!-- Europe server cluster -->
+      <circle cx="500" cy="225" r="4" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.7"/>
+      <circle cx="515" cy="235" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.5"/>
+      <circle cx="490" cy="240" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.5"/>
+
+      <!-- Asia server cluster -->
+      <circle cx="660" cy="260" r="4" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.7"/>
+      <circle cx="680" cy="270" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.5"/>
+      <circle cx="640" cy="275" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.5"/>
+
+      <!-- Australia server -->
+      <circle cx="860" cy="480" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.6"/>
+
+      <!-- South America server -->
+      <circle cx="275" cy="460" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.6"/>
+
+      <!-- Africa server -->
+      <circle cx="500" cy="390" r="3" fill="url(#dot-cyan)" filter="url(#glow-cyan)" opacity="0.6"/>
+
+      <!-- AI Server main label — centered over Atlantic -->
+      <text x="320" y="160" fill="#22d3ee" font-size="10" font-weight="600"
+            text-anchor="middle" filter="url(#glow-cyan)">✦ 56 AI PROVIDERS</text>
+      <text x="320" y="173" fill="rgba(255,255,255,0.4)" font-size="7"
+            text-anchor="middle">Global Model Access</text>
+
+      <!-- Small connecting lines from server clusters to main label -->
+      <g opacity="0.25" filter="url(#glow-line)">
+        <line x1="240" y1="260" x2="300" y2="170" stroke="#22d3ee" stroke-width="0.5"
+              stroke-dasharray="2,4"/>
+        <line x1="500" y1="220" x2="340" y2="170" stroke="#22d3ee" stroke-width="0.5"
+              stroke-dasharray="2,4"/>
+        <line x1="660" y1="255" x2="360" y2="170" stroke="#22d3ee" stroke-width="0.5"
+              stroke-dasharray="2,4"/>
+      </g>
+
+      <!-- Twinkle stars / ambient dots -->
+      <circle cx="80"  cy="150" r="1" fill="#d4a017" opacity="0.4" class="twinkle"/>
+      <circle cx="950" cy="200" r="1" fill="#d4a017" opacity="0.3" class="twinkle" style="animation-delay: 0.7s;"/>
+      <circle cx="400" cy="100" r="1" fill="#d4a017" opacity="0.5" class="twinkle" style="animation-delay: 1.2s;"/>
+      <circle cx="700" cy="130" r="1" fill="#d4a017" opacity="0.3" class="twinkle" style="animation-delay: 0.3s;"/>
+      <circle cx="1100" cy="300" r="1" fill="#d4a017" opacity="0.4" class="twinkle" style="animation-delay: 1.8s;"/>
+      <circle cx="150" cy="500" r="0.8" fill="#d4a017" opacity="0.3" class="twinkle" style="animation-delay: 0.9s;"/>
+      <circle cx="850" cy="350" r="0.8" fill="#d4a017" opacity="0.4" class="twinkle" style="animation-delay: 2.1s;"/>
+      <circle cx="1050" cy="120" r="1" fill="#d4a017" opacity="0.3" class="twinkle" style="animation-delay: 0.5s;"/>
+    </svg>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-dot gold"></span>
+      <span class="legend-label"><strong>Payment Regions</strong> · Stripe, Paystack</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot blue"></span>
+      <span class="legend-label"><strong>Global Crypto</strong> · USDT, BTC, ETH</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-line cyan"></span>
+      <span class="legend-label"><strong>AI Server Network</strong> · 56 Providers</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-line gold"></span>
+      <span class="legend-label"><strong>Interconnect</strong> · Cross-Region Links</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="number">5</div>
+      <div class="label">Currencies Supported</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">3</div>
+      <div class="label">Payment Processors</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">56</div>
+      <div class="label">AI Model Providers</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">3</div>
+      <div class="label">Blockchain Networks</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">6</div>
+      <div class="label">Global Regions</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

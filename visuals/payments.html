@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlbTOKEN — Payment Methods</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0b0e17;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 1200px;
+    width: 100%;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f0b90b 0%, #d4a004 50%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .header .subtitle {
+    color: #8892b0;
+    font-size: 1.1rem;
+    margin-top: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+  .header .accent-line {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #f0b90b, #00d4aa);
+    margin: 18px auto 0;
+    border-radius: 2px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 30px;
+  }
+  .card {
+    background: linear-gradient(145deg, #131726, #0f1220);
+    border-radius: 20px;
+    padding: 36px 32px 32px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(240, 185, 11, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(240, 185, 11, 0.08);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+  }
+  .card.stripe::before  { background: linear-gradient(90deg, #635bff, #00d4aa); }
+  .card.paystack::before{ background: linear-gradient(90deg, #f0b90b, #e85d2c); }
+  .card.crypto::before  { background: linear-gradient(90deg, #f7931a, #627eea, #00d4aa); }
+
+  .card-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 26px;
+  }
+  .card.stripe .card-icon  { background: rgba(99, 91, 255, 0.15); color: #635bff; }
+  .card.paystack .card-icon{ background: rgba(240, 185, 11, 0.15); color: #f0b90b; }
+  .card.crypto .card-icon  { background: rgba(0, 212, 170, 0.12); color: #00d4aa; }
+
+  .card h2 {
+    color: #e6f1ff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .card .tagline {
+    color: #8892b0;
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+  }
+  .card .desc {
+    color: #a8b2d1;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    min-height: 48px;
+  }
+  .card .divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(240,185,11,0.15), transparent);
+    margin-bottom: 20px;
+  }
+  .payment-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .payment-items .item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: #ccd6f6;
+    transition: all 0.2s;
+  }
+  .payment-items .item:hover {
+    background: rgba(240,185,11,0.08);
+    border-color: rgba(240,185,11,0.2);
+  }
+  .payment-items .item .flag {
+    font-size: 1.1rem;
+  }
+  .payment-items .item .badge {
+    font-size: 0.7rem;
+    background: rgba(240,185,11,0.15);
+    color: #f0b90b;
+    padding: 1px 7px;
+    border-radius: 6px;
+    margin-left: 2px;
+  }
+
+  .card-network-logos {
+    display: flex;
+    gap: 12px;
+    margin: 18px 0 16px;
+    align-items: center;
+  }
+
+  .footer-note {
+    text-align: center;
+    margin-top: 50px;
+    color: #495670;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .footer-note span { color: #f0b90b; }
+
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: 1fr; }
+    .header h1 { font-size: 2rem; }
+    .card { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>⚡ GlbTOKEN</h1>
+    <p class="subtitle">Supported Payment Methods</p>
+    <div class="accent-line"></div>
+  </div>
+
+  <div class="cards">
+
+    <!-- ────────────── STRIPE ────────────── -->
+    <div class="card stripe">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="4" width="24" height="20" rx="3" stroke="currentColor" stroke-width="1.8"/><circle cx="14" cy="14" r="3" fill="currentColor"/><path d="M9 14h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <h2>Stripe</h2>
+      <p class="tagline">Credit &amp; Debit Cards · USD</p>
+      <p class="desc">Fast, secure card payments powered by Stripe. Accept Visa, Mastercard, and American Express globally.</p>
+
+      <div class="card-network-logos">
+        <!-- Visa -->
+        <svg width="52" height="16" viewBox="0 0 52 16" fill="none">
+          <rect x="0.5" y="0.5" width="51" height="15" rx="2" fill="#1a1f2e" stroke="#2a3040"/>
+          <text x="7" y="12" font-family="Arial" font-weight="bold" font-size="10" fill="#1a1f71">VISA</text>
+        </svg>
+        <!-- Mastercard -->
+        <svg width="52" height="16" viewBox="0 0 52 16" fill="none">
+          <rect x="0.5" y="0.5" width="51" height="15" rx="2" fill="#1a1f2e" stroke="#2a3040"/>
+          <circle cx="17" cy="8" r="4" fill="#eb001b" opacity="0.8"/>
+          <circle cx="24" cy="8" r="4" fill="#f79e1b" opacity="0.8"/>
+        </svg>
+        <!-- Amex -->
+        <svg width="52" height="16" viewBox="0 0 52 16" fill="none">
+          <rect x="0.5" y="0.5" width="51" height="15" rx="2" fill="#1a1f2e" stroke="#2a3040"/>
+          <text x="7" y="12" font-family="Arial" font-weight="bold" font-size="9" fill="#2e77bc">AMEX</text>
+        </svg>
+      </div>
+
+      <div class="divider"></div>
+      <div class="payment-items">
+        <span class="item">
+          <span class="flag">💳</span> Credit / Debit Cards
+        </span>
+        <span class="item">
+          <span>🌍</span> Global (USD)
+        </span>
+        <span class="item">
+          <span>🔒</span> 3D Secure
+        </span>
+      </div>
+    </div>
+
+    <!-- ────────────── PAYSTACK ────────────── -->
+    <div class="card paystack">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 2L26 14L14 26L2 14L14 2Z" stroke="currentColor" stroke-width="1.8"/><path d="M10 14h8M14 10v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h2>Paystack</h2>
+      <p class="tagline">African Payments · NGN · GHS · KES</p>
+      <p class="desc">Seamless payments across Africa. Bank transfers, USSD, and Mobile Money for Nigeria, Ghana, and Kenya.</p>
+
+      <div class="payment-items" style="margin-bottom:14px;">
+        <span class="item">
+          <span class="flag">🇳🇬</span> Nigeria <span class="badge">NGN</span>
+        </span>
+        <span class="item">
+          <span class="flag">🇬🇭</span> Ghana <span class="badge">GHS</span>
+        </span>
+        <span class="item">
+          <span class="flag">🇰🇪</span> Kenya <span class="badge">KES</span>
+        </span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="payment-items">
+        <span class="item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f0b90b" stroke-width="1.6"><rect x="2" y="6" width="20" height="12" rx="2"/></svg>
+          Bank Transfer
+        </span>
+        <span class="item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f0b90b" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 10v4M15 10v4"/></svg>
+          USSD
+        </span>
+        <span class="item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f0b90b" stroke-width="1.6"><path d="M12 2v20M2 12h20"/></svg>
+          Mobile Money
+        </span>
+      </div>
+    </div>
+
+    <!-- ────────────── CRYPTO ────────────── -->
+    <div class="card crypto">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="currentColor" stroke-width="1.8"/><path d="M14 4v20M8 10h12M8 18h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <h2>Crypto</h2>
+      <p class="tagline">USDT · BTC · ETH</p>
+      <p class="desc">Decentralized crypto payments. Support for USDT (TRC-20 &amp; ERC-20), Bitcoin, and Ethereum.</p>
+
+      <div class="payment-items" style="margin-bottom:14px;">
+        <!-- USDT -->
+        <span class="item" style="gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#26a17b" opacity="0.25"/><text x="16" y="21" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="12" fill="#26a17b">₮</text></svg>
+          USDT
+        </span>
+        <!-- BTC -->
+        <span class="item" style="gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#f7931a" opacity="0.25"/><text x="16" y="21" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="13" fill="#f7931a">₿</text></svg>
+          BTC
+        </span>
+        <!-- ETH -->
+        <span class="item" style="gap:6px;">
+          <svg width="18" height="18" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" fill="#627eea" opacity="0.25"/><text x="16" y="21" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="13" fill="#627eea">Ξ</text></svg>
+          ETH
+        </span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="payment-items">
+        <span class="item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+          TRC-20
+        </span>
+        <span class="item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M22 12h-4M2 12h4"/></svg>
+          ERC-20
+        </span>
+        <span class="item">
+          <span>🔗</span> On-chain
+        </span>
+        <span class="item">
+          <span>⛓️</span> Multi-wallet
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    <span>✦</span> GlbTOKEN — All payments processed securely <span>✦</span>
+  </div>
+</div>
+</body>
+</html>

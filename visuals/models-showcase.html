@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLB Token — AI Model Showcase</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: 1200px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1280px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.05));
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 100px;
+    padding: 0.45rem 1.2rem 0.45rem 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d4af37;
+    box-shadow: 0 0 10px rgba(212,175,55,0.5);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .header-badge span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #d4af37;
+  }
+
+  .header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.6rem;
+  }
+
+  .header h1 span {
+    background: linear-gradient(135deg, #d4af37 0%, #f0d48c 40%, #d4af37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.45);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .card {
+    position: relative;
+    background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 1.25rem 1rem 1rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: default;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    opacity: 0;
+    animation: fadeInCard 0.4s ease forwards;
+  }
+
+  @keyframes fadeInCard {
+    to { opacity: 1; }
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.06) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .card:hover {
+    border-color: rgba(212,175,55,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(212,175,55,0.05);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+    border-radius: 0 0 2px 2px;
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+
+  .card:hover::after {
+    opacity: 1;
+    left: 10%;
+    right: 10%;
+  }
+
+  .provider-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .provider-icon {
+    transform: scale(1.05);
+  }
+
+  .provider-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .provider-name {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 0.2rem;
+  }
+
+  .model-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  .model-name.gold {
+    color: #d4af37;
+  }
+
+  .model-badge {
+    margin-top: 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 100px;
+    padding: 0.2rem 0.7rem;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover .model-badge {
+    border-color: rgba(212,175,55,0.2);
+    color: rgba(212,175,55,0.6);
+  }
+
+  .badge-dot-sm {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .footer {
+    margin-top: 3rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.05em;
+  }
+
+  .footer span {
+    color: rgba(212,175,55,0.4);
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 1.5rem 1rem; }
+    .header h1 { font-size: 2rem; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
+    .card { padding: 1rem 0.75rem 0.85rem; }
+    .provider-icon { width: 40px; height: 40px; }
+    .provider-icon svg { width: 22px; height: 22px; }
+    .model-name { font-size: 0.9rem; }
+  }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .card { padding: 0.85rem 0.6rem 0.75rem; border-radius: 12px; }
+    .provider-icon { width: 36px; height: 36px; border-radius: 10px; }
+    .provider-icon svg { width: 20px; height: 20px; }
+    .model-name { font-size: 0.8rem; }
+    .provider-name { font-size: 0.55rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-badge">
+      <div class="badge-dot"></div>
+      <span>Model Showcase</span>
+    </div>
+    <h1>AI <span>Model</span> Grid</h1>
+    <p>19 cutting-edge models · 9 providers</p>
+  </div>
+
+  <div class="grid" id="model-grid"></div>
+
+  <div class="footer">
+    <span>✦</span> GLB Token · Model Ecosystem <span>✦</span>
+  </div>
+</div>
+
+<script>
+const PROVIDER_ICONS = {
+  OpenAI: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 8.5L21 11L14.5 13.5L12 20L9.5 13.5L3 11L9.5 8.5L12 2Z" fill="#fff"/></svg>',
+  Anthropic: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#fff"/><text x="12" y="16" text-anchor="middle" font-size="11" font-weight="700" font-family="Arial" fill="#d97757">A</text></svg>',
+  Google: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#fff"/><text x="12" y="16" text-anchor="middle" font-size="10" font-weight="700" font-family="Arial" fill="#4285F4">G</text></svg>',
+  Meta: '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" fill="#fff"/><path d="M16 10.5C16 8.57 14.43 7 12.5 7H9v10h2.5v-4h1l2.5 4H18l-2.5-4h.5c1.1 0 2-.9 2-2v.5z" fill="#1877F2"/></svg>',
+  DeepSeek: '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" fill="#fff"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#4F46E5" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  Mistral: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#fff"/><path d="M8 8L16 16M16 8L8 16" stroke="#FF6B35" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  Qwen: '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" fill="#fff"/><path d="M12 7v10M7 12h10" stroke="#6C5CE7" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  Cohere: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#fff"/><circle cx="12" cy="12" r="5" fill="#2D9CDB" opacity="0.8"/></svg>',
+  xAI: '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" fill="#fff"/><text x="12" y="16" text-anchor="middle" font-size="12" font-weight="700" font-family="Arial" fill="#1DA1F2">X</text></svg>'
+};
+
+const PROVIDER_COLORS = {
+  OpenAI: { bg: '#10a37f', dark: '#0d8c6b' },
+  Anthropic: { bg: '#d97757', dark: '#c06a4e' },
+  Google: { bg: '#4285F4', dark: '#3570d0' },
+  Meta: { bg: '#1877F2', dark: '#1465d0' },
+  DeepSeek: { bg: '#4F46E5', dark: '#4338ca' },
+  Mistral: { bg: '#FF6B35', dark: '#e05a2a' },
+  Qwen: { bg: '#6C5CE7', dark: '#5a4bd4' },
+  Cohere: { bg: '#2D9CDB', dark: '#2685b8' },
+  xAI: { bg: '#1DA1F2', dark: '#1889d1' }
+};
+
+const MODELS = [
+  { provider: 'OpenAI', name: 'GPT-4o', badge: 'Flagship' },
+  { provider: 'OpenAI', name: 'GPT-4o Mini', badge: 'Lightweight' },
+  { provider: 'OpenAI', name: 'o1', badge: 'Reasoning' },
+  { provider: 'OpenAI', name: 'o3-mini', badge: 'Reasoning' },
+  { provider: 'Anthropic', name: 'Claude 3.5 Sonnet', badge: 'Balanced' },
+  { provider: 'Anthropic', name: 'Claude 3 Haiku', badge: 'Fast' },
+  { provider: 'Anthropic', name: 'Claude 4', badge: 'Next-gen' },
+  { provider: 'Google', name: 'Gemini 2.0 Flash', badge: 'Speed' },
+  { provider: 'Google', name: 'Gemini 2.0 Pro', badge: 'Power' },
+  { provider: 'Meta', name: 'Llama 4 Scout', badge: 'Efficient' },
+  { provider: 'Meta', name: 'Llama 4 Maverick', badge: 'Performance' },
+  { provider: 'DeepSeek', name: 'V3 Flash', badge: 'Fast' },
+  { provider: 'DeepSeek', name: 'V4 Pro', badge: 'Flagship' },
+  { provider: 'DeepSeek', name: 'R1', badge: 'Reasoning' },
+  { provider: 'Mistral', name: 'Small', badge: 'Lightweight' },
+  { provider: 'Mistral', name: 'Large 2', badge: 'Power' },
+  { provider: 'Qwen', name: 'Qwen 3.7 Plus', badge: 'General' },
+  { provider: 'Cohere', name: 'Command A', badge: 'Enterprise' },
+  { provider: 'xAI', name: 'Grok 4.20', badge: 'Latest' }
+];
+
+const GOLD_MODELS = new Set([
+  'GPT-4o', 'Claude 4', 'Gemini 2.0 Pro',
+  'Llama 4 Maverick', 'V4 Pro', 'Large 2', 'Grok 4.20'
+]);
+
+const GOLD_BADGES = new Set([
+  'Flagship', 'Next-gen', 'Latest', 'Power', 'Performance'
+]);
+
+const grid = document.getElementById('model-grid');
+
+MODELS.forEach((m, i) => {
+  const c = PROVIDER_COLORS[m.provider] || { bg: '#888', dark: '#666' };
+  const icon = PROVIDER_ICONS[m.provider] || '';
+  const gold = GOLD_MODELS.has(m.name);
+  const goldBadge = GOLD_BADGES.has(m.badge);
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.animationDelay = `${i * 30}ms`;
+  div.innerHTML = `
+    <div class="provider-icon" style="background:linear-gradient(135deg,${c.bg},${c.dark});box-shadow:0 4px 12px ${c.bg}44">
+      ${icon}
+    </div>
+    <div class="provider-name" style="color:${c.bg}cc">${m.provider}</div>
+    <div class="model-name ${gold?'gold':''}">${m.name}</div>
+    <div class="model-badge" style="${goldBadge?'border-color:rgba(212,175,55,0.25);color:rgba(212,175,55,0.7)':''}">
+      <span class="badge-dot-sm"></span>${m.badge}
+    </div>`;
+  grid.appendChild(div);
+});
+</script>
+
+</body>
+</html>

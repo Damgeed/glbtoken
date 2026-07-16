@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlbTOKEN Pricing Comparison</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d0f14;
+    color: #e8e8e8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 900px;
+    width: 100%;
+    background: #141820;
+    border-radius: 20px;
+    padding: 2.5rem 2.5rem 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    border: 1px solid #1e2633;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+  }
+  h1 .gold {
+    background: linear-gradient(135deg, #f0b429, #d4940a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    font-weight: 400;
+  }
+
+  .chart { position: relative; }
+
+  .row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    min-height: 60px;
+  }
+  .row:last-child { margin-bottom: 0; }
+
+  .label {
+    width: 115px;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #9ca3af;
+    padding-right: 12px;
+  }
+
+  .bars {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 24px;
+    background: #1a202c;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1s cubic-bezier(0.22,1,0.36,1);
+    width: 0%;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .bar-fill.gold {
+    background: linear-gradient(90deg, #f0b429, #d4940a);
+    color: #0d0f14;
+  }
+  .bar-fill.blue {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    color: #fff;
+  }
+  .bar-fill.purple {
+    background: linear-gradient(90deg, #a855f7, #7c3aed);
+    color: #fff;
+  }
+  .bar-fill.emerald {
+    background: linear-gradient(90deg, #10b981, #059669);
+    color: #fff;
+  }
+  .bar-fill.slate {
+    background: linear-gradient(90deg, #64748b, #475569);
+    color: #fff;
+  }
+  .bar-fill.orange {
+    background: linear-gradient(90deg, #f97316, #ea580c);
+    color: #fff;
+  }
+
+  .bar-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 65px;
+    text-align: right;
+  }
+  .bar-value.gold { color: #f0b429; }
+  .bar-value.muted { color: #6b7280; }
+
+  .discount-badge {
+    display: inline-block;
+    background: rgba(240, 180, 41, 0.12);
+    color: #f0b429;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(240, 180, 41, 0.2);
+    margin-left: 6px;
+  }
+
+  .footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #1e2633;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer .note {
+    font-size: 0.7rem;
+    color: #4b5563;
+  }
+  .footer .glb-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #f0b429;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 1.5rem 1rem; }
+    .label { width: 80px; font-size: 0.7rem; }
+    .bar-fill { font-size: 0.65rem; padding-left: 6px; }
+    .bar-value { font-size: 0.65rem; min-width: 48px; }
+    h1 { font-size: 1.2rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1><span class="gold">GlbTOKEN</span> Pricing Comparison</h1>
+  <div class="subtitle">Cost per million tokens — direct API pricing</div>
+
+  <div class="chart" id="chart">
+
+    <!-- GPT-4o -->
+    <div class="row">
+      <div class="label">GPT-4o</div>
+      <div class="bars">
+        <div class="bar-wrap">
+          <div class="bar-track">
+            <div class="bar-fill gold" data-width="50">GlbTOKEN</div>
+          </div>
+          <span class="bar-value gold">$2.50</span>
+          <span class="discount-badge">50% cheaper</span>
+        </div>
+        <div class="bar-wrap comp-row">
+          <div class="bar-track">
+            <div class="bar-fill blue" data-width="100">OpenAI</div>
+          </div>
+          <span class="bar-value muted">$5.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claude 3.5 Sonnet -->
+    <div class="row">
+      <div class="label">Claude 3.5<br>Sonnet</div>
+      <div class="bars">
+        <div class="bar-wrap">
+          <div class="bar-track">
+            <div class="bar-fill gold" data-width="66.7">GlbTOKEN</div>
+          </div>
+          <span class="bar-value gold">$2.00</span>
+          <span class="discount-badge">33% cheaper</span>
+        </div>
+        <div class="bar-wrap comp-row">
+          <div class="bar-track">
+            <div class="bar-fill purple" data-width="100">Anthropic</div>
+          </div>
+          <span class="bar-value muted">$3.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gemini 2.0 Flash -->
+    <div class="row">
+      <div class="label">Gemini 2.0<br>Flash</div>
+      <div class="bars">
+        <div class="bar-wrap">
+          <div class="bar-track">
+            <div class="bar-fill gold" data-width="50">GlbTOKEN</div>
+          </div>
+          <span class="bar-value gold">$0.15</span>
+          <span class="discount-badge">50% cheaper</span>
+        </div>
+        <div class="bar-wrap comp-row">
+          <div class="bar-track">
+            <div class="bar-fill emerald" data-width="100">Google</div>
+          </div>
+          <span class="bar-value muted">$0.30</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Llama 4 Maverick -->
+    <div class="row">
+      <div class="label">Llama 4<br>Maverick</div>
+      <div class="bars">
+        <div class="bar-wrap">
+          <div class="bar-track">
+            <div class="bar-fill orange" data-width="16.7">GlbTOKEN</div>
+          </div>
+          <span class="bar-value gold">$0.50</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DeepSeek V3 -->
+    <div class="row">
+      <div class="label">DeepSeek V3</div>
+      <div class="bars">
+        <div class="bar-wrap">
+          <div class="bar-track">
+            <div class="bar-fill slate" data-width="8.3">GlbTOKEN</div>
+          </div>
+          <span class="bar-value gold">$0.25</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span class="note">* Prices per 1M input tokens. Competitor prices shown alongside where applicable.</span>
+    <span class="glb-badge">⚡ GlbTOKEN</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  const fills = document.querySelectorAll('.bar-fill');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fills.forEach(el => {
+        const w = el.getAttribute('data-width');
+        if (w) el.style.width = w + '%';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

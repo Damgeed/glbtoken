@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlbTOKEN API Integration</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+  .container {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 960px;
+    width: 100%;
+  }
+  .container + .container { margin-top: 20px; }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #21262d;
+  }
+  .logo {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #F4B400 0%, #FFD700 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    color: #0d1117;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    color: #e6edf3;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .header-text p {
+    color: #8b949e;
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0;
+    padding-left: 16px;
+  }
+  .tab {
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8b949e;
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: default;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-family: inherit;
+  }
+  .tab.active {
+    color: #F4B400;
+    background: #161b22;
+    border-color: #30363d;
+  }
+  .code-window {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 0 12px 12px 12px;
+    overflow: hidden;
+  }
+  .window-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+    gap: 10px;
+  }
+  .window-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
+  .window-title {
+    color: #8b949e;
+    font-size: 12px;
+    font-weight: 500;
+    flex: 1;
+    text-align: center;
+    margin-right: 48px;
+  }
+  .window-action {
+    color: #58a6ff;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: default;
+  }
+  .code-body {
+    padding: 20px 24px;
+    overflow-x: auto;
+    line-height: 1.7;
+    font-size: 13.5px;
+  }
+  .code-body pre {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #21262d;
+  }
+  .footer-info {
+    color: #8b949e;
+    font-size: 12px;
+  }
+  .footer-info strong {
+    color: #F4B400;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #1a2332;
+    border: 1px solid #30363d;
+    border-radius: 20px;
+    color: #58a6ff;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+  /* CSS-only tab switcher */
+  input[type="radio"] { display: none; }
+  .code-panel { display: none; }
+  #tab-curl:checked ~ .tabs label[for="tab-curl"],
+  #tab-py:checked ~ .tabs label[for="tab-py"],
+  #tab-js:checked ~ .tabs label[for="tab-js"],
+  #tab-resp:checked ~ .tabs label[for="tab-resp"] {
+    color: #F4B400 !important;
+    background: #161b22 !important;
+    border-color: #30363d !important;
+  }
+  #tab-curl:checked ~ .code-window .panel-curl { display: block; }
+  #tab-py:checked ~ .code-window .panel-py { display: block; }
+  #tab-js:checked ~ .code-window .panel-js { display: block; }
+  #tab-resp:checked ~ .code-window .panel-resp { display: block; }
+  .kw { color: #F4B400; font-weight: 600; }
+  .str { color: #00D68F; }
+  .fn { color: #58a6ff; }
+  .cm { color: #8b949e; font-style: italic; }
+  .op { color: #c9d1d9; }
+  .num { color: #f97583; }
+  .var { color: #79c0ff; }
+  .pl { color: #d2a8ff; }
+  .base { color: #c9d1d9; }
+  .bg-line { fill: #0d1117; }
+  .line-num { fill: #484f58; text-anchor: end; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ─── BANNER / HERO SVG ─── -->
+<div class="container">
+  <div class="header">
+    <div class="logo">G</div>
+    <div class="header-text">
+      <h1>GlbTOKEN API Integration</h1>
+      <p>OpenAI-compatible · HTTPS · JSON · Bearer Auth</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">cURL</div>
+    <div class="tab">Python</div>
+    <div class="tab">JavaScript</div>
+    <div class="tab">Response</div>
+  </div>
+
+  <div class="code-window">
+    <div class="window-header">
+      <div class="window-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="window-title">api-integration.sh</div>
+      <div class="window-action">▼</div>
+    </div>
+    <div class="code-body" style="padding:16px 20px;">
+
+<svg viewBox="0 0 860 330" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;display:block;">
+  <rect class="bg-line" x="0" y="0" width="860" height="330" rx="4" />
+
+  <!-- line numbers -->
+  <text class="line-num" x="30" y="26"> 1</text>
+  <text class="line-num" x="30" y="50"> 2</text>
+  <text class="line-num" x="30" y="74"> 3</text>
+  <text class="line-num" x="30" y="98"> 4</text>
+  <text class="line-num" x="30" y="122"> 5</text>
+  <text class="line-num" x="30" y="146"> 6</text>
+  <text class="line-num" x="30" y="170"> 7</text>
+  <text class="line-num" x="30" y="194"> 8</text>
+  <text class="line-num" x="30" y="218"> 9</text>
+  <text class="line-num" x="30" y="242">10</text>
+  <text class="line-num" x="30" y="266">11</text>
+  <text class="line-num" x="30" y="290">12</text>
+  <text class="line-num" x="30" y="314">13</text>
+
+  <!-- L1 -->
+  <text class="cm" x="46" y="26"># cURL Example — Chat Completion</text>
+  <!-- L2 -->
+  <text class="base" x="46" y="50"></text>
+  <!-- L3: curl -X POST \ -->
+  <text class="kw" x="46" y="74">curl</text>
+  <text class="op" x="86" y="74">-X</text>
+  <text class="kw" x="106" y="74">POST</text>
+  <text class="op" x="140" y="74">\</text>
+  <!-- L4: -H "Content-Type: application/json" \ -->
+  <text class="op" x="54" y="98">-H</text>
+  <text class="str" x="74" y="98">"Content-Type: application/json"</text>
+  <text class="op" x="238" y="98">\</text>
+  <!-- L5: -H "Authorization: Bearer $GLBTOKEN_KEY" \ -->
+  <text class="op" x="54" y="122">-H</text>
+  <text class="str" x="74" y="122">"Authorization: Bearer $GLBTOKEN_API_KEY"</text>
+  <text class="op" x="310" y="122">\</text>
+  <!-- L6: -d '{ -->
+  <text class="op" x="54" y="146">-d</text>
+  <text class="str" x="74" y="146">'{</text>
+  <text class="op" x="96" y="146">\</text>
+  <!-- L7: "model": "glb-turbo", -->
+  <text class="str" x="82" y="170">  "model": "glb-turbo",</text>
+  <text class="op" x="200" y="170">\</text>
+  <!-- L8: "messages": [...] -->
+  <text class="str" x="82" y="194">  "messages": [{"role": "user", "content": "Hello!"}]</text>
+  <text class="op" x="368" y="194">\</text>
+  <!-- L9: }' \ -->
+  <text class="str" x="74" y="218">}'</text>
+  <text class="op" x="96" y="218">\</text>
+  <!-- L10: https://... -->
+  <text class="fn" x="54" y="242">https://api.glbtoken.io/v1/chat/completions</text>
+  <!-- L11: empty -->
+  <!-- L12: # Example response -->
+  <text class="cm" x="46" y="266"># Response (truncated):</text>
+  <!-- L13: { "id": ... -->
+  <text class="op" x="46" y="290">{</text>
+  <text class="str" x="54" y="314">  "id": "chatcmpl-9a8bC3dEf..."</text>
+  <text class="op" x="240" y="314">,</text>
+</svg>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-info">
+      <strong>Base URL:</strong> https://api.glbtoken.io/v1 &nbsp;·&nbsp;
+      <strong>Auth:</strong> Bearer Token &nbsp;·&nbsp;
+      <strong>Models:</strong> glb-turbo, glb-pro
+    </div>
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      OpenAI Compatible
+    </div>
+  </div>
+</div>
+
+<!-- ─── INTERACTIVE CODE EXAMPLES ─── -->
+<div class="container">
+  <div class="header" style="margin-bottom:20px;">
+    <div class="logo" style="background:linear-gradient(135deg,#00D68F,#00b37e);">&lt;/&gt;</div>
+    <div class="header-text">
+      <h1>Code Examples</h1>
+      <p>Click a tab to switch between integration languages</p>
+    </div>
+  </div>
+
+  <input type="radio" name="code-tab" id="tab-curl" checked>
+  <input type="radio" name="code-tab" id="tab-py">
+  <input type="radio" name="code-tab" id="tab-js">
+  <input type="radio" name="code-tab" id="tab-resp">
+
+  <div class="tabs">
+    <label for="tab-curl" class="tab" style="cursor:pointer;">cURL</label>
+    <label for="tab-py" class="tab" style="cursor:pointer;">Python</label>
+    <label for="tab-js" class="tab" style="cursor:pointer;">JavaScript</label>
+    <label for="tab-resp" class="tab" style="cursor:pointer;">Response</label>
+  </div>
+
+  <div class="code-window">
+    <div class="window-header">
+      <div class="window-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="window-title">bash</div>
+      <div class="window-action">copy</div>
+    </div>
+    <div class="code-body" style="padding:0;">
+
+<!-- cURL panel -->
+<pre class="code-panel panel-curl"><span class="cm"># cURL — Chat Completion</span>
+<span class="kw">curl</span> <span class="op">-X</span> <span class="kw">POST</span> <span class="op">\</span>
+  <span class="op">-H</span> <span class="str">"Content-Type: application/json"</span> <span class="op">\</span>
+  <span class="op">-H</span> <span class="str">"Authorization: Bearer $GLBTOKEN_API_KEY"</span> <span class="op">\</span>
+  <span class="op">-d</span> <span class="str">'{
+    "model": "glb-turbo",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'</span> <span class="op">\</span>
+  <span class="fn">https://api.glbtoken.io/v1/chat/completions</span></pre>
+
+<!-- Python panel -->
+<pre class="code-panel panel-py"><span class="cm"># Python — openai library with custom base_url</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client <span class="op">=</span> OpenAI(
+    base_url<span class="op">=</span><span class="str">"https://api.glbtoken.io/v1"</span>,
+    api_key<span class="op">=</span><span class="str">"glb-..."</span>
+)
+
+response <span class="op">=</span> client.chat.completions.create(
+    model<span class="op">=</span><span class="str">"glb-turbo"</span>,
+    messages<span class="op">=</span>[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}
+    ]
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+<span class="cm"># Token usage:</span>
+<span class="fn">print</span>(response.usage.total_tokens)</pre>
+
+<!-- JavaScript panel -->
+<pre class="code-panel panel-js"><span class="cm">// JavaScript — fetch() with Bearer auth</span>
+<span class="kw">const</span> response <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">"https://api.glbtoken.io/v1/chat/completions"</span>,
+  {
+    method<span class="op">:</span> <span class="str">"POST"</span>,
+    headers<span class="op">:</span> {
+      <span class="str">"Content-Type"</span><span class="op">:</span> <span class="str">"application/json"</span>,
+      <span class="str">"Authorization"</span><span class="op">:</span> <span class="str">`Bearer <span class="pl">${apiKey}</span>`</span>
+    },
+    body<span class="op">:</span> <span class="fn">JSON</span>.<span class="fn">stringify</span>({
+      model<span class="op">:</span> <span class="str">"glb-turbo"</span>,
+      messages<span class="op">:</span> [{role<span class="op">:</span> <span class="str">"user"</span>, content<span class="op">:</span> <span class="str">"Hello!"</span>}]
+    })
+  }
+);
+
+<span class="kw">const</span> data <span class="op">=</span> <span class="kw">await</span> response.<span class="fn">json</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(data.choices[<span class="num">0</span>].message.content);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`Tokens: <span class="pl">${data.usage.total_tokens}</span>`</span>);</pre>
+
+<!-- Response panel -->
+<pre class="code-panel panel-resp">{
+  <span class="str">"id"</span>: <span class="str">"chatcmpl-9a8bC3dEfGhIjKlMnOpQrStUv"</span>,
+  <span class="str">"object"</span>: <span class="str">"chat.completion"</span>,
+  <span class="str">"created"</span>: <span class="num">1721164800</span>,
+  <span class="str">"model"</span>: <span class="str">"glb-turbo"</span>,
+  <span class="str">"choices"</span>: [
+    {
+      <span class="str">"index"</span>: <span class="num">0</span>,
+      <span class="str">"message"</span>: {
+        <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+        <span class="str">"content"</span>: <span class="str">"Hello! How can I help you today?"</span>
+      },
+      <span class="str">"finish_reason"</span>: <span class="str">"stop"</span>
+    }
+  ],
+  <span class="str">"usage"</span>: {
+    <span class="str">"prompt_tokens</span><span class="str">"</span>: <span class="num">25</span>,
+    <span class="str">"completion_tokens"</span>: <span class="num">128</span>,
+    <span class="str">"total_tokens"</span>: <span class="num">153</span>
+  }
+}</pre>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-info">
+      <strong>Quick Start:</strong> Replace <code style="color:#F4B400;background:#1a2332;padding:2px 6px;border-radius:4px;">$GLBTOKEN_API_KEY</code> with your key
+    </div>
+    <div class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      glb-turbo · glb-pro
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

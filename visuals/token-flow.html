@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlbTOKEN Flow — Token Lifecycle</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0A0B14;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+  .container {
+    position: relative;
+    width: 1200px;
+    max-width: 98vw;
+    background: radial-gradient(ellipse at 50% 0%, rgba(244,180,0,0.04) 0%, transparent 70%),
+                radial-gradient(ellipse at 50% 100%, rgba(0,214,143,0.04) 0%, transparent 70%),
+                #0A0B14;
+    border: 1px solid rgba(244,180,0,0.08);
+    border-radius: 24px;
+    padding: 30px 20px 20px;
+    box-shadow: 0 0 80px rgba(244,180,0,0.03), inset 0 0 60px rgba(0,214,143,0.02);
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #F4B400 0%, #FFD54F 40%, #00D68F 70%, #00E5A0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header .sub {
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  svg { width: 100%; height: auto; display: block; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>⚡ GlbTOKEN &nbsp;Lifecycle</h1>
+    <div class="sub">Purchase → Credit → API Call → Burn</div>
+  </div>
+
+  <svg viewBox="0 0 1160 620" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+    <defs>
+
+      <!-- Glow filters -->
+      <filter id="glow-gold" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6" result="blur1"/>
+        <feGaussianBlur stdDeviation="14" result="blur2"/>
+        <feGaussianBlur stdDeviation="28" result="blur3"/>
+        <feMerge>
+          <feMergeNode in="blur3"/>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <filter id="glow-teal" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="5" result="blur1"/>
+        <feGaussianBlur stdDeviation="12" result="blur2"/>
+        <feGaussianBlur stdDeviation="24" result="blur3"/>
+        <feMerge>
+          <feMergeNode in="blur3"/>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <filter id="glow-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <filter id="glow-intense" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="8" result="blur1"/>
+        <feGaussianBlur stdDeviation="20" result="blur2"/>
+        <feMerge>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <filter id="shadow">
+        <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#0A0B14" flood-opacity="0.6"/>
+      </filter>
+
+      <!-- Gradients -->
+      <linearGradient id="bg-card" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+      </linearGradient>
+
+      <linearGradient id="gold-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#F4B400"/>
+        <stop offset="50%" stop-color="#FFD54F"/>
+        <stop offset="100%" stop-color="#F4B400"/>
+      </linearGradient>
+
+      <linearGradient id="teal-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#00D68F"/>
+        <stop offset="50%" stop-color="#00E5A0"/>
+        <stop offset="100%" stop-color="#00C87B"/>
+      </linearGradient>
+
+      <linearGradient id="coin-gold" x1="0.2" y1="0" x2="0.8" y2="1">
+        <stop offset="0%" stop-color="#FFD54F"/>
+        <stop offset="40%" stop-color="#F4B400"/>
+        <stop offset="100%" stop-color="#C58A00"/>
+      </linearGradient>
+
+      <linearGradient id="coin-teal" x1="0.2" y1="0" x2="0.8" y2="1">
+        <stop offset="0%" stop-color="#00E5A0"/>
+        <stop offset="40%" stop-color="#00D68F"/>
+        <stop offset="100%" stop-color="#009966"/>
+      </linearGradient>
+
+      <!-- Animated coin marker template -->
+      <g id="coin-gold-svg">
+        <circle r="18" fill="url(#coin-gold)" stroke="#F4B400" stroke-width="1.5" filter="url(#glow-gold)"/>
+        <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="700" fill="#0A0B14">$</text>
+      </g>
+
+      <g id="coin-teal-svg">
+        <circle r="18" fill="url(#coin-teal)" stroke="#00D68F" stroke-width="1.5" filter="url(#glow-teal)"/>
+        <text x="0" y="5" text-anchor="middle" font-size="10" font-weight="700" fill="#0A0B14">T</text>
+      </g>
+
+      <g id="coin-burn-svg">
+        <circle r="18" fill="url(#coin-gold)" stroke="#F4B400" stroke-width="1.5" filter="url(#glow-intense)"/>
+        <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="700" fill="#0A0B14">&#x1F525;</text>
+      </g>
+
+      <!-- Sparkle -->
+      <g id="sparkle">
+        <path d="M0,-8 L2,-2 L8,0 L2,2 L0,8 L-2,2 L-8,0 L-2,-2 Z" fill="#F4B400" opacity="0.8"/>
+      </g>
+
+    </defs>
+
+    <!-- ===== BACKGROUND GRID ===== -->
+    <g opacity="0.04">
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#F4B400" stroke-width="0.5"/>
+      </pattern>
+      <rect width="1160" height="620" fill="url(#grid)"/>
+    </g>
+
+    <!-- ===== CONNECTION ARROWS (flow lines) ===== -->
+    <!-- Step 1&#8594;2 -->
+    <g>
+      <path d="M 160,280 C 260,280 300,280 400,280" fill="none" stroke="#F4B400" stroke-width="2" stroke-dasharray="8,6" opacity="0.4"/>
+      <path d="M 160,280 C 260,280 300,280 400,280" fill="none" stroke="#F4B400" stroke-width="2" stroke-dasharray="8,6" opacity="0.7">
+        <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+      <!-- Arrowhead -->
+      <polygon points="395,275 405,280 395,285" fill="#F4B400" opacity="0.8"/>
+    </g>
+
+    <!-- Step 2&#8594;3 -->
+    <g>
+      <path d="M 500,280 C 560,280 580,280 640,280" fill="none" stroke="#00D68F" stroke-width="2" stroke-dasharray="8,6" opacity="0.4"/>
+      <path d="M 500,280 C 560,280 580,280 640,280" fill="none" stroke="#00D68F" stroke-width="2" stroke-dasharray="8,6" opacity="0.7">
+        <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+      <polygon points="635,275 645,280 635,285" fill="#00D68F" opacity="0.8"/>
+    </g>
+
+    <!-- Step 3&#8594;4 -->
+    <g>
+      <path d="M 740,280 C 800,280 830,280 890,280" fill="none" stroke="#F4B400" stroke-width="2" stroke-dasharray="8,6" opacity="0.4"/>
+      <path d="M 740,280 C 800,280 830,280 890,280" fill="none" stroke="#F4B400" stroke-width="2" stroke-dasharray="8,6" opacity="0.7">
+        <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+      <polygon points="885,275 895,280 885,285" fill="#F4B400" opacity="0.8"/>
+    </g>
+
+    <!-- Step 4&#8594;5 (downward) -->
+    <g>
+      <path d="M 990,340 C 990,400 990,430 990,500" fill="none" stroke="#00D68F" stroke-width="2" stroke-dasharray="8,6" opacity="0.4"/>
+      <path d="M 990,340 C 990,400 990,430 990,500" fill="none" stroke="#00D68F" stroke-width="2" stroke-dasharray="8,6" opacity="0.7">
+        <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+      <polygon points="985,495 990,505 995,495" fill="#00D68F" opacity="0.8"/>
+    </g>
+
+    <!-- ===== ANIMATED COINS FLOWING ALONG PATHS ===== -->
+    <!-- Coin 1&#8594;2 -->
+    <g filter="url(#glow-gold)">
+      <use href="#coin-gold-svg" x="0" y="0">
+        <animateMotion dur="2.4s" repeatCount="indefinite" path="M 170,295 C 260,295 300,295 390,295"/>
+      </use>
+    </g>
+
+    <!-- Coin 2&#8594;3 -->
+    <g filter="url(#glow-teal)">
+      <use href="#coin-teal-svg" x="0" y="0">
+        <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.8s" path="M 510,295 C 560,295 580,295 630,295"/>
+      </use>
+    </g>
+
+    <!-- Coin 3&#8594;4 -->
+    <g filter="url(#glow-gold)">
+      <use href="#coin-gold-svg" x="0" y="0">
+        <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.6s" path="M 750,295 C 800,295 830,295 880,295"/>
+      </use>
+    </g>
+
+    <!-- Coin 4&#8594;5 -->
+    <g filter="url(#glow-teal)">
+      <use href="#coin-teal-svg" x="0" y="0">
+        <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.4s" path="M 1005,350 C 1005,400 1005,430 1005,490"/>
+      </use>
+    </g>
+
+    <!-- ==================================================== -->
+    <!-- STEP 1: PURCHASE                                      -->
+    <!-- ==================================================== -->
+    <g transform="translate(80,180)">
+      <!-- Card BG -->
+      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(#shadow)"/>
+      <!-- Glow accent top -->
+      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(#glow-gold)"/>
+
+      <text x="80" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#F4B400" letter-spacing="1">STEP 1</text>
+      <text x="80" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F4B0; Purchase</text>
+
+      <!-- Coin icon -->
+      <g transform="translate(80,80)" filter="url(#glow-gold)">
+        <circle r="22" fill="url(#coin-gold)" stroke="#F4B400" stroke-width="1.5"/>
+        <text x="0" y="6" text-anchor="middle" font-size="13" font-weight="700" fill="#0A0B14">$</text>
+      </g>
+
+      <text x="80" y="120" text-anchor="middle" font-size="18" font-weight="700" fill="#F4B400">$50</text>
+      <text x="80" y="138" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.5)">worth of tokens</text>
+
+      <!-- Payment methods -->
+      <g transform="translate(80,168)">
+        <rect x="-48" y="-10" width="30" height="20" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(244,180,0,0.15)" stroke-width="0.5"/>
+        <text x="-33" y="4" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)">Stripe</text>
+        <rect x="-14" y="-10" width="28" height="20" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(244,180,0,0.15)" stroke-width="0.5"/>
+        <text x="0" y="4" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)">Paystack</text>
+        <rect x="20" y="-10" width="28" height="20" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(244,180,0,0.15)" stroke-width="0.5"/>
+        <text x="34" y="4" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)">Crypto</text>
+      </g>
+    </g>
+
+    <!-- ==================================================== -->
+    <!-- STEP 2: TOKEN CREDIT                                  -->
+    <!-- ==================================================== -->
+    <g transform="translate(330,180)">
+      <rect x="0" y="0" width="170" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(0,214,143,0.2)" stroke-width="1" filter="url(#shadow)"/>
+      <rect x="0" y="0" width="170" height="3" rx="1.5" fill="#00D68F" filter="url(#glow-teal)"/>
+
+      <text x="85" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#00D68F" letter-spacing="1">STEP 2</text>
+      <text x="85" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F4E6; Token Credit</text>
+
+      <!-- DB icon -->
+      <g transform="translate(85,72)">
+        <ellipse cx="0" cy="-8" rx="20" ry="6" fill="none" stroke="#00D68F" stroke-width="1.5" opacity="0.6"/>
+        <ellipse cx="0" cy="0" rx="20" ry="6" fill="none" stroke="#00D68F" stroke-width="1.5"/>
+        <ellipse cx="0" cy="8" rx="20" ry="6" fill="none" stroke="#00D68F" stroke-width="1.5" opacity="0.6"/>
+        <line x1="-20" y1="-8" x2="-20" y2="8" stroke="#00D68F" stroke-width="1.5" opacity="0.6"/>
+        <line x1="20" y1="-8" x2="20" y2="8" stroke="#00D68F" stroke-width="1.5" opacity="0.6"/>
+      </g>
+
+      <text x="85" y="118" text-anchor="middle" font-size="18" font-weight="700" fill="#00D68F">+5,000</text>
+      <text x="85" y="136" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.5)">tokens credited</text>
+
+      <!-- DB label -->
+      <g transform="translate(85,165)">
+        <rect x="-48" y="-10" width="96" height="20" rx="6" fill="rgba(0,214,143,0.08)" stroke="rgba(0,214,143,0.2)" stroke-width="0.5"/>
+        <text x="0" y="4" text-anchor="middle" font-size="9" fill="#00D68F">PostgreSQL DB</text>
+      </g>
+    </g>
+
+    <!-- ==================================================== -->
+    <!-- STEP 3: API CALL                                     -->
+    <!-- ==================================================== -->
+    <g transform="translate(580,180)">
+      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(#shadow)"/>
+      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(#glow-gold)"/>
+
+      <text x="80" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#F4B400" letter-spacing="1">STEP 3</text>
+      <text x="80" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F511; API Call</text>
+
+      <!-- Key icon -->
+      <g transform="translate(80,78)">
+        <circle cx="-6" cy="0" r="8" fill="none" stroke="#F4B400" stroke-width="2"/>
+        <line x1="0" y1="0" x2="22" y2="0" stroke="#F4B400" stroke-width="2.5"/>
+        <line x1="14" y1="0" x2="14" y2="8" stroke="#F4B400" stroke-width="2"/>
+        <line x1="18" y1="0" x2="18" y2="5" stroke="#F4B400" stroke-width="1.5"/>
+      </g>
+
+      <text x="80" y="120" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(255,255,255,0.8)">POST /v1/chat</text>
+      <text x="80" y="138" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.4)">with API Key</text>
+
+      <!-- Key label -->
+      <g transform="translate(80,168)">
+        <rect x="-42" y="-10" width="84" height="20" rx="6" fill="rgba(244,180,0,0.06)" stroke="rgba(244,180,0,0.15)" stroke-width="0.5"/>
+        <text x="0" y="4" text-anchor="middle" font-size="8" fill="#F4B400" opacity="0.7">sk-••••••4f2G</text>
+      </g>
+    </g>
+
+    <!-- ==================================================== -->
+    <!-- STEP 4: TOKEN BURN / CONSUMPTION                     -->
+    <!-- ==================================================== -->
+    <g transform="translate(830,180)">
+      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(#shadow)"/>
+      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(#glow-gold)"/>
+
+      <text x="80" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#F4B400" letter-spacing="1">STEP 4</text>
+      <text x="80" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F525; Token Burn</text>
+
+      <!-- Flame animation -->
+      <g transform="translate(80,80)">
+        <g filter="url(#glow-intense)">
+          <path d="M0,-22 C6,-14 10,-6 8,0 C6,6 0,10 -4,6 C-8,2 -6,-4 0,-8 C4,-10 2,-16 0,-22 Z" fill="#F4B400" opacity="0.9">
+            <animate attributeName="d" dur="0.8s" repeatCount="indefinite"
+              values="M0,-22 C6,-14 10,-6 8,0 C6,6 0,10 -4,6 C-8,2 -6,-4 0,-8 C4,-10 2,-16 0,-22 Z;
+                      M0,-20 C8,-12 10,-4 8,2 C6,8 -2,10 -6,6 C-10,2 -4,-4 0,-6 C4,-8 2,-14 0,-20 Z;
+                      M0,-22 C6,-14 10,-6 8,0 C6,6 0,10 -4,6 C-8,2 -6,-4 0,-8 C4,-10 2,-16 0,-22 Z"/>
+          </path>
+          <path d="M-2,-16 C3,-10 6,-4 5,0 C4,4 -1,6 -3,4 C-5,2 -3,-2 0,-4 C2,-6 1,-10 -2,-16 Z" fill="#FFD54F" opacity="0.6">
+            <animate attributeName="d" dur="0.8s" repeatCount="indefinite"
+              values="M-2,-16 C3,-10 6,-4 5,0 C4,4 -1,6 -3,4 C-5,2 -3,-2 0,-4 C2,-6 1,-10 -2,-16 Z;
+                      M-1,-14 C4,-8 5,-2 4,2 C3,6 -2,7 -4,5 C-6,3 -2,-1 0,-3 C2,-5 1,-9 -1,-14 Z;
+                      M-2,-16 C3,-10 6,-4 5,0 C4,4 -1,6 -3,4 C-5,2 -3,-2 0,-4 C2,-6 1,-10 -2,-16 Z"/>
+          </path>
+        </g>
+      </g>
+
+      <text x="80" y="120" text-anchor="middle" font-size="18" font-weight="700" fill="#F4B400">&#x2212; tokens</text>
+      <text x="80" y="138" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.5)">deducted based on model</text>
+
+      <!-- Model pricing -->
+      <g transform="translate(80,168)">
+        <rect x="-42" y="-10" width="84" height="20" rx="6" fill="rgba(244,180,0,0.06)" stroke="rgba(244,180,0,0.15)" stroke-width="0.5"/>
+        <text x="0" y="4" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.5)">pricing &middot; 100+ models</text>
+      </g>
+    </g>
+
+    <!-- ==================================================== -->
+    <!-- STEP 5: DASHBOARD                                    -->
+    <!-- ==================================================== -->
+    <g transform="translate(900,440)">
+      <rect x="0" y="0" width="180" height="130" rx="16" fill="url(#bg-card)" stroke="rgba(0,214,143,0.25)" stroke-width="1.5" filter="url(#shadow)"/>
+      <rect x="0" y="0" width="180" height="3" rx="1.5" fill="#00D68F" filter="url(#glow-teal)"/>
+
+      <text x="90" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#00D68F" letter-spacing="1">STEP 5</text>
+      <text x="90" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F4CA; Dashboard</text>
+
+      <!-- Mini bar chart -->
+      <g transform="translate(30,62)">
+        <rect x="0" y="12" width="16" height="28" rx="3" fill="rgba(244,180,0,0.3)" stroke="#F4B400" stroke-width="0.8"/>
+        <rect x="22" y="4" width="16" height="36" rx="3" fill="rgba(244,180,0,0.4)" stroke="#F4B400" stroke-width="0.8"/>
+        <rect x="44" y="18" width="16" height="22" rx="3" fill="rgba(0,214,143,0.3)" stroke="#00D68F" stroke-width="0.8"/>
+        <rect x="66" y="8" width="16" height="32" rx="3" fill="rgba(0,214,143,0.4)" stroke="#00D68F" stroke-width="0.8"/>
+        <rect x="88" y="2" width="16" height="38" rx="3" fill="rgba(244,180,0,0.5)" stroke="#F4B400" stroke-width="0.8"/>
+      </g>
+
+      <text x="90" y="118" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.4)">Real-time usage &amp; balance</text>
+    </g>
+
+    <!-- ===== SPARKLES / AMBIENT ===== -->
+    <g opacity="0.6">
+      <use href="#sparkle" x="120" y="170">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0s"/>
+        <animateTransform attributeName="transform" type="scale" values="0.8;1.2;0.8" dur="2s" repeatCount="indefinite" begin="0s"/>
+      </use>
+      <use href="#sparkle" x="380" y="175">
+        <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
+        <animateTransform attributeName="transform" type="scale" values="0.6;1.1;0.6" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
+      </use>
+      <use href="#sparkle" x="630" y="170">
+        <animate attributeName="opacity" values="0;1;0" dur="1.8s" repeatCount="indefinite" begin="1s"/>
+        <animateTransform attributeName="transform" type="scale" values="0.7;1.3;0.7" dur="1.8s" repeatCount="indefinite" begin="1s"/>
+      </use>
+      <use href="#sparkle" x="880" y="175">
+        <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite" begin="1.5s"/>
+        <animateTransform attributeName="transform" type="scale" values="0.5;1.2;0.5" dur="2.2s" repeatCount="indefinite" begin="1.5s"/>
+      </use>
+      <use href="#sparkle" x="1005" y="430">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.8s"/>
+        <animateTransform attributeName="transform" type="scale" values="0.6;1.4;0.6" dur="2s" repeatCount="indefinite" begin="0.8s"/>
+      </use>
+    </g>
+
+    <!-- ===== FLOATING ORB PARTICLES ===== -->
+    <circle cx="200" cy="120" r="2" fill="#F4B400" opacity="0.3">
+      <animate attributeName="cy" values="120;100;120" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="450" cy="140" r="1.5" fill="#00D68F" opacity="0.3">
+      <animate attributeName="cy" values="140;115;140" dur="3.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="700" cy="130" r="2" fill="#F4B400" opacity="0.25">
+      <animate attributeName="cy" values="130;105;130" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.25;0.6;0.25" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="950" cy="145" r="1.5" fill="#00D68F" opacity="0.3">
+      <animate attributeName="cy" values="145;120;145" dur="4.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4.2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- ===== BOTTOM TAGLINE ===== -->
+    <g transform="translate(580,590)">
+      <text x="0" y="0" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.15)" letter-spacing="3">
+        GlbTOKEN &middot; One Balance &middot; 100+ Models
+      </text>
+    </g>
+
+  </svg>
+</div>
+
+</body>
+</html>
