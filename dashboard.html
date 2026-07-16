@@ -125,9 +125,12 @@ body{background:var(--bg)}
 .pg-empty-glb{color:var(--primary)}
 .pg-empty-token{color:var(--success)}
 .pg-empty h2{font-size:1.3rem;font-weight:600;color:var(--text);margin:0 0 1.5rem}
-.pg-suggestions{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;max-width:500px}
-.pg-suggestion{background:var(--bg-alt);border:1px solid var(--border);border-radius:20px;padding:0.45rem 0.9rem;font-size:0.8rem;color:var(--text);cursor:pointer;transition:all 0.2s;white-space:nowrap}
-.pg-suggestion:hover{background:var(--card);border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+.pg-suggestions{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;max-width:480px;width:100%}
+.pg-suggestion-card{background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;cursor:pointer;transition:all 0.2s;text-align:left}
+.pg-suggestion-card:hover{background:var(--card);border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+.pg-sug-icon{font-size:1.2rem;margin-bottom:0.35rem}
+.pg-sug-title{font-size:0.82rem;font-weight:600;color:var(--text)}
+.pg-sug-desc{font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem}
 .pg-input-area{border-top:1px solid var(--border);padding:0.75rem 1rem 1rem;background:var(--card);flex-shrink:0}
 .pg-input-row{display:flex;gap:0.5rem;align-items:flex-end;max-width:720px;margin:0 auto;position:relative}
 .pg-input{flex:1;padding:0.7rem 1rem;border-radius:12px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.88rem;resize:none;min-height:44px;max-height:150px;font-family:inherit;line-height:1.4;transition:border-color 0.2s}
@@ -141,15 +144,23 @@ body{background:var(--bg)}
 .pg-msg{display:flex;gap:0.75rem;padding:1rem 1.5rem;max-width:720px;width:100%;margin:0 auto;animation:fadeSlideUp 0.25s ease}
 .pg-msg.user{justify-content:flex-end}
 .pg-msg.ai{justify-content:flex-start}
-.pg-msg .pg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.75rem;font-weight:600}
+.pg-msg .pg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.75rem;font-weight:600;margin-top:0.25rem}
 .pg-msg.user .pg-av{background:var(--primary);color:#0A0B14;order:1}
 .pg-msg.ai .pg-av{background:linear-gradient(135deg,var(--primary),var(--success));color:#fff}
 .pg-msg .pg-bub{padding:0.75rem 1rem;border-radius:12px;font-size:0.88rem;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;max-width:85%}
 .pg-msg.user .pg-bub{background:var(--primary);color:#0A0B14;border-bottom-right-radius:4px}
 .pg-msg.ai .pg-bub{background:var(--bg-alt);border:1px solid var(--border);border-bottom-left-radius:4px}
-.pg-msg .pg-meta{display:flex;gap:0.5rem;font-size:0.68rem;color:var(--text-muted);margin-top:0.25rem}
+.pg-msg .pg-meta{display:flex;align-items:center;gap:0.5rem;font-size:0.68rem;color:var(--text-muted);margin-top:0.3rem;padding-left:0.15rem}
 .pg-msg.user .pg-meta{justify-content:flex-end}
 .pg-msg.ai .pg-meta{justify-content:flex-start}
+/* Copy button */
+.pg-copy-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.2rem;border-radius:4px;display:inline-flex;align-items:center;opacity:0;transition:all 0.15s;vertical-align:middle}
+.pg-msg.ai:hover .pg-copy-btn{opacity:0.6}
+.pg-copy-btn:hover{opacity:1!important;color:var(--primary)!important}
+/* Code blocks in chat */
+.pg-code-block{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin:0.5rem 0;font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:0.8rem;color:#e0e0e0;overflow-x:auto;line-height:1.5;white-space:pre}
+.pg-inline-code{background:rgba(0,0,0,0.2);border-radius:4px;padding:0.1rem 0.35rem;font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:0.82rem;color:var(--primary)}
+.pg-msg.ai .pg-bub strong{color:var(--primary);font-weight:600}
 .pg-typing .pg-bub::after{content:'...';animation:typing 1.5s infinite}
 @keyframes typing{0%,100%{opacity:0.3}50%{opacity:1}}
 @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -203,7 +214,10 @@ body{background:var(--bg)}
   .pg-empty{padding:1.5rem 1rem}
   .pg-empty-logo{font-size:1.8rem}
   .pg-empty h2{font-size:1.1rem}
-  .pg-suggestion{font-size:0.72rem;padding:0.35rem 0.7rem}
+  .pg-suggestions{grid-template-columns:1fr 1fr;gap:0.5rem}
+  .pg-suggestion-card{padding:0.65rem 0.75rem}
+  .pg-sug-title{font-size:0.75rem}
+  .pg-sug-desc{font-size:0.65rem}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
   #referral-share-charts{grid-template-columns:1fr 1fr!important;gap:1rem}
   #referral-share-charts>.dash-card:first-child{grid-column:1/-1}
@@ -790,10 +804,26 @@ function toggleDashSidebar() {
               </div>
               <h2>How can I help you today?</h2>
               <div class="pg-suggestions">
-                <span class="pg-suggestion" onclick="useSuggestion('Write a Python function to sort a list of dictionaries by a key')">✏️ Write a Python sort function</span>
-                <span class="pg-suggestion" onclick="useSuggestion('Explain quantum computing in simple terms')">⚛️ Explain quantum computing</span>
-                <span class="pg-suggestion" onclick="useSuggestion('Create a React component for a modal dialog')">🧩 React modal component</span>
-                <span class="pg-suggestion" onclick="useSuggestion('Compare GPT-4o vs Claude 3.5 Sonnet performance')">🤖 Compare AI models</span>
+                <div class="pg-suggestion-card" onclick="useSuggestion('Write a Python function to sort a list of dictionaries by a key')">
+                  <div class="pg-sug-icon">✏️</div>
+                  <div class="pg-sug-title">Write code</div>
+                  <div class="pg-sug-desc">Python sort function</div>
+                </div>
+                <div class="pg-suggestion-card" onclick="useSuggestion('Explain quantum computing in simple terms')">
+                  <div class="pg-sug-icon">⚛️</div>
+                  <div class="pg-sug-title">Explain</div>
+                  <div class="pg-sug-desc">Quantum computing</div>
+                </div>
+                <div class="pg-suggestion-card" onclick="useSuggestion('Create a React component for a modal dialog')">
+                  <div class="pg-sug-icon">🧩</div>
+                  <div class="pg-sug-title">Build</div>
+                  <div class="pg-sug-desc">React modal component</div>
+                </div>
+                <div class="pg-suggestion-card" onclick="useSuggestion('Compare GPT-4o vs Claude 3.5 Sonnet performance')">
+                  <div class="pg-sug-icon">🤖</div>
+                  <div class="pg-sug-title">Compare</div>
+                  <div class="pg-sug-desc">AI model performance</div>
+                </div>
               </div>
             </div>
           </div>
@@ -929,10 +959,10 @@ function showEmptyState(){
     + '<div class="pg-empty-logo"><span class="pg-empty-glb">Glb</span><span class="pg-empty-token">TOKEN</span></div>'
     + '<h2>How can I help you today?</h2>'
     + '<div class="pg-suggestions">'
-    + '<span class="pg-suggestion" onclick="useSuggestion(\'Write a Python function to sort a list of dictionaries by a key\')">✏️ Write a Python sort function</span>'
-    + '<span class="pg-suggestion" onclick="useSuggestion(\'Explain quantum computing in simple terms\')">⚛️ Explain quantum computing</span>'
-    + '<span class="pg-suggestion" onclick="useSuggestion(\'Create a React component for a modal dialog\')">🧩 React modal component</span>'
-    + '<span class="pg-suggestion" onclick="useSuggestion(\'Compare GPT-4o vs Claude 3.5 Sonnet performance\')">🤖 Compare AI models</span>'
+    + '<div class="pg-suggestion-card" onclick="useSuggestion(\'Write a Python function to sort a list of dictionaries by a key\')"><div class="pg-sug-icon">✏️</div><div class="pg-sug-title">Write code</div><div class="pg-sug-desc">Python sort function</div></div>'
+    + '<div class="pg-suggestion-card" onclick="useSuggestion(\'Explain quantum computing in simple terms\')"><div class="pg-sug-icon">⚛️</div><div class="pg-sug-title">Explain</div><div class="pg-sug-desc">Quantum computing</div></div>'
+    + '<div class="pg-suggestion-card" onclick="useSuggestion(\'Create a React component for a modal dialog\')"><div class="pg-sug-icon">🧩</div><div class="pg-sug-title">Build</div><div class="pg-sug-desc">React modal component</div></div>'
+    + '<div class="pg-suggestion-card" onclick="useSuggestion(\'Compare GPT-4o vs Claude 3.5 Sonnet performance\')"><div class="pg-sug-icon">🤖</div><div class="pg-sug-title">Compare</div><div class="pg-sug-desc">AI model performance</div></div>'
     + '</div></div>';
 }
 function useSuggestion(text){
@@ -949,12 +979,11 @@ function sendPlaygroundMessage(){
   var chat = document.getElementById('chatMessages');
   var userMsg = document.createElement('div');
   userMsg.className = 'pg-msg user';
-  userMsg.innerHTML = '<div class="pg-av">U</div><div class="pg-bub">'+escapeHtml(text)+'</div><div class="pg-meta">Just now</div>';
+  userMsg.innerHTML = '<div class="pg-av">U</div><div class="pg-bub">'+escapeHtml(text)+'</div>';
   chat.appendChild(userMsg);
   input.value = '';
   input.style.height = 'auto';
   document.getElementById('playgroundSendBtn').disabled = true;
-  updateTokenEstimate();
   chat.scrollTop = chat.scrollHeight;
   showTypingIndicator();
   setTimeout(function(){
@@ -963,9 +992,15 @@ function sendPlaygroundMessage(){
     var response = getSimulatedResponse(text);
     var tokenCount = Math.floor(Math.random() * 300) + 50;
     var responseTime = (Math.random() * 2.5 + 0.5).toFixed(2);
+    var rendered = renderResponse(response);
     var aiMsg = document.createElement('div');
     aiMsg.className = 'pg-msg ai';
-    aiMsg.innerHTML = '<div class="pg-av">GT</div><div class="pg-bub">'+response+'</div><div class="pg-meta">'+modelName+' · '+tokenCount+' tokens · '+responseTime+'s</div>';
+    aiMsg.innerHTML = '<div class="pg-av">GT</div>'
+      + '<div><div class="pg-bub">'+rendered+'</div>'
+      + '<div class="pg-meta">'+modelName+' · '+tokenCount+' tokens · '+responseTime+'s'
+      + ' <button class="pg-copy-btn" onclick="copyResponse(this)" title="Copy">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>'
+      + '</button></div></div>';
     chat.appendChild(aiMsg);
     chat.scrollTop = chat.scrollHeight;
     document.getElementById('playgroundSendBtn').disabled = false;
@@ -990,11 +1025,34 @@ function removeTypingIndicator(){
 }
 function getSimulatedResponse(text){
   var responses = [
-    "That's a great question! Let me break it down for you.\\n\\nBased on my analysis, here are the key points to consider:\\n\\n1. **Performance**: Modern AI models excel at this type of task, especially when the input is well-structured.\\n\\n2. **Best Practices**: I recommend using a systematic approach — break the problem into smaller, manageable parts.\\n\\n3. **Example**: Here's a simple implementation:\\n\\n```python\\ndef solution(data):\\n    result = []\\n    for item in data:\\n        processed = transform(item)\\n        result.append(processed)\\n    return result\\n```\\n\\nWould you like me to go into more detail on any specific aspect?",
-    "I can help with that! Here's what I know about this topic.\\n\\n**Overview:**\\nThe field has evolved significantly over the past few years. Key developments include:\\n\\n- Better algorithmic efficiency\\n- Larger-scale training data\\n- Improved hardware acceleration\\n\\n**Practical Application:**\\nWhen implementing this, consider:\\n1. Start with a clear specification\\n2. Use proper error handling\\n3. Test with realistic data\\n4. Monitor performance metrics\\n\\nLet me know if you'd like specific code examples or further explanation!",
-    "Excellent question! Here's my detailed response.\\n\\n## Key Insights\\n\\nAfter careful consideration, I believe the most important factors are:\\n\\n### 1. Architecture\\nModern approaches use transformer-based designs that scale efficiently.\\n\\n### 2. Data Quality\\nHigh-quality, diverse training data remains crucial for good results.\\n\\n### 3. Evaluation\\nAlways validate your outputs against ground truth when possible.\\n\\nFeel free to ask follow-up questions!"
+    "Here's a **Python function** that sorts a list of dictionaries by a key:\n\n```python\ndef sort_by_key(data, key, reverse=False):\n    \"\"\"Sort a list of dictionaries by a given key.\"\"\"\n    return sorted(data, key=lambda x: x.get(key), reverse=reverse)\n\n# Example usage:\nusers = [\n    {\"name\": \"Alice\", \"age\": 30},\n    {\"name\": \"Bob\", \"age\": 25},\n    {\"name\": \"Charlie\", \"age\": 35}\n]\nsorted_users = sort_by_key(users, \"age\")\nprint(sorted_users)\n# Output: [{'name': 'Bob', 'age': 25}, {'name': 'Alice', 'age': 30}, {'name': 'Charlie', 'age': 35}]\n```\n\nYou can also sort in descending order by passing `reverse=True`. Let me know if you need more help!",
+    "Great question! Here's a quick overview of **quantum computing**:\n\nUnlike classical computers that use bits (0 or 1), quantum computers use **qubits** that can exist in multiple states simultaneously thanks to:\n\n- **Superposition**: A qubit can be both 0 and 1 at the same time\n- **Entanglement**: Two qubits can be linked so measuring one instantly reveals the state of the other\n- **Interference**: Quantum states can amplify correct answers and cancel out wrong ones\n\nThis allows quantum computers to solve certain problems exponentially faster \u2014 like factoring large numbers, simulating molecules, and optimizing complex systems.\n\n> Think of it like searching a maze: a classical computer tries one path at a time, while a quantum computer explores all paths simultaneously.",
+    "Here's a **React modal component** you can drop right in:\n\n```jsx\nimport React, { useState } from 'react';\n\nfunction Modal({ isOpen, onClose, title, children }) {\n  if (!isOpen) return null;\n  return (\n    <div style={{\n      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,\n      background: 'rgba(0,0,0,0.5)',\n      display: 'flex', alignItems: 'center', justifyContent: 'center',\n      zIndex: 1000\n    }} onClick={onClose}>\n      <div style={{\n        background: '#fff', borderRadius: 12, padding: '1.5rem',\n        maxWidth: 480, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)'\n      }} onClick={e => e.stopPropagation()}>\n        <h2 style={{margin: '0 0 1rem'}}>{title}</h2>\n        {children}\n        <button onClick={onClose} style={{\n          marginTop: '1rem', padding: '0.5rem 1rem',\n          background: '#F4B400', border: 'none', borderRadius: 8,\n          cursor: 'pointer', fontWeight: 600\n        }}>Close</button>\n      </div>\n    </div>\n  );\n}\n\n// Usage:\n// const [open, setOpen] = useState(false);\n// <Modal isOpen={open} onClose={() => setOpen(false)} title=\"Hello\">\n//   <p>Modal content here</p>\n// </Modal>\n```",
+    "Here's a comparison of **GPT-4o vs Claude 3.5 Sonnet**:\n\n| Feature | GPT-4o | Claude 3.5 Sonnet |\n|---------|--------|-------------------|\n| **Speed** | \u26a1 Very fast | \u26a1 Fast |\n| **Code** | Excellent | Excellent |\n| **Reasoning** | Strong | Very strong |\n| **Cost** | $2.50/1M input | $3.00/1M input |\n| **Context** | 128K tokens | 200K tokens |\n| **Vision** | \u2705 Built-in | \u2705 Built-in |\n| **Multilingual** | \u2705 Excellent | \u2705 Great |\n\n**Bottom line:** Both are excellent models. GPT-4o is slightly faster and cheaper, while Claude 3.5 Sonnet excels at nuanced reasoning and has a larger context window. For code generation, they're comparable \u2014 pick the one that fits your workflow best!"
   ];
   return responses[Math.floor(Math.random() * responses.length)];
+}
+function renderResponse(text){
+  text = escapeHtml(text);
+  text = text.replace(/```(\w*)\n([\s\S]*?)```/g, '<div class="pg-code-block">$2</div>');
+  text = text.replace(/`([^`]+)`/g, '<code class="pg-inline-code">$1</code>');
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/^- (.*)/gm, '<span style="display:block;padding-left:0.5rem">\u2022 $1</span>');
+  text = text.replace(/^> (.*)/gm, '<span style="display:block;padding:0.25rem 0.5rem;margin:0.25rem 0;border-left:3px solid var(--primary);color:var(--text-muted);font-style:italic">$1</span>');
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
+function copyResponse(btn){
+  var bub = btn.closest('.pg-msg').querySelector('.pg-bub');
+  var text = bub.textContent || bub.innerText;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(function(){
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+      }, 2000);
+    });
+  }
 }
 function escapeHtml(text){
   var div = document.createElement('div');
