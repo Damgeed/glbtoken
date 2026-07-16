@@ -213,17 +213,8 @@ body{background:var(--bg)}
 function toggleDashSidebar() {
   var sb = document.getElementById('dashSidebar');
   var toggle = document.getElementById('dashSidebarToggle');
-  if(window.innerWidth < 768){
-    // Mobile: use open class
-    sb.classList.toggle('open');
-    if(toggle) toggle.classList.toggle('hidden', sb.classList.contains('open'));
-  } else {
-    // Desktop: use collapsed class
-    sb.classList.toggle('collapsed');
-    var content = document.querySelector('.dash-content');
-    if(content) content.style.marginLeft = sb.classList.contains('collapsed') ? '0' : '240px';
-    if(toggle) toggle.classList.toggle('hidden', !sb.classList.contains('collapsed'));
-  }
+  sb.classList.toggle('open');
+  if(toggle) toggle.classList.toggle('hidden', sb.classList.contains('open'));
 }
 </script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>

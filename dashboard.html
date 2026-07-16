@@ -301,17 +301,8 @@ function showDashSection(section) {
 function toggleDashSidebar() {
   var sb = document.getElementById('dashSidebar');
   var toggle = document.getElementById('dashSidebarToggle');
-  if(window.innerWidth < 768){
-    // Mobile: use open class
-    sb.classList.toggle('open');
-    if(toggle) toggle.classList.toggle('hidden', sb.classList.contains('open'));
-  } else {
-    // Desktop: use collapsed class
-    sb.classList.toggle('collapsed');
-    var content = document.querySelector('.dash-content');
-    if(content) content.style.marginLeft = sb.classList.contains('collapsed') ? '0' : '240px';
-    if(toggle) toggle.classList.toggle('hidden', !sb.classList.contains('collapsed'));
-  }
+  sb.classList.toggle('open');
+  if(toggle) toggle.classList.toggle('hidden', sb.classList.contains('open'));
 }
 
 </script>
@@ -472,7 +463,7 @@ function toggleDashSidebar() {
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance">0</span> <small>GT</small></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" style="background:linear-gradient(135deg,#F4B400,#00D68F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">0</span> <small>GT</small> <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;border-radius:6px;font-size:0.7rem;font-weight:500;background:rgba(0,214,143,0.12);color:#00D68F;position:relative;top:-2px"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> +12.4%</span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
           <div class="actions" style="margin-top:3rem"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
