@@ -26,8 +26,7 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
 </div>
 <script>
 (function() {
-  var API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-    ? 'http://localhost:8000' : 'https://glbtoken-backend-production.up.railway.app';
+  var API_URL = 'https://glbtoken-backend-production.up.railway.app';
 
   var queryParams = new URLSearchParams(window.location.search);
   var hashParams = window.location.hash ? new URLSearchParams(window.location.hash.substring(1)) : null;

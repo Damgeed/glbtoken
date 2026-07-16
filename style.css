@@ -249,8 +249,8 @@
 .dash-sidebar-toggle:hover span{transform:translateX(2px)}
 .dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
 @media(max-width:768px){
-  .dash-sidebar{left:-300px;top:0;height:100vh;z-index:100;border-radius:0 12px 12px 0}
-  .dash-content{padding:1rem}
+  .dash-sidebar{left:-280px;top:56px;height:calc(100vh - 56px);z-index:100;border-radius:0 12px 12px 0;box-shadow:4px 0 24px rgba(0,0,0,0.35)}
+  .dash-content{padding:0.75rem 1rem;margin-left:0;min-height:calc(100vh - 56px)}
 }
     
 /* ── Blog Listing Grid ── */
