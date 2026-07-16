@@ -210,6 +210,12 @@ body{background:var(--bg)}
 #section-overview{display:block}
 #section-playground{display:none}
 .dash-section.active{display:block!important}
+@media(max-width:768px){
+  .dash-balance{padding:1rem!important}
+  .dash-stats{grid-template-columns:repeat(3,1fr)!important}
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  [style*="grid-template-columns:1.5fr 1fr"]{grid-template-columns:1fr!important}
+}
 </style>
   </head>
 <body>
