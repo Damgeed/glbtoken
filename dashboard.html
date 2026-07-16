@@ -85,46 +85,30 @@ body{background:var(--bg)}
 .dash-activity .activity-item:hover{background:var(--bg-alt)}
 .dash-activity .activity-item .act-time{font-size:0.72rem;color:var(--text-muted);margin-left:auto;white-space:nowrap}
 
-/* ── Playground — ChatGPT-style ── */
+/* ── Playground — GlobalGPT-style ── */
 .pg-page{display:flex;flex:1;position:relative;background:var(--bg);overflow:hidden;min-height:0}
-.pg-sidebar{width:260px;min-width:260px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
-.pg-new-btn{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1rem;margin:0.75rem;border-radius:8px;background:var(--primary);color:#0A0B14;font-weight:600;font-size:0.82rem;cursor:pointer;border:none;transition:all 0.2s;justify-content:center}
+.pg-sidebar{width:204px;min-width:204px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.pg-sb-head{display:flex;align-items:center;padding:0.75rem 0.75rem 0.5rem;border-bottom:1px solid var(--border)}
+.pg-sb-logo{font-size:1.1rem;font-weight:700;letter-spacing:-0.5px}
+.pg-sb-glb{color:var(--primary)}
+.pg-sb-token{color:var(--text)}
+.pg-new-btn{display:flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.5rem;margin:0.6rem 0.6rem 0.4rem;border-radius:8px;background:var(--primary);color:#0A0B14;font-weight:600;font-size:0.8rem;cursor:pointer;border:none;transition:all 0.2s}
 .pg-new-btn:hover{opacity:0.9}
-.pg-history{flex:1;overflow-y:auto;padding:0.25rem 0.5rem}
-.pg-history-item{display:flex;align-items:center;gap:0.35rem;padding:0.5rem 0.6rem;border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:0.82rem;color:var(--text);margin-bottom:2px;position:relative}
-.pg-history-item:hover{background:var(--bg-alt)}
-.pg-history-item.active{background:var(--bg-alt)}
-.pg-h-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.8rem}
-.pg-h-del{opacity:0;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.2rem;border-radius:4px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pg-history-item:hover .pg-h-del{opacity:0.5}
-.pg-h-del:hover{opacity:1!important;background:rgba(255,107,107,0.15);color:#FF6B6B}
+.pg-sb-nav{flex:1;overflow-y:auto;padding:0.25rem 0.5rem}
+.pg-sb-label{font-size:0.68rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;padding:0.5rem 0.5rem 0.35rem}
+.pg-model-item{display:flex;align-items:center;gap:0.5rem;padding:0.45rem 0.5rem;border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:0.82rem;color:var(--text);text-decoration:none;margin-bottom:1px}
+.pg-model-item:hover{background:var(--bg-alt)}
+.pg-model-item.active{background:var(--bg-alt)}
+.pg-mi-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:#fff;flex-shrink:0}
+.pg-mi-name{font-size:0.8rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pg-main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--bg)}
-.pg-model-bar{display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.6rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0}
-.pg-model-select{padding:0.35rem 0.75rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem;max-width:260px;cursor:pointer}
-.pg-model-select:focus{outline:none;border-color:var(--primary)}
-.pg-settings-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.5rem;color:var(--text-muted);cursor:pointer;transition:all 0.2s;display:flex;align-items:center}
-.pg-settings-btn:hover{background:var(--bg-alt);color:var(--text)}
-.pg-mobile-toggle{display:none;background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.25rem;align-items:center}
-.pg-backdrop{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:45;background:rgba(0,0,0,0.6)}
-@media(max-width:768px){.pg-mobile-toggle{display:flex}}
-@media(max-width:768px){
-  .pg-sidebar.open + .pg-main .pg-backdrop,
-  .pg-sidebar.open ~ .pg-backdrop{display:block}
-}
-.pg-params-panel{display:none;flex-wrap:wrap;gap:0.75rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border);background:var(--bg-alt)}
-.pg-params-panel.open{display:flex}
-.pg-param{display:flex;flex-direction:column;gap:0.2rem;min-width:140px;flex:1}
-.pg-param label{font-size:0.72rem;color:var(--text-muted)}
-.pg-param input[type="range"]{width:100%;accent-color:var(--primary);height:4px;cursor:pointer}
-.pg-p-val{font-size:0.78rem;color:var(--text);font-weight:500}
-.pg-param input[type="number"]{padding:0.25rem 0.5rem;border-radius:4px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:0.78rem;width:80px}
 .pg-chat{flex:1;overflow-y:auto;display:flex;flex-direction:column}
 .pg-chat > :first-child{margin-top:auto}
 .pg-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;max-width:600px;margin:0 auto}
-.pg-empty-logo{font-size:2.5rem;font-weight:800;letter-spacing:-1px;margin-bottom:0.75rem}
+.pg-empty-logo{font-size:2.5rem;font-weight:800;letter-spacing:-1px;margin-bottom:0.35rem}
 .pg-empty-glb{color:var(--primary)}
 .pg-empty-token{color:var(--text)}
-.pg-empty h2{font-size:1.3rem;font-weight:600;color:var(--text);margin:0 0 1.5rem}
+.pg-empty-sub{font-size:1.05rem;font-weight:500;color:var(--text-muted);margin:0 0 1.5rem}
 .pg-suggestions{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;max-width:480px;width:100%}
 .pg-suggestion-card{background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;cursor:pointer;transition:all 0.2s;text-align:left}
 .pg-suggestion-card:hover{background:var(--card);border-color:var(--primary);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.12)}
@@ -144,7 +128,7 @@ body{background:var(--bg)}
 .pg-msg{display:flex;gap:0.75rem;padding:1rem 1.5rem;max-width:720px;width:100%;margin:0 auto;animation:fadeSlideUp 0.25s ease}
 .pg-msg.user{justify-content:flex-end}
 .pg-msg.ai{justify-content:flex-start}
-.pg-msg .pg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.75rem;font-weight:600;margin-top:0.25rem}
+.pg-msg .pg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.7rem;font-weight:600;margin-top:0.15rem}
 .pg-msg.user .pg-av{background:var(--primary);color:#0A0B14;order:1}
 .pg-msg.ai .pg-av{background:linear-gradient(135deg,var(--primary),var(--success));color:#fff}
 .pg-msg .pg-bub{padding:0.75rem 1rem;border-radius:12px;font-size:0.88rem;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;max-width:85%}
@@ -153,15 +137,14 @@ body{background:var(--bg)}
 .pg-msg .pg-meta{display:flex;align-items:center;gap:0.5rem;font-size:0.68rem;color:var(--text-muted);margin-top:0.3rem;padding-left:0.15rem}
 .pg-msg.user .pg-meta{justify-content:flex-end}
 .pg-msg.ai .pg-meta{justify-content:flex-start}
-/* Copy button */
-.pg-copy-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.2rem;border-radius:4px;display:inline-flex;align-items:center;opacity:0;transition:all 0.15s;vertical-align:middle}
+.pg-copy-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.2rem;border-radius:4px;display:inline-flex;align-items:center;opacity:0;transition:all 0.15s}
 .pg-msg.ai:hover .pg-copy-btn{opacity:0.6}
 .pg-copy-btn:hover{opacity:1!important;color:var(--primary)!important}
-/* Code blocks in chat */
 .pg-code-block{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin:0.5rem 0;font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:0.8rem;color:#e0e0e0;overflow-x:auto;line-height:1.5;white-space:pre}
 .pg-inline-code{background:rgba(0,0,0,0.2);border-radius:4px;padding:0.1rem 0.35rem;font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:0.82rem;color:var(--primary)}
 .pg-msg.ai .pg-bub strong{color:var(--primary);font-weight:600}
 .pg-typing .pg-bub::after{content:'...';animation:typing 1.5s infinite}
+.pg-backdrop{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:45;background:rgba(0,0,0,0.6)}
 @keyframes typing{0%,100%{opacity:0.3}50%{opacity:1}}
 @keyframes fadeSlideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -203,21 +186,19 @@ body{background:var(--bg)}
   .dash-section > .dash-grid,
   .dash-section > .settings-grid,
   .dash-section > .billing-grid{margin-bottom:0.75rem}
-  /* Playground mobile */
-  .pg-sidebar{display:none;position:absolute;z-index:50;height:100%;width:240px;min-width:240px}
-  .pg-sidebar.open{display:flex}
-  .pg-chat{padding:0}
-  .pg-msg{padding:0.75rem 1rem;max-width:100%}
-  .pg-input-area{padding:0.5rem 0.75rem 0.75rem}
-  .pg-params-panel{flex-direction:column}
-  .pg-model-bar{padding:0.4rem 0.75rem}
   .pg-empty{padding:1.5rem 1rem}
   .pg-empty-logo{font-size:1.8rem}
-  .pg-empty h2{font-size:1.1rem}
+  .pg-empty-sub{font-size:0.95rem}
   .pg-suggestions{grid-template-columns:1fr 1fr;gap:0.5rem}
   .pg-suggestion-card{padding:0.65rem 0.75rem}
   .pg-sug-title{font-size:0.75rem}
   .pg-sug-desc{font-size:0.65rem}
+  .pg-sidebar{display:none;position:absolute;z-index:50;height:100%;width:204px;min-width:204px}
+  .pg-sidebar.open{display:flex}
+  .pg-chat{padding:0}
+  .pg-msg{padding:0.75rem 1rem;max-width:100%}
+  .pg-input-area{padding:0.5rem 0.75rem 0.75rem}
+  .pg-sidebar.open ~ .pg-backdrop{display:block}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
   #referral-share-charts{grid-template-columns:1fr 1fr!important;gap:1rem}
   #referral-share-charts>.dash-card:first-child{grid-column:1/-1}
@@ -726,83 +707,50 @@ function toggleDashSidebar() {
       <div class="pg-page">
         <!-- Left Sidebar -->
         <div class="pg-sidebar" id="pgSidebar">
+          <div class="pg-sb-head">
+            <div class="pg-sb-logo"><span class="pg-sb-glb">Glb</span><span class="pg-sb-token">TOKEN</span></div>
+          </div>
           <button class="pg-new-btn" onclick="newConversation()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             New Chat
           </button>
-          <div class="pg-history" id="conversationHistory">
-            <div class="pg-history-item active" onclick="switchConversation(this)" data-id="1">
-              <span class="pg-h-title">GPT-4o API integration</span>
-              <button class="pg-h-del" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-              </button>
-            </div>
-            <div class="pg-history-item" onclick="switchConversation(this)" data-id="2">
-              <span class="pg-h-title">Claude 3.5 Sonnet testing</span>
-              <button class="pg-h-del" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
-            </div>
-            <div class="pg-history-item" onclick="switchConversation(this)" data-id="3">
-              <span class="pg-h-title">Code generation test</span>
-              <button class="pg-h-del" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
-            </div>
-            <div class="pg-history-item" onclick="switchConversation(this)" data-id="4">
-              <span class="pg-h-title">Translation comparison</span>
-              <button class="pg-h-del" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+          <div class="pg-sb-nav">
+            <div class="pg-sb-label">Models</div>
+            <div class="pg-history" id="conversationHistory">
+              <a class="pg-model-item active" onclick="switchConversation(this);event.preventDefault()" data-id="1" href="#">
+                <span class="pg-mi-icon" style="background:linear-gradient(135deg,#F4B400,#F5C842)">G</span>
+                <span class="pg-mi-name">GPT-4o</span>
+              </a>
+              <a class="pg-model-item" onclick="switchConversation(this);event.preventDefault()" data-id="2" href="#">
+                <span class="pg-mi-icon" style="background:linear-gradient(135deg,#00D68F,#00BFA5)">C</span>
+                <span class="pg-mi-name">Claude 3.5</span>
+              </a>
+              <a class="pg-model-item" onclick="switchConversation(this);event.preventDefault()" data-id="3" href="#">
+                <span class="pg-mi-icon" style="background:linear-gradient(135deg,#7C4DFF,#536DFE)">D</span>
+                <span class="pg-mi-name">DeepSeek V3</span>
+              </a>
+              <a class="pg-model-item" onclick="switchConversation(this);event.preventDefault()" data-id="4" href="#">
+                <span class="pg-mi-icon" style="background:linear-gradient(135deg,#4FC3F7,#29B6F6)">G</span>
+                <span class="pg-mi-name">Gemini 2.0</span>
+              </a>
+              <a class="pg-model-item" onclick="switchConversation(this);event.preventDefault()" data-id="5" href="#">
+                <span class="pg-mi-icon" style="background:linear-gradient(135deg,#FF9800,#F57C00)">L</span>
+                <span class="pg-mi-name">Llama 3.1</span>
+              </a>
             </div>
           </div>
         </div>
 
         <!-- Main Chat Area -->
         <div class="pg-main">
-          <!-- Model Bar -->
-          <div class="pg-model-bar">
-            <button class="pg-mobile-toggle" onclick="togglePlaygroundSidebar()" title="Toggle sidebar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-              </svg>
-            </button>
-            <select class="pg-model-select" id="modelSelect">
-              <option value="gpt-4o">GPT-4o — OpenAI</option>
-              <option value="claude-3.5-sonnet" selected>Claude 3.5 Sonnet — Anthropic</option>
-              <option value="claude-3-opus">Claude 3 Opus — Anthropic</option>
-              <option value="gemini-2.0">Gemini 2.0 Flash — Google</option>
-              <option value="llama-3.1-405b">Llama 3.1 405B — Meta</option>
-              <option value="deepseek-v3">DeepSeek V3 — DeepSeek</option>
-              <option value="gpt-4-turbo">GPT-4 Turbo — OpenAI</option>
-              <option value="mistral-large">Mistral Large — Mistral</option>
-            </select>
-            <button class="pg-settings-btn" onclick="toggleParamsPanel()" id="paramsToggle" title="Parameters">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
-            </button>
-          </div>
-
-          <!-- Params Panel (collapsed by default) -->
-          <div class="pg-params-panel" id="paramsPanel">
-            <div class="pg-param">
-              <label>Temperature <span class="pg-p-val" id="tempValue">0.7</span></label>
-              <input type="range" min="0" max="2" step="0.1" value="0.7" oninput="document.getElementById('tempValue').textContent=this.value" />
-            </div>
-            <div class="pg-param">
-              <label>Max Tokens</label>
-              <input type="number" value="4096" min="1" max="131072" oninput="updateTokenEstimate()" id="maxTokensInput" />
-            </div>
-            <div class="pg-param">
-              <label>Top P <span class="pg-p-val" id="topPValue">1.0</span></label>
-              <input type="range" min="0" max="1" step="0.05" value="1" oninput="document.getElementById('topPValue').textContent=this.value" />
-            </div>
-          </div>
-
-          <!-- Chat Messages -->
           <div class="pg-chat" id="chatMessages">
             <div class="pg-empty" id="emptyState">
               <div class="pg-empty-logo">
                 <span class="pg-empty-glb">Glb</span><span class="pg-empty-token">TOKEN</span>
               </div>
-              <h2>How can I help you today?</h2>
+              <p class="pg-empty-sub">How can I help you today?</p>
               <div class="pg-suggestions">
                 <div class="pg-suggestion-card" onclick="useSuggestion('Write a Python function to sort a list of dictionaries by a key')">
                   <div class="pg-sug-icon">✏️</div>
@@ -838,7 +786,7 @@ function toggleDashSidebar() {
                 </svg>
               </button>
             </div>
-            <div class="pg-input-footer"><span id="tokenEstimate">GlbTOKEN may produce inaccurate information.</span></div>
+            <div class="pg-input-footer"><span>GlbTOKEN may produce inaccurate information.</span></div>
           </div>
         </div>
       </div>
@@ -932,14 +880,14 @@ function newConversation(){
   document.getElementById('pgSidebar').classList.remove('open');
 }
 function switchConversation(el){
-  document.querySelectorAll('.pg-history-item').forEach(function(i){ i.classList.remove('active'); });
+  document.querySelectorAll('.pg-model-item').forEach(function(i){ i.classList.remove('active'); });
   el.classList.add('active');
   currentConversationId = el.getAttribute('data-id');
   clearChat();
 }
 function deleteConvItem(btn){
   showConfirm('Delete Conversation', 'Delete this conversation?', function(){
-    var item = btn.closest('.pg-history-item');
+    var item = btn.closest('.pg-model-item');
     if(item){
       var next = item.nextElementSibling || item.previousElementSibling;
       item.remove();
@@ -957,7 +905,7 @@ function showEmptyState(){
   if(chat.querySelector('.pg-msg')) return;
   chat.innerHTML = '<div class="pg-empty" id="emptyState">'
     + '<div class="pg-empty-logo"><span class="pg-empty-glb">Glb</span><span class="pg-empty-token">TOKEN</span></div>'
-    + '<h2>How can I help you today?</h2>'
+    + '<p class="pg-empty-sub">How can I help you today?</p>'
     + '<div class="pg-suggestions">'
     + '<div class="pg-suggestion-card" onclick="useSuggestion(\'Write a Python function to sort a list of dictionaries by a key\')"><div class="pg-sug-icon">✏️</div><div class="pg-sug-title">Write code</div><div class="pg-sug-desc">Python sort function</div></div>'
     + '<div class="pg-suggestion-card" onclick="useSuggestion(\'Explain quantum computing in simple terms\')"><div class="pg-sug-icon">⚛️</div><div class="pg-sug-title">Explain</div><div class="pg-sug-desc">Quantum computing</div></div>'
@@ -988,7 +936,7 @@ function sendPlaygroundMessage(){
   showTypingIndicator();
   setTimeout(function(){
     removeTypingIndicator();
-    var modelName = document.getElementById('modelSelect').options[document.getElementById('modelSelect').selectedIndex].text;
+    var modelName = document.querySelector('.pg-model-item.active .pg-mi-name'); modelName = modelName ? modelName.textContent : 'GPT-4o';
     var response = getSimulatedResponse(text);
     var tokenCount = Math.floor(Math.random() * 300) + 50;
     var responseTime = (Math.random() * 2.5 + 0.5).toFixed(2);
@@ -1004,7 +952,7 @@ function sendPlaygroundMessage(){
     chat.appendChild(aiMsg);
     chat.scrollTop = chat.scrollHeight;
     document.getElementById('playgroundSendBtn').disabled = false;
-    var active = document.querySelector('.pg-history-item.active .pg-h-title');
+    var active = document.querySelector('.pg-model-item.active .pg-mi-name');
     if(active && active.textContent === 'New conversation'){
       active.textContent = text.substring(0, 30) + (text.length > 30 ? '...' : '');
     }
