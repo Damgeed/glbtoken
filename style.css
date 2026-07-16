@@ -239,7 +239,7 @@
 .dash-sidebar-item:hover{background:var(--bg-alt);color:var(--primary)}
 .dash-sidebar-item.active{background:var(--bg-alt);color:var(--primary);border-left-color:var(--primary);font-weight:600}
 .dash-sidebar-item svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;stroke-width:2;fill:none}
-.dash-content{flex:1;padding:0.75rem 2rem;overflow-y:auto;margin-left:0;min-height:calc(100vh - 64px)}
+.dash-content{width:100%;max-width:1200px;margin:0 auto;padding:0.75rem 2rem;overflow-y:auto;min-height:calc(100vh - 64px)}
 .dash-section{display:none}
 .dash-section.active{display:block}
 /* Mobile sidebar toggle */
