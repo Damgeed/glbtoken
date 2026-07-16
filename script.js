@@ -3311,3 +3311,71 @@ function insertPromptSuggestion(text) {
   inputEl.focus();
 }
 
+// ── Mobile swipe to open dash sidebar ──
+(function(){
+  const THRESHOLD=40; // px to trigger open/close
+  const EDGE_ZONE=40; // px from left edge for open gesture
+  var startX=0,startY=0,swiping=false;
+  var sb=null;
+  function getSidebar(){return document.getElementById('dashSidebar')}
+  function isOpen(){var s=getSidebar();return s&&s.classList.contains('open')}
+  
+  // Lock/unlock body scroll when sidebar opens/closes (covers both swipe & button click)
+  function lockScroll(lock){
+    document.body.style.overflow=lock?'hidden':'';
+    if(lock) document.body.style.position='fixed';
+    else document.body.style.position='';
+  }
+  // Watch for class changes on sidebar via MutationObserver (catches toggleDashSidebar clicks)
+  var obs=new MutationObserver(function(){
+    var s=getSidebar();
+    if(!s)return;
+    lockScroll(s.classList.contains('open'));
+  });
+  document.addEventListener('DOMContentLoaded',function(){
+    var s=getSidebar();
+    if(s)obs.observe(s,{attributes:true,attributeFilter:['class']});
+  });
+  
+  document.addEventListener('touchstart',function(e){
+    sb=getSidebar();
+    if(!sb)return;
+    var t=e.touches[0];
+    startX=t.clientX;startY=t.clientY;
+    swiping=true;
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!swiping||!sb)return;
+    var t=e.touches[0];
+    var dx=t.clientX-startX;
+    var dy=t.clientY-startY;
+    // Only handle horizontal swipes (more horizontal than vertical)
+    if(Math.abs(dx)<Math.abs(dy))return;
+    // Opening: swipe right from left edge
+    if(!isOpen()&&startX<=EDGE_ZONE&&dx>THRESHOLD){
+      e.preventDefault(); // prevent scroll/nav
+      sb.classList.add('open');
+      var toggle=document.getElementById('dashSidebarToggle');
+      if(toggle)toggle.classList.add('hidden');
+      swiping=false;
+      return;
+    }
+    // Closing: swipe left when open
+    if(isOpen()&&dx<-THRESHOLD){
+      e.preventDefault(); // prevent scroll/nav
+      sb.classList.remove('open');
+      var toggle=document.getElementById('dashSidebarToggle');
+      if(toggle)toggle.classList.remove('hidden');
+      swiping=false;
+      return;
+    }
+    // If sidebar is open, prevent any horizontal scroll
+    if(isOpen()&&Math.abs(dx)>10){
+      e.preventDefault();
+    }
+  },{passive:false});
+  document.addEventListener('touchend',function(){
+    swiping=false;
+  },{passive:true});
+})();
+
