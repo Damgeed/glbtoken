@@ -242,17 +242,15 @@
 .dash-content{flex:1;padding:0.75rem 2rem;overflow-y:auto;margin-left:0;min-height:calc(100vh - 64px)}
 .dash-section{display:none}
 .dash-section.active{display:block}
-/* Sidebar toggle - visible on all screens */
+/* Mobile sidebar toggle */
 .dash-sidebar-toggle{display:flex;background:var(--card);border:2px solid var(--primary);border-left:none;color:var(--primary);cursor:pointer;width:32px;height:40px;align-items:center;justify-content:center;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;border-radius:0 20px 20px 0;transition:all 0.25s;box-shadow:3px 0 12px rgba(244,180,0,0.12)}
 .dash-sidebar-toggle:hover{background:color-mix(in srgb,var(--card) 90%,var(--primary));box-shadow:3px 0 16px rgba(244,180,0,0.25)}
 .dash-sidebar-toggle span{font-size:16px;line-height:1;font-weight:700;transition:transform 0.2s;margin-left:2px}
 .dash-sidebar-toggle:hover span{transform:translateX(2px)}
 .dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
 @media(max-width:768px){
-  .dash-sidebar{left:-300px;top:0;height:100vh;z-index:100}
-  .dash-sidebar.open{left:0}
-  .dash-sidebar-backdrop{z-index:99}
-  .dash-content{padding:0.5rem}
+  .dash-sidebar{left:-300px;top:0;height:100vh;z-index:100;border-radius:0 12px 12px 0}
+  .dash-content{padding:1rem}
 }
     
 /* ── Blog Listing Grid ── */
