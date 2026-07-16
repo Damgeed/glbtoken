@@ -498,6 +498,7 @@ function toggleDashSidebar() {
           <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
           <div class="dash-stat-card"><div class="num" id="dashKeyCount">—</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
           <div class="dash-stat-card"><div class="num" id="dashDaysActive">—</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalConsumed">—</div><div class="lbl">Tokens Consumed</div><div class="chg" style="color:var(--text-muted)">Lifetime</div></div>
         </div>
       </div>
       <div class="dash-card">
@@ -1056,11 +1057,14 @@ function renderHistoryRow(item){
   var statusIcon = item.status === 'success'
     ? '<strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong>'
     : '<strong style="color:#FF6B6B;font-size:0.85rem">❌<span class="status-text"> Failed</span></strong>';
+  var locParts=item.location.split(', ');
+  var city=locParts[0]||item.location;
+  var country=locParts[1]||'';
   return '<tr>'
     + '<td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">'+date+'</div><div style="font-size:0.7rem;color:var(--text-muted)">'+time+'</div></td>'
     + '<td class="ip-col" style="font-family:monospace;font-size:0.85rem">'+item.ip+'</td>'
     + '<td style="font-size:0.85rem">'+item.device+'</td>'
-    + '<td style="font-size:0.85rem;color:var(--text-muted)">'+getFlag(item.location)+' <span class="loc-city">'+item.location.replace(/, [A-Z]{2}$/,'')+'</span><span class="loc-country">, '+item.location.match(/, ([A-Z]{2})$/)?.[1]||''+'</span></td>'
+    + '<td style="font-size:0.85rem;color:var(--text-muted)">'+getFlag(item.location)+' <span class="loc-city">'+city+'</span><span class="loc-country">'+(country?', '+country:'')+'</span></td>'
     + '<td>'+statusIcon+'</td>'
     + '</tr>';
 }
