@@ -221,6 +221,7 @@ body{background:var(--bg)}
   .api-stats-grid > div > div:nth-child(2){font-size:0.55rem!important}
   .api-stats-grid > div > div:nth-child(3){font-size:0.55rem!important}
 }
+.api-stats-grid > div{text-align:center;padding:0.4rem;background:var(--card);border-radius:6px;border:1px solid var(--border)}
 </style>
   </head>
 <body>
@@ -507,23 +508,23 @@ function toggleDashSidebar() {
             </div>
           </div>
           <div class="api-stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-top:0.75rem;padding-top:0.625rem;border-top:1px solid var(--border)">
-            <div style="text-align:center;padding:0.4rem;background:rgba(255,255,255,0.02);border-radius:6px;border:1px solid rgba(255,255,255,0.04)">
-              <div style="font-size:0.85rem;font-weight:600;color:#fff">8.3k</div>
+            <div style="text-align:center">
+              <div style="font-size:0.85rem;font-weight:600;color:var(--text)">8.3k</div>
               <div style="font-size:0.6rem;color:var(--text-muted)">Total Calls</div>
               <div style="font-size:0.6rem;color:var(--success)">↑ 23%</div>
             </div>
-            <div style="text-align:center;padding:0.4rem;background:rgba(255,255,255,0.02);border-radius:6px;border:1px solid rgba(255,255,255,0.04)">
-              <div style="font-size:0.85rem;font-weight:600;color:#fff">276</div>
+            <div style="text-align:center">
+              <div style="font-size:0.85rem;font-weight:600;color:var(--text)">276</div>
               <div style="font-size:0.6rem;color:var(--text-muted)">Avg / Day</div>
               <div style="font-size:0.6rem;color:var(--success)">↑ 8%</div>
             </div>
-            <div style="text-align:center;padding:0.4rem;background:rgba(255,255,255,0.02);border-radius:6px;border:1px solid rgba(255,255,255,0.04)">
-              <div style="font-size:0.85rem;font-weight:600;color:#fff">99.2%</div>
+            <div style="text-align:center">
+              <div style="font-size:0.85rem;font-weight:600;color:var(--text)">99.2%</div>
               <div style="font-size:0.6rem;color:var(--text-muted)">Success</div>
               <div style="font-size:0.6rem;color:var(--success)">↑ 0.4%</div>
             </div>
-            <div style="text-align:center;padding:0.4rem;background:rgba(255,255,255,0.02);border-radius:6px;border:1px solid rgba(255,255,255,0.04)">
-              <div style="font-size:0.85rem;font-weight:600;color:#fff">187ms</div>
+            <div style="text-align:center">
+              <div style="font-size:0.85rem;font-weight:600;color:var(--text)">187ms</div>
               <div style="font-size:0.6rem;color:var(--text-muted)">Latency</div>
               <div style="font-size:0.6rem;color:#FF6B6B">↓ 12ms</div>
             </div>
