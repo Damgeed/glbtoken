@@ -239,7 +239,7 @@
 .dash-sidebar-item:hover{background:var(--bg-alt);color:var(--primary)}
 .dash-sidebar-item.active{background:var(--bg-alt);color:var(--primary);border-left-color:var(--primary);font-weight:600}
 .dash-sidebar-item svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;stroke-width:2;fill:none}
-.dash-content{flex:1;padding:0.75rem 2rem;overflow-y:auto;margin-left:0;min-height:calc(100vh - 64px);width:100%;max-width:1320px;margin-right:auto}
+.dash-content{flex:1;padding:0.75rem 2rem;overflow-y:auto;margin-left:0;min-height:calc(100vh - 64px)}
 .dash-section{display:none}
 .dash-section.active{display:block}
 /* Sidebar toggle - visible on all screens */
@@ -251,7 +251,7 @@
 @media(max-width:768px){
   .dash-sidebar{left:-300px;top:0;height:100vh;z-index:100}
   .dash-sidebar.open{left:0}
-  .dash-sidebar-backdrop{z-index:99;backdrop-filter:none}
+  .dash-sidebar-backdrop{z-index:99}
   .dash-content{padding:0.5rem}
 }
     
