@@ -128,10 +128,7 @@ body{background:var(--bg)}
 
 /* Mobile responsive */
 @media(max-width:768px){
-  .dash-sidebar{width:280px;min-width:280px;position:fixed;left:-300px;top:0;z-index:100;transition:left 0.3s;height:100vh;margin-left:0;border-radius:0 12px 12px 0;box-shadow:4px 0 24px rgba(0,0,0,0.3)}
-  .dash-sidebar.open{left:0}
-  .dash-sidebar.open+.dash-sidebar-backdrop{display:block}
-  .dash-sidebar-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:99;backdrop-filter:blur(2px)}
+
   .dash-sidebar-toggle{display:flex;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:50;width:32px;height:40px;border-radius:0 20px 20px 0;border:2px solid var(--primary);border-left:none;background:var(--card);color:var(--primary);cursor:pointer;align-items:center;justify-content:center;box-shadow:3px 0 12px rgba(244,180,0,0.12);transition:all 0.25s;opacity:1;pointer-events:auto}
   .dash-content{padding:0.5rem;margin-left:0}
   .dash-header{flex-direction:row;text-align:left;gap:0.35rem;margin-bottom:0.75rem}
@@ -213,17 +210,8 @@ body{background:var(--bg)}
 function toggleDashSidebar() {
   var sb = document.getElementById('dashSidebar');
   var toggle = document.getElementById('dashSidebarToggle');
-  if(window.innerWidth < 768){
-    // Mobile: use open class
-    sb.classList.toggle('open');
-    if(toggle) toggle.classList.toggle('hidden', sb.classList.contains('open'));
-  } else {
-    // Desktop: use collapsed class
-    sb.classList.toggle('collapsed');
-    var content = document.querySelector('.dash-content');
-    if(content) content.style.marginLeft = sb.classList.contains('collapsed') ? '0' : '240px';
-    if(toggle) toggle.classList.toggle('hidden', !sb.classList.contains('collapsed'));
-  }
+  var isOpen = sb.classList.toggle('open');
+  if(toggle) toggle.classList.toggle('hidden', isOpen);
 }
 </script>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
