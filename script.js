@@ -256,12 +256,17 @@
       try {
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
+          if(resp.status === 401){
+            showSessionExpired();
+            throw new Error('Session expired');
+          }
           const errData = await resp.json().catch(()=>{});
           throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
         }
         return await resp.json();
       } catch(e) {
         if (e.name === 'AbortError') throw new Error('Request timed out');
+        if(e.message === 'Session expired') throw e;
         throw new Error('Network error. Check your connection.');
       } finally {
         if(timer) clearTimeout(timer);
@@ -2460,6 +2465,37 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       document.body.appendChild(m);
       document.getElementById('alertOkBtn').onclick=function(){m.remove()};
       m.onclick=function(e){if(e.target===m)m.remove()};
+    }
+    // ── Session Expired gentle modal ──
+    var _sessionExpiredShown = false;
+    function showSessionExpired(){
+      if(_sessionExpiredShown) return;
+      _sessionExpiredShown = true;
+      var existing=document.getElementById('sessionExpiredModal');
+      if(existing)return;
+      var m=document.createElement('div');
+      m.id='sessionExpiredModal';
+      m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+      var theme=document.documentElement.className;
+      var isDark=theme==='dark';
+      var cardBg=isDark?'#1e1f29':'#ffffff';
+      var textClr=isDark?'#f8f8f2':'#1a1a2e';
+      var muted=isDark?'#6272a4':'#666';
+      var border=isDark?'#3a3a4e':'#ddd';
+      m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+        +'<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
+        +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">Session Expired</h3>'
+        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">Your session has expired. Please log in again to continue using GlbTOKEN.</p>'
+        +'<button id="sessionLoginBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Log In</button>'
+        +'</div></div>';
+      document.body.appendChild(m);
+      document.getElementById('sessionLoginBtn').onclick=function(){
+        m.remove();
+        token='';userData={};
+        localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+        window.location.href='login.html';
+      };
+      m.onclick=function(e){if(e.target===m){m.remove();_sessionExpiredShown=false}};
     }
     // ── Themed prompt dialog ──
     function showPrompt(title, placeholder, onSubmit){
