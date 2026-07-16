@@ -166,6 +166,9 @@ body{background:var(--bg)}
 .dash-stat-card .chg.up{color:var(--success)}
 .dash-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:all 0.2s}
 .dash-card:hover{border-color:color-mix(in srgb,var(--border) 70%,var(--primary));box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+/* Logs grid: 2x2 for admin cards */
+.logs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:768px){.logs-grid{grid-template-columns:1fr;gap:0.75rem}}
 .dash-section-title{font-size:1rem;font-weight:600;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;color:var(--text);letter-spacing:-0.01em}
 .dash-section-title svg{flex-shrink:0}
 .section-title{font-size:1.75rem;font-weight:700;margin:0 0 0.25rem;letter-spacing:-0.02em}
@@ -537,11 +540,12 @@ function toggleDashSidebar() {
         <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> Your Models <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="modelCountLabel">via New API</span></div>
         <div id="dashModelList" style="max-height:200px;overflow-y:auto;margin-top:0.25rem"><p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">Connect New API to see available models.</p></div>
       </div>
-      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="dashboard.html#usage" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
+      <div class="dash-card"><div class="dash-section-title">Recent Transactions <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Last 5</span> <a href="javascript:void(0)" onclick="showDashSection('usage')" style="font-size:0.8rem;color:var(--primary);cursor:pointer;margin-left:0.5rem;text-decoration:none">View all →</a></div>
         <table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Detail</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions yet</td></tr></tbody></table>
       </div>
-      <!-- ── ADMIN CARDS: Cost, Errors, Response Time, Speed ── -->
+      <!-- ── ADMIN LOGS: Cost, Errors, Response Time, Speed (2x2 grid) ── -->
+      <div class="logs-grid">
       <div class="dash-card" id="dashCostBreakdown">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -593,6 +597,7 @@ function toggleDashSidebar() {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
 
     </div>
