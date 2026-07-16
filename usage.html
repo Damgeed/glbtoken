@@ -450,8 +450,9 @@ function toggleDashSidebar() {
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
           </svg>
           Login Attempts
+          <a href="javascript:void(0)" onclick="toggleLoginHistory()" id="toggleHistoryLink" style="font-size:0.8rem;font-weight:400;color:var(--primary);margin-left:auto;text-decoration:none;cursor:pointer">Hide</a>
         </div>
-        <div style="overflow-x:auto">
+        <div id="loginHistoryContent" style="overflow-x:auto">
           <table class="tx-table">
             <thead><tr><th>Timestamp</th><th class="ip-col">IP Address</th><th>Device / Browser</th><th>Location</th><th>Status</th></tr></thead>
             <tbody id="historyBody">
@@ -513,7 +514,6 @@ function toggleDashSidebar() {
               </tr>
             </tbody>
           </table>
-        </div>
 
         <!-- Empty State -->
         <div id="historyEmptyState" style="display:none;text-align:center;padding:3rem 1rem">
@@ -533,6 +533,7 @@ function toggleDashSidebar() {
             Load More
           </button>
           <p style="font-size:0.75rem;color:var(--text-muted);margin:0.5rem 0 0" id="historyCount">Showing 8 of 8 entries</p>
+        </div>
         </div>
       </div>
 
@@ -713,6 +714,14 @@ function applyFilters(){
     });
     document.getElementById('historyCount').textContent = 'Showing '+filtered.length+' entries';
   }
+}
+function toggleLoginHistory() {
+  var content = document.getElementById('loginHistoryContent');
+  var link = document.getElementById('toggleHistoryLink');
+  if(!content || !link) return;
+  var hidden = content.style.display === 'none';
+  content.style.display = hidden ? '' : 'none';
+  link.textContent = hidden ? 'Hide' : 'Show';
 }
 </script>
 
