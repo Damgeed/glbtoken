@@ -170,9 +170,10 @@ body{background:var(--bg)}
   .dash-section > .settings-grid,
   .dash-section > .billing-grid{margin-bottom:0.75rem}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
-  #referral-share-charts{grid-template-columns:1fr 2.5fr 2.5fr!important;gap:0.75rem;overflow-x:auto}
-  #referral-share-charts>.dash-card:first-child{grid-column:1/-1}
-  #referral-share-charts>.dash-card:nth-child(n+2){min-width:320px;width:100%}
+  #referral-share-charts{grid-template-columns:1fr!important;gap:0.75rem}
+  #referral-share-charts>.dash-card:first-child{width:100%}
+  .chart-scroll-row{display:flex;gap:0.75rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:0.25rem}
+  .chart-scroll-row>.dash-card{flex:0 0 320px;min-width:320px;overflow:visible!important;width:auto}
   #section-referral .dash-stat-card{padding:0.5rem 0.35rem;white-space:nowrap;overflow-x:auto}
   #section-referral .dash-stat-card .num{font-size:0.9rem}
   #section-referral .dash-stat-card .lbl{font-size:0.62rem}
@@ -182,6 +183,11 @@ body{background:var(--bg)}
 
 /* Referral section visible by default */
 #section-referral{display:block}
+/* chart scroll row — desktop: fill grid cell, mobile: horizontal scroll */
+@media(min-width:769px){
+  .chart-scroll-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;grid-column:span 2}
+  .chart-scroll-row>.dash-card{overflow:hidden}
+}
 </style>
   </head>
 <body>
@@ -451,23 +457,25 @@ function toggleDashSidebar() {
             </button>
           </div>
         </div>
-        <div class="dash-card">
-          <div class="dash-section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-            </svg>
-            Referrals Over Time
+        <div class="chart-scroll-row">
+          <div class="dash-card">
+            <div class="dash-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+              </svg>
+              Referrals Over Time
+            </div>
+            <div class="chart-container" style="height:180px;min-width:300px"><canvas id="referralsChart"></canvas></div>
           </div>
-          <div class="chart-container" style="height:180px"><canvas id="referralsChart"></canvas></div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
-              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-            </svg>
-            Earnings Over Time
+          <div class="dash-card">
+            <div class="dash-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+              </svg>
+              Earnings Over Time
+            </div>
+            <div class="chart-container" style="height:180px;min-width:300px"><canvas id="earningsChart"></canvas></div>
           </div>
-          <div class="chart-container" style="height:180px"><canvas id="earningsChart"></canvas></div>
         </div>
       </div>
 
