@@ -443,79 +443,21 @@ function toggleDashSidebar() {
         <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
       </div>
 
-      <!-- ═══════ BALANCE OVERVIEW ═══════ -->
-      <div class="dash-balance" style="background:linear-gradient(135deg,rgba(244,180,0,0.12),rgba(0,214,143,0.06));border:1px solid rgba(244,180,0,0.2);border-radius:var(--radius-lg);padding:1.5rem 2rem;margin-bottom:1.25rem;position:relative;overflow:hidden">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;position:relative;z-index:1">
-          <div>
-            <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:500;margin-bottom:0.25rem">Available Balance</div>
-            <div style="display:flex;align-items:baseline;gap:0.75rem;flex-wrap:wrap">
-              <span style="font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#F4B400,#00D68F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1" id="dashBalance">0</span>
-              <span style="font-size:1rem;font-weight:600;color:var(--primary)">GT</span>
-              <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;border-radius:6px;font-size:0.75rem;font-weight:500;background:rgba(0,214,143,0.12);color:#00D68F">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-                +12.4% this week
-              </span>
-            </div>
-            <div style="font-size:0.9rem;color:var(--text-muted);margin-top:0.25rem" id="dashUsd">$0.00 USD</div>
-            <div style="display:flex;gap:2rem;margin-top:0.75rem">
-              <div><span style="display:block;font-size:0.9rem;font-weight:600;color:#fff" id="dashTotalSpentLifetime">$0.00</span><span style="font-size:0.68rem;color:var(--text-muted)">Lifetime Spend</span></div>
-              <div><span style="display:block;font-size:0.9rem;font-weight:600;color:#fff" id="dashTotalConsumed">0</span><span style="font-size:0.68rem;color:var(--text-muted)">Tokens Consumed</span></div>
-              <div><span style="display:block;font-size:0.9rem;font-weight:600;color:#fff" id="dashDaysActive">—</span><span style="font-size:0.68rem;color:var(--text-muted)">Days Active</span></div>
-            </div>
+      <div class="dash-grid">
+        <div class="dash-balance">
+          <div class="top">
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" style="background:linear-gradient(135deg,#F4B400,#00D68F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">0</span> <small>GT</small> <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;border-radius:6px;font-size:0.7rem;font-weight:500;background:rgba(0,214,143,0.12);color:#00D68F;position:relative;top:-2px"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> +12.4%</span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
-          <div>
-            <button class="btn-primary" onclick="showPage('topup')" style="padding:0.65rem 1.35rem;font-size:0.85rem;font-weight:600;border:none;border-radius:8px;background:#F4B400;color:#0A0B14;cursor:pointer;box-shadow:0 0 20px rgba(244,180,0,0.2)">Buy Tokens</button>
-          </div>
+          <div class="actions" style="margin-top:3rem"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
         </div>
-        <!-- Sparkline bars under balance -->
-        <div style="display:flex;gap:3px;align-items:flex-end;height:32px;margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(244,180,0,0.1)">
-          <div style="flex:1;height:12px;background:rgba(244,180,0,0.2);border-radius:2px"></div>
-          <div style="flex:1;height:18px;background:rgba(244,180,0,0.3);border-radius:2px"></div>
-          <div style="flex:1;height:8px;background:rgba(244,180,0,0.15);border-radius:2px"></div>
-          <div style="flex:1;height:22px;background:rgba(244,180,0,0.4);border-radius:2px"></div>
-          <div style="flex:1;height:14px;background:rgba(244,180,0,0.25);border-radius:2px"></div>
-          <div style="flex:1;height:26px;background:rgba(244,180,0,0.5);border-radius:2px"></div>
-          <div style="flex:1;height:10px;background:rgba(244,180,0,0.18);border-radius:2px"></div>
-          <div style="flex:1;height:20px;background:rgba(244,180,0,0.35);border-radius:2px"></div>
-          <div style="flex:1;height:28px;background:rgba(244,180,0,0.55);border-radius:2px"></div>
-          <div style="flex:1;height:16px;background:rgba(244,180,0,0.28);border-radius:2px"></div>
-          <div style="flex:1;height:30px;background:rgba(244,180,0,0.6);border-radius:2px"></div>
-          <div style="flex:1;height:24px;background:rgba(244,180,0,0.45);border-radius:2px"></div>
-          <div style="flex:1;height:14px;background:rgba(244,180,0,0.25);border-radius:2px"></div>
-        </div>
-      </div>
-
-      <!-- ═══════ STATS + CHARTS ROW ═══════ -->
-      <div class="dash-stats" style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.625rem;margin-bottom:1.25rem">
-        <div class="dash-stat-card" style="padding:0.75rem 0.6rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)">
-          <div class="num" id="dashTotalSpent" style="font-size:1.1rem;font-weight:700">—</div>
-          <div class="lbl" style="font-size:0.65rem;color:var(--text-muted)">Total Spent</div>
-          <div class="chg up" style="font-size:0.6rem;color:var(--success)">↑ Lifetime</div>
-        </div>
-        <div class="dash-stat-card" style="padding:0.75rem 0.6rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)">
-          <div class="num" id="dashModelsUsed" style="font-size:1.1rem;font-weight:700">—</div>
-          <div class="lbl" style="font-size:0.65rem;color:var(--text-muted)">Models Used</div>
-          <div class="chg up" style="font-size:0.6rem;color:var(--success)">↑ All time</div>
-        </div>
-        <div class="dash-stat-card" style="padding:0.75rem 0.6rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)">
-          <div class="num" id="dashTotalRequests" style="font-size:1.1rem;font-weight:700">—</div>
-          <div class="lbl" style="font-size:0.65rem;color:var(--text-muted)">API Requests</div>
-          <div class="chg up" style="font-size:0.6rem;color:var(--success)">↑ Total calls</div>
-        </div>
-        <div class="dash-stat-card" style="padding:0.75rem 0.6rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)">
-          <div class="num" id="dashKeyCount" style="font-size:1.1rem;font-weight:700">—</div>
-          <div class="lbl" style="font-size:0.65rem;color:var(--text-muted)">API Keys</div>
-          <div class="chg" style="font-size:0.6rem;color:var(--text-muted)" id="dashKeyStatus">-</div>
-        </div>
-        <div class="dash-stat-card" style="padding:0.75rem 0.6rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)">
-          <div class="num" style="font-size:1.1rem;font-weight:700">99.2%</div>
-          <div class="lbl" style="font-size:0.65rem;color:var(--text-muted)">Success Rate</div>
-          <div class="chg up" style="font-size:0.6rem;color:var(--success)">↑ 0.4%</div>
-        </div>
-        <div class="dash-stat-card" style="padding:0.75rem 0.6rem;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)">
-          <div class="num" style="font-size:1.1rem;font-weight:700">187ms</div>
-          <div class="lbl" style="font-size:0.65rem;color:var(--text-muted)">Avg Latency</div>
-          <div class="chg down" style="font-size:0.6rem;color:#FF6B6B">↓ 12ms</div>
+        <div class="dash-stats">
+          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashModelsUsed">—</div><div class="lbl">Models Used</div><div class="chg up">↑ All time</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up">↑ Total calls</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashKeyCount">—</div><div class="lbl">API Keys Active</div><div class="chg" style="color:var(--text-muted)" id="dashKeyStatus">-</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashDaysActive">—</div><div class="lbl">Days Active</div><div class="chg" style="color:var(--text-muted)" id="dashNewapiStatus">Offline</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalConsumed">—</div><div class="lbl">Tokens Consumed</div><div class="chg" style="color:var(--text-muted)">Lifetime</div></div>
         </div>
       </div>
 
