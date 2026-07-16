@@ -257,7 +257,15 @@
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
           if(resp.status === 401){
-            showSessionExpired();
+            // Only show session modal on dashboard pages; silently redirect elsewhere
+            var page = window.location.pathname.split('/').pop();
+            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
+            if(isDashPage){
+              showSessionExpired();
+            } else {
+              localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+              window.location.href = 'login.html';
+            }
             throw new Error('Session expired');
           }
           const errData = await resp.json().catch(()=>{});
@@ -2497,11 +2505,12 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       document.getElementById('sessionLoginBtn').onclick=function(){
         m.remove();
         document.body.style.overflow = '';
+        _sessionExpiredShown=false;
         token='';userData={};
         localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
         window.location.href='login.html';
       };
-      m.onclick=function(e){if(e.target===m){m.remove();document.body.style.overflow='';_sessionExpiredShown=false}};
+      // Modal cannot be dismissed by clicking outside — only Log In works
     }
     // ── Themed prompt dialog ──
     function showPrompt(title, placeholder, onSubmit){
