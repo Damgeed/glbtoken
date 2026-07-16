@@ -229,17 +229,16 @@
 
 /* ── Dashboard Sidebar Navigation ── */
 .dash-layout{display:flex;min-height:calc(100vh - 64px);margin-top:0}
-.dash-sidebar{width:280px;min-width:280px;background:var(--card);border-right:1px solid var(--border);padding:1.25rem 0;overflow-y:auto;position:fixed;left:-280px;top:64px;height:calc(100vh - 64px);z-index:40;transition:left 0.3s;box-shadow:4px 0 24px rgba(0,0,0,0.3);border-radius:0 12px 12px 0}
-.dash-sidebar.open{left:0;z-index:50}
-.dash-sidebar-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:45;backdrop-filter:blur(2px)}
-.dash-sidebar.open+.dash-sidebar-backdrop{display:block}
+.dash-sidebar{width:240px;min-width:240px;background:var(--card);border-right:1px solid var(--border);padding:1.25rem 0;overflow-y:auto;position:fixed;left:0;top:64px;height:calc(100vh - 64px);z-index:40;transition:left 0.3s}
+.dash-sidebar.collapsed{left:-240px}
+@media(min-width:769px){.dash-sidebar-toggle{display:none!important}}
 .dash-sidebar-section{margin-bottom:1.25rem}
 .dash-sidebar-label{padding:0.25rem 1.25rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:0.6rem;font-weight:600;opacity:0.8}
 .dash-sidebar-item{display:flex;align-items:center;gap:0.625rem;padding:0.5rem 1.25rem;font-size:0.85rem;color:var(--text);text-decoration:none;border-left:3px solid transparent;transition:all 0.2s;cursor:pointer;font-weight:400}
 .dash-sidebar-item:hover{background:var(--bg-alt);color:var(--primary)}
 .dash-sidebar-item.active{background:var(--bg-alt);color:var(--primary);border-left-color:var(--primary);font-weight:600}
 .dash-sidebar-item svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;stroke-width:2;fill:none}
-.dash-content{flex:1;padding:0.75rem 2rem;overflow-y:auto;margin-left:0;min-height:calc(100vh - 64px)}
+.dash-content{flex:1;padding:0.75rem 2rem;overflow-y:auto;margin-left:240px;min-height:calc(100vh - 64px)}
 .dash-section{display:none}
 .dash-section.active{display:block}
 /* Mobile sidebar toggle */
@@ -249,8 +248,7 @@
 .dash-sidebar-toggle:hover span{transform:translateX(2px)}
 .dash-sidebar-toggle.hidden{opacity:0;pointer-events:none}
 @media(max-width:768px){
-  .dash-sidebar{left:-280px;top:56px;height:calc(100vh - 56px);z-index:100;border-radius:0 12px 12px 0;box-shadow:4px 0 24px rgba(0,0,0,0.35)}
-  .dash-content{padding:0.75rem 1rem;margin-left:0;min-height:calc(100vh - 56px)}
+  .dash-content{padding:1rem}
 }
     
 /* ── Blog Listing Grid ── */
