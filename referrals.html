@@ -172,8 +172,9 @@ body{background:var(--bg)}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
   #referral-share-charts{grid-template-columns:1fr!important;gap:0.75rem}
   #referral-share-charts>.dash-card:first-child{width:100%}
-  .chart-scroll-row{display:flex;gap:0.75rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:0.25rem}
-  .chart-scroll-row>.dash-card{flex:0 0 320px;min-width:320px;overflow:visible!important;width:auto}
+  .chart-scroll-row{display:flex;gap:0.75rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:0.25rem;width:100%}
+  .chart-scroll-row>.dash-card{flex:0 0 auto;min-width:320px;width:50%;overflow:visible!important}
+  .chart-scroll-row>.dash-card .chart-container{min-width:260px}
   #section-referral .dash-stat-card{padding:0.5rem 0.35rem;white-space:nowrap;overflow-x:auto}
   #section-referral .dash-stat-card .num{font-size:0.9rem}
   #section-referral .dash-stat-card .lbl{font-size:0.62rem}
