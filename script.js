@@ -259,7 +259,7 @@
           if(resp.status === 401){
             // Only show session modal on dashboard pages; silently redirect elsewhere
             var page = window.location.pathname.split('/').pop();
-            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
+            var isDashPage = page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
             if(isDashPage){
               showSessionExpired();
             } else {
