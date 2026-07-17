@@ -1,4 +1,4 @@
-/* ── Billing page extras ── */
+/* ── Shared billing component ── */
 .billing-grid{display:grid;gap:1.25rem;margin-top:1.25rem}
 @media(min-width:768px){.billing-grid{grid-template-columns:1fr 1fr}}
 .billing-summary-grid{display:grid;gap:0.75rem;grid-template-columns:1fr}
@@ -38,6 +38,3 @@
   .tx-table{font-size:0.75rem}
   .tx-table th,.tx-table td{padding:0.4rem 0.3rem}
 }
-
-/* Billing section visible by default */
-#section-billing{display:block}

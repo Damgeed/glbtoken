@@ -1,8 +1,9 @@
+/* ── API Keys standalone page ── */
 @media(max-width:768px){
-      .apikey-page{padding:0.75rem 0.5rem 2rem}
-      .apikey-page .section-title{font-size:1.4rem!important}
-      .apikey-page .dash-card{padding:0.75rem}
-      .apikey-page .dash-card h3{font-size:1rem!important}
-      .apikey-page .dash-card p,.apikey-page .dash-card li{font-size:0.82rem!important}
-      .apikey-page .dash-card pre{font-size:0.75rem!important}
-    }
+  .apikey-page{padding:0.75rem 0.5rem 2rem}
+  .apikey-page .section-title{font-size:1.4rem!important}
+  .apikey-page .dash-card{padding:0.75rem}
+  .apikey-page .dash-card h3{font-size:1rem!important}
+  .apikey-page .dash-card p,.apikey-page .dash-card li{font-size:0.82rem!important}
+  .apikey-page .dash-card pre{font-size:0.75rem!important}
+}
