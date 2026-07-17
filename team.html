@@ -30,7 +30,7 @@
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" class="active d-none" id="navDashLink" >Dashboard</a>
 
     </div>
     <div class="nav-right">
@@ -50,9 +50,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" style="display:none">
+        <div id="navUser"  class="d-none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" style="cursor:pointer">
+            <div class="dropdown-header cursor-pointer" onclick="window.location.href='settings.html';return false" >
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -84,7 +84,7 @@
     <a href="how.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V4a2 2 0 012-2h8.5L20 7.5V20a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> How It Works</a>
     <a href="models.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> Models</a>
     <a href="apikeys.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Docs</a>
-    <a href="dashboard.html" onclick="closeMobile()" id="mobileDashLink" style="display:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
+    <a href="dashboard.html" onclick="closeMobile()" id="mobileDashLink"  class="d-none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
     <hr>
     <div class="m-section-label">Account</div>
@@ -92,7 +92,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" style="display:none">
+    <div id="mobileUserSection"  class="d-none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -103,7 +103,7 @@
   </div>
 
 <button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
+  <span  class="text-title">→</span>
 </button>
 
 <div class="dash-layout">
@@ -176,7 +176,7 @@
       <div class="dash-header">
         <div class="dash-welcome">
           <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline-lg">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
             </svg>
             Team Management
@@ -187,29 +187,29 @@
       </div>
 
       <!-- Org Selector -->
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="orgSelector">
+      <div id="orgSelector" class="flex-row-wrap">
         <button class="sort-btn active" data-org="org1" onclick="switchOrg('org1')">Acme Corp</button>
         <button class="sort-btn" data-org="org2" onclick="switchOrg('org2')">Startup Inc</button>
         <button class="sort-btn" data-org="org3" onclick="switchOrg('org3')">Dev Team Alpha</button>
-        <button class="btn-primary" style="margin-left:auto;padding:0.4rem 0.85rem;font-size:0.8rem" onclick="showCreateOrgModal()">+ New Org</button>
+        <button class="btn-primary btn-auto" onclick="showCreateOrgModal()">+ New Org</button>
       </div>
 
       <!-- Current Org Header -->
-      <div class="dash-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
-        <div style="display:flex;align-items:center;gap:1rem">
-          <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F4B400,#FF6B6B);display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:#fff" id="orgAvatar">A</div>
+      <div class="dash-card flex-row-between-wrap" >
+        <div  class="flex-row-lg">
+          <div class="avatar-lg-gold" id="orgAvatar">A</div>
           <div>
-            <h2 style="margin:0;font-size:1.1rem" id="orgName">Acme Corp</h2>
-            <div style="display:flex;gap:0.75rem;margin-top:0.25rem;font-size:0.85rem;color:var(--text-muted)">
+            <h2 id="orgName" class="text-md-title">Acme Corp</h2>
+            <div  class="meta-row">
               <span id="orgMemberCount">12 members</span>
-              <span id="orgPlanBadge" style="background:rgba(244,180,0,0.15);color:#F4B400;padding:0.1rem 0.5rem;border-radius:4px;font-size:0.75rem">Pro Plan</span>
+              <span id="orgPlanBadge"  class="badge-gold">Pro Plan</span>
             </div>
           </div>
         </div>
 
-        <div style="display:flex;align-items:center;gap:0.5rem">
-          <span id="orgRoleBadge" style="background:rgba(79,195,247,0.15);color:#4FC3F7;padding:0.25rem 0.75rem;border-radius:6px;font-size:0.8rem;font-weight:500">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px">
+        <div  class="flex-row">
+          <span id="orgRoleBadge"  class="badge-blue">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline-sm">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
             Owner
@@ -219,80 +219,80 @@
       </div>
 
       <!-- Usage Stats -->
-      <div class="dash-grid" style="margin-top:1.25rem">
+      <div class="dash-grid mt-lg" >
         <div class="dash-stat-card"><div class="num" id="orgTotalSpend">$1,245.80</div><div class="lbl">Total Spend</div><div class="chg up">↑ $320.50 this month</div></div>
         <div class="dash-stat-card"><div class="num" id="orgTotalCalls">48,392</div><div class="lbl">Total API Calls</div><div class="chg up">↑ 12.4% vs last month</div></div>
-        <div class="dash-stat-card"><div class="num" id="orgActiveMembers">8</div><div class="lbl">Active Members</div><div class="chg" style="color:var(--text-muted)">This month</div></div>
+        <div class="dash-stat-card"><div class="num" id="orgActiveMembers">8</div><div class="lbl">Active Members</div><div class="chg text-muted" >This month</div></div>
         <div class="dash-stat-card"><div class="num" id="orgAvgCost">$0.026</div><div class="lbl">Avg Cost / Call</div><div class="chg down">↓ 3.2% vs last month</div></div>
       </div>
 
       <!-- Members Table -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
           </svg>
           Team Members
         </div>
-        <div style="overflow-x:auto">
+        <div  class="scroll-x">
           <table class="tx-table">
             <thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
             <tbody id="teamMembersBody">
               <tr>
-                <td><div style="display:flex;align-items:center;gap:0.5rem"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#F4B400,#FF6B6B);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff">JD</div><span>John Doe</span></div></td>
+                <td><div  class="flex-row"><div class="avatar-sm-gold">JD</div><span>John Doe</span></div></td>
                 <td>john@acmecorp.com</td>
                 <td>
-                  <select class="role-select" onchange="updateRole(this,'john')" style="padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem">
+                  <select class="role-select tag-filter" onchange="updateRole(this,'john')" >
                     <option value="owner">Owner</option>
                     <option value="admin" selected>Admin</option>
                     <option value="member">Member</option>
                     <option value="viewer">Viewer</option>
                   </select>
                 </td>
-<td style="font-size:0.85rem;color:var(--text-muted)">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary" style="padding:0.25rem 0.6rem;font-size:0.75rem;color:#FF6B6B" onclick="removeMember('john')">Remove</button></td>
+<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
+                <td><button class="btn-secondary badge-red" onclick="removeMember('john')">Remove</button></td>
               </tr>
               <tr>
-                <td><div style="display:flex;align-items:center;gap:0.5rem"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#00D68F,#4FC3F7);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff">JS</div><span>Jane Smith</span></div></td>
+                <td><div  class="flex-row"><div class="avatar-sm-green">JS</div><span>Jane Smith</span></div></td>
                 <td>jane@acmecorp.com</td>
                 <td>
-                  <select class="role-select" onchange="updateRole(this,'jane')" style="padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem">
+                  <select class="role-select tag-filter" onchange="updateRole(this,'jane')" >
                     <option value="owner">Owner</option>
                     <option value="admin">Admin</option>
                     <option value="member" selected>Member</option>
                     <option value="viewer">Viewer</option>
                   </select>
                 </td>
-<td style="font-size:0.85rem;color:var(--text-muted)">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary" style="padding:0.25rem 0.6rem;font-size:0.75rem;color:#FF6B6B" onclick="removeMember('jane')">Remove</button></td>
+<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
+                <td><button class="btn-secondary badge-red" onclick="removeMember('jane')">Remove</button></td>
               </tr>
               <tr>
-                <td><div style="display:flex;align-items:center;gap:0.5rem"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#F4B400);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff">MB</div><span>Mike Brown</span></div></td>
+                <td><div  class="flex-row"><div class="avatar-sm-red">MB</div><span>Mike Brown</span></div></td>
                 <td>mike@acmecorp.com</td>
                 <td>
-                  <select class="role-select" onchange="updateRole(this,'mike')" style="padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem">
+                  <select class="role-select tag-filter" onchange="updateRole(this,'mike')" >
                     <option value="owner">Owner</option>
                     <option value="admin">Admin</option>
                     <option value="member" selected>Member</option>
                     <option value="viewer">Viewer</option>
                   </select>
                 </td>
-<td style="font-size:0.85rem;color:var(--text-muted)">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary" style="padding:0.25rem 0.6rem;font-size:0.75rem;color:#FF6B6B" onclick="removeMember('mike')">Remove</button></td>
+<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
+                <td><button class="btn-secondary badge-red" onclick="removeMember('mike')">Remove</button></td>
               </tr>
               <tr>
-                <td><div style="display:flex;align-items:center;gap:0.5rem"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4FC3F7,#00D68F);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff">SW</div><span>Sarah Wilson</span></div></td>
+                <td><div  class="flex-row"><div class="avatar-sm-blue">SW</div><span>Sarah Wilson</span></div></td>
                 <td>sarah@acmecorp.com</td>
                 <td>
-                  <select class="role-select" onchange="updateRole(this,'sarah')" style="padding:0.3rem 0.5rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem">
+                  <select class="role-select tag-filter" onchange="updateRole(this,'sarah')" >
                     <option value="owner">Owner</option>
                     <option value="admin">Admin</option>
                     <option value="member">Member</option>
                     <option value="viewer" selected>Viewer</option>
                   </select>
                 </td>
-<td style="font-size:0.85rem;color:var(--text-muted)">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary" style="padding:0.25rem 0.6rem;font-size:0.75rem;color:#FF6B6B" onclick="removeMember('sarah')">Remove</button></td>
+<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
+                <td><button class="btn-secondary badge-red" onclick="removeMember('sarah')">Remove</button></td>
               </tr>
             </tbody>
           </table>
@@ -302,41 +302,41 @@
       <!-- Invite Section -->
       <div class="dash-card" id="inviteSection">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
           Invite Members
         </div>
-        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0">
-          <input type="email" id="inviteEmail" placeholder="Enter email address..." style="flex:1;min-width:200px;padding:0.6rem 1rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem" />
-          <select id="inviteRole" style="padding:0.6rem 1rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.85rem">
+        <div  class="filter-row">
+          <input type="email" id="inviteEmail" placeholder="Enter email address..." class="input-search" />
+          <select id="inviteRole" class="input-field">
             <option value="admin">Admin</option>
             <option value="member" selected>Member</option>
             <option value="viewer">Viewer</option>
           </select>
-          <button class="btn-primary" onclick="sendInvite()" style="padding:0.6rem 1.25rem;font-size:0.85rem;white-space:nowrap">Send Invite</button>
+          <button class="btn-primary btn-nowrap" onclick="sendInvite()" >Send Invite</button>
         </div>
         <!-- Pending Invites -->
-        <div style="margin-top:0.75rem;border-top:1px solid var(--border);padding-top:0.75rem">
-          <div class="dash-section-title" style="font-size:0.85rem;margin-bottom:0.5rem">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+        <div  class="section-divider">
+          <div class="dash-section-title text-sm-mb" >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
             Pending Invites
           </div>
           <div id="pendingInvitesList">
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)">
-              <div><span style="font-size:0.85rem">alex@example.com</span> <span style="font-size:0.75rem;color:var(--text-muted)">— Member</span></div>
-              <div style="display:flex;gap:0.5rem">
-                <span style="font-size:0.75rem;color:#FFB347">Sent Jun 14</span>
-                <button class="btn-secondary" style="padding:0.2rem 0.5rem;font-size:0.7rem;color:#FF6B6B" onclick="cancelInvite(this)">Cancel</button>
+            <div  class="team-row">
+              <div><span  class="text-sm">alex@example.com</span> <span  class="text-xs-muted-2">— Member</span></div>
+              <div  class="flex-row-gap">
+                <span  class="text-xs-gold">Sent Jun 14</span>
+                <button class="btn-secondary badge-red-sm" onclick="cancelInvite(this)">Cancel</button>
               </div>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)">
-              <div><span style="font-size:0.85rem">lisa@example.com</span> <span style="font-size:0.75rem;color:var(--text-muted)">— Admin</span></div>
-              <div style="display:flex;gap:0.5rem">
-                <span style="font-size:0.75rem;color:#FFB347">Sent Jun 13</span>
-                <button class="btn-secondary" style="padding:0.2rem 0.5rem;font-size:0.7rem;color:#FF6B6B" onclick="cancelInvite(this)">Cancel</button>
+            <div  class="team-row">
+              <div><span  class="text-sm">lisa@example.com</span> <span  class="text-xs-muted-2">— Admin</span></div>
+              <div  class="flex-row-gap">
+                <span  class="text-xs-gold">Sent Jun 13</span>
+                <button class="btn-secondary badge-red-sm" onclick="cancelInvite(this)">Cancel</button>
               </div>
             </div>
           </div>
@@ -346,13 +346,13 @@
       <!-- Membership -->
       <div class="dash-card" id="membershipSection">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
           Membership
         </div>
-        <p style="font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0">You are a member of this organization. You can leave at any time.</p>
-        <button class="btn-secondary" style="color:#FF6B6B;border-color:#FF6B6B;padding:0.6rem 1.25rem;font-size:0.85rem" onclick="leaveOrg()">Leave Organization</button>
+        <p  class="text-sm-muted-m">You are a member of this organization. You can leave at any time.</p>
+        <button class="btn-secondary btn-danger" onclick="leaveOrg()">Leave Organization</button>
       </div>
 
     </div>
@@ -427,7 +427,7 @@ function sendInvite(){
   var sentDate = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'});
   var div = document.createElement('div');
   div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)';
-  div.innerHTML = '<div><span style="font-size:0.85rem">'+email+'</span> <span style="font-size:0.75rem;color:var(--text-muted)">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div><div style="display:flex;gap:0.5rem"><span style="font-size:0.75rem;color:#FFB347">Sent '+sentDate+'</span><button class="btn-secondary" style="padding:0.2rem 0.5rem;font-size:0.7rem;color:#FF6B6B" onclick="cancelInvite(this)">Cancel</button></div>';
+  div.innerHTML = '<div><span  class="text-sm">'+email+'</span> <span  class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div><div  class="flex-row-gap"><span  class="text-xs-gold">Sent '+sentDate+'</span><button class="btn-secondary badge-red-sm" onclick="cancelInvite(this)">Cancel</button></div>';
   list.prepend(div);
   document.getElementById('inviteEmail').value = '';
 }
