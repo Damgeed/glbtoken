@@ -35,23 +35,6 @@
 .scroll-x table th,
 .scroll-x table td { white-space:nowrap; }
 .scroll-x table td button { white-space:nowrap; }
-.scroll-hint { display:none; }
-@media (max-width: 768px) {
-  .scroll-hint {
-    display: block;
-    text-align: center;
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    opacity: 0.4;
-    margin-top: 0.5rem;
-    animation: scrollHintPulse 2s ease-in-out infinite;
-  }
-}
-@keyframes scrollHintPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
-}
-
 .text-sm-mb { font-size:0.85rem;margin-bottom:0.5rem; }
 .text-sm-muted-m { font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0; }
 .section-divider { margin-top:0.75rem;border-top:1px solid var(--border);padding-top:0.75rem; }
