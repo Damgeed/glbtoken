@@ -6352,6 +6352,37 @@ html.light .star.white {
   }
 }
 
+
+/* ── Shared utility classes ── */
+.d-none { display:none; }
+.cursor-pointer { cursor:pointer; }
+.text-muted { color:var(--text-muted); }
+.text-title { font-size:16px;line-height:1;font-weight:700; }
+.text-center { text-align:center; }
+.icon-inline { vertical-align:middle;margin-right:6px; }
+.icon-inline-lg { vertical-align:middle;margin-right:8px; }
+.icon-inline-sm { vertical-align:middle;margin-right:4px; }
+.scroll-x { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.scroll-x table { min-width:500px; }
+.scroll-x table th,
+.scroll-x table td { white-space:nowrap; }
+.scroll-x table td button { white-space:nowrap; }
+.scroll-hint { display:none; }
+@media (max-width: 768px) {
+  .scroll-hint {
+    display: block;
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.4;
+    margin-top: 0.5rem;
+    animation: scrollHintPulse 2s ease-in-out infinite;
+  }
+}
+@keyframes scrollHintPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
 /* ── Professional Dashboard Styling ── */
 body {
   background: var(--bg);

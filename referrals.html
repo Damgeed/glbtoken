@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1010" />
+  <link rel="stylesheet" href="style.css?v=1011" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1010" /><link rel="stylesheet" href="referrals.css?v=1010" />
+<link rel="stylesheet" href="billing.css?v=1011" /><link rel="stylesheet" href="referrals.css?v=1011" />
   </head>
 <body>
 <script src="dashboard.js?v=1001"></script>
@@ -223,7 +223,7 @@
         <div  class="filter-row">
           <div class="ref-input-group">
             <span id="refCode" class="ref-code-text">https://glbtoken.com/ref/GLB-ABCD</span>
-            <button class="btn-primary" onclick="copyRefLink()" class="btn-copy">
+            <button class="btn-primary btn-copy" onclick="copyRefLink()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline-sm">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
               </svg>
@@ -273,6 +273,7 @@
           </div>
           <div class="chart-container chart-box"><canvas id="earningsChart"></canvas></div>
         </div>
+        <div class="scroll-hint">↔ Swipe charts</div>
       </div>
 
       <!-- Referrals Table -->
