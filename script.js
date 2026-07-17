@@ -3397,7 +3397,7 @@ function insertPromptSuggestion(text) {
     if(Math.abs(dx)<Math.abs(dy))return;
     // Opening: swipe right from left edge
     if(!isOpen()&&startX<=EDGE_ZONE&&dx>THRESHOLD){
-      e.preventDefault(); // prevent scroll/nav
+      e.preventDefault();
       sb.classList.add('open');
       var toggle=document.getElementById('dashSidebarToggle');
       if(toggle)toggle.classList.add('hidden');
@@ -3406,7 +3406,7 @@ function insertPromptSuggestion(text) {
     }
     // Closing: swipe left when open
     if(isOpen()&&dx<-THRESHOLD){
-      e.preventDefault(); // prevent scroll/nav
+      e.preventDefault();
       sb.classList.remove('open');
       var toggle=document.getElementById('dashSidebarToggle');
       if(toggle)toggle.classList.remove('hidden');
@@ -3419,6 +3419,37 @@ function insertPromptSuggestion(text) {
     }
   },{passive:false});
   document.addEventListener('touchend',function(){
+    swiping=false;
+  },{passive:true});
+
+  // ── Desktop mouse drag from left edge (same as mobile swipe) ──
+  document.addEventListener('mousedown',function(e){
+    sb=getSidebar();
+    if(!sb||e.clientX>EDGE_ZONE||e.button!==0)return;
+    startX=e.clientX;startY=e.clientY;
+    swiping=true;
+  },{passive:true});
+  document.addEventListener('mousemove',function(e){
+    if(!swiping||!sb)return;
+    var dx=e.clientX-startX;
+    var dy=e.clientY-startY;
+    if(Math.abs(dx)<Math.abs(dy))return;
+    if(!isOpen()&&dx>THRESHOLD){
+      sb.classList.add('open');
+      var toggle=document.getElementById('dashSidebarToggle');
+      if(toggle)toggle.classList.add('hidden');
+      swiping=false;
+      return;
+    }
+    if(isOpen()&&dx<-THRESHOLD){
+      sb.classList.remove('open');
+      var toggle=document.getElementById('dashSidebarToggle');
+      if(toggle)toggle.classList.remove('hidden');
+      swiping=false;
+      return;
+    }
+  },{passive:true});
+  document.addEventListener('mouseup',function(){
     swiping=false;
   },{passive:true});
 })();
