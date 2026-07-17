@@ -60,9 +60,11 @@
 
 #section-referral{display:block}
 /* chart scroll row — desktop: 2-column grid, mobile: horizontal scroll */
-@media(min-width:769px){
-  .chart-scroll-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem}
-  .chart-scroll-row>.dash-card{overflow:hidden}
+.chart-scroll-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem}
+.chart-scroll-row>.dash-card{overflow:hidden}
+@media(max-width:768px){
+  .chart-scroll-row{display:flex;gap:0.75rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:0.5rem}
+  .chart-scroll-row>.dash-card{flex:0 0 calc(100vw - 2rem);min-width:300px;scroll-snap-align:start}
 }
 </style>
   </head>
