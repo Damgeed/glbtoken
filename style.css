@@ -6378,24 +6378,22 @@ html.light .star.white {
     color: var(--text-muted);
     opacity: 0;
     margin-top: 0.5rem;
-    animation: scrollHintFlash 5s ease-in-out forwards;
-    animation-delay: 2s;
+    animation: scrollHintFlash 6s ease-in-out forwards;
+    animation-delay: 1s;
   }
 }
 @keyframes scrollHintFlash {
   0% { opacity: 0; }
-  8% { opacity: 0.75; }
-  12% { opacity: 0.2; }
-  20% { opacity: 0.75; }
-  24% { opacity: 0.2; }
-  32% { opacity: 0.75; }
-  36% { opacity: 0.2; }
-  44% { opacity: 0.75; }
-  48% { opacity: 0.2; }
-  56% { opacity: 0.6; }
-  62% { opacity: 0.15; }
-  70% { opacity: 0.4; }
-  80% { opacity: 0.1; }
+  10% { opacity: 0.7; }
+  15% { opacity: 0.3; }
+  25% { opacity: 0.7; }
+  30% { opacity: 0.3; }
+  40% { opacity: 0.7; }
+  45% { opacity: 0.3; }
+  55% { opacity: 0.7; }
+  60% { opacity: 0.3; }
+  70% { opacity: 0.5; }
+  80% { opacity: 0.2; }
   100% { opacity: 0; }
 }
 /* ── Professional Dashboard Styling ── */
@@ -6940,4 +6938,3 @@ body {
     grid-column: 1/-1;
   }
 }
-

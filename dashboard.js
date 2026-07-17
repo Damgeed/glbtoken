@@ -63,9 +63,3 @@ function toggleDashSidebar() {
   document.addEventListener('mouseup', endDrag);
   document.addEventListener('touchend', endDrag);
 })();
-
-// Hide scroll hints on swipe
-document.querySelectorAll('.scroll-hint').forEach(function(h) {
-  var p = h.closest('.dash-card') || h.parentElement;
-  p.addEventListener('scroll', function() { h.style.display = 'none'; });
-});
