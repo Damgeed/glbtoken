@@ -257,8 +257,15 @@
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
           if(resp.status === 401){
-            localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
-            window.location.href = 'login.html';
+            // Show modal on dash pages; silently redirect elsewhere
+            var page = window.location.pathname.split('/').pop();
+            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
+            if(isDashPage){
+              showSessionExpired();
+            } else {
+              localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+              window.location.href = 'login.html';
+            }
             throw new Error('Session expired');
           }
           const errData = await resp.json().catch(()=>{});
@@ -2504,6 +2511,15 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         window.location.href='login.html';
       };
       // Modal cannot be dismissed by clicking outside — only Log In works
+      // Industry standard: intercept back/forward navigation → redirect to login
+      function _onPopState(){ window.location.href='login.html'; }
+      window.addEventListener('popstate',_onPopState);
+      // Clean up the listener when user clicks Log In
+      var _origBtn=m.querySelector('#sessionLoginBtn').onclick;
+      m.querySelector('#sessionLoginBtn').onclick=function(){
+        window.removeEventListener('popstate',_onPopState);
+        _origBtn.call(this);
+      };
     }
     // ── Dash sidebar: close sidebar first when tapping any item ──
     document.addEventListener('click',function(e){
