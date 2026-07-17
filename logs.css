@@ -1,0 +1,48 @@
+
+/* ── Billing page extras ── */
+.billing-grid{display:grid;gap:1.25rem;margin-top:1.25rem}
+@media(min-width:768px){.billing-grid{grid-template-columns:1fr 1fr}}
+/* ── Logs page extras ── */
+.logs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:768px){.logs-grid{grid-template-columns:1fr;gap:0.75rem}}
+.billing-summary-grid{display:grid;gap:0.75rem;grid-template-columns:1fr}
+@media(min-width:480px){.billing-summary-grid{grid-template-columns:repeat(3,1fr)}}
+.billing-stat-card{background:var(--bg-alt);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center}
+.billing-stat-card .num{font-size:1.25rem;font-weight:700;color:var(--primary)}
+.billing-stat-card .lbl{font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem}
+.billing-stat-card .icon{display:flex;align-items:center;justify-content:center;height:2rem;margin-bottom:0.35rem}
+.billing-empty-state{text-align:center;padding:2rem 1rem;color:var(--text-muted)}
+.billing-empty-state .empty-icon{font-size:2.5rem;margin-bottom:0.5rem;opacity:0.5}
+.billing-empty-state p{font-size:0.85rem;margin:0.25rem 0}
+.payment-card{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-alt);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.payment-card .card-icon{font-size:1.5rem;flex-shrink:0}
+.payment-card .card-info{flex:1}
+.payment-card .card-info .name{font-weight:600;font-size:0.85rem}
+.payment-card .card-info .meta{font-size:0.75rem;color:var(--text-muted)}
+.payment-card .badge{font-size:0.7rem;padding:0.15rem 0.5rem;background:var(--primary-subtle);border-radius:4px;color:var(--primary);font-weight:500;margin-left:auto;flex-shrink:0}
+.status-badge{display:inline-block;font-size:0.75rem;padding:0.15rem 0.5rem;border-radius:4px;font-weight:500}
+.status-paid{background:var(--success-subtle,rgba(0,214,143,0.12));color:var(--success,#00D68F)}
+.status-pending{background:rgba(255,183,0,0.12);color:#FFB700}
+.status-failed{background:rgba(255,77,79,0.12);color:#FF4D4F}
+.status-refunded{background:rgba(114,46,209,0.12);color:#722ED1}
+.receipt-link{color:var(--primary);text-decoration:none;font-size:0.8rem;font-weight:500}
+.receipt-link:hover{text-decoration:underline}
+@media(max-width:767px){
+  .billing-page-header h2{font-size:1.4rem}
+  .payment-card{-ms-flex-wrap:wrap;flex-wrap:wrap}
+  .tx-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tx-table-wrap table{min-width:600px}
+  .billing-grid .dash-card{width:100%;max-width:100%;box-sizing:border-box;overflow:hidden}
+  .billing-stat-card{padding:0.75rem 0.5rem}
+  .billing-stat-card .num{font-size:1rem}
+  #billingSummaryCard .dash-section-title{font-size:0.9rem}
+  .billing-empty-state{padding:1.5rem 0.75rem}
+  .billing-grid{gap:0.75rem;margin-top:0.75rem}
+  .dash-section-title{font-size:0.85rem}
+  .tx-table{font-size:0.75rem}
+  .tx-table th,.tx-table td{padding:0.4rem 0.3rem}
+}
+
+/* Billing section visible by default */
+#section-logs{display:block}
+
