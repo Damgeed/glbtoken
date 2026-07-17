@@ -1195,6 +1195,8 @@ body{background:var(--bg)}
   .status-text{display:none}
   .ip-col{display:none}
   .loc-city{display:inline}
+  /* Center status column on mobile */
+  .tx-table td:last-child,.tx-table th:last-child{text-align:center}
   /* Mobile standardised vertical spacing */
   .dash-section > div{margin-bottom:0.75rem}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
