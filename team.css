@@ -34,7 +34,8 @@
 .icon-inline-sm { vertical-align:middle;margin-right:4px; }
 .mt-lg { margin-top:1.25rem; }
 .text-muted { color:var(--text-muted); }
-.scroll-x { overflow-x:auto; }
+.scroll-x { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.scroll-x table { min-width:500px; }
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .text-sm-mb { font-size:0.85rem;margin-bottom:0.5rem; }
 .text-sm-muted-m { font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0; }
