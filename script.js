@@ -257,15 +257,8 @@
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
           if(resp.status === 401){
-            // Only show session modal on dashboard pages; silently redirect elsewhere
-            var page = window.location.pathname.split('/').pop();
-            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
-            if(isDashPage){
-              showSessionExpired();
-            } else {
-              localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
-              window.location.href = 'login.html';
-            }
+            localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+            window.location.href = 'login.html';
             throw new Error('Session expired');
           }
           const errData = await resp.json().catch(()=>{});
