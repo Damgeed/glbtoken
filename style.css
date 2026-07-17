@@ -1683,13 +1683,8 @@ input[type="range"]::-moz-range-thumb {
   font-size: 16px;
   line-height: 1;
   font-weight: 700;
-  animation: dashArrowBlink 2s ease-in-out infinite;
   transition: transform 0.2s;
   margin-left: 2px;
-}
-@keyframes dashArrowBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
 }
 .dash-sidebar-toggle:hover span {
   transform: translateX(2px);
@@ -6374,7 +6369,35 @@ html.light .star.white {
 .scroll-x table td button { white-space:nowrap; }
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .flex-row-wrap { display:flex;gap:0.5rem;flex-wrap:wrap; }
-
+.scroll-hint { display:none; }
+@media (max-width: 768px) {
+  .scroll-hint {
+    display: block;
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0;
+    margin-top: 0.5rem;
+    animation: scrollHintFlash 5s ease-in-out forwards;
+    animation-delay: 2s;
+  }
+}
+@keyframes scrollHintFlash {
+  0% { opacity: 0; }
+  8% { opacity: 0.75; }
+  12% { opacity: 0.2; }
+  20% { opacity: 0.75; }
+  24% { opacity: 0.2; }
+  32% { opacity: 0.75; }
+  36% { opacity: 0.2; }
+  44% { opacity: 0.75; }
+  48% { opacity: 0.2; }
+  56% { opacity: 0.6; }
+  62% { opacity: 0.15; }
+  70% { opacity: 0.4; }
+  80% { opacity: 0.1; }
+  100% { opacity: 0; }
+}
 /* ── Professional Dashboard Styling ── */
 body {
   background: var(--bg);
