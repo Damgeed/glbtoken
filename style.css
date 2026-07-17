@@ -6347,16 +6347,17 @@ html.light .star.white {
   .scroll-hint {
     display: block;
     text-align: center;
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    opacity: 0.4;
-    margin-top: 0.5rem;
-    animation: scrollHintPulse 2s ease-in-out infinite;
+    font-size: 1.1rem;
+    color: var(--primary);
+    opacity: 0.5;
+    margin-top: 0.4rem;
+    animation: scrollHintPulse 1.8s ease-in-out infinite;
+    letter-spacing: 2px;
   }
 }
 @keyframes scrollHintPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 /* ── Professional Dashboard Styling ── */
 body {
