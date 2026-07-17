@@ -38,6 +38,7 @@
 .scroll-x table { min-width:500px; }
 .scroll-x table th,
 .scroll-x table td { white-space:nowrap; }
+.scroll-x table td button { white-space:nowrap; }
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .text-sm-mb { font-size:0.85rem;margin-bottom:0.5rem; }
 .text-sm-muted-m { font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0; }
