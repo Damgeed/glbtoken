@@ -1196,7 +1196,7 @@ body{background:var(--bg)}
   .ip-col{display:none}
   .loc-city{display:inline}
   /* Pull status column left, closer to Location */
-  .tx-table td:last-child,.tx-table th:last-child{padding-left:0.15rem}
+  .tx-table td:last-child,.tx-table thead tr th:last-child{padding-left:0.15rem!important}
   /* Mobile standardised vertical spacing */
   .dash-section > div{margin-bottom:0.75rem}
   #section-referral .dash-grid{grid-template-columns:1fr 1fr!important;gap:0.4rem;overflow-x:auto}
