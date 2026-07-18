@@ -6355,7 +6355,7 @@ html.light .star.white {
     right: 4px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 0.7rem;
+    font-size: 1.2rem;
     color: var(--primary);
     opacity: 0.6;
     pointer-events: none;
