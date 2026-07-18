@@ -6353,8 +6353,7 @@ html.light .star.white {
     content: "→";
     position: absolute;
     right: 4px;
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: 0;
     font-size: 1.2rem;
     color: var(--primary);
     opacity: 0.6;
