@@ -6350,19 +6350,20 @@ html.light .star.white {
   }
   .dash-card [style*="overflow-x:auto"]::after,
   .dash-card .scroll-x::after {
-    content: "↔";
+    content: "── ↔";
     position: absolute;
     right: 4px;
     top: 50%;
-    transform: translateY(-50%) scaleX(1.8);
-    font-size: 0.85rem;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
     color: var(--primary);
     opacity: 0.6;
     pointer-events: none;
     animation: scrollHintPulse 1.8s ease-in-out infinite;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     z-index: 2;
     line-height: 1;
+    white-space: pre;
   }
 }
 @keyframes scrollHintPulse {
