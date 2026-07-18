@@ -6350,7 +6350,7 @@ html.light .star.white {
   }
   .dash-card [style*="overflow-x:auto"]::after,
   .dash-card .scroll-x::after {
-    content: "── ↔";
+    content: "── ➡";
     position: absolute;
     right: 4px;
     top: 50%;
