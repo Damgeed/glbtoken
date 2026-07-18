@@ -63,3 +63,13 @@ function toggleDashSidebar() {
   document.addEventListener('mouseup', endDrag);
   document.addEventListener('touchend', endDrag);
 })();
+
+// Scroll-hint: hide gold arrow when user scrolls
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.dash-card div[style*="overflow-x:auto"], .dash-card .scroll-x').forEach(function(el) {
+    el.addEventListener('scroll', function() {
+      var card = this.closest('.dash-card');
+      if(card) card.classList.add('is-scrolled');
+    }, {passive:true});
+  });
+});

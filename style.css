@@ -6344,11 +6344,11 @@ html.light .star.white {
 .flex-row-wrap { display:flex;gap:0.5rem;flex-wrap:wrap; }
 .scroll-hint { display:none; }
 @media (max-width: 768px) {
-  .dash-card [style*="overflow-x:auto"],
+  .dash-card div[style*="overflow-x:auto"],
   .dash-card .scroll-x {
     position: relative;
   }
-  .dash-card [style*="overflow-x:auto"]::after,
+  .dash-card div[style*="overflow-x:auto"]::after,
   .dash-card .scroll-x::after {
     content: "→";
     position: absolute;
@@ -6360,10 +6360,13 @@ html.light .star.white {
     opacity: 0.6;
     pointer-events: none;
     animation: scrollHintPulse 1.8s ease-in-out infinite;
-    letter-spacing: 1px;
     z-index: 2;
     line-height: 1;
-    white-space: pre;
+  }
+  .dash-card.is-scrolled div[style*="overflow-x:auto"]::after,
+  .dash-card.is-scrolled .scroll-x::after {
+    opacity: 0 !important;
+    animation: none !important;
   }
 }
 @keyframes scrollHintPulse {

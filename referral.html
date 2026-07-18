@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1020" />
+  <link rel="stylesheet" href="style.css?v=1021" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -313,6 +313,13 @@
 
 <script src="translations.js?v=214"></script>
 <script data-cfasync="false" src="script.js?v=214"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+document.querySelectorAll('.dash-card div[style*="overflow-x:auto"], .dash-card .scroll-x').forEach(function(el){
+  el.addEventListener('scroll',function(){var c=this.closest('.dash-card');if(c)c.classList.add('is-scrolled');},{passive:true});
+});
+});
+</script>
 
 <script>
 // Referral page charts
