@@ -1,3 +1,76 @@
+/* ── How It Works — extracted styles ── */
+
+/* Section backgrounds */
+.section-bg-alt { background: var(--bg-alt); padding: 4rem 0; }
+
+/* Hero section */
+.hero-center { text-align: center; }
+.hero-center p { margin: 0 auto; }
+.hero-sub { margin: 0 auto 2rem; max-width: 600px; }
+
+/* Step grid */
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin: 2rem auto 6rem; }
+
+/* Visual gallery grid */
+.visual-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+
+/* Visual tiles */
+.visual-tile {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+/* Visual preview area */
+.visual-preview {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Preview gradient variants */
+.preview-navy { background: linear-gradient(135deg, #0A0B14 0%, #0a1a2e 100%); }
+.preview-navy-alt { background: linear-gradient(135deg, #0A0B14 0%, #1a1a2e 100%); }
+.preview-green { background: linear-gradient(135deg, #0A0B14 0%, #1a2e1a 100%); }
+.preview-gold { background: linear-gradient(135deg, #0A0B14 0%, #1a1a0a 100%); }
+.preview-red { background: linear-gradient(135deg, #0A0B14 0%, #1a0a0a 100%); }
+
+/* Preview iframe */
+.preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  transform: scale(0.6);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* Visual info area */
+.visual-info { padding: 1rem; }
+
+/* Tag row */
+.tag-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+
+/* Tag colors */
+.tag-gold { background: rgba(244, 180, 0, 0.15); color: #F4B400; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.tag-green { background: rgba(0, 214, 143, 0.15); color: #00D68F; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.tag-blue { background: rgba(79, 195, 247, 0.15); color: #4FC3F7; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.tag-purple { background: rgba(124, 77, 255, 0.15); color: #7C4DFF; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.tag-red { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+
+/* Card heading */
+.viz-title { margin: 0 0 0.25rem; font-size: 1rem; }
+.viz-desc { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+
+/* SVG inline icon */
+.icon-mid { vertical-align: middle; }
+
 @media (max-width: 768px) {
   .visual-grid {
     grid-template-columns: 1fr 1fr !important;
