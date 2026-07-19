@@ -6353,7 +6353,7 @@ html.light .star.white {
     content: "→";
     position: absolute;
     right: 4px;
-    bottom: 0;
+    bottom: 1.4rem;
     font-size: 1.2rem;
     color: var(--primary);
     opacity: 0.6;
@@ -6371,10 +6371,6 @@ html.light .star.white {
 @keyframes scrollHintPulse {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
-}
-/* Login Attempts — move arrow up slightly */
-#loginScrollX::after {
-  bottom: 28px !important;
 }
 /* ── Professional Dashboard Styling ── */
 body {
