@@ -2521,7 +2521,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         window.removeEventListener('popstate',_onPopState);
         _origBtn.call(this);
       };
-      // Continue browsing — clears session, stays on page in guest mode
+      // Continue browsing — clears session, goes to homepage in guest mode
       document.getElementById('sessionDismissBtn').onclick=function(e){
         e.preventDefault();
         window.removeEventListener('popstate',_onPopState);
@@ -2533,6 +2533,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         m.remove();
         document.body.style.overflow = '';
         _sessionExpiredShown=false;
+        window.location.href='/';
       };
     }
     // ── Dash sidebar: close sidebar first when tapping any item ──
