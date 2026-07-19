@@ -2500,6 +2500,7 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">Session Expired</h3>'
         +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">Your session has expired. Please log in again to continue using GlbTOKEN.</p>'
         +'<button id="sessionLoginBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Log In</button>'
+        +'<a href="#" id="sessionDismissBtn" style="display:inline-block;margin-top:1rem;color:'+muted+';font-size:0.85rem;text-decoration:none;cursor:pointer">Continue browsing →</a>'
         +'</div></div>';
       document.body.appendChild(m);
       document.getElementById('sessionLoginBtn').onclick=function(){
@@ -2519,6 +2520,19 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       m.querySelector('#sessionLoginBtn').onclick=function(){
         window.removeEventListener('popstate',_onPopState);
         _origBtn.call(this);
+      };
+      // Continue browsing — clears session, stays on page in guest mode
+      document.getElementById('sessionDismissBtn').onclick=function(e){
+        e.preventDefault();
+        window.removeEventListener('popstate',_onPopState);
+        token='';userData={};
+        localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+        localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
+        localStorage.removeItem('gt_keys');
+        applyAuth();
+        m.remove();
+        document.body.style.overflow = '';
+        _sessionExpiredShown=false;
       };
     }
     // ── Dash sidebar: close sidebar first when tapping any item ──
