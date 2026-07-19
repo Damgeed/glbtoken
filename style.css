@@ -6372,6 +6372,10 @@ html.light .star.white {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
+/* Login Attempts — move arrow up slightly */
+#loginScrollX::after {
+  bottom: 28px !important;
+}
 /* ── Professional Dashboard Styling ── */
 body {
   background: var(--bg);

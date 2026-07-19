@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1021" />
+  <link rel="stylesheet" href="style.css?v=1023" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="billing.css?v=1007" /><link rel="stylesheet" href="usage.css?v=1007" />
   </head>
@@ -255,7 +255,7 @@
           </svg>
           Login Attempts
         </div>
-        <div style="overflow-x:auto">
+        <div style="overflow-x:auto" id="loginScrollX">
           <table class="tx-table" id="loginTable">
             <thead><tr><th>Timestamp</th><th class="ip-col">IP Address</th><th>Device / Browser</th><th>Location</th><th>Status</th></tr></thead>
             <tbody id="historyBody">
