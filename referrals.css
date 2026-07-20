@@ -50,6 +50,7 @@
   #share-socials .btn-secondary{font-size:0.7rem;padding:0.4rem 0.25rem;justify-content:center}
   .tx-table{min-width:500px}
   .tx-table th,.tx-table td{white-space:nowrap}
+  .refs-card-hero{margin-top:0.75rem}
 }
 
 /* ── Referrals inline style extraction ── */
