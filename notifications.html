@@ -172,28 +172,68 @@
   <div class="dash-sidebar-backdrop" onclick="toggleDashSidebar()"></div>
   <div class="dash-content">
 
-      <span class="section-label">Alerts</span>
-      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">Notifications</h2>
-      <div style="margin-top:1.5rem" class="notif-grid">
-        <div class="notif-item dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
-          <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">Top-up Confirmed</div><div style="font-size:0.8rem;color:var(--text-muted)">2 min ago · $50 added · 55,000 tokens credited</div></div>
-          <span class="notif-dot" style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0"></span>
-          <button onclick="dismissNotif(this)" style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
-        </div>
-        <div class="notif-item dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--destructive-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-          <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">Low Balance Warning</div><div style="font-size:0.8rem;color:var(--text-muted)">1 hour ago · Your balance is below 1,000 tokens</div></div>
-          <span class="notif-dot" style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0"></span>
-          <button onclick="dismissNotif(this)" style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
-        </div>
-        <div class="notif-item dash-card" style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;opacity:0.6">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--success-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-          <div style="flex:1"><div style="font-weight:600;font-size:0.9rem">API Key Created</div><div style="font-size:0.8rem;color:var(--text-muted)">3 days ago · "Production API" key was generated</div></div>
-          <button onclick="dismissNotif(this)" style="font-size:0.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">✕</button>
+      <div class="dash-header">
+        <div class="dash-welcome">
+          <h1>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-lg">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Notifications
+          </h1>
+          <p>Manage your notification preferences and view recent alerts</p>
         </div>
       </div>
-      <div style="text-align:center;margin-top:1rem"><button class="btn-secondary" onclick="markAllRead()" style="font-size:0.85rem">Mark All as Read</button></div>
+
+      <!-- Notification Settings -->
+      <div class="dash-card">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Notification Settings
+        </div>
+        <div class="settings-flex-col">
+          <div class="toggle-row">
+            <div><div class="toggle-label">Email Notifications</div><div class="toggle-desc">Receive account &amp; marketing emails</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="notifEmail" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Low Balance Alerts</div><div class="toggle-desc">Get notified when your balance runs low</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="notifLowBalance" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Login Alerts</div><div class="toggle-desc">Email when a new device signs in</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="notifLogin" /><span class="toggle-slider"></span></label>
+          </div>
+          <button class="btn-primary settings-save-btn" onclick="saveNotificationSettings()">Save Notification Preferences</button>
+        </div>
+      </div>
+
+      <!-- Notification History -->
+      <div class="dash-card">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Recent Notifications
+        </div>
+        <div class="notif-grid">
+          <div class="notif-item settings-row">
+            <div class="settings-icon settings-icon-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
+            <div class="settings-flex-fill"><div class="settings-item-name">Top-up Confirmed</div><div class="settings-item-desc">2 min ago · $50 added · 55,000 tokens credited</div></div>
+            <span class="notif-dot settings-dot"></span>
+            <button onclick="dismissNotif(this)" class="settings-delete-btn">✕</button>
+          </div>
+          <div class="notif-item settings-row">
+            <div class="settings-icon settings-icon-destructive"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="settings-flex-fill"><div class="settings-item-name">Low Balance Warning</div><div class="settings-item-desc">1 hour ago · Your balance is below 1,000 tokens</div></div>
+            <span class="notif-dot settings-dot"></span>
+            <button onclick="dismissNotif(this)" class="settings-delete-btn">✕</button>
+          </div>
+          <div class="notif-item settings-row" style="opacity:0.6">
+            <div class="settings-icon settings-icon-success"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="settings-flex-fill"><div class="settings-item-name">API Key Created</div><div class="settings-item-desc">3 days ago · "Production API" key was generated</div></div>
+            <button onclick="dismissNotif(this)" class="settings-delete-btn">✕</button>
+          </div>
+        </div>
+        <div class="settings-center-mt"><button class="btn-secondary settings-center-text" onclick="markAllRead()">Mark All as Read</button></div>
+      </div>
     </div></div><footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
