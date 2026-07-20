@@ -16,7 +16,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=1025" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1007" />
+<link rel="stylesheet" href="dashboard.css?v=1008" />
   </head>
 <body>
 <script>
@@ -248,10 +248,10 @@ function toggleDashSidebar() {
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" style="background:linear-gradient(135deg,#F4B400,#00D68F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">0</span> <small>GT</small> <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;border-radius:6px;font-size:0.7rem;font-weight:500;background:rgba(0,214,143,0.12);color:#00D68F;position:relative;top:-2px"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> +12.4%</span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> +12.4%</span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
-          <div class="actions" style="margin-top:3rem"><button class="btn-primary" onclick="showPage('topup')" style="padding:0.625rem 1.25rem;font-size:0.85rem">Buy Tokens</button></div>
+          <div class="actions" class="dash-actions-mt"><button class="btn-primary" onclick="showPage('topup')" class="dash-action-btn">Buy Tokens</button></div>
         </div>
         <div class="dash-stats">
           <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up">↑ Lifetime</div></div>
@@ -264,46 +264,46 @@ function toggleDashSidebar() {
       </div>
 
       <!-- ═══════ CHARTS ROW: Bar Chart + Donut ═══════ -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+      <div class="mini-chart-grid">
         <!-- API Calls per Model Bar Chart -->
         <div class="dash-card stat-card" >
           <div class="dash-section-title section-header" >
             <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-gold"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg> API Calls per Model</span>
-            <span style="font-size:0.72rem;color:var(--text-muted);cursor:pointer">7d ▼</span>
+            <span class="legend-label">7d ▼</span>
           </div>
-          <div style="display:flex;align-items:flex-end;gap:0.4rem;height:100px;padding-top:0.25rem">
+          <div class="bar-chart-wrap">
             <div  class="flex-col-center">
               <span  class="label-tiny">2.1k</span>
-              <div style="width:100%;max-width:32px;border-radius:3px 3px 0 0;height:90%;background:linear-gradient(180deg,#F4B400 0%,rgba(244,180,0,0.3) 100%);transition:all 0.4s"></div>
+              <div class="bar-chart-bar bar-gold" style="height:90%"></div>
               <span  class="label-micro">GPT-4o</span>
             </div>
             <div  class="flex-col-center">
               <span  class="label-tiny">1.8k</span>
-              <div style="width:100%;max-width:32px;border-radius:3px 3px 0 0;height:78%;background:linear-gradient(180deg,#00D68F 0%,rgba(0,214,143,0.3) 100%);transition:all 0.4s"></div>
+              <div class="bar-chart-bar bar-teal" style="height:78%"></div>
               <span  class="label-micro">Claude</span>
             </div>
             <div  class="flex-col-center">
               <span  class="label-tiny">1.4k</span>
-              <div style="width:100%;max-width:32px;border-radius:3px 3px 0 0;height:62%;background:linear-gradient(180deg,#7C4DFF 0%,rgba(124,77,255,0.3) 100%);transition:all 0.4s"></div>
+              <div class="bar-chart-bar bar-purple" style="height:62%"></div>
               <span  class="label-micro">DeepSeek</span>
             </div>
             <div  class="flex-col-center">
               <span  class="label-tiny">1.2k</span>
-              <div style="width:100%;max-width:32px;border-radius:3px 3px 0 0;height:55%;background:linear-gradient(180deg,#4FC3F7 0%,rgba(79,195,247,0.3) 100%);transition:all 0.4s"></div>
+              <div class="bar-chart-bar bar-blue" style="height:55%"></div>
               <span  class="label-micro">Gemini</span>
             </div>
             <div  class="flex-col-center">
               <span  class="label-tiny">0.9k</span>
-              <div style="width:100%;max-width:32px;border-radius:3px 3px 0 0;height:42%;background:linear-gradient(180deg,#FF9800 0%,rgba(255,152,0,0.3) 100%);transition:all 0.4s"></div>
+              <div class="bar-chart-bar bar-orange" style="height:42%"></div>
               <span  class="label-micro">Llama</span>
             </div>
             <div  class="flex-col-center">
               <span  class="label-tiny">0.6k</span>
-              <div style="width:100%;max-width:32px;border-radius:3px 3px 0 0;height:32%;background:linear-gradient(180deg,#FF6B6B 0%,rgba(255,107,107,0.3) 100%);transition:all 0.4s"></div>
+              <div class="bar-chart-bar bar-red" style="height:32%"></div>
               <span  class="label-micro">Mistral</span>
             </div>
           </div>
-          <div class="api-stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-top:0.75rem;padding-top:0.625rem;border-top:1px solid var(--border)">
+          <div class="api-stats-grid" class="model-grid">
             <div  class="text-center">
               <div  class="stat-value">8.3k</div>
               <div  class="text-tiny-muted">Total Calls</div>
@@ -322,7 +322,7 @@ function toggleDashSidebar() {
             <div  class="text-center">
               <div  class="stat-value">187ms</div>
               <div  class="text-tiny-muted">Latency</div>
-              <div style="font-size:0.6rem;color:#FF6B6B">↓ 12ms</div>
+              <div class="model-error">↓ 12ms</div>
             </div>
           </div>
         </div>
@@ -330,36 +330,36 @@ function toggleDashSidebar() {
         <!-- Spending by Provider Donut Chart -->
         <div class="dash-card stat-card" >
           <div class="dash-section-title section-header" >
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;color:#00D68F"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Spending by Provider</span>
-            <span style="font-size:0.72rem;color:var(--text-muted);cursor:pointer">This month</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-success"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Spending by Provider</span>
+            <span class="legend-label">This month</span>
           </div>
-          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
-            <div style="position:relative;width:150px;height:150px;flex-shrink:0">
-              <canvas id="spendingDonut" width="150" height="150" style="width:150px;height:150px"></canvas>
-              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-                <div style="font-size:1.1rem;font-weight:700;color:var(--text)">$0.00</div>
+          <div class="dash-usage-row">
+            <div class="donut-wrap">
+              <canvas id="spendingDonut" width="150" height="150" class="donut-canvas"></canvas>
+class="donut-center"
+                <div class="donut-value">$0.00</div>
                 <div  class="text-tiny-muted">spent</div>
               </div>
             </div>
-            <div style="flex:1;min-width:120px" class="spending-list">
+            <div class="legend-item-flex" class="spending-list">
               <div  class="provider-row">
-                <div  class="flex-row-sm"><span style="width:7px;height:7px;border-radius:2px;background:#F4B400;flex-shrink:0"></span><span  class="text-sm-secondary">OpenAI</span><span  class="text-xs-muted">42%</span></div>
+                <div  class="flex-row-sm"><span class="legend-dot legend-dot-gold"></span><span  class="text-sm-secondary">OpenAI</span><span  class="text-xs-muted">42%</span></div>
                 <span  class="text-sm-medium">$30.41</span>
               </div>
               <div  class="provider-row">
-                <div  class="flex-row-sm"><span style="width:7px;height:7px;border-radius:2px;background:#00D68F;flex-shrink:0"></span><span  class="text-sm-secondary">Anthropic</span><span  class="text-xs-muted">25%</span></div>
+                <div  class="flex-row-sm"><span class="legend-dot legend-dot-teal"></span><span  class="text-sm-secondary">Anthropic</span><span  class="text-xs-muted">25%</span></div>
                 <span  class="text-sm-medium">$18.10</span>
               </div>
               <div  class="provider-row">
-                <div  class="flex-row-sm"><span style="width:7px;height:7px;border-radius:2px;background:#7C4DFF;flex-shrink:0"></span><span  class="text-sm-secondary">DeepSeek</span><span  class="text-xs-muted">15%</span></div>
+                <div  class="flex-row-sm"><span class="legend-dot legend-dot-purple"></span><span  class="text-sm-secondary">DeepSeek</span><span  class="text-xs-muted">15%</span></div>
                 <span  class="text-sm-medium">$10.86</span>
               </div>
               <div  class="provider-row">
-                <div  class="flex-row-sm"><span style="width:7px;height:7px;border-radius:2px;background:#4FC3F7;flex-shrink:0"></span><span  class="text-sm-secondary">Google</span><span  class="text-xs-muted">10%</span></div>
+                <div  class="flex-row-sm"><span class="legend-dot legend-dot-blue"></span><span  class="text-sm-secondary">Google</span><span  class="text-xs-muted">10%</span></div>
                 <span  class="text-sm-medium">$7.24</span>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.25rem 0">
-                <div  class="flex-row-sm"><span style="width:7px;height:7px;border-radius:2px;background:#FF6B6B;flex-shrink:0"></span><span  class="text-sm-secondary">Other</span><span  class="text-xs-muted">8%</span></div>
+              <div class="legend-row">
+                <div  class="flex-row-sm"><span class="legend-dot legend-dot-red"></span><span  class="text-sm-secondary">Other</span><span  class="text-xs-muted">8%</span></div>
                 <span  class="text-sm-medium">$5.79</span>
               </div>
             </div>
@@ -368,26 +368,26 @@ function toggleDashSidebar() {
       </div>
 
       <!-- ═══════ USAGE CHART + ACTIVITY FEED ═══════ -->
-      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1.25rem">
+      <div class="charts-side-grid">
         <!-- Usage Chart (Chart.js) -->
         <div class="dash-card stat-card" >
-          <div class="dash-section-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem">
-            <span style="font-size:0.82rem;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Usage</span>
-            <div style="display:flex;gap:0.2rem;font-size:0.65rem" id="usageRangeBtns">
+          <div class="dash-section-title" class="filter-btn-row">
+            <span class="filter-btn-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Usage</span>
+            <div class="filter-badge-row" id="usageRangeBtns">
               <button class="sort-btn usage-range active badge" data-days="7" onclick="setUsageRange(7)" >7d</button>
               <button class="sort-btn usage-range badge" data-days="30" onclick="setUsageRange(30)" >30d</button>
               <button class="sort-btn usage-range badge" data-days="90" onclick="setUsageRange(90)" >90d</button>
             </div>
-            <select id="usageModelFilter" style="font-size:0.65rem;padding:0.2rem 0.35rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text)" onchange="refreshUsageChart()">
+            <select id="usageModelFilter" class="filter-badge-item" onchange="refreshUsageChart()">
               <option value="">All Models</option>
             </select>
-            <div style="display:flex;gap:0.2rem;font-size:0.65rem;margin-left:auto" id="usageModeBtns">
+            <div class="filter-badge-right" id="usageModeBtns">
               <button class="sort-btn usage-mode active badge" data-mode="tokens" onclick="setUsageMode('tokens')" >Tokens</button>
               <button class="sort-btn usage-mode badge" data-mode="cost" onclick="setUsageMode('cost')" >Cost</button>
             </div>
           </div>
-          <div class="chart-container" style="height:150px;position:relative"><canvas id="dailyChart"></canvas></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border)" id="usageSummary">
+          <div class="chart-container" class="chart-container-rel"><canvas id="dailyChart"></canvas></div>
+          <div class="chart-axis-labels" id="usageSummary">
             <span id="usageTotalLabel">Total: <strong id="usageTotalVal"  class="text-semibold">0</strong> tokens</span>
             <span id="usageCostLabel">Cost: <strong id="usageCostVal"  class="text-semibold">$0.00</strong></span>
           </div>
@@ -397,9 +397,9 @@ function toggleDashSidebar() {
         <div class="dash-card stat-card" >
           <div class="dash-section-title section-header" >
             <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-gold"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Activity</span>
-            <span style="font-size:0.72rem;color:var(--primary);cursor:pointer">Live ▸</span>
+            <span class="view-details-link">Live ▸</span>
           </div>
-          <div id="dashActivity" class="dash-activity" style="max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:0.35rem">
+          <div id="dashActivity" class="dash-activity" class="activity-scroll">
             <div class="activity-item activity-row" >
               <div  class="color-dot-blue">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -419,7 +419,7 @@ function toggleDashSidebar() {
               </div>
             </div>
             <div class="activity-item activity-row" >
-              <div style="width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;background:rgba(0,214,143,0.1);color:#00D68F">
+              <div class="activity-icon activity-icon-teal">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
               </div>
               <div  class="flex-grow">
@@ -428,16 +428,16 @@ function toggleDashSidebar() {
               </div>
             </div>
             <div class="activity-item activity-row" >
-              <div style="width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;background:rgba(244,180,0,0.1);color:#F4B400">
+              <div class="activity-icon activity-icon-gold">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>
               </div>
               <div  class="flex-grow">
-                <div  class="text-desc">New key: <strong style="color:var(--text);font-weight:600">glb_prod_7f3a…</strong></div>
+                <div  class="text-desc">New key: <strong class="activity-model">glb_prod_7f3a…</strong></div>
                 <div  class="text-micro-top">32 min ago</div>
               </div>
             </div>
-            <div class="activity-item" style="display:flex;gap:0.6rem;padding:0.4rem 0">
-              <div style="width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;background:rgba(255,107,107,0.1);color:#FF6B6B">
+            <div class="activity-item" class="activity-row">
+              <div class="activity-icon activity-icon-red">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
               <div  class="flex-grow">
@@ -446,45 +446,45 @@ function toggleDashSidebar() {
               </div>
             </div>
           </div>
-          <div style="margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:0.65rem;color:var(--text-muted)">
+class="activity-footer"
             <span id="activityCount">5 events</span>
-            <span style="cursor:pointer;color:var(--primary)">View all →</span>
+            <span class="activity-view-all">View all →</span>
           </div>
         </div>
       </div>
 
       <!-- ═══════ TOKEN USAGE BAR ═══════ -->
       <div class="dash-card stat-card" >
-        <div class="dash-section-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;font-size:0.82rem;font-weight:600">
+class="progress-header"
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-gold"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M9 9h6"/></svg> Token Usage <span id="usageSubtitle" class="text-sm-muted">Loading...</span></span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:0.35rem">
+class="chart-axis-labels"
           <span  class="text-muted"><span id="usedTokens">—</span> used</span>
           <span id="remainingTokens" class="text-muted">0 remaining</span>
         </div>
-        <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden;position:relative">
-          <div id="quotaBar" style="height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,var(--primary),#00D68F);transition:width 0.6s ease"></div>
+        <div class="progress-track">
+class="progress-fill"
         </div>
       </div>
 
       <!-- ═══════ AVAILABLE MODELS ═══════ -->
       <div class="dash-card stat-card" id="dashAvailableModels" >
-        <div class="dash-section-title" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;font-size:0.82rem;font-weight:600">
+class="model-usage-row"
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
           Your Models <span id="modelCountLabel" class="text-sm-muted">via New API</span>
         </div>
-        <div id="dashModelList" style="max-height:180px;overflow-y:auto"><p style="color:var(--text-muted);font-size:0.8rem;text-align:center;padding:0.5rem">Connect New API to see available models.</p></div>
+        <div id="dashModelList" class="model-list-scroll"><p class="model-list-empty">Connect New API to see available models.</p></div>
       </div>
 
       <!-- ═══════ RECENT TRANSACTIONS ═══════ -->
       <div class="dash-card stat-card" >
         <div class="dash-section-title section-header" >
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-blue"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Recent Transactions <span  class="text-sm-muted">Last 5</span></span>
-          <a href="usage.html" style="font-size:0.75rem;color:var(--primary);cursor:pointer;text-decoration:none">View all →</a>
+          <a href="usage.html" class="view-models-link">View all →</a>
         </div>
-        <table class="tx-table" style="width:100%;border-collapse:collapse;font-size:0.82rem">
-          <thead><tr><th  class="table-header">Date</th><th  class="table-header">Type</th><th  class="table-header">Detail</th><th style="padding:0.5rem;text-align:right;font-weight:600;color:var(--text-muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--border)">Amount</th><th style="padding:0.5rem;text-align:center;font-weight:600;color:var(--text-muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--border)">Status</th></tr></thead>
-          <tbody id="dashTxBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.8rem">No transactions yet</td></tr></tbody>
+        <table class="tx-table" class="tx-table-full">
+          <thead><tr><th  class="table-header">Date</th><th  class="table-header">Type</th><th  class="table-header">Detail</th><th class="tx-th tx-th-right">Amount</th><th class="tx-th tx-th-center">Status</th></tr></thead>
+          <tbody id="dashTxBody"><tr><td colspan="5" class="td-empty">No transactions yet</td></tr></tbody>
         </table>
       </div>
 

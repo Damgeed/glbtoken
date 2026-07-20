@@ -1193,3 +1193,359 @@ body {
     display: none;
   }
 }
+
+/* ── Dashboard inline style extraction ── */
+/* Gradient text (gold→teal) */
+.dash-gradient-text {
+  background: linear-gradient(135deg, #F4B400, #00D68F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Inline badge */
+.dash-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: rgba(0, 214, 143, 0.12);
+  color: #00D68F;
+  position: relative;
+  top: -2px;
+}
+/* Actions top margin */
+.dash-actions-mt {
+  margin-top: 3rem;
+}
+/* Primary action button */
+.dash-action-btn {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.85rem;
+}
+/* Mini chart 2-col grid */
+.mini-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+/* Legend/model label */
+.legend-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+/* Bar chart wrapper */
+.bar-chart-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 100px;
+  padding-top: 0.25rem;
+}
+/* Bar chart bar base */
+.bar-chart-bar {
+  width: 100%;
+  max-width: 32px;
+  border-radius: 3px 3px 0 0;
+  transition: all 0.4s;
+}
+.bar-gold {
+  background: linear-gradient(180deg, #F4B400 0%, rgba(244, 180, 0, 0.3) 100%);
+}
+.bar-teal {
+  background: linear-gradient(180deg, #00D68F 0%, rgba(0, 214, 143, 0.3) 100%);
+}
+.bar-purple {
+  background: linear-gradient(180deg, #7C4DFF 0%, rgba(124, 77, 255, 0.3) 100%);
+}
+.bar-blue {
+  background: linear-gradient(180deg, #4FC3F7 0%, rgba(79, 195, 247, 0.3) 100%);
+}
+.bar-orange {
+  background: linear-gradient(180deg, #FF9800 0%, rgba(255, 152, 0, 0.3) 100%);
+}
+.bar-red {
+  background: linear-gradient(180deg, #FF6B6B 0%, rgba(255, 107, 107, 0.3) 100%);
+}
+/* Model grid */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--border);
+}
+/* Model error text */
+.model-error {
+  font-size: 0.6rem;
+  color: #FF6B6B;
+}
+/* SVG icon with success color */
+.icon-inline-success {
+  vertical-align: middle;
+  margin-right: 6px;
+  color: #00D68F;
+}
+/* Usage row */
+.dash-usage-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+/* Donut chart wrapper */
+.donut-wrap {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+/* Donut canvas */
+.donut-canvas {
+  width: 150px;
+  height: 150px;
+}
+/* Donut center label */
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 0.5rem;
+}
+/* Donut center value */
+.donut-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+/* Legend flex item */
+.legend-item-flex {
+  flex: 1;
+  min-width: 120px;
+}
+/* Legend dot colors */
+.legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.legend-dot-gold { background: #F4B400; }
+.legend-dot-teal { background: #00D68F; }
+.legend-dot-purple { background: #7C4DFF; }
+.legend-dot-blue { background: #4FC3F7; }
+.legend-dot-red { background: #FF6B6B; }
+/* Legend row */
+.legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+}
+/* Charts side-by-side grid */
+.charts-side-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.25rem;
+}
+/* Filter button row */
+.filter-btn-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+/* Filter button text */
+.filter-btn-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+/* Filter badge row */
+.filter-badge-row {
+  display: flex;
+  gap: 0.2rem;
+  font-size: 0.65rem;
+}
+/* Filter badge item */
+.filter-badge-item {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+/* Filter badge right */
+.filter-badge-right {
+  display: flex;
+  gap: 0.2rem;
+  font-size: 0.65rem;
+  margin-left: auto;
+}
+/* Chart container */
+.chart-container-rel {
+  height: 150px;
+  position: relative;
+}
+/* Chart axis labels */
+.chart-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+/* View details link */
+.view-details-link {
+  font-size: 0.72rem;
+  color: var(--primary);
+  cursor: pointer;
+}
+/* Activity scroll list */
+.activity-scroll {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+/* Activity icon */
+.activity-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.activity-icon-gold {
+  background: rgba(244, 180, 0, 0.15);
+  color: #F4B400;
+}
+.activity-icon-teal {
+  background: rgba(0, 214, 143, 0.15);
+  color: #00D68F;
+}
+.activity-icon-red {
+  background: rgba(255, 107, 107, 0.1);
+  color: #FF6B6B;
+}
+/* Activity model name */
+.activity-model {
+  color: var(--text);
+  font-weight: 600;
+}
+/* Activity row */
+.activity-row {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+}
+/* Activity footer */
+.activity-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+/* Activity view all */
+.activity-view-all {
+  cursor: pointer;
+  color: var(--primary);
+}
+/* Progress header */
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+}
+/* Progress row */
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+/* Progress bar track */
+.progress-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border);
+  overflow: hidden;
+  position: relative;
+}
+/* Progress bar fill */
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  transition: width 0.5s ease;
+}
+/* Model usage row */
+.model-usage-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+/* Model list scroll */
+.model-list-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+}
+/* Model list empty */
+.model-list-empty {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+/* View all models link */
+.view-models-link {
+  font-size: 0.75rem;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+/* Full width table */
+.tx-table-full {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+/* Table header cell */
+.tx-th {
+  padding: 0.5rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+.tx-th-right {
+  text-align: right;
+}
+.tx-th-center {
+  text-align: center;
+}
+/* Table empty cell */
+.td-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1.5rem;
+  font-size: 0.8rem;
+}
