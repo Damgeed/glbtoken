@@ -1439,30 +1439,7 @@ input[type="range"]::-moz-range-thumb {
 .topup-page {
   padding: 2rem 1.25rem 3rem;
 }
-.dash-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.dash-welcome h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-.dash-welcome p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-.dash-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  margin-top: 1.25rem;
-  margin-bottom: 1.25rem;
-}
+/* Dashboard - unified gap-based layout */
 .dash-balance {
   background: linear-gradient(
     135deg,

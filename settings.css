@@ -213,17 +213,6 @@
   color: var(--text);
   font-size: 0.85rem;
 }
-/* Input with top margin */
-.settings-input-mt {
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  border: 1px solid var(--border-light);
-  color: var(--text);
-  font-size: 0.85rem;
-}
 /* Save button (reuses input style) */
 button.settings-save-btn {
   width: 100%;
