@@ -16,7 +16,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=1025" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1007" /><link rel="stylesheet" href="usage.css?v=1007" />
+<link rel="stylesheet" href="billing.css?v=1007" /><link rel="stylesheet" href="usage.css?v=1008" />
   </head>
 <body>
 <script src="dashboard.js?v=1001"></script>
@@ -30,7 +30,7 @@
       <a href="how.html">How It Works</a>
       <a href="models.html">Models</a>
       <a href="apikeys.html" id="navApiLink">Docs</a>
-      <a href="dashboard.html" class="active" id="navDashLink" style="display:none">Dashboard</a>
+      <a href="dashboard.html" class="active d-none" id="navDashLink">Dashboard</a>
 
     </div>
     <div class="nav-right">
@@ -50,9 +50,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" style="display:none">
+        <div id="navUser" class="d-none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" style="cursor:pointer">
+            <div class="dropdown-header cursor-pointer" onclick="window.location.href='settings.html';return false">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -84,7 +84,7 @@
     <a href="how.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V4a2 2 0 012-2h8.5L20 7.5V20a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> How It Works</a>
     <a href="models.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> Models</a>
     <a href="apikeys.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Docs</a>
-    <a href="dashboard.html" onclick="closeMobile()" id="mobileDashLink" style="display:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
+    <a href="dashboard.html" onclick="closeMobile()" id="mobileDashLink" class="d-none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
     <hr>
     <div class="m-section-label">Account</div>
@@ -92,7 +92,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" style="display:none">
+    <div id="mobileUserSection" class="d-none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -103,7 +103,7 @@
   </div>
 
 <button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
+  <span class="usage-sidebar-arrow">→</span>
 </button>
 
 <div class="dash-layout">
@@ -176,7 +176,7 @@
       <div class="dash-header">
         <div class="dash-welcome">
           <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-lg">
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
             Login History
@@ -188,22 +188,22 @@
       <!-- Transaction History -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
           Transaction History
-          <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted);margin-left:0.5rem">Deposits & Consumption</span>
+          <span class="tx-title-sub">Deposits & Consumption</span>
         </div>
-        <div style="display:flex;gap:0.75rem">
-          <button class="tx-tab active" onclick="switchTxTab(this,'deposits')" style="padding:0.4rem 1rem;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:0.85rem">Deposits</button>
-          <button class="tx-tab" onclick="switchTxTab(this,'consumption')" style="padding:0.4rem 1rem;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:0.85rem">Consumption</button>
+        <div class="tx-tab-row">
+          <button class="tx-tab active tx-tab-btn" onclick="switchTxTab(this,'deposits')">Deposits</button>
+          <button class="tx-tab tx-tab-btn" onclick="switchTxTab(this,'consumption')">Consumption</button>
         </div>
-        <div style="overflow-x:auto">
+        <div class="scroll-x">
           <table class="tx-table">
             <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Tokens</th><th>Status</th></tr></thead>
-            <tbody id="txDepositBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No deposits</td></tr></tbody>
+            <tbody id="txDepositBody"><tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr></tbody>
           </table>
-          <table class="tx-table" id="txConsumption" style="display:none">
+          <table class="tx-table d-none" id="txConsumption">
             <thead><tr><th>Date</th><th>Model</th><th>Tokens</th><th>Type</th></tr></thead>
-            <tbody id="txConsumptionBody"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No consumption</td></tr></tbody>
+            <tbody id="txConsumptionBody"><tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr></tbody>
           </table>
         </div>
         
@@ -211,18 +211,18 @@
 
       <!-- Login History Filters -->
       <div class="dash-card">
-        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+        <div class="filter-row-wide">
           <div>
-            <label style="font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Date Range</label>
-            <div style="display:flex;gap:0.25rem;font-size:0.8rem">
-              <input type="date" id="filterDateFrom" style="padding:0.4rem 0.6rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem" />
-              <span style="color:var(--text-muted);align-self:center">—</span>
-              <input type="date" id="filterDateTo" style="padding:0.4rem 0.6rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem" />
+            <label class="filter-label">Date Range</label>
+            <div class="date-range-row">
+              <input type="date" id="filterDateFrom" class="filter-input" />
+              <span class="separator-dash">—</span>
+              <input type="date" id="filterDateTo" class="filter-input" />
             </div>
           </div>
           <div>
-            <label style="font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Device</label>
-            <select id="filterDevice" onchange="applyFilters()" style="padding:0.4rem 0.6rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem">
+            <label class="filter-label">Device</label>
+            <select id="filterDevice" onchange="applyFilters()" class="filter-input">
               <option value="">All Devices</option>
               <option value="Windows">Windows</option>
               <option value="Mac">Mac</option>
@@ -236,84 +236,84 @@
             </select>
           </div>
           <div>
-            <label style="font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:0.25rem">Status</label>
-            <select id="filterStatus" onchange="applyFilters()" style="padding:0.4rem 0.6rem;border-radius:4px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.8rem">
+            <label class="filter-label">Status</label>
+            <select id="filterStatus" onchange="applyFilters()" class="filter-input">
               <option value="">All Status</option>
               <option value="success">✅ Success</option>
               <option value="failed">❌ Failed</option>
             </select>
           </div>
-          <button class="btn-primary" onclick="applyFilters()" style="margin-top:1.25rem;padding:0.4rem 1rem;font-size:0.8rem">Apply Filters</button>
+          <button class="btn-primary apply-btn" onclick="applyFilters()">Apply Filters</button>
         </div>
       </div>
 
       <!-- Login History Table -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
           </svg>
           Login Attempts
         </div>
-        <div style="overflow-x:auto" id="loginScrollX">
+        <div class="scroll-x" id="loginScrollX">
           <table class="tx-table" id="loginTable">
             <thead><tr><th>Timestamp</th><th class="ip-col">IP Address</th><th>Device / Browser</th><th>Location</th><th>Status</th></tr></thead>
             <tbody id="historyBody">
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-14</div><div style="font-size:0.7rem;color:var(--text-muted)">09:32:18</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">203.0.113.42</td>
-                <td style="font-size:0.85rem">Chrome 126 on Windows 11</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇺🇸 <span class="loc-city">New York</span><span class="loc-country">, US</span></td>
-                <td><strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-14</div><div class="td-time">09:32:18</div></td>
+                <td class="ip-col td-ip">203.0.113.42</td>
+                <td class="td-device">Chrome 126 on Windows 11</td>
+                <td class="td-location">🇺🇸 <span class="loc-city">New York</span><span class="loc-country">, US</span></td>
+                <td><strong class="status-badge-success">✅<span class="status-text"> Success</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-14</div><div style="font-size:0.7rem;color:var(--text-muted)">08:15:42</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">198.51.100.77</td>
-                <td style="font-size:0.85rem">Safari 17.5 on macOS 14</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇬🇧 <span class="loc-city">London</span><span class="loc-country">, UK</span></td>
-                <td><strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-14</div><div class="td-time">08:15:42</div></td>
+                <td class="ip-col td-ip">198.51.100.77</td>
+                <td class="td-device">Safari 17.5 on macOS 14</td>
+                <td class="td-location">🇬🇧 <span class="loc-city">London</span><span class="loc-country">, UK</span></td>
+                <td><strong class="status-badge-success">✅<span class="status-text"> Success</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-13</div><div style="font-size:0.7rem;color:var(--text-muted)">22:04:11</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">192.0.2.15</td>
-                <td style="font-size:0.85rem">Firefox 127 on Linux</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><strong style="color:#FF6B6B;font-size:0.85rem">❌<span class="status-text"> Failed</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-13</div><div class="td-time">22:04:11</div></td>
+                <td class="ip-col td-ip">192.0.2.15</td>
+                <td class="td-device">Firefox 127 on Linux</td>
+                <td class="td-location">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
+                <td><strong class="status-badge-failed">❌<span class="status-text"> Failed</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-13</div><div style="font-size:0.7rem;color:var(--text-muted)">18:30:55</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">203.0.113.42</td>
-                <td style="font-size:0.85rem">Chrome 126 on Windows 11</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇺🇸 <span class="loc-city">New York</span><span class="loc-country">, US</span></td>
-                <td><strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-13</div><div class="td-time">18:30:55</div></td>
+                <td class="ip-col td-ip">203.0.113.42</td>
+                <td class="td-device">Chrome 126 on Windows 11</td>
+                <td class="td-location">🇺🇸 <span class="loc-city">New York</span><span class="loc-country">, US</span></td>
+                <td><strong class="status-badge-success">✅<span class="status-text"> Success</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-13</div><div style="font-size:0.7rem;color:var(--text-muted)">14:12:09</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">198.51.100.77</td>
-                <td style="font-size:0.85rem">Edge 126 on Windows 11</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇬🇧 <span class="loc-city">London</span><span class="loc-country">, UK</span></td>
-                <td><strong style="color:#FF6B6B;font-size:0.85rem">❌<span class="status-text"> Failed</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-13</div><div class="td-time">14:12:09</div></td>
+                <td class="ip-col td-ip">198.51.100.77</td>
+                <td class="td-device">Edge 126 on Windows 11</td>
+                <td class="td-location">🇬🇧 <span class="loc-city">London</span><span class="loc-country">, UK</span></td>
+                <td><strong class="status-badge-failed">❌<span class="status-text"> Failed</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-13</div><div style="font-size:0.7rem;color:var(--text-muted)">11:45:33</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">192.0.2.88</td>
-                <td style="font-size:0.85rem">Safari 17.5 on iOS 18</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇯🇵 <span class="loc-city">Tokyo</span><span class="loc-country">, JP</span></td>
-                <td><strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-13</div><div class="td-time">11:45:33</div></td>
+                <td class="ip-col td-ip">192.0.2.88</td>
+                <td class="td-device">Safari 17.5 on iOS 18</td>
+                <td class="td-location">🇯🇵 <span class="loc-city">Tokyo</span><span class="loc-country">, JP</span></td>
+                <td><strong class="status-badge-success">✅<span class="status-text"> Success</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-12</div><div style="font-size:0.7rem;color:var(--text-muted)">21:08:22</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">203.0.113.42</td>
-                <td style="font-size:0.85rem">Chrome 126 on Windows 11</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇺🇸 <span class="loc-city">New York</span><span class="loc-country">, US</span></td>
-                <td><strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-12</div><div class="td-time">21:08:22</div></td>
+                <td class="ip-col td-ip">203.0.113.42</td>
+                <td class="td-device">Chrome 126 on Windows 11</td>
+                <td class="td-location">🇺🇸 <span class="loc-city">New York</span><span class="loc-country">, US</span></td>
+                <td><strong class="status-badge-success">✅<span class="status-text"> Success</span></strong></td>
               </tr>
               <tr>
-                <td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">2026-06-12</div><div style="font-size:0.7rem;color:var(--text-muted)">19:30:05</div></td>
-                <td class="ip-col" style="font-family:monospace;font-size:0.85rem">198.51.100.15</td>
-                <td style="font-size:0.85rem">Android Chrome 126 on Samsung</td>
-                <td style="font-size:0.85rem;color:var(--text-muted)">🇰🇷 <span class="loc-city">Seoul</span><span class="loc-country">, KR</span></td>
-                <td><strong style="color:#FF6B6B;font-size:0.85rem">❌<span class="status-text"> Failed</span></strong></td>
+                <td class="td-date"><div class="td-date-strong">2026-06-12</div><div class="td-time">19:30:05</div></td>
+                <td class="ip-col td-ip">198.51.100.15</td>
+                <td class="td-device">Android Chrome 126 on Samsung</td>
+                <td class="td-location">🇰🇷 <span class="loc-city">Seoul</span><span class="loc-country">, KR</span></td>
+                <td><strong class="status-badge-failed">❌<span class="status-text"> Failed</span></strong></td>
               </tr>
             </tbody>
           </table>
@@ -321,23 +321,23 @@
         
 
         <!-- Empty State -->
-        <div id="historyEmptyState" style="display:none;text-align:center;padding:3rem 1rem">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1rem;opacity:0.4">
+        <div id="historyEmptyState" class="usage-empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="usage-empty-icon">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
-          <h3 style="margin:0 0 0.5rem;color:var(--text-muted);font-size:1.1rem">No login history yet</h3>
-          <p style="margin:0;color:var(--text-muted);font-size:0.9rem">Logins will appear here once you sign in from different devices or locations.</p>
+          <h3 class="usage-empty-title">No login history yet</h3>
+          <p class="usage-empty-desc">Logins will appear here once you sign in from different devices or locations.</p>
         </div>
 
         <!-- Load More -->
-        <div style="text-align:center;padding:1.5rem 0 0.5rem;border-top:1px solid var(--border);margin-top:1rem">
-          <button class="btn-secondary" onclick="loadMoreHistory()" id="loadMoreBtn" style="padding:0.6rem 2rem;font-size:0.85rem">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px">
+        <div class="load-more-wrap">
+          <button class="btn-secondary load-more-btn" onclick="loadMoreHistory()" id="loadMoreBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
               <polyline points="7 13 12 18 17 13"/><polyline points="12 18 12 6"/>
             </svg>
             Load More
           </button>
-          <p style="font-size:0.75rem;color:var(--text-muted);margin:0.5rem 0 0" id="historyCount">Showing 8 of 8 entries</p>
+          <p class="history-count-note" id="historyCount">Showing 8 of 8 entries</p>
         </div>
       </div>
 
@@ -416,16 +416,16 @@ function renderHistoryRow(item){
   var parts=item.ts.split(' ');
   var date=parts[0], time=parts[1]||'';
   var statusIcon = item.status === 'success'
-    ? '<strong style="color:#00D68F;font-size:0.85rem">✅<span class="status-text"> Success</span></strong>'
-    : '<strong style="color:#FF6B6B;font-size:0.85rem">❌<span class="status-text"> Failed</span></strong>';
+    ? '<strong class="status-badge-success">✅<span class="status-text"> Success</span></strong>'
+    : '<strong class="status-badge-failed">❌<span class="status-text"> Failed</span></strong>';
   var locParts=item.location.split(', ');
   var city=locParts[0]||item.location;
   var country=locParts[1]||'';
   return '<tr>'
-    + '<td style="font-size:0.85rem;white-space:nowrap"><div style="font-weight:600">'+date+'</div><div style="font-size:0.7rem;color:var(--text-muted)">'+time+'</div></td>'
-    + '<td class="ip-col" style="font-family:monospace;font-size:0.85rem">'+item.ip+'</td>'
-    + '<td style="font-size:0.85rem">'+item.device+'</td>'
-    + '<td style="font-size:0.85rem;color:var(--text-muted)">'+getFlag(item.location)+' <span class="loc-city">'+city+'</span><span class="loc-country">'+(country?', '+country:'')+'</span></td>'
+    + '<td class="td-date"><div class="td-date-strong">'+date+'</div><div class="td-time">'+time+'</div></td>'
+    + '<td class="ip-col td-ip">'+item.ip+'</td>'
+    + '<td class="td-device">'+item.device+'</td>'
+    + '<td class="td-location">'+getFlag(item.location)+' <span class="loc-city">'+city+'</span><span class="loc-country">'+(country?', '+country:'')+'</span></td>'
     + '<td>'+statusIcon+'</td>'
     + '</tr>';
 }
@@ -449,7 +449,7 @@ function loadMoreHistory(){
   document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
 
   if(moreData.length === 0){
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="18 15 12 9 6 15"/></svg> Show Less';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="18 15 12 9 6 15"/></svg> Show Less';
     btn.onclick = showLessHistory;
     btn.disabled = false;
     btn.style.opacity = '';
@@ -474,7 +474,7 @@ function showLessHistory(){
   document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
 
   // Reset button back to Load More
-  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="7 13 12 18 17 13"/><polyline points="12 18 12 6"/></svg> Load More';
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="7 13 12 18 17 13"/><polyline points="12 18 12 6"/></svg> Load More';
   btn.onclick = loadMoreHistory;
   btn.disabled = false;
   btn.style.opacity = '';

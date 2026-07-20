@@ -195,3 +195,150 @@
 #section-usage {
   display: block;
 }
+
+/* ── Usage inline style extraction ── */
+/* Sidebar toggle arrow */
+.usage-sidebar-arrow {
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 700;
+}
+/* Transaction section sub label */
+.tx-title-sub {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+/* Tab button row */
+.tx-tab-row {
+  display: flex;
+  gap: 0.75rem;
+}
+/* Tab button style */
+.tx-tab-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+/* Empty table cell */
+.tx-empty-cell {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1.5rem;
+  font-size: 0.85rem;
+}
+/* Filter row (wide gap variant) */
+.filter-row-wide {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+/* Filter label */
+.filter-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+/* Date range inner row */
+.date-range-row {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+/* Filter input/select field */
+.filter-input {
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.8rem;
+}
+/* Date separator dash */
+.separator-dash {
+  color: var(--text-muted);
+  align-self: center;
+}
+/* Apply filters button */
+.apply-btn {
+  margin-top: 1.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+}
+/* Empty state (usage-specific display:none variant) */
+.usage-empty-state {
+  display: none;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.usage-empty-icon {
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+.usage-empty-title {
+  margin: 0 0 0.5rem;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+.usage-empty-desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+/* Load more wrapper */
+.load-more-wrap {
+  text-align: center;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+/* Load more button */
+.load-more-btn {
+  padding: 0.6rem 2rem;
+  font-size: 0.85rem;
+}
+/* History count note */
+.history-count-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+}
+/* Table cell styles */
+.td-date {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.td-date-strong {
+  font-weight: 600;
+}
+.td-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.td-ip {
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+.td-device {
+  font-size: 0.85rem;
+}
+.td-location {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+/* Status badge colors */
+.status-badge-success {
+  color: #00D68F;
+  font-size: 0.85rem;
+}
+.status-badge-failed {
+  color: #FF6B6B;
+  font-size: 0.85rem;
+}
