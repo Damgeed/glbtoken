@@ -1328,7 +1328,6 @@
       if(mu)mu.style.display=loggedIn?'block':'none';
       // Toggle Dashboard vs API/Dev in nav
       var nal=document.getElementById('navApiLink');if(nal)nal.style.display=loggedIn?'none':'inline-block';
-      var ndl=document.getElementById('navDashLink');if(ndl)ndl.style.display=loggedIn?'inline-block':'none';
       var mal=document.getElementById('mNavApiLink');
       if(mal)mal.style.display=loggedIn?'none':'block';
       var mdl=document.getElementById('mNavDashLink');
