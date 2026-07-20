@@ -1,0 +1,134 @@
+/* ── Referral page inline style extraction ── */
+
+/* Hero subtitle margin */
+.ref-hero-sub {
+  margin-bottom: 1.25rem;
+}
+/* Referral code text in stat card */
+.ref-code-text {
+  font-size: 1.1rem;
+  font-family: monospace;
+  letter-spacing: 2px;
+  color: #F4B400;
+}
+/* Stat card changelog muted */
+.ref-chg-muted {
+  color: var(--text-muted);
+}
+/* Pending rewards color */
+.ref-pending {
+  color: #FFB347;
+}
+/* Card top margin */
+.ref-card-mt {
+  margin-top: 1.25rem;
+}
+/* Share link row */
+.ref-share-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0.75rem 0;
+}
+/* Referral link input box */
+.ref-link-box {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+/* Referral link text */
+.ref-link-text {
+  padding: 0.75rem 1rem;
+  font-family: monospace;
+  font-size: 0.95rem;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+/* Copy button (no left radius) */
+.ref-copy-btn {
+  border-radius: 0;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+/* Share buttons row */
+.ref-share-btn-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+/* Share button */
+.ref-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+}
+/* Chart container fixed height */
+.chart-container-ht {
+  height: 180px;
+}
+/* Success color text */
+.text-success-color {
+  color: #00D68F;
+}
+/* Failed color text */
+.text-failed-color {
+  color: #FF6B6B;
+}
+/* Rewards grid */
+.ref-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+/* Reward/incentive card */
+.reward-card {
+  background: var(--bg-alt);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+/* Reward icon — gold */
+.reward-icon-gold {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(244, 180, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+/* Reward icon — teal */
+.reward-icon-teal {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 214, 143, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+/* Reward title */
+.reward-title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+/* Reward description */
+.reward-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
