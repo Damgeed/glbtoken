@@ -225,15 +225,29 @@
   font-size: 0.85rem;
 }
 /* Save button (reuses input style) */
-.settings-save-btn {
+button.settings-save-btn {
   width: 100%;
   margin-top: 0.75rem;
-  padding: 0.6rem 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  border: 1px solid var(--border-light);
-  color: var(--text);
-  font-size: 0.85rem;
+  background: var(--primary);
+  border: none;
+  color: #0a0b14;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--primary-glow);
+}
+button.settings-save-btn:hover {
+  background: var(--primary-hover);
+  box-shadow: var(--primary-glow-strong);
+}
+/* Gap between cards on mobile */
+@media (max-width: 768px) {
+  .dash-card + .dash-card {
+    margin-top: 0.75rem;
+  }
 }
 /* Action button right-aligned */
 .settings-btn-right {
