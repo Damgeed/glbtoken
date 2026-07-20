@@ -1330,9 +1330,7 @@
       var nal=document.getElementById('navApiLink');if(nal)nal.style.display=loggedIn?'none':'inline-block';
       var mal=document.getElementById('mNavApiLink');
       if(mal)mal.style.display=loggedIn?'none':'block';
-      var mdl=document.getElementById('mNavDashLink');
-      if(mdl)mdl.style.display=loggedIn?'block':'none';
-      // New feature nav links
+      // Toggle Buy Tokens link in nav
       var nrl=document.getElementById('navReferralLink');if(nrl)nrl.style.display=loggedIn?'inline-block':'none';
       var ntl=document.getElementById('navTeamLink');if(ntl)ntl.style.display=loggedIn?'inline-block':'none';
       var npl=document.getElementById('navPlaygroundLink');if(npl)npl.style.display=loggedIn?'inline-block':'none';
