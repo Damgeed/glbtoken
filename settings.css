@@ -248,7 +248,7 @@ button.settings-save-btn:hover {
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
-  background: var(--bg-alt);
+  background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: var(--radius-sm);
@@ -258,6 +258,7 @@ button.settings-save-btn:hover {
 }
 .settings-btn-full:hover {
   border-color: var(--primary);
+  background: var(--bg-alt);
   color: var(--primary);
 }
 .settings-btn-mt {
@@ -267,6 +268,9 @@ button.settings-save-btn:hover {
 @media (max-width: 768px) {
   .dash-card + .dash-card {
     margin-top: 0.75rem;
+  }
+  .settings-grid > .dash-card + .dash-card {
+    margin-top: 0;
   }
   button.settings-save-btn {
     padding: 0.65rem 1rem;
