@@ -69,8 +69,12 @@
 }
 /* Card with top margin + bottom padding */
 .refs-card-hero {
-  margin-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+@media (min-width: 769px) {
+  .refs-card-hero {
+    margin-top: 1.25rem;
+  }
 }
 /* Share link row */
 .refs-share-row {
