@@ -51,7 +51,7 @@
         </div>
         <div id="navUser" class="dn">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" class="cursor-pointer">
+            <div class="dropdown-header cursor-pointer" onclick="window.location.href='settings.html';return false">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -195,14 +195,14 @@
           <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
           <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
           <button class="sort-btn" onclick="sortKeys('usage')">Usage</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" class="ml-auto-btn">+ New Key</button>
+          <button class="btn-primary ml-auto-btn" onclick="showCreateKeyModal()">+ New Key</button>
         </div>
         <div id="keyList"><p class="muted-box">Loading keys...</p></div>
       </div>
 
       <!-- Create Key Modal -->
-      <div class="modal-overlay" id="createKeyModal" class="modal-overlay" onclick="if(event.target===this)closeCreateKeyModal()">
-        <div class="modal-content" class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-overlay modal-overlay" id="createKeyModal" onclick="if(event.target===this)closeCreateKeyModal()">
+        <div class="modal-content modal-content" onclick="event.stopPropagation()">
           <button onclick="closeCreateKeyModal()" class="modal-close">✕</button>
           <h3 class="modal-title">Create API Key</h3>
           <p class="txt-muted-desc">Name your key and set permissions</p>
@@ -214,21 +214,21 @@
             <option value="read_only">Read Only</option>
           </select>
           <div class="flex-gap075">
-            <button class="btn-secondary" onclick="closeCreateKeyModal()" class="flex-1-p06">Cancel</button>
-            <button class="btn-primary" onclick="createApiKey()" class="flex-1-p06">Create Key</button>
+            <button class="btn-secondary flex-1-p06" onclick="closeCreateKeyModal()">Cancel</button>
+            <button class="btn-primary flex-1-p06" onclick="createApiKey()">Create Key</button>
           </div>
           <div id="newKeyResult" class="dn-box">
             <p class="txt-success-sm"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
             <code id="newKeyValue" class="code-display"></code>
-            <button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')" class="btn-sm">Copy Key</button>
+            <button class="btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')">Copy Key</button>
           </div>
         </div>
       </div>
 
       <!-- Docs Link -->
-      <div class="dash-card" class="tac-p125">
+      <div class="dash-card tac-p125">
         <p class="desc-md">Need integration guides, code examples, and API reference?</p>
-        <a href="apikeys.html" class="btn-primary" class="btn-inline">View Full Documentation →</a>
+        <a class="btn-primary btn-inline" href="apikeys.html">View Full Documentation →</a>
       </div>
 
     </div>

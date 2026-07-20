@@ -51,7 +51,7 @@
         </div>
         <div id="navUser" class="dn">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" class="cursor-pointer">
+            <div class="dropdown-header cursor-pointer" onclick="window.location.href='settings.html';return false">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -195,12 +195,12 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           Cost Breakdown by Model <span class="txt-muted-sm-fw400">Per-model spend</span>
         </div>
-        <div class="dash-grid" class="grid-3col-auto">
+        <div class="dash-grid grid-3col-auto">
           <div class="dash-stat-card"><div class="num" id="cbTotalCost">$0.00</div><div class="lbl">Total Cost</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg" class="text-muted">Avg cost/call</div></div>
-          <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg" class="text-muted">Per request</div></div>
+          <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg text-muted">Avg cost/call</div></div>
+          <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg text-muted">Per request</div></div>
         </div>
-        <div class="chart-container" class="chart-sm"><canvas id="costByModelChart"></canvas></div>
+        <div class="chart-container chart-sm"><canvas id="costByModelChart"></canvas></div>
       </div>
 
       <div class="dash-card" id="dashErrorRate">
@@ -208,12 +208,12 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Error Rate Monitoring <span class="txt-muted-sm-fw400">Track API errors</span>
         </div>
-        <div class="dash-grid" class="grid-3col-auto">
-          <div class="dash-stat-card"><div class="num" id="erTotalErrors">0</div><div class="lbl">Total Errors</div><div class="chg" class="text-muted">All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="erErrorRate">0%</div><div class="lbl">Error Rate</div><div class="chg" class="text-muted">Percentage</div></div>
-          <div class="dash-stat-card"><div class="num" id="erLastError">—</div><div class="lbl">Last Error</div><div class="chg" class="text-muted">Time</div></div>
+        <div class="dash-grid grid-3col-auto">
+          <div class="dash-stat-card"><div class="num" id="erTotalErrors">0</div><div class="lbl">Total Errors</div><div class="chg text-muted">All time</div></div>
+          <div class="dash-stat-card"><div class="num" id="erErrorRate">0%</div><div class="lbl">Error Rate</div><div class="chg text-muted">Percentage</div></div>
+          <div class="dash-stat-card"><div class="num" id="erLastError">—</div><div class="lbl">Last Error</div><div class="chg text-muted">Time</div></div>
         </div>
-        <div class="chart-container" class="chart-sm"><canvas id="errorRateChart"></canvas></div>
+        <div class="chart-container chart-sm"><canvas id="errorRateChart"></canvas></div>
       </div>
 
       <div class="dash-card" id="dashResponseTime">
