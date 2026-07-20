@@ -1486,6 +1486,13 @@ body {
 .activity-view-all {
   cursor: pointer;
   color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+#activityCount {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 400;
 }
 /* Progress header */
 .progress-header {
