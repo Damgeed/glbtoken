@@ -21,7 +21,7 @@
 }
 .billing-stat-card {
   background: var(--bg-alt);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
   padding: 1rem;
   text-align: center;
@@ -64,7 +64,7 @@
   padding: 0.75rem;
   background: var(--bg-alt);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
 }
 .payment-card .card-icon {
   font-size: 1.5rem;
@@ -175,4 +175,176 @@
 /* Settings section visible by default */
 #section-settings {
   display: block;
+}
+
+/* ── Settings inline style extraction ── */
+/* Sidebar toggle arrow */
+.settings-sidebar-arrow {
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 700;
+}
+/* Section heading */
+.settings-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+/* Field group */
+.settings-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+/* Field label */
+.settings-field-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+/* Text input */
+.settings-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+/* Input with top margin */
+.settings-input-mt {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+/* Save button (reuses input style) */
+.settings-save-btn {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+/* Action button right-aligned */
+.settings-btn-right {
+  margin-left: auto;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+}
+/* Settings row (active) */
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+}
+/* Settings row (disabled) */
+.settings-row-disabled {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  opacity: 0.6;
+}
+/* Settings icon base */
+.settings-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.settings-icon-primary {
+  background: var(--primary-subtle);
+}
+.settings-icon-destructive {
+  background: var(--destructive-subtle);
+}
+.settings-icon-success {
+  background: var(--success-subtle);
+}
+/* Settings item name */
+.settings-item-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.settings-item-name-sm {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+/* Settings item description */
+.settings-item-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.settings-item-desc-sm {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+/* Delete/remove button */
+.settings-delete-btn {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+/* Badge card */
+.settings-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+/* Flex fill */
+.settings-flex-fill {
+  flex: 1;
+}
+/* Flex column */
+.settings-flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+/* Center text */
+.settings-center-mt {
+  text-align: center;
+  margin-top: 1rem;
+}
+.settings-center-text {
+  font-size: 0.85rem;
+}
+/* Status dot */
+.settings-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+/* Avatar wrapper */
+.settings-avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+/* Avatar display block */
+.settings-avatar-block {
+  display: block;
+  margin: 0 auto;
 }
