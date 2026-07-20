@@ -3052,7 +3052,7 @@ async function loadOrgs() {
     if(!selector)return;
     const orgs=d.orgs||d||[];
     if(!orgs.length){
-      selector.innerHTML='<div class="empty-state" style="padding: 1rem; text-align: center; color: var(--text-muted)"><div class="empty-icon">🏢</div><div class="empty-title" style="font-size: 0.85rem; margin-top: 0.3rem">No organizations found</div></div>';
+      // API returned no orgs — keep demo data visible instead of replacing
       return;
     }
     selector.innerHTML='<option value="">Select organization</option>'+orgs.map(function(o){return '<option value="'+escapeHtml(String(o.id))+'">'+escapeHtml(o.name||'Org '+o.id)+'</option>';}).join('');
