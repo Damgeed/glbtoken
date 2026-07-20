@@ -1704,6 +1704,9 @@ input[type="range"]::-moz-range-thumb {
   .dash-content {
     padding: 1rem;
   }
+  .dash-card + .dash-card {
+    margin-top: 0.75rem;
+  }
 }
 
 /* ── Blog Listing Grid ── */
