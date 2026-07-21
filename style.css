@@ -6317,15 +6317,7 @@ html.light .star.white {
 
 /* ── Shared utility classes ── */
 .d-none { display:none; }
-.dn { display:none; }
 .cursor-pointer { cursor:pointer; }
-.m-auto { margin:0 auto; }
-.tac { text-align:center; }
-.mt-2 { margin-top:2rem; }
-.vam { vertical-align:middle; }
-.mr-6 { margin-right:6px; }
-.d-block { display:block; }
-.w-full { max-width:100%; }
 .text-muted { color:var(--text-muted); }
 .text-title { font-size:16px;line-height:1;font-weight:700; }
 .text-center { text-align:center; }
@@ -6719,59 +6711,7 @@ body {
   white-space: nowrap;
 }
 
-/* ── Code blocks (extracted from index.html) ── */
-.code-block { margin:0;font-family:'SF Mono','Menlo','Monaco','Courier New',monospace;font-size:0.75rem;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word; }
-.ci { background:none;padding:0;color:var(--text); }
-.ci-muted { background:none;padding:0;color:var(--text-muted); }
-.ch { border:none;border-top:1px solid var(--hr-color);margin:0.5rem 0; }
-.code-section { min-width:100%;max-width:100%;flex-shrink:0;display:grid;gap:0.625rem; }
-.code-container { background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto;position:relative; }
-.code-desc { font-size:0.7rem;color:var(--text-muted);margin:0;text-align:center; }
-.copy-btn { position:absolute;top:6px;right:6px;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;cursor:pointer;font-size:0.7rem;padding:2px 5px;color:var(--text-secondary);opacity:0.55;line-height:1;z-index:2; }
-.cc-link { color:var(--code-comment);text-decoration:none;cursor:pointer; }
-.ccb { font-weight:700; }
-
-/* ── Code syntax highlighting classes ── */
-.ck { color:var(--code-keyword); }
-.cf { color:var(--code-function); }
-.cl { color:var(--code-literal); }
-.cs { color:var(--code-string); }
-.cp { color:var(--code-property); }
-.cn { color:var(--code-number); }
-.cc { color:var(--code-comment); }
-.co { color:var(--code-operator); }
-
-/* ── Model cards (home page) ── */
-.mc { background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:0.75rem;overflow-wrap:break-word;word-break:break-word;overflow:hidden;width:100%;box-sizing:border-box; }
-.mc-label { font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.2rem;overflow-wrap:break-word;word-break:break-word; }
-.mc-name { font-weight:600;font-size:0.85rem;overflow-wrap:break-word;word-break:break-word; }
-.mc-detail { font-size:0.75rem;color:var(--text-secondary);overflow-wrap:break-word;word-break:break-word; }
-
-/* ── Hero section components ── */
-.hero-col { display:flex;flex-direction:column;gap:1rem; }
-.section-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem; }
-.section-title-sm { font-size:1.05rem;font-weight:600;margin:0; }
-.view-all { font-size:0.8rem;color:var(--primary);cursor:pointer; }
-.carousel-wrap { position:relative;overflow:hidden;border-radius:var(--radius-sm); }
-.track { display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1); }
-.model-grid { min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex-shrink:0;overflow-wrap:break-word;word-break:break-word; }
-.dots-container { display:flex;justify-content:center;gap:0.5rem;margin-top:0.75rem; }
-.dot { width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s; }
-.dot-active { background:var(--primary); }
-
-/* ── Calculator components ── */
-.calc-result-box { margin-top:1rem;padding:0.75rem;background:var(--primary-subtle);border-radius:var(--radius-sm);text-align:center; }
-.calc-result-row { margin-top:1rem;padding:0.75rem;background:var(--primary-subtle);border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center; }
-.calc-result-text { font-size:0.8rem;color:var(--text-secondary); }
-.calc-result-price { font-size:1.25rem;font-weight:700;color:var(--primary); }
-.calc-btn { padding:0.625rem 1.25rem;font-size:0.85rem; }
-
-/* ── Page sections ── */
-.footer-section { text-align:center;margin-bottom:2rem; }
-.bg-alt-section { background:var(--bg-alt); }
-.pricing-btn { padding:1rem 2.5rem;font-size:1.05rem; }
-
-/* ── Mobile responsive */
+/* Mobile responsive */
 @media (max-width: 768px) {
   .dash-sidebar {
     width: 280px;
