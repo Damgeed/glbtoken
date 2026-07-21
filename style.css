@@ -3278,7 +3278,13 @@ html.light .modal-overlay {
     display: none !important;
   }
   .mobile-right-group {
-    gap: 10px;
+    gap: 6px;
+  }
+  .theme-toggle-mobile {
+    padding: 6px 4px;
+  }
+  .lang-btn-mobile {
+    padding: 6px 4px;
   }
   .mobile-auth-grid {
     display: grid;
