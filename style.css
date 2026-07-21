@@ -789,7 +789,6 @@ html.dark .nav-logo-img {
   padding-top: 1.75rem;
   border-top: 1px solid var(--border);
 }
-.hero-stats-mobile { display: none; }
 .hero-stat h3 {
   font-size: 1.75rem;
   font-weight: 700;
@@ -3153,7 +3152,7 @@ html.light .modal-overlay {
 .tm-dot:hover {
   opacity: 0.8;
 }
-  @media (max-width: 900px) {
+@media (max-width: 900px) {
   .hero-grid,
   .dash-grid {
     grid-template-columns: 1fr;
@@ -3162,14 +3161,7 @@ html.light .modal-overlay {
     font-size: 2.5rem;
   }
   .hero-stats {
-    display: none;
-  }
-  .hero-stats-mobile {
-    display: flex;
     gap: 1.5rem;
-    margin-top: 0;
-    justify-content: center;
-    flex-wrap: wrap;
   }
   .hero {
     min-height: 40vh;
@@ -3348,11 +3340,6 @@ html.light .modal-overlay {
     text-align: center;
   }
   .hero-stats {
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
-  .hero-stats-mobile {
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
@@ -3660,11 +3647,6 @@ html.light .modal-overlay {
     grid-template-columns: 1fr;
   }
   .hero-stats {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: center;
-  }
-  .hero-stats-mobile {
     flex-direction: column;
     gap: 0.75rem;
     align-items: center;
