@@ -133,6 +133,36 @@ textarea {
 /* ── Utility Classes ── */
 .d-none { display: none !important; }
 .cursor-pointer { cursor: pointer !important; }
+/* ── Content Text (legal, about, etc.) ── */
+.content-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.content-text p {
+  margin-bottom: 1rem;
+}
+.content-text p:last-child {
+  margin-bottom: 0;
+}
+.page-title {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+.page-title-sm {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.page-title-lg {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+.icon-arrow { font-size: 16px; line-height: 1; font-weight: 700; }
+.faded { opacity: 0.6; }
+.link-primary { color: var(--primary); }
+.models-header { margin-bottom: 2rem; }
+.models-header .section-title { font-size: 1.75rem; }
+.models-header p { font-size: 0.9rem; color: var(--text-secondary); }
 /* ── Layout ── */
 .container {
   width: 100%;
