@@ -3430,8 +3430,8 @@ html.light .modal-overlay {
   .hero-actions .btn-secondary {
     width: auto;
     text-align: center;
-    padding: 0.35rem 0.6rem;
-    font-size: 0.78rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
   }
   .btn-primary,
   .btn-secondary,
