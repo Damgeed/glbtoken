@@ -4429,10 +4429,10 @@ html.light .star.white {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
-/* Notifications grid: 2 cols desktop, 1 col mobile */
+/* Notifications grid: 3 cols desktop, 1 col mobile */
 .notif-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
 @media (max-width: 900px) {
@@ -6789,7 +6789,7 @@ body {
 }
 .notif-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
 @media (max-width: 768px) {
