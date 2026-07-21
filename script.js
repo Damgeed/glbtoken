@@ -2676,9 +2676,9 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     btn.className = 'back-to-top';
     btn.innerHTML = '↑';
     btn.onclick = function(){
+      window.scrollTo({top:0,behavior:'smooth'});
       var dc = document.querySelector('.dash-content');
-      if(dc) { dc.scrollTo({top:0,behavior:'smooth'}); }
-      else { window.scrollTo({top:0,behavior:'smooth'}); }
+      if(dc) dc.scrollTo({top:0,behavior:'smooth'});
     };
     document.body.appendChild(btn);
     // Listen on the scrollable container (window or .dash-content)
