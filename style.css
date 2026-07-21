@@ -1659,12 +1659,14 @@ input[type="range"]::-moz-range-thumb {
     font-weight: 600;
   }
   .dash-sidebar-item.active::before {
-    content: '•';
-    color: var(--primary);
-    font-size: 1.3rem;
-    line-height: 1;
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
     position: absolute;
-    left: 4px;
+    left: 8px;
     top: 50%;
     transform: translateY(-50%);
   }
@@ -1733,12 +1735,14 @@ input[type="range"]::-moz-range-thumb {
   font-weight: 600;
 }
 .dash-sidebar-item.active::before {
-  content: '•';
-  color: var(--primary);
-  font-size: 1.5rem;
-  line-height: 1;
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary), 0 0 20px hsla(44 96% 52% / 0.3);
   position: absolute;
-  left: 4px;
+  left: 8px;
   top: 50%;
   transform: translateY(-50%);
 }
