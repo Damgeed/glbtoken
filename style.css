@@ -6197,7 +6197,7 @@ html.light .star.white {
     padding: 0.5rem 0.75rem;
   }
   section {
-    padding: 1.5rem 0.75rem !important;
+    padding: 1.5rem 0 !important;
   }
   section.hero {
     padding: 1rem 0 !important;
