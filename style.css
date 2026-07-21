@@ -6905,9 +6905,9 @@ body {
 
 /* ── Model cards (home page) ── */
 .mc { background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:0.75rem;overflow-wrap:break-word;word-break:break-word;overflow:hidden;width:100%;box-sizing:border-box; }
-.tm-carousel .mc-label { font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.2rem;overflow-wrap:break-word;word-break:break-word; }
-.tm-carousel .mc-name { font-weight:600;font-size:0.85rem;overflow-wrap:break-word;word-break:break-word; }
-.tm-carousel .mc-detail { font-size:0.75rem;color:var(--text-secondary);overflow-wrap:break-word;word-break:break-word; }
+.mc-label { font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.2rem;overflow-wrap:break-word;word-break:break-word; }
+.mc-name { font-weight:600;font-size:0.85rem;overflow-wrap:break-word;word-break:break-word; }
+.mc-detail { font-size:0.75rem;color:var(--text-secondary);overflow-wrap:break-word;word-break:break-word; }
 
 /* ── Hero section components ── */
 .hero-col { display:flex;flex-direction:column;gap:1rem; }
@@ -6916,7 +6916,7 @@ body {
 .view-all { font-size:0.8rem;color:var(--primary);cursor:pointer; }
 .carousel-wrap { position:relative;overflow:hidden;border-radius:var(--radius-sm); }
 .track { display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1); }
-.tm-carousel .model-grid { min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex-shrink:0;overflow-wrap:break-word;word-break:break-word; }
+.model-grid { min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex-shrink:0;overflow-wrap:break-word;word-break:break-word; }
 .dots-container { display:flex;justify-content:center;gap:0.5rem;margin-top:0.75rem; }
 .dot { width:8px;height:8px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s; }
 .dot-active { background:var(--primary); }
