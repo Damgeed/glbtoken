@@ -6198,6 +6198,9 @@ html.light .star.white {
   section {
     padding: 1.5rem 0.75rem !important;
   }
+  section.hero {
+    padding: 1rem 0 !important;
+  }
   .section-title {
     font-size: 1.4rem !important;
     margin-bottom: 0.5rem !important;
