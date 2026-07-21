@@ -1051,7 +1051,7 @@ section {
 }
 @media (max-width: 600px) {
   .pricing-card {
-    padding: 1rem 1.25rem;
+    padding: 1rem;
   }
   .pricing-card .plan-price {
     font-size: 1.75rem;
