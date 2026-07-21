@@ -1604,6 +1604,28 @@ input[type="range"]::-moz-range-thumb {
   left: 0;
   z-index: 50;
 }
+/* Desktop: sidebar always visible, part of flex flow — no overlay */
+@media (min-width: 769px) {
+  .dash-sidebar {
+    position: sticky;
+    left: 0;
+    top: 64px;
+    z-index: 10;
+    transition: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .dash-sidebar.open {
+    left: 0;
+    z-index: 10;
+  }
+  .dash-sidebar-backdrop {
+    display: none !important;
+  }
+  .dash-sidebar-toggle {
+    display: none !important;
+  }
+}
 .dash-sidebar-backdrop {
   display: none;
   position: fixed;
@@ -1717,13 +1739,6 @@ input[type="range"]::-moz-range-thumb {
 .dash-sidebar-toggle.hidden {
   opacity: 0;
   pointer-events: none;
-}
-@media (min-width: 769px) {
-  .dash-sidebar-toggle.hidden {
-    opacity: 1;
-    pointer-events: auto;
-    z-index: 60;
-  }
 }
 @media (max-width: 768px) {
   .dash-sidebar {
