@@ -51,7 +51,7 @@
         </div>
         <div id="navUser" class="dn">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header cursor-pointer" onclick="window.location.href='settings.html';return false">
+            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" class="cursor-pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -221,7 +221,7 @@
               <p class="txt-xs-mt025">Add a card or mobile money method to get started.</p>
             </div>
           </div>
-          <button class="btn-secondary w-100-mt075" onclick="addPaymentMethod()">+ Add Payment Method</button>
+          <button class="btn-secondary" onclick="addPaymentMethod()" class="w-100-mt075">+ Add Payment Method</button>
         </div>
 
         <!-- Invoices -->
@@ -251,8 +251,8 @@
           </div>
         
           <div class="flex-gap05-mt075">
-            <button class="btn-primary btn-md" onclick="window.location.href='topup.html'">+ Top Up Now</button>
-            <button class="btn-secondary btn-md" onclick="loadBillingPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Refresh</button>
+            <button class="btn-primary" onclick="window.location.href='topup.html'" class="btn-md">+ Top Up Now</button>
+            <button class="btn-secondary" onclick="loadBillingPage()" class="btn-md"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Refresh</button>
           </div>
         </div>
       </div>

@@ -48,7 +48,7 @@
         </div>
         <div id="navUser" class="dn">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header cursor-pointer" onclick="window.location='dashboard.html#settings'">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -102,19 +102,19 @@
       <div class="topup-header"><span class="section-label">Buy Tokens</span><h2 class="section-title">Top Up Wallet</h2><p class="section-sub">Select a package or custom amount. $2 minimum.</p></div>
       <div id="topupStep1">
         <div class="pricing-grid">
-          <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary w-100" onclick="showPaymentModal(5)">Buy $5</button></div>
-          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary w-100" onclick="showPaymentModal(20)">Buy $20</button></div>
-          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary w-100" onclick="showPaymentModal(100)">Buy $100</button></div>
+          <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary" class="w-100" onclick="showPaymentModal(5)">Buy $5</button></div>
+          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary" class="w-100" onclick="showPaymentModal(20)">Buy $20</button></div>
+          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary" class="w-100" onclick="showPaymentModal(100)">Buy $100</button></div>
           <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">55,000 Tokens</div>
             <div class="pv-05-1">
               <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="range-slider">
               <div class="range-labels"><span>$2</span><span>$500</span></div>
             </div>
             <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Instant top-up</li></ul>
-            <button class="btn-primary w-100" onclick="showPaymentModal('custom')" id="customBuyBtn">Buy $50</button></div>
+            <button class="btn-primary" class="w-100" onclick="showPaymentModal('custom')" id="customBuyBtn">Buy $50</button></div>
         </div>
       </div>
-      <div id="topupSuccess" class="dn"><div class="success-page"><div class="success-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-center"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="h2-page">Payment Successful!</h2><p id="topupSuccessMsg" class="txt-secondary-mb15"></p><button class="btn-primary" onclick="window.location.href='dashboard.html'">Dashboard</button><button class="btn-secondary ml-075" onclick="window.location.href='apikeys.html'">API Keys</button></div></div>
+      <div id="topupSuccess" class="dn"><div class="success-page"><div class="success-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-center"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="h2-page">Payment Successful!</h2><p id="topupSuccessMsg" class="txt-secondary-mb15"></p><button class="btn-primary" onclick="window.location.href='dashboard.html'">Dashboard</button><button class="btn-secondary" class="ml-075" onclick="window.location.href='apikeys.html'">API Keys</button></div></div>
     </div></div>
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal" onclick="closePaymentModal(event)">
@@ -123,7 +123,7 @@
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-center-mb075"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
         <h3 class="h2-sm">Choose Payment Method</h3>
         <p class="desc-lg">Amount: <strong id="modalAmount">$5.00</strong></p>
-        <div class="payment-grid mb-15">
+        <div class="payment-grid" class="mb-15">
           <div class="payment-card selected" onclick="selectPayment(this,'stripe')">
             <div class="pc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
             <h4>Stripe</h4>
@@ -140,7 +140,7 @@
             <span class="pc-badge crypto">Global</span>
           </div>
         </div>
-        <button class="btn-primary btn-lg" onclick="processModalPayment()">Pay Now</button>
+        <button class="btn-primary" class="btn-lg" onclick="processModalPayment()">Pay Now</button>
       </div>
     </div></div>
 

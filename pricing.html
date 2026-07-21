@@ -48,7 +48,7 @@
         </div>
         <div id="navUser" class="dn">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header cursor-pointer" onclick="window.location='dashboard.html#settings'">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -98,19 +98,19 @@
       </div>
     </div>
   </div>
-<section><div class="container tac">
-      <span class="section-label">Pricing</span><h2 class="section-title">Token Packages</h2><p class="section-sub m-auto">Choose a package or choose your own amount.</p>
-      <div class="pricing-grid container-1200">
-        <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary w-100" onclick="startCheckout(5)">Buy $5</button></div>
-        <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary w-100" onclick="startCheckout(20)">Buy $20</button></div>
-        <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary w-100" onclick="startCheckout(100)">Buy $100</button></div>
+<section><div class="container" class="tac">
+      <span class="section-label">Pricing</span><h2 class="section-title">Token Packages</h2><p class="section-sub" class="m-auto">Choose a package or choose your own amount.</p>
+      <div class="pricing-grid" class="container-1200">
+        <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary" class="w-100" onclick="startCheckout(5)">Buy $5</button></div>
+        <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary" class="w-100" onclick="startCheckout(20)">Buy $20</button></div>
+        <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary" class="w-100" onclick="startCheckout(100)">Buy $100</button></div>
         <div class="pricing-card"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">55,000 Tokens</div>
           <div class="pv-05-1">
             <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="range-slider">
             <div class="range-labels"><span>$2</span><span>$500</span></div>
           </div>
           <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Instant top-up</li></ul>
-          <button class="btn-primary w-100" onclick="customCheckout()" id="customBuyBtn">Buy $50</button></div>
+          <button class="btn-primary" class="w-100" onclick="customCheckout()" id="customBuyBtn">Buy $50</button></div>
       </div>
       <div id="priceCalculator" class="mt-15"></div>
     </div></section>

@@ -48,7 +48,7 @@
         </div>
         <div id="navUser" class="dn">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header cursor-pointer" onclick="window.location='dashboard.html#settings'">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -99,7 +99,7 @@
     </div>
   </div>
 <div class="models-page"><div class="container">
-      <div class="mb-2r"><span class="section-label">Models</span><h2 class="section-title fs-175">Models</h2><p class="txt-sm-secondary">All models with pricing & version info. <span id="modelCount"></span></p></div>
+      <div class="mb-2r"><span class="section-label">Models</span><h2 class="section-title" class="fs-175">Models</h2><p class="txt-sm-secondary">All models with pricing & version info. <span id="modelCount"></span></p></div>
       <div class="models-toolbar">
         <input type="text" id="modelSearch" placeholder="Search by name, ID, or provider..." oninput="filterModelCards()">
         <select id="providerFilter" onchange="filterModelCards()"><option value="">All Providers</option></select>
