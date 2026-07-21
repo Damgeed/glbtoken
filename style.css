@@ -1669,6 +1669,9 @@ input[type="range"]::-moz-range-thumb {
   padding: 0.75rem 2rem;
   overflow-y: auto;
   min-height: calc(100vh - 64px);
+  position: relative;
+  left: 0;
+  transition: none;
 }
 .dash-section {
   display: none;
