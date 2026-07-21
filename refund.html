@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -45,9 +45,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -85,7 +85,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -98,13 +98,13 @@
   </div>
 <div class="dash-page"><div class="container">
       <span class="section-label">Legal</span>
-      <h2 class="section-title" class="blog-h1">Refund Policy</h2>
-      <div class="dash-card"><div class="body-text">
-        <p data-i18n="refund-section-1" class="mb-1"><strong>Token Purchases</strong><br>All token purchases are final. Tokens that have been used (consumed via API or chat) cannot be refunded.</p>
-        <p data-i18n="unused-tokens" class="mb-1"><strong>Unused Tokens</strong><br>If your account is active and tokens have not been used, please contact <a href="mailto:support@glbtoken.com" class="txt-primary">support@glbtoken.com</a> for a case-by-case review.</p>
-        <p data-i18n="refund-section-3" class="mb-1"><strong>Service Downtime</strong><br>In the event of extended service downtime (>48 hours), we may issue token credits at our discretion.</p>
-        <p data-i18n="refund-section-4" class="mb-1"><strong>Crypto Payments</strong><br>Crypto payments are processed on-chain and are generally non-reversible. Please verify all transaction details before sending.</p>
-        <p data-i18n="refund-section-5" class="mb-1"><strong>Chargebacks</strong><br>Chargebacks will result in immediate account suspension and forfeiture of all token balances.</p>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1rem">Refund Policy</h2>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+        <p data-i18n="refund-section-1" style="margin-bottom:1rem"><strong>Token Purchases</strong><br>All token purchases are final. Tokens that have been used (consumed via API or chat) cannot be refunded.</p>
+        <p data-i18n="unused-tokens" style="margin-bottom:1rem"><strong>Unused Tokens</strong><br>If your account is active and tokens have not been used, please contact <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> for a case-by-case review.</p>
+        <p data-i18n="refund-section-3" style="margin-bottom:1rem"><strong>Service Downtime</strong><br>In the event of extended service downtime (>48 hours), we may issue token credits at our discretion.</p>
+        <p data-i18n="refund-section-4" style="margin-bottom:1rem"><strong>Crypto Payments</strong><br>Crypto payments are processed on-chain and are generally non-reversible. Please verify all transaction details before sending.</p>
+        <p data-i18n="refund-section-5" style="margin-bottom:1rem"><strong>Chargebacks</strong><br>Chargebacks will result in immediate account suspension and forfeiture of all token balances.</p>
       </div></div>
     </div></div>
 

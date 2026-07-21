@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -46,9 +46,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -87,7 +87,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -100,20 +100,20 @@
   </div>
 <div class="dash-page"><div class="container">
       <span class="section-label">Support</span>
-      <h2 class="section-title" class="blog-h1-lg">Frequently Asked Questions</h2>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1.5rem">Frequently Asked Questions</h2>
 
-      <div class="auth-hero-testimonial" class="card-lg">
-        <h3 class="h3-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg> Contact GlbTOKEN</h3>
-        <div class="grid-auto-200">
-          <div class="flex-ac-gap05">
+      <div class="auth-hero-testimonial" style="margin-bottom:2rem;padding:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <h3 style="margin:0 0 1rem;font-size:1.1rem;font-weight:600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg> Contact GlbTOKEN</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;font-size:0.9rem">
+          <div style="display:flex;align-items:center;gap:0.5rem">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
-            <strong>Email:</strong> <a href="mailto:support@glbtoken.com" class="txt-primary">support@glbtoken.com</a>
+            <strong>Email:</strong> <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>
           </div>
-          <div class="flex-ac-gap05">
+          <div style="display:flex;align-items:center;gap:0.5rem">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             <strong>Live Chat:</strong> Click the 💬 button in the bottom-right corner
           </div>
-          <div class="flex-ac-gap05">
+          <div style="display:flex;align-items:center;gap:0.5rem">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <strong>Response Time:</strong> Typically within 2 hours (UTC+0 to UTC+8)
           </div>
@@ -165,8 +165,8 @@
           <h3 class="faq-q" onclick="this.parentNode.classList.toggle('open')">How do I use the API? <span class="faq-toggle">+</span></h3>
           <div class="faq-answer">
             <div class="faq-body" data-i18n="faq-answer-5">Generate an API key from your Dashboard, then use our OpenAI-compatible endpoint:<br><br>
-            <code translate="no" class="bg-label">POST https://api.glbtoken.io/v1/chat/completions</code><br><br>
-            Pass your key in the <code translate="no" class="bg-label">Authorization: Bearer gt_...</code> header. Full documentation with code examples for Python, Node.js, cURL, and streaming is available on the Docs page.</div>
+            <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85em">POST https://api.glbtoken.io/v1/chat/completions</code><br><br>
+            Pass your key in the <code translate="no" style="background:var(--bg-alt);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85em">Authorization: Bearer gt_...</code> header. Full documentation with code examples for Python, Node.js, cURL, and streaming is available on the Docs page.</div>
           </div>
         </div>
 
@@ -211,14 +211,14 @@
         <div class="dash-card faq-item">
           <h3 class="faq-q" onclick="this.parentNode.classList.toggle('open')">Can I use GlbTOKEN for commercial projects? <span class="faq-toggle">+</span></h3>
           <div class="faq-answer">
-            <div class="faq-body" data-i18n="faq-answer-11">Absolutely. GlbTOKEN is designed for developers, startups, and enterprises building AI-powered products. Use your API key in production applications, serve end users, integrate with your existing stack — there are no usage restrictions beyond our Terms of Service. For high-volume plans, contact us at <a href="mailto:sales@glbtoken.com" class="txt-primary">sales@glbtoken.com</a> for custom pricing.</div>
+            <div class="faq-body" data-i18n="faq-answer-11">Absolutely. GlbTOKEN is designed for developers, startups, and enterprises building AI-powered products. Use your API key in production applications, serve end users, integrate with your existing stack — there are no usage restrictions beyond our Terms of Service. For high-volume plans, contact us at <a href="mailto:sales@glbtoken.com" style="color:var(--primary)">sales@glbtoken.com</a> for custom pricing.</div>
           </div>
         </div>
 
         <div class="dash-card faq-item">
           <h3 class="faq-q" onclick="this.parentNode.classList.toggle('open')">How do I contact support? <span class="faq-toggle">+</span></h3>
           <div class="faq-answer">
-            <div class="faq-body" data-i18n="faq-answer-12">You can reach us at <a href="mailto:support@glbtoken.com" class="txt-primary">support@glbtoken.com</a> or use the 💬 chat bubble in the bottom-right corner of any page. We typically respond within 2 hours during business hours (UTC+0 to UTC+8). For urgent API issues, email is fastest — include your account email and a description of the issue.</div>
+            <div class="faq-body" data-i18n="faq-answer-12">You can reach us at <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a> or use the 💬 chat bubble in the bottom-right corner of any page. We typically respond within 2 hours during business hours (UTC+0 to UTC+8). For urgent API issues, email is fastest — include your account email and a description of the issue.</div>
           </div>
         </div>
 

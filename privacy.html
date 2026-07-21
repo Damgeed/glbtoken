@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -45,9 +45,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -85,7 +85,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -98,14 +98,14 @@
   </div>
 <div class="dash-page"><div class="container">
       <span class="section-label">Legal</span>
-      <h2 class="section-title" class="blog-h1">Privacy Policy</h2>
-      <div class="dash-card"><div class="body-text">
-        <p data-i18n="privacy-section-1" class="mb-1"><strong>1. Information We Collect</strong><br>We collect your name, email address, country, and payment information necessary to process transactions. Usage data (models used, tokens spent) is collected to provide the service.</p>
-        <p data-i18n="privacy-section-2" class="mb-1"><strong>2. How We Use Data</strong><br>Your data is used to: provide and improve the service, process transactions, send service updates, and comply with legal obligations.</p>
-        <p data-i18n="privacy-section-3" class="mb-1"><strong>3. Data Protection</strong><br>We implement industry-standard security measures. Your password is hashed and never stored in plain text. Payment data is handled by Stripe and Paystack directly.</p>
-        <p data-i18n="privacy-section-4" class="mb-1"><strong>4. Third Parties</strong><br>We share data only with our payment processors (Stripe, Paystack) and AI model providers (OpenAI, Anthropic, etc.) for API routing. We never sell your data.</p>
-        <p data-i18n="privacy-section-5" class="mb-1"><strong>5. Your Rights</strong><br>You may request access to, correction of, or deletion of your personal data at any time by contacting <a href="mailto:privacy@glbtoken.com" class="txt-primary">privacy@glbtoken.com</a>.</p>
-        <p data-i18n="privacy-section-6" class="mb-1"><strong>6. Contact</strong><br>For privacy inquiries: privacy@glbtoken.com. Last updated: July 2026.</p>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1rem">Privacy Policy</h2>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+        <p data-i18n="privacy-section-1" style="margin-bottom:1rem"><strong>1. Information We Collect</strong><br>We collect your name, email address, country, and payment information necessary to process transactions. Usage data (models used, tokens spent) is collected to provide the service.</p>
+        <p data-i18n="privacy-section-2" style="margin-bottom:1rem"><strong>2. How We Use Data</strong><br>Your data is used to: provide and improve the service, process transactions, send service updates, and comply with legal obligations.</p>
+        <p data-i18n="privacy-section-3" style="margin-bottom:1rem"><strong>3. Data Protection</strong><br>We implement industry-standard security measures. Your password is hashed and never stored in plain text. Payment data is handled by Stripe and Paystack directly.</p>
+        <p data-i18n="privacy-section-4" style="margin-bottom:1rem"><strong>4. Third Parties</strong><br>We share data only with our payment processors (Stripe, Paystack) and AI model providers (OpenAI, Anthropic, etc.) for API routing. We never sell your data.</p>
+        <p data-i18n="privacy-section-5" style="margin-bottom:1rem"><strong>5. Your Rights</strong><br>You may request access to, correction of, or deletion of your personal data at any time by contacting <a href="mailto:privacy@glbtoken.com" style="color:var(--primary)">privacy@glbtoken.com</a>.</p>
+        <p data-i18n="privacy-section-6" style="margin-bottom:1rem"><strong>6. Contact</strong><br>For privacy inquiries: privacy@glbtoken.com. Last updated: July 2026.</p>
       </div></div>
     </div></div>
 

@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 
   </head>
 <body>
@@ -101,25 +101,25 @@
   </div>
 <div class="dash-page blog-article-page"><div class="container">
       <span class="section-label" data-i18n="Blog">Blog</span>
-      <h2 class="section-title blog-h1" data-i18n="article-4-title">Developer API Launched: 100+ Models, One Endpoint</h2>
-      <p class="blog-date" data-i18n="article-4-subtitle">June 25, 2026 · 5 min read</p>
-      <div class="dash-card"><div class="blog-body-text">
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem" data-i18n="article-4-title">Developer API Launched: 100+ Models, One Endpoint</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem" data-i18n="article-4-subtitle">June 25, 2026 · 5 min read</p>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
 
-        <p class="mb-4" data-i18n="article-4-para-1">We're thrilled to announce the launch of the <strong>GlbTOKEN Developer API</strong> — a single, OpenAI-compatible REST endpoint that gives you access to over 100 AI models from 56 providers with a single API key and a single token balance. No more managing multiple SDKs, juggling separate API keys for each provider, or tracking down credits across a dozen different dashboards.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-1">We're thrilled to announce the launch of the <strong>GlbTOKEN Developer API</strong> — a single, OpenAI-compatible REST endpoint that gives you access to over 100 AI models from 56 providers with a single API key and a single token balance. No more managing multiple SDKs, juggling separate API keys for each provider, or tracking down credits across a dozen different dashboards.</p>
 
-        <p class="mb-4" data-i18n="article-4-para-2">Starting today, every GlbTOKEN user can generate an API key from their dashboard and begin building with any model on the platform in under two minutes. The API is fully compatible with the OpenAI SDK, the Anthropic SDK, LangChain, LlamaIndex, and every major AI framework — so there's nothing new to learn.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-2">Starting today, every GlbTOKEN user can generate an API key from their dashboard and begin building with any model on the platform in under two minutes. The API is fully compatible with the OpenAI SDK, the Anthropic SDK, LangChain, LlamaIndex, and every major AI framework — so there's nothing new to learn.</p>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-1">What Makes the GlbTOKEN API Different?</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-1">What Makes the GlbTOKEN API Different?</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-3">There are plenty of AI API services out there, but GlbTOKEN was designed from day one to solve the problems developers actually face when building production AI applications.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-3">There are plenty of AI API services out there, but GlbTOKEN was designed from day one to solve the problems developers actually face when building production AI applications.</p>
 
-        <p class="mb-4" data-i18n="article-4-para-4"><strong>1. True Provider Agnosticism</strong></p>
-        <p class="mb-4" data-i18n="article-4-para-5">Most "unified" APIs still lock you into a single provider's ecosystem. GlbTOKEN doesn't. You can call GPT-5.5 Pro, Claude Sonnet 5, Gemini Ultra, Mistral Large, Llama 4, and dozens of other models — all through the same endpoint, all deducted from the same balance. Need to switch from OpenAI to Anthropic mid-project? Change one string in your code. That's it.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-4"><strong>1. True Provider Agnosticism</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-5">Most "unified" APIs still lock you into a single provider's ecosystem. GlbTOKEN doesn't. You can call GPT-5.5 Pro, Claude Sonnet 5, Gemini Ultra, Mistral Large, Llama 4, and dozens of other models — all through the same endpoint, all deducted from the same balance. Need to switch from OpenAI to Anthropic mid-project? Change one string in your code. That's it.</p>
 
-        <p class="mb-4" data-i18n="article-4-para-6"><strong>2. OpenAI SDK Compatibility</strong></p>
-        <p class="mb-4" data-i18n="article-4-para-7">We built the GlbTOKEN API to be a drop-in replacement for the OpenAI API. If you already use the OpenAI Python, Node.js, or Go SDK, you can point it at <code>https://api.glbtoken.com/v1</code> and start using any model immediately. No new SDK to install, no unfamiliar method signatures to learn. Here's how it looks in Python:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-6"><strong>2. OpenAI SDK Compatibility</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-7">We built the GlbTOKEN API to be a drop-in replacement for the OpenAI API. If you already use the OpenAI Python, Node.js, or Go SDK, you can point it at <code>https://api.glbtoken.com/v1</code> and start using any model immediately. No new SDK to install, no unfamiliar method signatures to learn. Here's how it looks in Python:</p>
 
-        <pre class="blog-code-block"><code>from openai import OpenAI
+        <pre style="background:var(--card-bg);padding:1rem;border-radius:8px;overflow-x:auto;margin-bottom:1rem;font-size:0.8rem;line-height:1.5"><code>from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.glbtoken.com/v1",
@@ -138,147 +138,147 @@ response = client.chat.completions.create(
 )
 print(response.choices[0].message.content)</code></pre>
 
-        <p class="mb-4" data-i18n="article-4-para-8"><strong>3. Unified Token System</strong></p>
-        <p class="mb-4" data-i18n="article-4-para-9">Every model on GlbTOKEN is priced in tokens — the same tokens you buy, earn, or top up. One balance works everywhere. When you purchase tokens, they're available instantly across every model and provider. No separate subscriptions, no per-provider credit pools, no expiring credits. You buy once, use anywhere.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-8"><strong>3. Unified Token System</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-9">Every model on GlbTOKEN is priced in tokens — the same tokens you buy, earn, or top up. One balance works everywhere. When you purchase tokens, they're available instantly across every model and provider. No separate subscriptions, no per-provider credit pools, no expiring credits. You buy once, use anywhere.</p>
 
-        <p class="mb-4" data-i18n="article-4-para-10"><strong>4. Real-Time Usage Analytics</strong></p>
-        <p class="mb-4" data-i18n="article-4-para-11">Every API call is logged and visible in your dashboard in real time. You can see which models are consuming the most tokens, track spending by project, set per-key usage limits, and configure webhook alerts when spending crosses defined thresholds. This is especially valuable for teams that need to manage budgets across multiple developers or applications.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-10"><strong>4. Real-Time Usage Analytics</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-11">Every API call is logged and visible in your dashboard in real time. You can see which models are consuming the most tokens, track spending by project, set per-key usage limits, and configure webhook alerts when spending crosses defined thresholds. This is especially valuable for teams that need to manage budgets across multiple developers or applications.</p>
 
-        <p class="mb-4" data-i18n="article-4-para-12"><strong>5. Enterprise-Grade Security</strong></p>
-        <p class="mb-4" data-i18n="article-4-para-13">All API traffic is encrypted end-to-end with TLS 1.3. API keys are stored as salted hashes and never exposed in plaintext. We support key-scoped permissions (e.g., read-only keys, model-restricted keys, spend-limited keys) so you can issue credentials to team members without compromising your account. We also offer IP whitelisting for API keys on our Pro and Enterprise plans.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-12"><strong>5. Enterprise-Grade Security</strong></p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-13">All API traffic is encrypted end-to-end with TLS 1.3. API keys are stored as salted hashes and never exposed in plaintext. We support key-scoped permissions (e.g., read-only keys, model-restricted keys, spend-limited keys) so you can issue credentials to team members without compromising your account. We also offer IP whitelisting for API keys on our Pro and Enterprise plans.</p>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-2">Supported Endpoints</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-2">Supported Endpoints</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-14">The initial release of the GlbTOKEN API includes the following endpoints:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-14">The initial release of the GlbTOKEN API includes the following endpoints:</p>
 
-        <table class="blog-table">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
           <thead>
-            <tr class="blog-table-header">
-              <th class="blog-cell-header">Endpoint</th>
-              <th class="blog-cell-header">Description</th>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Endpoint</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Description</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="bb">
-              <td class="p-2"><code>/v1/chat/completions</code></td>
-              <td class="p-2">Chat completions with any supported LLM</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/chat/completions</code></td>
+              <td style="padding:0.5rem">Chat completions with any supported LLM</td>
             </tr>
-            <tr class="bb">
-              <td class="p-2"><code>/v1/completions</code></td>
-              <td class="p-2">Legacy text completions (GPT-3.5 style)</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/completions</code></td>
+              <td style="padding:0.5rem">Legacy text completions (GPT-3.5 style)</td>
             </tr>
-            <tr class="bb">
-              <td class="p-2"><code>/v1/embeddings</code></td>
-              <td class="p-2">Text embeddings for RAG and vector search</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/embeddings</code></td>
+              <td style="padding:0.5rem">Text embeddings for RAG and vector search</td>
             </tr>
-            <tr class="bb">
-              <td class="p-2"><code>/v1/models</code></td>
-              <td class="p-2">List all available models and their pricing</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem"><code>/v1/models</code></td>
+              <td style="padding:0.5rem">List all available models and their pricing</td>
             </tr>
             <tr>
-              <td class="p-2"><code>/v1/audio/transcriptions</code></td>
-              <td class="p-2">Speech-to-text via Whisper and other ASR models</td>
+              <td style="padding:0.5rem"><code>/v1/audio/transcriptions</code></td>
+              <td style="padding:0.5rem">Speech-to-text via Whisper and other ASR models</td>
             </tr>
           </tbody>
         </table>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-3">Getting Started in 3 Steps</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-3">Getting Started in 3 Steps</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-15">Here's how to start building with the GlbTOKEN API:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-15">Here's how to start building with the GlbTOKEN API:</p>
 
-        <ol class="blog-list">
-          <li class="mb-2" data-i18n="article-4-list-1"><strong>Create an account and top up.</strong> Head to <a href="register.html" class="text-primary-color">glbtoken.com/register</a> and create an account. Top up your balance with as little as $5. We accept credit/debit cards, Paystack (mobile money), USDT, and BTC.</li>
-          <li class="mb-2" data-i18n="article-4-list-2"><strong>Generate an API key.</strong> From your Dashboard, navigate to the API Keys section and click "Generate New Key." Give it a name (e.g., "Production App" or "Dev Testing") and optionally set a monthly spend limit.</li>
-          <li class="mb-2" data-i18n="article-4-list-3"><strong>Make your first request.</strong> Use the OpenAI SDK (or any HTTP client) to call <code>https://api.glbtoken.com/v1/chat/completions</code> with your key and the model of your choice. That's it.</li>
+        <ol style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-1"><strong>Create an account and top up.</strong> Head to <a href="register.html" style="color:var(--primary)">glbtoken.com/register</a> and create an account. Top up your balance with as little as $5. We accept credit/debit cards, Paystack (mobile money), USDT, and BTC.</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-2"><strong>Generate an API key.</strong> From your Dashboard, navigate to the API Keys section and click "Generate New Key." Give it a name (e.g., "Production App" or "Dev Testing") and optionally set a monthly spend limit.</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-3"><strong>Make your first request.</strong> Use the OpenAI SDK (or any HTTP client) to call <code>https://api.glbtoken.com/v1/chat/completions</code> with your key and the model of your choice. That's it.</li>
         </ol>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-4">Pricing & Free Tier</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-4">Pricing & Free Tier</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-16">Every new account receives <strong>1,000 free tokens</strong> to test the API. No credit card required. After that, pricing varies by model — but you only pay for what you use, with no monthly minimums or hidden fees. Here are some example rates:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-16">Every new account receives <strong>1,000 free tokens</strong> to test the API. No credit card required. After that, pricing varies by model — but you only pay for what you use, with no monthly minimums or hidden fees. Here are some example rates:</p>
 
-        <table class="blog-table">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:1rem;font-size:0.85rem">
           <thead>
-            <tr class="blog-table-header">
-              <th class="blog-cell-header">Model</th>
-              <th class="blog-cell-header">Input (per 1M tokens)</th>
-              <th class="blog-cell-header">Output (per 1M tokens)</th>
+            <tr style="border-bottom:1px solid var(--border);background:var(--card-bg)">
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Model</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Input (per 1M tokens)</th>
+              <th style="padding:0.5rem;text-align:left;color:var(--text-primary)">Output (per 1M tokens)</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="bb">
-              <td class="p-2">GPT-5.5 Pro</td>
-              <td class="p-2">15 Tokens</td>
-              <td class="p-2">75 Tokens</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">GPT-5.5 Pro</td>
+              <td style="padding:0.5rem">15 Tokens</td>
+              <td style="padding:0.5rem">75 Tokens</td>
             </tr>
-            <tr class="bb">
-              <td class="p-2">Claude Sonnet 5</td>
-              <td class="p-2">12 Tokens</td>
-              <td class="p-2">60 Tokens</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Claude Sonnet 5</td>
+              <td style="padding:0.5rem">12 Tokens</td>
+              <td style="padding:0.5rem">60 Tokens</td>
             </tr>
-            <tr class="bb">
-              <td class="p-2">Gemini Ultra 3</td>
-              <td class="p-2">10 Tokens</td>
-              <td class="p-2">40 Tokens</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Gemini Ultra 3</td>
+              <td style="padding:0.5rem">10 Tokens</td>
+              <td style="padding:0.5rem">40 Tokens</td>
             </tr>
-            <tr class="bb">
-              <td class="p-2">Mistral Large 3</td>
-              <td class="p-2">8 Tokens</td>
-              <td class="p-2">24 Tokens</td>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:0.5rem">Mistral Large 3</td>
+              <td style="padding:0.5rem">8 Tokens</td>
+              <td style="padding:0.5rem">24 Tokens</td>
             </tr>
             <tr>
-              <td class="p-2">Llama 4 (70B)</td>
-              <td class="p-2">2 Tokens</td>
-              <td class="p-2">6 Tokens</td>
+              <td style="padding:0.5rem">Llama 4 (70B)</td>
+              <td style="padding:0.5rem">2 Tokens</td>
+              <td style="padding:0.5rem">6 Tokens</td>
             </tr>
           </tbody>
         </table>
 
-        <p class="mb-4" data-i18n="article-4-para-17">1 Token ≈ $0.001 USD. Volume discounts are available at 500K, 1M, and 5M token purchases. Visit our <a href="pricing.html" class="text-primary-color">Pricing page</a> for the full breakdown.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-17">1 Token ≈ $0.001 USD. Volume discounts are available at 500K, 1M, and 5M token purchases. Visit our <a href="pricing.html" style="color:var(--primary)">Pricing page</a> for the full breakdown.</p>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-5">What Developers Are Building</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-5">What Developers Are Building</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-18">Since our private beta opened three weeks ago, we've seen an incredible range of applications built on the GlbTOKEN API:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-18">Since our private beta opened three weeks ago, we've seen an incredible range of applications built on the GlbTOKEN API:</p>
 
-        <ul class="blog-list">
-          <li class="mb-2" data-i18n="article-4-list-4">A legal tech startup processing 50,000+ contract pages per day using GPT-5.5 Pro for extraction and Claude Sonnet 5 for analysis — switching between models based on the task's requirements with zero code changes.</li>
-          <li class="mb-2" data-i18n="article-4-list-5">An e-commerce platform using Gemini Ultra 3 for product image captioning and Mistral Large 3 for real-time customer support chat, all billed to a single token balance.</li>
-          <li class="mb-2" data-i18n="article-4-list-6">An open-source RAG framework that uses GlbTOKEN embeddings for vector search and any chat model for generation, enabling users to switch models without modifying their pipeline.</li>
-          <li class="mb-2" data-i18n="article-4-list-7">A language-learning app serving users across 40+ countries, using Llama 4 (70B) for cost-effective free-tier responses and GPT-5.5 Pro for premium subscribers — both through the same API key.</li>
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-4">A legal tech startup processing 50,000+ contract pages per day using GPT-5.5 Pro for extraction and Claude Sonnet 5 for analysis — switching between models based on the task's requirements with zero code changes.</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-5">An e-commerce platform using Gemini Ultra 3 for product image captioning and Mistral Large 3 for real-time customer support chat, all billed to a single token balance.</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-6">An open-source RAG framework that uses GlbTOKEN embeddings for vector search and any chat model for generation, enabling users to switch models without modifying their pipeline.</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-7">A language-learning app serving users across 40+ countries, using Llama 4 (70B) for cost-effective free-tier responses and GPT-5.5 Pro for premium subscribers — both through the same API key.</li>
         </ul>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-6">Documentation & Support</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-6">Documentation & Support</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-19">We've published comprehensive documentation at <a href="apikeys.html" class="text-primary-color">docs.glbtoken.com</a> covering every endpoint, model, and feature. The docs include:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-19">We've published comprehensive documentation at <a href="apikeys.html" style="color:var(--primary)">docs.glbtoken.com</a> covering every endpoint, model, and feature. The docs include:</p>
 
-        <ul class="blog-list">
-          <li class="mb-2" data-i18n="article-4-list-8">Quickstart guides for Python, Node.js, Go, and cURL</li>
-          <li class="mb-2" data-i18n="article-4-list-9">Full API reference with request/response schemas</li>
-          <li class="mb-2" data-i18n="article-4-list-10">Model catalog with capabilities, context windows, and pricing</li>
-          <li class="mb-2" data-i18n="article-4-list-11">Migration guides from OpenAI, Anthropic, Google, and others</li>
-          <li class="mb-2" data-i18n="article-4-list-12">Error code reference and troubleshooting guide</li>
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-8">Quickstart guides for Python, Node.js, Go, and cURL</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-9">Full API reference with request/response schemas</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-10">Model catalog with capabilities, context windows, and pricing</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-11">Migration guides from OpenAI, Anthropic, Google, and others</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-12">Error code reference and troubleshooting guide</li>
         </ul>
 
-        <p class="mb-4" data-i18n="article-4-para-20">If you get stuck, our in-app chat connects you with a real engineer — not a bot. We also offer dedicated Slack/Discord support channels for our Pro and Enterprise customers.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-20">If you get stuck, our in-app chat connects you with a real engineer — not a bot. We also offer dedicated Slack/Discord support channels for our Pro and Enterprise customers.</p>
 
-        <h3 class="blog-h3" data-i18n="article-4-heading-7">What's Next</h3>
+        <h3 style="margin:1.5rem 0 0.75rem;color:var(--text-primary)" data-i18n="article-4-heading-7">What's Next</h3>
 
-        <p class="mb-4" data-i18n="article-4-para-21">This is just the beginning. Over the coming weeks, we'll be shipping:</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-21">This is just the beginning. Over the coming weeks, we'll be shipping:</p>
 
-        <ul class="blog-list">
-          <li class="mb-2" data-i18n="article-4-list-13"><strong>Streaming support</strong> — real-time token-by-token responses for chat applications</li>
-          <li class="mb-2" data-i18n="article-4-list-14"><strong>Function calling</strong> — structured output and tool use across all supported models</li>
-          <li class="mb-2" data-i18n="article-4-list-15"><strong>Batch API</strong> — asynchronous batch processing at 50% lower cost</li>
-          <li class="mb-2" data-i18n="article-4-list-16"><strong>Image generation</strong> — DALL·E, Stable Diffusion, and Midjourney through the same API</li>
-          <li class="mb-2" data-i18n="article-4-list-17"><strong>SDK libraries</strong> — first-party Python, Node.js, and Go SDKs with GlbTOKEN-specific features</li>
+        <ul style="margin-bottom:1rem;padding-left:1.25rem">
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-13"><strong>Streaming support</strong> — real-time token-by-token responses for chat applications</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-14"><strong>Function calling</strong> — structured output and tool use across all supported models</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-15"><strong>Batch API</strong> — asynchronous batch processing at 50% lower cost</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-16"><strong>Image generation</strong> — DALL·E, Stable Diffusion, and Midjourney through the same API</li>
+          <li style="margin-bottom:0.5rem" data-i18n="article-4-list-17"><strong>SDK libraries</strong> — first-party Python, Node.js, and Go SDKs with GlbTOKEN-specific features</li>
         </ul>
 
-        <p class="mb-4" data-i18n="article-4-para-22">We believe that access to the best AI models should be simple, unified, and affordable. The GlbTOKEN Developer API is our biggest step yet toward that vision. <a href="register.html" class="text-primary-color">Sign up today</a>, grab your free 1,000 tokens, and start building.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-22">We believe that access to the best AI models should be simple, unified, and affordable. The GlbTOKEN Developer API is our biggest step yet toward that vision. <a href="register.html" style="color:var(--primary)">Sign up today</a>, grab your free 1,000 tokens, and start building.</p>
 
-        <p class="mb-4" data-i18n="article-4-para-23">If you have questions, feedback, or ideas, we'd love to hear from you. Reach out via the in-app chat or email <a href="mailto:support@glbtoken.com" class="text-primary-color">support@glbtoken.com</a>.</p>
+        <p style="margin-bottom:1rem" data-i18n="article-4-para-23">If you have questions, feedback, or ideas, we'd love to hear from you. Reach out via the in-app chat or email <a href="mailto:support@glbtoken.com" style="color:var(--primary)">support@glbtoken.com</a>.</p>
 
-        <hr class="blog-hr" />
+        <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0" />
 
-          <a href="blog.html" class="blog-back-link" data-i18n="back-to-blog">&larr; Back to Blog</a>
+          <a href="blog.html" style="color:var(--primary);font-size:0.85rem" data-i18n="back-to-blog">&larr; Back to Blog</a>
         </div></div>
     </div></div>
 

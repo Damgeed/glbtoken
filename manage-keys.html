@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1009" />
   </head>
@@ -49,9 +49,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location.href='settings.html';return false" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -90,7 +90,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -175,7 +175,7 @@
       <div class="dash-header">
         <div class="dash-welcome">
           <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-lg">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px">
               <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
             </svg>
             API Keys</h1>
@@ -186,49 +186,49 @@
       <!-- Key Management Card -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
           Your API Keys
-          <span class="txt-muted-sm-ml">Manage your API access</span>
+          <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted);margin-left:0.5rem">Manage your API access</span>
         </div>
-        <div class="flex-gap05-wrap">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
           <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
           <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
           <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
           <button class="sort-btn" onclick="sortKeys('usage')">Usage</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" class="ml-auto-btn">+ New Key</button>
+          <button class="btn-primary" onclick="showCreateKeyModal()" style="margin-left:auto;padding:0.5rem 1rem;font-size:0.85rem">+ New Key</button>
         </div>
-        <div id="keyList"><p class="muted-box">Loading keys...</p></div>
+        <div id="keyList"><p style="color:var(--text-muted);font-size:0.85rem;padding:1rem;text-align:center">Loading keys...</p></div>
       </div>
 
       <!-- Create Key Modal -->
-      <div class="modal-overlay" id="createKeyModal" class="modal-overlay" onclick="if(event.target===this)closeCreateKeyModal()">
-        <div class="modal-content" class="modal-content" onclick="event.stopPropagation()">
-          <button onclick="closeCreateKeyModal()" class="modal-close">✕</button>
-          <h3 class="modal-title">Create API Key</h3>
-          <p class="txt-muted-desc">Name your key and set permissions</p>
-          <label class="svg-label">Key Name</label>
-          <input type="text" id="newKeyName" value="My API Key" class="input-base-mb1" />
-          <label class="svg-label">Permissions</label>
-          <select id="newKeyPerms" class="input-base-mb125">
+      <div class="modal-overlay" id="createKeyModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center" onclick="if(event.target===this)closeCreateKeyModal()">
+        <div class="modal-content" style="background:var(--bg);border:1px solid var(--border);border-radius:12px;max-width:480px;width:90%;padding:2rem;position:relative" onclick="event.stopPropagation()">
+          <button onclick="closeCreateKeyModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;color:var(--text-muted);cursor:pointer">✕</button>
+          <h3 style="margin:0 0 0.25rem;font-size:1.15rem">Create API Key</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1.25rem">Name your key and set permissions</p>
+          <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.3rem">Key Name</label>
+          <input type="text" id="newKeyName" value="My API Key" style="width:100%;padding:0.6rem 0.75rem;border-radius:6px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem;margin-bottom:1rem;box-sizing:border-box" />
+          <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.3rem">Permissions</label>
+          <select id="newKeyPerms" style="width:100%;padding:0.6rem 0.75rem;border-radius:6px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem;margin-bottom:1.25rem;box-sizing:border-box">
             <option value="read_write">Read & Write</option>
             <option value="read_only">Read Only</option>
           </select>
-          <div class="flex-gap075">
-            <button class="btn-secondary" onclick="closeCreateKeyModal()" class="flex-1-p06">Cancel</button>
-            <button class="btn-primary" onclick="createApiKey()" class="flex-1-p06">Create Key</button>
+          <div style="display:flex;gap:0.75rem">
+            <button class="btn-secondary" onclick="closeCreateKeyModal()" style="flex:1;padding:0.6rem">Cancel</button>
+            <button class="btn-primary" onclick="createApiKey()" style="flex:1;padding:0.6rem">Create Key</button>
           </div>
-          <div id="newKeyResult" class="dn-box">
-            <p class="txt-success-sm"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
-            <code id="newKeyValue" class="code-display"></code>
-            <button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')" class="btn-sm">Copy Key</button>
+          <div id="newKeyResult" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px">
+            <p style="font-size:0.85rem;color:var(--success);margin:0 0 0.5rem"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
+            <code id="newKeyValue" style="display:block;padding:0.5rem;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;font-size:0.8rem;word-break:break-all;margin-bottom:0.5rem"></code>
+            <button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')" style="padding:0.4rem 1rem;font-size:0.8rem">Copy Key</button>
           </div>
         </div>
       </div>
 
       <!-- Docs Link -->
-      <div class="dash-card" class="tac-p125">
-        <p class="desc-md">Need integration guides, code examples, and API reference?</p>
-        <a href="apikeys.html" class="btn-primary" class="btn-inline">View Full Documentation →</a>
+      <div class="dash-card" style="text-align:center;padding:1.25rem">
+        <p style="font-size:0.9rem;color:var(--text-secondary);margin:0 0 0.75rem">Need integration guides, code examples, and API reference?</p>
+        <a href="apikeys.html" class="btn-primary" style="display:inline-block;padding:0.65rem 1.5rem;font-size:0.9rem;text-decoration:none">View Full Documentation →</a>
       </div>
 
     </div>
@@ -237,7 +237,7 @@
 </div>
 
 <button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <span class="text-title">→</span>
+  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
 </button>
 
   </div>

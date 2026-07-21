@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -46,9 +46,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -87,7 +87,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -98,21 +98,21 @@
       </div>
     </div>
   </div>
-<section><div class="container" class="tac">
-      <span class="section-label">Pricing</span><h2 class="section-title">Token Packages</h2><p class="section-sub" class="m-auto">Choose a package or choose your own amount.</p>
-      <div class="pricing-grid" class="container-1200">
-        <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary" class="w-100" onclick="startCheckout(5)">Buy $5</button></div>
-        <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary" class="w-100" onclick="startCheckout(20)">Buy $20</button></div>
-        <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary" class="w-100" onclick="startCheckout(100)">Buy $100</button></div>
+<section><div class="container" style="text-align:center">
+      <span class="section-label">Pricing</span><h2 class="section-title">Token Packages</h2><p class="section-sub" style="margin:0 auto">Choose a package or choose your own amount.</p>
+      <div class="pricing-grid" style="max-width:1200px;margin:2rem auto">
+        <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary" style="width:100%" onclick="startCheckout(5)">Buy $5</button></div>
+        <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary" style="width:100%" onclick="startCheckout(20)">Buy $20</button></div>
+        <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>90-day validity</li><li>Team sharing</li></ul><button class="btn-primary" style="width:100%" onclick="startCheckout(100)">Buy $100</button></div>
         <div class="pricing-card"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">55,000 Tokens</div>
-          <div class="pv-05-1">
-            <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="range-slider">
-            <div class="range-labels"><span>$2</span><span>$500</span></div>
+          <div style="padding:0.5rem 0 1rem">
+            <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" style="width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none;cursor:pointer">
+            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-top:4px;padding:0 2px"><span>$2</span><span>$500</span></div>
           </div>
           <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Instant top-up</li></ul>
-          <button class="btn-primary" class="w-100" onclick="customCheckout()" id="customBuyBtn">Buy $50</button></div>
+          <button class="btn-primary" style="width:100%" onclick="customCheckout()" id="customBuyBtn">Buy $50</button></div>
       </div>
-      <div id="priceCalculator" class="mt-15"></div>
+      <div id="priceCalculator" style="margin-top:1.5rem"></div>
     </div></section>
 
   <!-- HOW IT WORKS -->

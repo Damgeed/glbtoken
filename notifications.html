@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 <link rel="stylesheet" href="settings.css?v=1011" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
@@ -49,9 +49,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -90,7 +90,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -102,7 +102,7 @@
     </div>
   </div>
 <button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <span class="text-title">→</span>
+  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
 </button>
 
 <div class="dash-layout">
@@ -227,7 +227,7 @@
             <span class="notif-dot settings-dot"></span>
             <button onclick="dismissNotif(this)" class="settings-delete-btn">✕</button>
           </div>
-          <div class="notif-item dash-card settings-row" class="op-6">
+          <div class="notif-item dash-card settings-row" style="opacity:0.6">
             <div class="settings-icon settings-icon-success"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
             <div class="settings-flex-fill"><div class="settings-item-name">API Key Created</div><div class="settings-item-desc">3 days ago · "Production API" key was generated</div></div>
             <button onclick="dismissNotif(this)" class="settings-delete-btn">✕</button>

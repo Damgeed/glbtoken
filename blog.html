@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 
   </head>
 <body>
@@ -47,9 +47,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -88,7 +88,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -101,7 +101,7 @@
   </div>
 <div class="dash-page blog-listing-page"><div class="container">
       <span class="section-label">Company</span>
-      <h2 class="section-title" class="blog-h1-lg">Blog & Updates</h2>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1.5rem">Blog & Updates</h2>
       <div class="blog-grid">
         <div class="blog-card"><h3 data-i18n="blog-1-title" class="blog-title">Introducing GlbTOKEN — One Balance for All AI</h3><p data-i18n="blog-1-date" class="blog-date">July 3, 2026</p><p data-i18n="blog-1" class="blog-desc">We're excited to launch GlbTOKEN, the unified token for accessing 100+ AI models. No more juggling subscriptions — one balance, one API, unlimited AI.</p><a href="blog-article-1.html" class="blog-readmore" data-i18n="read-more">Read more →</a></div>
         <div class="blog-card"><h3 data-i18n="blog-2-title" class="blog-title">New Models Added: GPT-5.5 & Claude Sonnet 5</h3><p data-i18n="blog-2-date" class="blog-date">July 1, 2026</p><p data-i18n="blog-2" class="blog-desc">We've added the latest flagship models from OpenAI and Anthropic. GPT-5.5 Pro and Claude Sonnet 5 are now available through the GlbTOKEN API.</p><a href="blog-article-2.html" class="blog-readmore" data-i18n="read-more">Read more →</a></div>

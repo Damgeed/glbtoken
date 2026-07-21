@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -45,9 +45,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -85,7 +85,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -98,12 +98,12 @@
   </div>
 <div class="dash-page"><div class="container">
       <span class="section-label">Company</span>
-      <h2 class="section-title" class="blog-h1-sm">About GlbTOKEN</h2>
-      <div class="dash-card"><div class="body-text">
-        <p class="mb-1">GlbTOKEN (Global Token) is the world's first unified token for AI model access. We believe AI should be accessible to everyone — not locked behind multiple subscriptions.</p>
-        <p class="mb-1">Founded with a vision to simplify AI access, GlbTOKEN lets you buy tokens once and use them across 100+ models from every major AI provider. Whether you're a developer integrating via API or a business exploring AI tools, GlbTOKEN gives you one balance, one API, and unlimited possibilities.</p>
-        <p class="mb-1" data-i18n="about-mission"><strong>Our Mission:</strong> Make AI as easy to buy as electricity. Pay for what you use, use any model, switch anytime.</p>
-        <p class="mb-1" data-i18n="about-global-team"><strong>Global Team:</strong> Operating from Ghana, Nigeria, Kenya, South Africa, UAE, Hong Kong, and the US. </p>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:0.5rem">About GlbTOKEN</h2>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+        <p style="margin-bottom:1rem">GlbTOKEN (Global Token) is the world's first unified token for AI model access. We believe AI should be accessible to everyone — not locked behind multiple subscriptions.</p>
+        <p style="margin-bottom:1rem">Founded with a vision to simplify AI access, GlbTOKEN lets you buy tokens once and use them across 100+ models from every major AI provider. Whether you're a developer integrating via API or a business exploring AI tools, GlbTOKEN gives you one balance, one API, and unlimited possibilities.</p>
+        <p style="margin-bottom:1rem" data-i18n="about-mission"><strong>Our Mission:</strong> Make AI as easy to buy as electricity. Pay for what you use, use any model, switch anytime.</p>
+        <p style="margin-bottom:1rem" data-i18n="about-global-team"><strong>Global Team:</strong> Operating from Ghana, Nigeria, Kenya, South Africa, UAE, Hong Kong, and the US. </p>
         <p></p>
       </div></div>
     </div></div>

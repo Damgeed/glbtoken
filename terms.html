@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1040" />
+  <link rel="stylesheet" href="style.css?v=1039" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -45,9 +45,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" class="dn">
+        <div id="navUser" style="display:none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" class="cursor-pointer">
+            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -85,7 +85,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" class="dn">
+    <div id="mobileUserSection" style="display:none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -98,14 +98,14 @@
   </div>
 <div class="dash-page"><div class="container">
       <span class="section-label">Legal</span>
-      <h2 class="section-title" class="blog-h1">Terms of Service</h2>
-      <div class="dash-card"><div class="body-text">
-        <p data-i18n="terms-section-1" class="mb-1"><strong>1. Acceptance of Terms</strong><br>By accessing or using GlbTOKEN, you agree to be bound by these Terms of Service. If you do not agree, do not use the service.</p>
-        <p data-i18n="terms-section-2" class="mb-1"><strong>2. Token Purchases</strong><br>All token purchases are final and non-refundable. Tokens are non-transferable and have no cash value. Prices may change at any time.</p>
-        <p data-i18n="terms-section-3" class="mb-1"><strong>3. Account Responsibility</strong><br>You are responsible for maintaining the confidentiality of your account credentials and API keys. Notify us immediately of unauthorized use.</p>
-        <p data-i18n="terms-section-4" class="mb-1"><strong>4. Acceptable Use</strong><br>You agree not to use the service for any illegal purpose, to violate any laws, or to transmit any harmful code. We reserve the right to suspend accounts for abuse.</p>
-        <p data-i18n="terms-section-5" class="mb-1"><strong>5. Limitation of Liability</strong><br>GlbTOKEN is provided "as is" without warranty. We are not liable for any damages arising from your use of the service.</p>
-        <p data-i18n="terms-section-6" class="mb-1"><strong>6. Changes</strong><br>We may modify these terms at any time. Continued use after changes constitutes acceptance. Last updated: July 2026.</p>
+      <h2 class="section-title" style="font-size:1.75rem;margin-bottom:1rem">Terms of Service</h2>
+      <div class="dash-card"><div style="font-size:0.9rem;color:var(--text-secondary);line-height:1.8">
+        <p data-i18n="terms-section-1" style="margin-bottom:1rem"><strong>1. Acceptance of Terms</strong><br>By accessing or using GlbTOKEN, you agree to be bound by these Terms of Service. If you do not agree, do not use the service.</p>
+        <p data-i18n="terms-section-2" style="margin-bottom:1rem"><strong>2. Token Purchases</strong><br>All token purchases are final and non-refundable. Tokens are non-transferable and have no cash value. Prices may change at any time.</p>
+        <p data-i18n="terms-section-3" style="margin-bottom:1rem"><strong>3. Account Responsibility</strong><br>You are responsible for maintaining the confidentiality of your account credentials and API keys. Notify us immediately of unauthorized use.</p>
+        <p data-i18n="terms-section-4" style="margin-bottom:1rem"><strong>4. Acceptable Use</strong><br>You agree not to use the service for any illegal purpose, to violate any laws, or to transmit any harmful code. We reserve the right to suspend accounts for abuse.</p>
+        <p data-i18n="terms-section-5" style="margin-bottom:1rem"><strong>5. Limitation of Liability</strong><br>GlbTOKEN is provided "as is" without warranty. We are not liable for any damages arising from your use of the service.</p>
+        <p data-i18n="terms-section-6" style="margin-bottom:1rem"><strong>6. Changes</strong><br>We may modify these terms at any time. Continued use after changes constitutes acceptance. Last updated: July 2026.</p>
       </div></div>
     </div></div>
 
