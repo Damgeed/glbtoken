@@ -1641,6 +1641,7 @@ input[type="range"]::-moz-range-thumb {
     font-size: 0.65rem;
     letter-spacing: 0.1em;
     margin-bottom: 0.4rem;
+    font-weight: 700;
   }
   .dash-sidebar-item {
     padding: 0.45rem 1rem;
@@ -1697,7 +1698,7 @@ input[type="range"]::-moz-range-thumb {
   letter-spacing: 0.08em;
   color: var(--primary);
   margin-bottom: 0.6rem;
-  font-weight: 600;
+  font-weight: 700;
   opacity: 0.8;
 }
 .dash-sidebar-item {
