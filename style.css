@@ -3701,11 +3701,6 @@ html.light .modal-overlay {
   .hero-actions {
     grid-template-columns: 1fr;
   }
-  .hero-actions .btn-primary,
-  .hero-actions .btn-secondary {
-    padding: 0.3rem 0.5rem;
-    font-size: 0.72rem;
-  }
   .hero-stats {
     flex-direction: column;
     gap: 0.75rem;
