@@ -1623,10 +1623,8 @@ input[type="range"]::-moz-range-thumb {
     align-self: flex-start;
     height: 100%;
     border-right: 1px solid var(--border);
-    padding: 0;
+    padding: 1.5rem 0 1rem;
     background: var(--bg-alt);
-    display: flex;
-    flex-direction: column;
   }
   .dash-sidebar.open {
     left: 0;
@@ -1638,111 +1636,33 @@ input[type="range"]::-moz-range-thumb {
   .dash-sidebar-toggle {
     display: none !important;
   }
-  /* ── Sidebar Brand Header ── */
-  .dash-sidebar-header {
-    padding: 1rem 0.85rem 0.85rem;
-    margin: 0 0.5rem 0.5rem;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .dash-sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
-  .dash-sidebar-brand svg {
-    opacity: 0.9;
-  }
-  /* ── Sidebar Scrolling Area ── */
-  .dash-sidebar {
-    overflow-y: auto;
-  }
-  .dash-sidebar::-webkit-scrollbar {
-    width: 4px;
-  }
-  .dash-sidebar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .dash-sidebar::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-  }
-  .dash-sidebar::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
-  }
-  /* ── Section Labels ── */
-  .dash-sidebar-section {
-    margin-bottom: 0.5rem;
-    flex-shrink: 0;
-  }
   .dash-sidebar-label {
-    padding: 0.35rem 0.85rem 0.2rem;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    font-weight: 500;
-    opacity: 0.7;
+    padding: 0.3rem 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
   }
-  /* ── Sidebar Items ── */
   .dash-sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.85rem;
-    margin: 1px 0.5rem;
+    padding: 0.45rem 1rem;
     font-size: 0.8rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: 6px;
-    border-left: none;
-    transition: all 0.12s ease;
-    cursor: pointer;
-    font-weight: 400;
-    position: relative;
+    gap: 0.5rem;
+    border-left: 3px solid transparent;
   }
   .dash-sidebar-item:hover {
-    background: color-mix(in srgb, var(--primary) 7%, transparent);
-    color: var(--text);
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+    color: var(--primary);
   }
   .dash-sidebar-item.active {
     background: color-mix(in srgb, var(--primary) 10%, var(--bg-alt));
     color: var(--primary);
+    border-left-color: var(--primary);
     font-weight: 600;
-  }
-  .dash-sidebar-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 16px;
-    background: var(--primary);
-    border-radius: 0 3px 3px 0;
   }
   .dash-sidebar-item svg {
     width: 16px;
     height: 16px;
-    flex-shrink: 0;
-    stroke: currentColor;
     stroke-width: 2;
-    fill: none;
-    opacity: 0.65;
-    transition: opacity 0.12s ease;
   }
-  .dash-sidebar-item:hover svg {
-    opacity: 0.85;
-  }
-  .dash-sidebar-item.active svg {
-    opacity: 1;
-    color: var(--primary);
-  }
-  /* ── Main Content ── */
   .dash-content {
     overflow-y: auto;
     height: 100%;
@@ -1751,7 +1671,6 @@ input[type="range"]::-moz-range-thumb {
     position: relative;
     left: 0;
     transition: none;
-    background: var(--bg);
   }
 }
 .dash-sidebar-backdrop {
