@@ -1319,13 +1319,20 @@
       if(sbAv&&userData&&userData.name)sbAv.textContent=userData.name.charAt(0).toUpperCase();
       const loggedIn=!!token;
       var ng=document.getElementById('navGuest');if(ng)ng.style.display=loggedIn?'none':'flex';
-      var nu=document.getElementById('navUser');if(nu)nu.style.display=loggedIn?'flex':'none';
+      var nu=document.getElementById('navUser');
+      if(nu){
+        nu.style.display=loggedIn?'flex':'none';
+        nu.classList.toggle('d-none',!loggedIn);
+      }
       var nb=document.getElementById('navBalance');if(nb)nb.style.display=loggedIn?'inline-block':'none';
       // Mobile menu sync
       var mg=document.getElementById('mobileGuestSection');
       var mu=document.getElementById('mobileUserSection');
       if(mg)mg.style.display=loggedIn?'none':'block';
-      if(mu)mu.style.display=loggedIn?'block':'none';
+      if(mu){
+        mu.style.display=loggedIn?'block':'none';
+        mu.classList.toggle('d-none',!loggedIn);
+      }
       // Toggle Dashboard vs API/Dev in nav
       var nal=document.getElementById('navApiLink');if(nal)nal.style.display=loggedIn?'none':'inline-block';
       var mal=document.getElementById('mNavApiLink');
