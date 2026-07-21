@@ -1587,11 +1587,13 @@ input[type="range"]::-moz-range-thumb {
   padding: 1.25rem 0;
   overflow-y: auto;
   position: fixed;
-  left: 0;
+  left: -280px;
   top: 64px;
   height: calc(100vh - 64px);
   z-index: 40;
   transition: left 0.3s;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  border-radius: 0 12px 12px 0;
 }
 .dash-sidebar.open {
   left: 0;
@@ -6950,11 +6952,5 @@ body {
   #referral-share-charts > .dash-card:first-child {
     grid-column: 1/-1;
   }
-}
-
-/* Desktop: sidebar always visible, hide toggle & backdrop */
-@media (min-width: 769px) {
-  .dash-sidebar-toggle { display: none !important; }
-  .dash-sidebar-backdrop { display: none !important; }
 }
 
