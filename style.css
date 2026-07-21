@@ -1618,13 +1618,13 @@ input[type="range"]::-moz-range-thumb {
     top: 0;
     z-index: 10;
     transition: none;
-    box-shadow: none;
-    border-radius: 0;
+    border-radius: 0 12px 12px 0;
     align-self: flex-start;
     height: 100%;
     border-right: 1px solid var(--border);
     padding: 1.5rem 0 1rem;
-    background: var(--bg-alt);
+    background: var(--card);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   }
   .dash-sidebar.open {
     left: 0;
