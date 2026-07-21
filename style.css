@@ -3428,9 +3428,9 @@ html.light .modal-overlay {
   }
   .hero-actions .btn-primary,
   .hero-actions .btn-secondary {
-    width: 100%;
+    width: auto;
     text-align: center;
-    padding: 0.4rem 0.65rem;
+    padding: 0.35rem 0.6rem;
     font-size: 0.78rem;
   }
   .btn-primary,
