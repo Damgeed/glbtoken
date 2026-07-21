@@ -1658,6 +1658,7 @@ input[type="range"]::-moz-range-thumb {
     color: var(--primary);
     border-left: 4px solid var(--primary);
     font-weight: 600;
+    animation: borderFlash 1.2s ease-in-out infinite;
   }
   .dash-sidebar-item svg {
     width: 16px;
@@ -1723,6 +1724,12 @@ input[type="range"]::-moz-range-thumb {
   color: var(--primary);
   border-left: 4px solid var(--primary);
   font-weight: 600;
+  animation: borderFlash 1.2s ease-in-out infinite;
+}
+
+@keyframes borderFlash {
+  0%, 100% { border-left-color: var(--primary); }
+  50% { border-left-color: hsla(44 96% 52% / 0.25); }
 }
 .dash-sidebar-item svg {
   width: 18px;
