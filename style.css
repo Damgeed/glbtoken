@@ -1647,7 +1647,7 @@ input[type="range"]::-moz-range-thumb {
     padding: 0.45rem 1rem;
     font-size: 0.8rem;
     gap: 0.5rem;
-    position: relative;
+    border-left: 4px solid transparent;
   }
   .dash-sidebar-item:hover {
     background: color-mix(in srgb, var(--primary) 8%, transparent);
@@ -1656,17 +1656,8 @@ input[type="range"]::-moz-range-thumb {
   .dash-sidebar-item.active {
     background: color-mix(in srgb, var(--primary) 12%, var(--bg-alt));
     color: var(--primary);
+    border-left: 4px solid var(--primary);
     font-weight: 600;
-  }
-  .dash-sidebar-item.active::before {
-    content: '•';
-    color: var(--primary);
-    font-size: 1.3rem;
-    line-height: 1;
-    position: absolute;
-    left: 4px;
-    top: 50%;
-    transform: translateY(-50%);
   }
   .dash-sidebar-item svg {
     width: 16px;
@@ -1718,10 +1709,10 @@ input[type="range"]::-moz-range-thumb {
   font-size: 0.85rem;
   color: var(--text);
   text-decoration: none;
+  border-left: 4px solid transparent;
   transition: all 0.2s;
   cursor: pointer;
   font-weight: 400;
-  position: relative;
 }
 .dash-sidebar-item:hover {
   background: var(--bg-alt);
@@ -1730,17 +1721,8 @@ input[type="range"]::-moz-range-thumb {
 .dash-sidebar-item.active {
   background: var(--bg-alt);
   color: var(--primary);
+  border-left: 4px solid var(--primary);
   font-weight: 600;
-}
-.dash-sidebar-item.active::before {
-  content: '•';
-  color: var(--primary);
-  font-size: 1.5rem;
-  line-height: 1;
-  position: absolute;
-  left: 4px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 .dash-sidebar-item svg {
   width: 18px;
