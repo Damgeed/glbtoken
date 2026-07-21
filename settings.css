@@ -213,6 +213,10 @@
   color: var(--text);
   font-size: 0.85rem;
 }
+.settings-input[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 /* Save button (reuses input style) */
 button.settings-save-btn {
   width: 100%;
