@@ -3161,9 +3161,6 @@ html.light .modal-overlay {
   .hero h1 {
     font-size: 2.5rem;
   }
-  .hero-stats {
-    display: none;
-  }
   .hero-stats-mobile {
     display: flex;
     gap: 1.5rem;
