@@ -46,9 +46,9 @@
           <a class="nav-btn-outline" href="login.html">Login</a>
           <a class="nav-btn" href="register.html">Get Started</a>
         </div>
-        <div id="navUser" style="display:none">
+        <div id="navUser" class="d-none">
           <div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">
-            <div class="dropdown-header" onclick="window.location='dashboard.html#settings'" style="cursor:pointer">
+            <div class="dropdown-header cursor-pointer" onclick="window.location='dashboard.html#settings'" >
               <div class="dd-av" id="ddAvatar">U</div>
               <div class="dd-info">
                 <div class="dd-name" id="dropName">User</div>
@@ -87,7 +87,7 @@
       <a href="login.html" onclick="closeMobile()" id="mobileLoginLink" class="mobile-auth-btn mobile-auth-btn-outline">Login</a>
       <a href="register.html" onclick="closeMobile()" id="mobileRegisterLink" class="mobile-auth-btn mobile-auth-btn-primary">Get Started</a>
     </div>
-    <div id="mobileUserSection" style="display:none">
+    <div id="mobileUserSection" class="d-none">
       <div class="mobile-account-card">
         <a href="dashboard.html" onclick="closeMobile()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</a>
 
@@ -123,7 +123,7 @@
     <div class="auth-card">
     <h2>Create Account</h2><p class="sub">Start using 100+ AI models</p>
     <div class="auth-field" id="regEmailGroup"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email"></div>
-    <div class="auth-field" id="regCodeGroup" style="display:none"><label>Verification Code</label><input type="text" id="regCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
+    <div class="auth-field d-none" id="regCodeGroup" ><label>Verification Code</label><input type="text" id="regCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
     <button class="btn-primary" style="width:100%;margin-top:0.75rem" id="regSendBtn" onclick="sendRegisterCode()">Continue</button>
     <button class="btn-primary" style="width:100%;display:none" id="regVerifyBtn" onclick="verifyRegisterCode()">Verify & Create Account</button>
     <div class="auth-divider">or continue with</div>
@@ -139,10 +139,10 @@
             </button>
             <input type="tel" id="regPhone" placeholder="Phone number" autocomplete="tel">
           </div>
-          <div class="phone-dropdown" id="regCountryList" style="display:none"></div>
+          <div class="phone-dropdown d-none" id="regCountryList" ></div>
         </div>
       </div>
-      <div class="auth-field" id="regSmsCodeGroup" style="display:none"><label>SMS Code</label><input type="text" id="regSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" oninput="document.getElementById('regPhoneVerifyBtn').disabled=false;document.getElementById('regPhoneVerifyBtn').classList.remove('btn-loading')"></div>
+      <div class="auth-field d-none" id="regSmsCodeGroup" ><label>SMS Code</label><input type="text" id="regSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" oninput="document.getElementById('regPhoneVerifyBtn').disabled=false;document.getElementById('regPhoneVerifyBtn').classList.remove('btn-loading')"></div>
       <button class="btn-primary" style="width:100%" id="regPhoneSendBtn" onclick="sendPhoneCode('reg')">Send Code</button>
       <button class="btn-primary" style="width:100%;display:none" id="regPhoneVerifyBtn" onclick="verifyPhoneCode('reg')">Verify & Create Account</button>
     </div>

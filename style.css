@@ -130,6 +130,10 @@ select,
 textarea {
   font-family: inherit;
 }
+/* ── Utility Classes ── */
+.d-none { display: none !important; }
+.cursor-pointer { cursor: pointer !important; }
+/* ── Layout ── */
 .container {
   width: 100%;
   max-width: 1400px;
