@@ -1998,6 +1998,10 @@ input[type="range"]::-moz-range-thumb {
   .contact-card {
     margin-bottom: 0.75rem;
   }
+  .contact-grid {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
   .faq-page-title {
     margin-bottom: 0.75rem !important;
   }
@@ -6064,6 +6068,7 @@ html.light .star.white {
     grid-template-columns: 1fr;
     max-width: 520px;
     margin: 2rem auto;
+    gap: 0.75rem;
   }
 }
 .step-card {
