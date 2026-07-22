@@ -35,6 +35,11 @@
   font-weight: 600;
   border: 1px solid hsla(44 96% 52% / 0.2);
 }
+.blog-article .tag-announcement {
+  background: var(--success-subtle);
+  color: var(--success);
+  border-color: hsla(145 62% 42% / 0.2);
+}
 .blog-article .article-hero {
   width: 100%;
   border-radius: var(--radius-lg);
@@ -55,6 +60,15 @@
   font-size: 1.05rem;
   max-width: 640px;
   margin: 0.5rem auto 0;
+}
+.blog-article .hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.75rem 0 0.25rem;
+}
+.blog-article .blog-link {
+  color: var(--primary);
+  font-weight: 600;
 }
 .blog-article h2 {
   font-size: 1.65rem;
@@ -102,6 +116,22 @@
 .blog-article .highlight-box.primary {
   border-left: 3px solid var(--primary);
   background: var(--primary-subtle);
+}
+.blog-article .highlight-box.cta-center {
+  text-align: center;
+  padding: 2rem;
+}
+.blog-article .cta-center h4 {
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+}
+.blog-article .cta-center p {
+  margin-bottom: 1.25rem;
+}
+.blog-article .cta-center .nav-btn {
+  display: inline-block;
+  padding: 0.7rem 2rem;
+  font-size: 1rem;
 }
 .blog-article .highlight-box h4 {
   font-size: 1rem;
