@@ -3640,9 +3640,6 @@ html.light .modal-overlay {
   .hero-text p {
     font-size: 0.95rem;
   }
-  .section-sub {
-    font-size: 0.9rem;
-  }
   .hero-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
