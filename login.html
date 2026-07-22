@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1067" />
+  <link rel="stylesheet" href="style.css?v=1068" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -102,7 +102,7 @@
   </div>
 <div class="auth-page auth-hero-wrapper">
   <div class="auth-hero">
-    <div class="hero-badge notranslate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a12.29 12.29 0 015-7.69 12.29 12.29 0 015 7.69l-3 3"/><path d="M12 15v6"/><path d="M8 22h8"/></svg> AI Payment Platform</div>
+    <div class="hero-badge notranslate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-badge"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a12.29 12.29 0 015-7.69 12.29 12.29 0 015 7.69l-3 3"/><path d="M12 15v6"/><path d="M8 22h8"/></svg> AI Payment Platform</div>
     <h1><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></h1>
     <p>One Balance. 100+ Models. No Subscriptions. Pay-as-you-go access to the world's most sophisticated AI models through a single, elegant API.</p>
     <div class="auth-hero-stats">
@@ -124,14 +124,14 @@
   <div class="auth-hero-card">
     <div class="auth-card">
     <h2>Welcome Back</h2><p class="sub">Sign in to your GlbTOKEN account</p>
-    <div id="loginErrorBanner" style="display:none;background:rgba(255,77,79,0.12);border:1px solid rgba(255,77,79,0.3);border-radius:var(--radius-sm);padding:0.65rem 0.85rem;font-size:0.8rem;color:#FF4D4F;margin-bottom:1rem;text-align:center"></div>
+    <div id="loginErrorBanner" class="auth-error-banner"></div>
     <div class="auth-field" id="loginEmailGroup"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"></div>
     <div class="auth-field d-none" id="loginCodeGroup" ><label>Verification Code</label><input type="text" id="loginCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
-    <button class="btn-primary" style="width:100%;margin-top:0.75rem" id="loginSendBtn" onclick="sendLoginCode()">Continue</button>
-    <button class="btn-primary" style="width:100%;display:none" id="loginVerifyBtn" onclick="verifyLoginCode()">Verify & Sign In</button>
+    <button class="btn-primary btn-block btn-block-mt" id="loginSendBtn" onclick="sendLoginCode()">Continue</button>
+    <button class="btn-primary btn-block btn-hidden" id="loginVerifyBtn" onclick="verifyLoginCode()">Verify & Sign In</button>
     <div class="auth-divider">or continue with</div>
-    <button class="auth-oauth-btn" style="width:100%;margin-bottom:0.75rem" onclick="togglePhone('login')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Continue with Phone</button>
-    <div id="loginPhoneSection" style="display:none;margin:0 0 0.75rem 0">
+    <button class="auth-oauth-btn oauth-btn-full" onclick="togglePhone('login')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Continue with Phone</button>
+    <div id="loginPhoneSection" class="phone-section-hidden">
       <div class="auth-field"><label>Phone</label>
         <div class="phone-wrap">
           <div class="phone-inner">
@@ -146,8 +146,8 @@
         </div>
       </div>
       <div class="auth-field d-none" id="loginSmsCodeGroup" ><label>SMS Code</label><input type="text" id="loginSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" oninput="document.getElementById('loginPhoneVerifyBtn').disabled=false;document.getElementById('loginPhoneVerifyBtn').classList.remove('btn-loading')"></div>
-      <button class="btn-primary" style="width:100%" id="loginPhoneSendBtn" onclick="sendPhoneCode('login')">Send Code</button>
-      <button class="btn-primary" style="width:100%;display:none" id="loginPhoneVerifyBtn" onclick="verifyPhoneCode('login')">Verify & Sign In</button>
+      <button class="btn-primary btn-block" id="loginPhoneSendBtn" onclick="sendPhoneCode('login')">Send Code</button>
+      <button class="btn-primary btn-block btn-hidden" id="loginPhoneVerifyBtn" onclick="verifyPhoneCode('login')">Verify & Sign In</button>
     </div>
     <div class="auth-oauth">
       <button class="auth-oauth-btn" onclick="oauthLogin('google',this)"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> <span>Google</span></button>
