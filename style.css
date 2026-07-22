@@ -1370,6 +1370,33 @@ input[type="range"]::-moz-range-thumb {
   margin-bottom: 1rem;
   text-align: center;
 }
+.faq-page-title {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+.contact-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.contact-card-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 .phone-country svg {
   opacity: 0.45;
   transition: transform 0.2s;
