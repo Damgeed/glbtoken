@@ -2002,6 +2002,9 @@ input[type="range"]::-moz-range-thumb {
     gap: 0.75rem;
     margin-bottom: 0.75rem;
   }
+  .apikey-page .dash-card + .dash-card {
+    margin-top: 0.75rem;
+  }
   .faq-page-title {
     margin-bottom: 0.75rem !important;
   }
