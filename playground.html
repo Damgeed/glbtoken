@@ -102,96 +102,10 @@
   </div>
 
 <div class="playground-shell">
-  <!-- Overlay for mobile sidebar -->
-  <div class="playground-overlay" id="pgOverlay" onclick="closePlaygroundSidebar()"></div>
-
-  <!-- Left Sidebar (ChatGPT-style) -->
-  <div class="playground-sidebar" id="playgroundSidebar">
-    <div class="playground-sidebar-header">
-      <button class="playground-new-btn" onclick="newConversation()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        New Chat
-      </button>
-      <button class="playground-sidebar-close" onclick="closePlaygroundSidebar()" title="Close sidebar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
-    <div class="playground-history" id="conversationHistory">
-      <div class="playground-history-item active" onclick="switchConversation(this)" data-id="1">
-        <span class="conv-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-          </svg>
-        </span>
-        <span class="conv-title">GPT-4o API integration</span>
-        <span class="conv-date">Jun 14</span>
-        <button class="delete-conv" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-          </svg>
-        </button>
-      </div>
-      <div class="playground-history-item" onclick="switchConversation(this)" data-id="2">
-        <span class="conv-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-          </svg>
-        </span>
-        <span class="conv-title">Claude 3.5 Sonnet testing</span>
-        <span class="conv-date">Jun 13</span>
-        <button class="delete-conv" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-          </svg>
-        </button>
-      </div>
-      <div class="playground-history-item" onclick="switchConversation(this)" data-id="3">
-        <span class="conv-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-          </svg>
-        </span>
-        <span class="conv-title">Code generation test</span>
-        <span class="conv-date">Jun 12</span>
-        <button class="delete-conv" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-          </svg>
-        </button>
-      </div>
-      <div class="playground-history-item" onclick="switchConversation(this)" data-id="4">
-        <span class="conv-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-          </svg>
-        </span>
-        <span class="conv-title">Translation comparison</span>
-        <span class="conv-date">Jun 10</span>
-        <button class="delete-conv" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div class="playground-sidebar-footer">
-      <span>GlbTOKEN Playground</span>
-    </div>
-  </div>
-
   <!-- Main Chat Area -->
   <div class="playground-main">
     <!-- Top Bar -->
     <div class="playground-topbar" id="topBar">
-      <button class="hamburger-btn" onclick="togglePlaygroundSidebar()" title="Toggle sidebar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
       <span class="playground-topbar-title" id="conversationTitle">GPT-4o API integration</span>
       <div class="playground-topbar-model">
         <select id="modelSelect">
@@ -251,19 +165,6 @@ var conversationCount = 4;
 var currentConversationId = 1;
 var isProcessing = false;
 
-// ── Sidebar ──
-function togglePlaygroundSidebar(){
-  var sidebar = document.getElementById('playgroundSidebar');
-  var overlay = document.getElementById('pgOverlay');
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('open');
-}
-
-function closePlaygroundSidebar(){
-  document.getElementById('playgroundSidebar').classList.remove('open');
-  document.getElementById('pgOverlay').classList.remove('open');
-}
-
 // ── Conversations ──
 function newConversation(){
   conversationCount++;
@@ -283,7 +184,6 @@ function newConversation(){
     + '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>';
   history.prepend(item);
   item.click();
-  closePlaygroundSidebar();
   document.getElementById('chatInput').focus();
 }
 
@@ -296,7 +196,6 @@ function switchConversation(el){
     document.getElementById('conversationTitle').textContent = title.textContent;
   }
   clearChat();
-  closePlaygroundSidebar();
 }
 
 function deleteConvItem(btn){
