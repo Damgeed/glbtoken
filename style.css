@@ -7146,7 +7146,6 @@ body {
 }
 
 /* ── Contact Page ── */
-.contact-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem; }
 .contact-icon-wrap { margin-bottom:0.75rem; }
 .contact-card h3 { font-size:1rem;font-weight:600;margin:0 0 0.5rem; }
 .contact-card p { font-size:0.85rem;color:var(--text-secondary);margin:0 0 0.75rem; }
