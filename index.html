@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="style.css?v=1078" />
+<link rel="stylesheet" href="style.css?v=1079" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -102,7 +102,7 @@
 <section class="hero"><div class="container hero-grid">
 <div class="hero-text">
 <span class="hero-badge notranslate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> 100+ Models. One Balance.</span>
-<h1><span class="nowrap notranslate">Premium AI.</span><br><span class="gold notranslate">One Token Balance.</span></h1>
+<h1 id="heroHeadline"><span class="nowrap notranslate">Premium AI.</span><br><span class="gold notranslate">One Token Balance.</span></h1>
 <p id="heroTagline">Access the world's most sophisticated AI models through a single, elegant API. Designed for those who demand excellence.</p>
 <div class="hero-actions">
 <button class="btn-primary" onclick="showPage('register')">Buy Tokens Now</button>
@@ -362,7 +362,7 @@
               </div>
               </div>
 
-<script src="translations.js?v=247"></script>
+<script src="translations.js?v=248"></script>
 <script data-cfasync="false" src="script.js?v=253"></script>
 
 <script>
@@ -411,6 +411,20 @@ document.addEventListener('touchend', endDrag);
     el.textContent = TRANS[key][lang];
   } else if (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key]['en']) {
     el.textContent = TRANS[key]['en'];
+  }
+})();
+</script>
+<script>
+(function() {
+  var el = document.getElementById('heroHeadline');
+  if (!el) return;
+  var n = Math.floor(Math.random() * 5) + 1;
+  var key = 'hero-headline-' + n;
+  var lang = localStorage.getItem('gt_lang') || 'en';
+  if (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key][lang]) {
+    el.innerHTML = TRANS[key][lang];
+  } else if (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key]['en']) {
+    el.innerHTML = TRANS[key]['en'];
   }
 })();
 </script>
