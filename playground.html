@@ -16,8 +16,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="style.css?v=1069" />
+  <link rel="stylesheet" href="playground.css?v=1007" />
+  <link rel="stylesheet" href="dashboard.css?v=1015" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="playground.css?v=1007" />
 </head>
 <body>
 <script>if(!localStorage.getItem('gt_token')){window.location.replace('login.html')}window.addEventListener('pageshow',function(e){if(e.persisted&&!localStorage.getItem('gt_token')){window.location.replace('login.html')}})</script>
@@ -100,6 +101,81 @@
       </div>
     </div>
   </div>
+
+<div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
+
+<button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
+  <span class="icon-arrow">→</span>
+</button>
+
+<div class="dash-layout">
+  <div class="dash-sidebar" id="dashSidebar">
+    <div class="dash-sidebar-section">
+      <div class="dash-sidebar-label">Chat</div>
+      <a class="dash-sidebar-item active" href="playground.html">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Playground
+      </a>
+      <a class="dash-sidebar-item" href="presets.html">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><circle cx="6" cy="6" r="2"/><line x1="3" y1="12" x2="17" y2="12"/><circle cx="19" cy="12" r="2"/><line x1="10" y1="18" x2="21" y2="18"/><circle cx="8" cy="18" r="2"/></svg>
+        Presets
+      </a>
+    </div>
+    <div class="dash-sidebar-section">
+      <div class="dash-sidebar-label">General</div>
+      <a class="dash-sidebar-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </a>
+      <a class="dash-sidebar-item" href="manage-keys.html">
+        <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        API Keys
+      </a>
+    </div>
+    <div class="dash-sidebar-section">
+      <div class="dash-sidebar-label">Personal</div>
+      <a class="dash-sidebar-item" href="billing.html">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Billing
+      </a>
+      <a class="dash-sidebar-item" href="topup.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
+        Buy Tokens
+      </a>
+      <a class="dash-sidebar-item" href="settings.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </a>
+      <a class="dash-sidebar-item" href="notifications.html">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notifications
+      </a>
+      <a class="dash-sidebar-item" href="usage.html">
+        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Usage &amp; History
+      </a>
+    </div>
+    <div class="dash-sidebar-section">
+      <div class="dash-sidebar-label">Admin</div>
+      <a class="dash-sidebar-item" href="logs.html">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Logs
+      </a>
+    </div>
+    <div class="dash-sidebar-section">
+      <div class="dash-sidebar-label">Team</div>
+      <a class="dash-sidebar-item" href="team.html">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Team
+      </a>
+      <a class="dash-sidebar-item" href="referrals.html">
+        <svg viewBox="0 0 24 24"><path d="M17 20l5-5-5-5"/><path d="M7 4l-5 5 5 5"/><path d="M14 4l-4 16"/></svg>
+        Referrals
+      </a>
+    </div>
+  </div>
+  <div class="dash-sidebar-backdrop" onclick="toggleDashSidebar()"></div>
+  <div class="dash-content">
 
 <div class="playground-shell">
   <!-- Main Chat Area -->
@@ -369,6 +445,9 @@ document.addEventListener('DOMContentLoaded', function(){
   updateSendButton();
 });
 </script>
+
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer><div class="container">
