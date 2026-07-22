@@ -1963,6 +1963,7 @@ input[type="range"]::-moz-range-thumb {
   }
   .blog-listing-page .page-title-lg {
     text-align: center !important;
+    margin-bottom: 0.75rem !important;
   }
   .blog-listing-page .section-title {
     font-size: 1.35rem !important;
@@ -1992,6 +1993,9 @@ input[type="range"]::-moz-range-thumb {
   }
   .contact-card {
     margin-bottom: 0.75rem;
+  }
+  .faq-page-title {
+    margin-bottom: 0.75rem !important;
   }
 }
 
@@ -6456,7 +6460,7 @@ html.light .star.white {
   }
   .section-sub {
     font-size: 0.85rem !important;
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
   }
   .section-label {
     font-size: 0.65rem !important;
