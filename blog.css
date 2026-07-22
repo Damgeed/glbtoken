@@ -70,6 +70,39 @@
   color: var(--primary);
   font-weight: 600;
 }
+.blog-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+.blog-article thead tr {
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+}
+.blog-article th {
+  padding: 0.5rem;
+  text-align: left;
+  color: var(--text-primary);
+}
+.blog-article tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+.blog-article tbody tr:last-child {
+  border-bottom: none;
+}
+.blog-article td {
+  padding: 0.5rem;
+}
+.blog-article pre {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
 .blog-article h2 {
   font-size: 1.65rem;
   font-weight: 700;
