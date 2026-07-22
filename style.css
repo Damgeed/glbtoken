@@ -1080,6 +1080,9 @@ section {
   grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
   margin-bottom: 1.5rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 @media (max-width: 900px) {
   .pricing-grid {
@@ -1097,9 +1100,34 @@ section {
     padding: 1rem;
   }
   .pricing-card .plan-price {
-    font-size: 1.75rem;
-    margin: 0.35rem 0;
+    font-size: 1.5rem;
   }
+}
+.pricing-slider-wrap {
+  padding: 0.5rem 0 1rem;
+}
+.pricing-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding: 0 2px;
+}
+#priceCalculator {
+  margin-top: 1.5rem;
+}
+.pricing-range {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+}
+@media (max-width: 600px) {
   .pricing-card .plan-desc {
     margin-bottom: 0.75rem;
     font-size: 0.8rem;
