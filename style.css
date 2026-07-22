@@ -1375,7 +1375,7 @@ input[type="range"]::-moz-range-thumb {
   margin-bottom: 1.5rem;
 }
 .contact-card {
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   padding: 1.5rem;
   background: var(--card);
   border: 1px solid var(--border);
@@ -1989,6 +1989,9 @@ input[type="range"]::-moz-range-thumb {
   .hero .container,
   section > .container {
     padding: 0 0.75rem;
+  }
+  .contact-card {
+    margin-bottom: 0.75rem;
   }
 }
 
