@@ -848,7 +848,7 @@ html.dark .nav-logo-img {
 }
 .hero-calc {
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
