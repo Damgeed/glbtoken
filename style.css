@@ -7037,9 +7037,9 @@ body {
     background: var(--card);
     box-shadow: var(--shadow-elevated);
     min-height: auto;
-    max-height: calc(100% - 32px);
+    max-height: calc(100dvh - 60px);
     overflow: hidden;
-    height: calc(100% - 32px);
+    height: calc(100dvh - 60px);
   }
   .ai-chat-section.chat-focused .chat-header {
     flex-shrink: 0;
@@ -7109,8 +7109,8 @@ body {
     position: static;
     width: 100%;
     max-width: 400px;
-    height: calc(100% - 32px);
-    max-height: calc(100% - 32px);
+    height: calc(100dvh - 60px);
+    max-height: calc(100dvh - 60px);
     min-height: auto;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -7542,35 +7542,5 @@ body {
   #referral-share-charts > .dash-card:first-child {
     grid-column: 1/-1;
   }
-  /* Chat popup narrower on mobile */
-  .chat-window {
-    width: 320px;
-    max-width: calc(100vw - 3rem);
-    left: 1.5rem;
-    bottom: 5rem;
-  }
-  .chat-fab {
-    bottom: 1rem;
-    left: 1rem;
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
-  }
-  .chat-window .chat-msgs {
-    padding: 0.75rem;
-  }
-  .chat-window .chat-header {
-    padding: 0.7rem 1rem;
-  }
-  .chat-window .chat-input {
-    padding: 0.5rem 0.75rem;
-  }
-  .chat-window .chat-input textarea {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
-  }
-  .chat-window .chat-input button {
-    width: 34px;
-    height: 34px;
-    font-size: 0.95rem;
-  }
+
+}

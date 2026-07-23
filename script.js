@@ -2339,16 +2339,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const msgs=document.getElementById('aiChatMsgs');
         if(msgs) msgs.scrollTop=msgs.scrollHeight;
       });
-      // VisualViewport handler for AI chat (keyboard on iOS)
-      if(window.visualViewport){
-        window._aiChatViewportHandler = function(){
-          const section = document.querySelector('.ai-chat-section.chat-focused');
-          if(section){
-            section.style.height = window.visualViewport.height + 'px';
-          }
-        };
-        window.visualViewport.addEventListener('resize', window._aiChatViewportHandler);
-      }
     }
     function closeMobileChat(){
       const section=document.querySelector('.ai-chat-section');
@@ -2359,13 +2349,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       if(btt) btt.style.display = '';
       lockBodyScroll(false);
       removeCloseBtn(section.querySelector('.chat-header'));
-      // Clean up VisualViewport handler
-      if(window.visualViewport && window._aiChatViewportHandler){
-        window.visualViewport.removeEventListener('resize', window._aiChatViewportHandler);
-        window._aiChatViewportHandler = null;
-      }
-      // Reset inline height set by viewport handler
-      section.style.height = '';
     }
     // ── Support Chat ──
     function toggleChat(){
@@ -2411,17 +2394,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const msgs = document.getElementById('chatMsgs');
         if(msgs) msgs.scrollTop = msgs.scrollHeight;
       });
-      // VisualViewport handler: keep chat visible when keyboard opens on iOS
-      if(window.visualViewport){
-        window._supportChatViewportHandler = function(){
-          const backdrop = document.querySelector('.support-chat-backdrop');
-          if(backdrop){
-            // Force the backdrop to fill visible area
-            backdrop.style.height = window.visualViewport.height + 'px';
-          }
-        };
-        window.visualViewport.addEventListener('resize', window._supportChatViewportHandler);
-      }
     }
     function closeMobileSupportChat(){
       const win = document.getElementById('chatWindow');
@@ -2437,11 +2409,6 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       }
       removeCloseBtn(win.querySelector('.chat-header'));
       lockBodyScroll(false);
-      // Clean up VisualViewport handler
-      if(window.visualViewport && window._supportChatViewportHandler){
-        window.visualViewport.removeEventListener('resize', window._supportChatViewportHandler);
-        window._supportChatViewportHandler = null;
-      }
     }
     // ── Draggable Chat FAB (mobile touch) ──
     (function(){
