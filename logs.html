@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1090" />
+  <link rel="stylesheet" href="style.css?v=1091" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1009" />
   </head>
@@ -202,34 +202,34 @@
 
       <div class="dash-card" id="dashCostBreakdown">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          Cost Breakdown by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Per-model spend</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Cost Breakdown by Model <span class="label-muted-sm">Per-model spend</span>
         </div>
         <div class="dash-grid" style="grid-template-columns:repeat(3,1fr)">
           <div class="dash-stat-card"><div class="num" id="cbTotalCost">$0.00</div><div class="lbl">Total Cost</div><div class="chg up">↑ Lifetime</div></div>
-          <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg" style="color:var(--text-muted)">Avg cost/call</div></div>
-          <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg" style="color:var(--text-muted)">Per request</div></div>
+          <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg" class="text-muted">Avg cost/call</div></div>
+          <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg" class="text-muted">Per request</div></div>
         </div>
         <div class="chart-container" style="height:40px;min-height:0"><canvas id="costByModelChart"></canvas></div>
       </div>
 
       <div class="dash-card" id="dashErrorRate">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Error Rate Monitoring <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Track API errors</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Error Rate Monitoring <span class="label-muted-sm">Track API errors</span>
         </div>
         <div class="dash-grid" style="grid-template-columns:repeat(3,1fr)">
-          <div class="dash-stat-card"><div class="num" id="erTotalErrors">0</div><div class="lbl">Total Errors</div><div class="chg" style="color:var(--text-muted)">All time</div></div>
-          <div class="dash-stat-card"><div class="num" id="erErrorRate">0%</div><div class="lbl">Error Rate</div><div class="chg" style="color:var(--text-muted)">Percentage</div></div>
-          <div class="dash-stat-card"><div class="num" id="erLastError">—</div><div class="lbl">Last Error</div><div class="chg" style="color:var(--text-muted)">Time</div></div>
+          <div class="dash-stat-card"><div class="num" id="erTotalErrors">0</div><div class="lbl">Total Errors</div><div class="chg" class="text-muted">All time</div></div>
+          <div class="dash-stat-card"><div class="num" id="erErrorRate">0%</div><div class="lbl">Error Rate</div><div class="chg" class="text-muted">Percentage</div></div>
+          <div class="dash-stat-card"><div class="num" id="erLastError">—</div><div class="lbl">Last Error</div><div class="chg" class="text-muted">Time</div></div>
         </div>
         <div class="chart-container" style="height:40px;min-height:0"><canvas id="errorRateChart"></canvas></div>
       </div>
 
       <div class="dash-card" id="dashResponseTime">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Response Time by Model <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Speed indicators</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Response Time by Model <span class="label-muted-sm">Speed indicators</span>
         </div>
         <div style="overflow-x:auto">
           <table class="tx-table" id="responseTimeTable">
@@ -244,8 +244,8 @@
 
       <div class="dash-card" id="dashSpeedComparison">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Model Speed Comparison <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Performance tiers</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Model Speed Comparison <span class="label-muted-sm">Performance tiers</span>
         </div>
         <div style="overflow-x:auto">
           <table class="tx-table" id="speedComparisonTable">
@@ -399,10 +399,10 @@ async function loadResponseTimes(days){
   try{
     var body=document.getElementById('responseTimeBody');
     if(!body)return;
-    body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--text-muted)">Loading...</td></tr>';
+    body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
     var data=await api('GET','/api/analytics/response-times?days='+(days||7));
     if(!data||!data.items||!data.items.length){
-      body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No response time data available.</td></tr>';
+      body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No response time data available.</td></tr>';
       return;
     }
     body.innerHTML=data.items.map(function(item){
@@ -412,7 +412,7 @@ async function loadResponseTimes(days){
     }).join('');
   }catch(e){
     var b2=document.getElementById('responseTimeBody');
-    if(b2)b2.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Failed to load response times.</td></tr>';
+    if(b2)b2.innerHTML='<tr><td colspan="4" class="empty-state-sm">Failed to load response times.</td></tr>';
   }
 }
 
@@ -420,11 +420,11 @@ async function loadSpeedComparison(){
   try{
     var body=document.getElementById('speedComparisonBody');
     if(!body)return;
-    body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--text-muted)">Loading...</td></tr>';
+    body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
     var result=await api('GET','/api/available-models',null,8000);
     var models=(result&&result.models)||[];
     if(!models.length){
-      body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No speed comparison data available.</td></tr>';
+      body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No speed comparison data available.</td></tr>';
       return;
     }
     var sorted=models.filter(function(m){return m.prompt_price>0;}).sort(function(a,b){return (a.prompt_price||0)-(b.prompt_price||0);}).slice(0,20);
@@ -438,7 +438,7 @@ async function loadSpeedComparison(){
     }).join('');
   }catch(e){
     var b2=document.getElementById('speedComparisonBody');
-    if(b2)b2.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Failed to load speed comparison.</td></tr>';
+    if(b2)b2.innerHTML='<tr><td colspan="4" class="empty-state-sm">Failed to load speed comparison.</td></tr>';
   }
 }
 

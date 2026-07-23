@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1090" />
+  <link rel="stylesheet" href="style.css?v=1091" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1009" />
   </head>
@@ -184,7 +184,7 @@
       <div class="dash-header">
         <div class="dash-welcome">
           <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg">
               <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
             </svg>
             API Keys</h1>
@@ -215,16 +215,16 @@
           <button onclick="closeCreateKeyModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.3rem;color:var(--text-muted);cursor:pointer">✕</button>
           <h3 style="margin:0 0 0.25rem;font-size:1.15rem">Create API Key</h3>
           <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1.25rem">Name your key and set permissions</p>
-          <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.3rem">Key Name</label>
-          <input type="text" id="newKeyName" value="My API Key" style="width:100%;padding:0.6rem 0.75rem;border-radius:6px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem;margin-bottom:1rem;box-sizing:border-box" />
-          <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.3rem">Permissions</label>
-          <select id="newKeyPerms" style="width:100%;padding:0.6rem 0.75rem;border-radius:6px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem;margin-bottom:1.25rem;box-sizing:border-box">
+          <label class="field-label">Key Name</label>
+          <input type="text" id="newKeyName" value="My API Key" class="form-input-full" style="margin-bottom:1rem" />
+          <label class="field-label">Permissions</label>
+          <select id="newKeyPerms" class="form-input-full" style="margin-bottom:1.25rem">
             <option value="read_write">Read & Write</option>
             <option value="read_only">Read Only</option>
           </select>
           <div style="display:flex;gap:0.75rem">
-            <button class="btn-secondary" onclick="closeCreateKeyModal()" style="flex:1;padding:0.6rem">Cancel</button>
-            <button class="btn-primary" onclick="createApiKey()" style="flex:1;padding:0.6rem">Create Key</button>
+            <button class="btn-secondary" onclick="closeCreateKeyModal()" class="flex-1 pad-sm">Cancel</button>
+            <button class="btn-primary" onclick="createApiKey()" class="flex-1 pad-sm">Create Key</button>
           </div>
           <div id="newKeyResult" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px">
             <p style="font-size:0.85rem;color:var(--success);margin:0 0 0.5rem"><strong>Key created!</strong> Copy it now — you won't see it again.</p>

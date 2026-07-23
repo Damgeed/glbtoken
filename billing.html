@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1090" />
+  <link rel="stylesheet" href="style.css?v=1091" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="billing.css?v=1008" />
   </head>
@@ -199,20 +199,20 @@
 
       <!-- ── Billing Summary ── -->
       <div class="dash-card" id="billingSummaryCard">
-        <div class="dash-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Billing Summary <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="summarySubtitle">Lifetime</span></div>
+        <div class="dash-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Billing Summary <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="summarySubtitle">Lifetime</span></div>
         <div class="billing-summary-grid" id="billingSummaryGrid">
           <div class="billing-stat-card">
-            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
             <div class="num" id="summaryTotalSpent">$0.00</div>
             <div class="lbl">Total Spent</div>
           </div>
           <div class="billing-stat-card">
-            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
             <div class="num" id="summaryLastInvoice">—</div>
             <div class="lbl">Last Invoice Date</div>
           </div>
           <div class="billing-stat-card">
-            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
             <div class="num" id="summaryTopMethod">—</div>
             <div class="lbl">Top Payment Method</div>
           </div>
@@ -223,7 +223,7 @@
       <div class="billing-grid">
         <!-- Payment Methods -->
         <div class="dash-card" id="paymentMethodsCard">
-          <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Methods</div>
+          <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Methods</div>
           <div id="paymentMethodsList">
             <div class="billing-empty-state" id="paymentMethodsEmpty">
               <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
@@ -236,7 +236,7 @@
 
         <!-- Invoices -->
         <div class="dash-card" id="invoicesCard">
-          <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Invoices <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="invoiceCount">0</span></div>
+          <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Invoices <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="invoiceCount">0</span></div>
           <div class="tx-table-wrap">
             <table class="tx-table">
               <thead>
@@ -251,7 +251,7 @@
               </thead>
               <tbody id="invoicesBody">
                 <tr>
-                  <td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;font-size:0.85rem">
+                  <td colspan="6" class="empty-state">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem;opacity:0.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     No invoices yet
                   </td>
@@ -262,7 +262,7 @@
         
           <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
             <button class="btn-primary" onclick="window.location.href='topup.html'" style="padding:0.5rem 1.25rem;font-size:0.85rem">+ Top Up Now</button>
-            <button class="btn-secondary" onclick="loadBillingPage()" style="padding:0.5rem 1.25rem;font-size:0.85rem"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Refresh</button>
+            <button class="btn-secondary" onclick="loadBillingPage()" style="padding:0.5rem 1.25rem;font-size:0.85rem"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Refresh</button>
           </div>
         </div>
       </div>
@@ -323,7 +323,7 @@
       .then(function(data){
         var inv = data && data.invoices;
         if(!inv || !inv.length){
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;font-size:0.85rem"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem;opacity:0.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>No invoices found</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem;opacity:0.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>No invoices found</td></tr>';
           document.getElementById('invoiceCount').textContent = '0';
           return;
         }
@@ -351,14 +351,14 @@
           var receiptHtml = '—';
           if(invItem.receipt_url || invItem.receipt){
             var rUrl = escapeHtml(invItem.receipt_url || invItem.receipt);
-            receiptHtml = '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>';
+            receiptHtml = '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>';
           }
 
           html += '<tr>';
-          html += '<td style="white-space:nowrap">' + date + '</td>';
+          html += '<td class="text-nowrap">' + date + '</td>';
           html += '<td style="white-space:nowrap;font-weight:500">' + amount + '</td>';
           html += '<td>' + method + '</td>';
-          html += '<td style="white-space:nowrap">' + tokens + ' GT</td>';
+          html += '<td class="text-nowrap">' + tokens + ' GT</td>';
           html += '<td><span class="status-badge ' + statusClass + '">' + escapeHtml(statusLabel) + '</span></td>';
           html += '<td>' + receiptHtml + '</td>';
           html += '</tr>';
@@ -368,7 +368,7 @@
       })
       .catch(function(err){
         console.error('Billing fetch error:', err);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;font-size:0.85rem"><div style="margin-bottom:0.5rem;opacity:0.5"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>Could not load invoices. <a href="javascript:void(0)" onclick="loadBillingPage()" style="color:var(--primary);text-decoration:none">Try again</a></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div style="margin-bottom:0.5rem;opacity:0.5"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 0.5rem"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>Could not load invoices. <a href="javascript:void(0)" onclick="loadBillingPage()" style="color:var(--primary);text-decoration:none">Try again</a></td></tr>';
       });
     }
 
