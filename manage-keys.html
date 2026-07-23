@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1095" />
+  <link rel="stylesheet" href="style.css?v=1097" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1009" />
   </head>
@@ -195,49 +195,49 @@
       <!-- Key Management Card -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle" style="margin-right:6px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle mr-6"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
           Your API Keys
-          <span class="text-xs font-normal text-muted" style="margin-left:0.5rem">Manage your API access</span>
+          <span class="text-xs font-normal text-muted ml-xs">Manage your API access</span>
         </div>
         <div class="flex gap-sm flex-wrap">
           <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
           <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
           <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
           <button class="sort-btn" onclick="sortKeys('usage')">Usage</button>
-          <button class="btn-primary" onclick="showCreateKeyModal()" class="btn-sm" style="margin-left:auto">+ New Key</button>
+          <button class="btn-primary btn-sm ml-auto" onclick="showCreateKeyModal()">+ New Key</button>
         </div>
-        <div id="keyList"><p class="text-muted text-sm text-center" style="padding:1rem">Loading keys...</p></div>
+        <div id="keyList"><p class="text-muted text-sm text-center pad-sm-1">Loading keys...</p></div>
       </div>
 
       <!-- Create Key Modal -->
-      <div class="modal-overlay" id="createKeyModal" class="modal-overlay" onclick="if(event.target===this)closeCreateKeyModal()">
-        <div class="modal-content" class="modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-overlay" id="createKeyModal" onclick="if(event.target===this)closeCreateKeyModal()">
+        <div class="modal-content modal-dialog" onclick="event.stopPropagation()">
           <button onclick="closeCreateKeyModal()" class="modal-close">✕</button>
           <h3 class="text-sm font-bold-sm" style="margin:0 0 0.25rem;font-size:1.15rem">Create API Key</h3>
           <p class="text-sm text-muted mb-lg">Name your key and set permissions</p>
           <label class="field-label">Key Name</label>
-          <input type="text" id="newKeyName" value="My API Key" class="form-input-full" class="mb-md" />
+          <input type="text" id="newKeyName" value="My API Key" class="form-input-full mb-md" />
           <label class="field-label">Permissions</label>
-          <select id="newKeyPerms" class="form-input-full" class="mb-lg">
+          <select id="newKeyPerms" class="form-input-full mb-lg">
             <option value="read_write">Read & Write</option>
             <option value="read_only">Read Only</option>
           </select>
           <div class="flex gap-md">
-            <button class="btn-secondary" onclick="closeCreateKeyModal()" class="flex-1 pad-sm">Cancel</button>
-            <button class="btn-primary" onclick="createApiKey()" class="flex-1 pad-sm">Create Key</button>
+            <button class="btn-secondary flex-1 pad-sm" onclick="closeCreateKeyModal()">Cancel</button>
+            <button class="btn-primary flex-1 pad-sm" onclick="createApiKey()">Create Key</button>
           </div>
           <div id="newKeyResult" class="hidden mt-sm" style="padding:1rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px">
-            <p class="text-sm text-success" style="margin:0 0 0.5rem"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
+            <p class="text-sm text-success m-0 mb-xs"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
             <code id="newKeyValue" class="block text-xs" style="padding:0.5rem;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;word-break:break-all;margin-bottom:0.5rem"></code>
-            <button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')" class="btn-xs">Copy Key</button>
+            <button class="btn-primary btn-xs" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')">Copy Key</button>
           </div>
         </div>
       </div>
 
       <!-- Docs Link -->
-      <div class="dash-card" class="text-center" class="pad-md">
-        <p class="text-secondary" class="mb-sm" style="margin:0 0 0.75rem">Need integration guides, code examples, and API reference?</p>
-        <a href="apikeys.html" class="btn-primary" class="inline-block text-decoration-none" style="padding:0.65rem 1.5rem;font-size:0.9rem">View Full Documentation →</a>
+      <div class="dash-card text-center pad-md">
+        <p class="text-secondary mb-sm" style="margin:0 0 0.75rem">Need integration guides, code examples, and API reference?</p>
+        <a href="apikeys.html" class="btn-primary inline-block text-decoration-none" style="padding:0.65rem 1.5rem;font-size:0.9rem">View Full Documentation →</a>
       </div>
 
     </div>

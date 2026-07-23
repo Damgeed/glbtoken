@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1095" />
+  <link rel="stylesheet" href="style.css?v=1097" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="billing.css?v=1008" />
   </head>
@@ -189,7 +189,7 @@
       <div class="dash-header">
         <div class="dash-welcome">
           <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle" style="margin-right:8px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle mr-xs">
               <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
             </svg>
             Billing</h1>
@@ -228,7 +228,7 @@
             <div class="billing-empty-state" id="paymentMethodsEmpty">
               <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
               <p><strong>No payment methods saved</strong></p>
-              <p class="text-xs" class="mt-xs">Add a card or mobile money method to get started.</p>
+              <p class="text-xs mt-xs">Add a card or mobile money method to get started.</p>
             </div>
           </div>
           <button class="btn-secondary" onclick="addPaymentMethod()" class="w-full mt-sm">+ Add Payment Method</button>
@@ -368,7 +368,7 @@
       })
       .catch(function(err){
         console.error('Billing fetch error:', err);
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="opacity-5"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto" style="margin-bottom:0.5rem"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>Could not load invoices. <a href="javascript:void(0)" onclick="loadBillingPage()" class="text-primary text-decoration-none">Try again</a></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="opacity-5"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto mb-xs"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>Could not load invoices. <a href="javascript:void(0)" onclick="loadBillingPage()" class="text-primary text-decoration-none">Try again</a></td></tr>';
       });
     }
 
@@ -423,7 +423,7 @@
         '<div class="billing-empty-state">' +
           '<div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>' +
           '<p><strong>No payment methods saved</strong></p>' +
-          '<p class="text-xs" class="mt-xs">Add a card or mobile money method to get started.</p>' +
+          '<p class="text-xs mt-xs">Add a card or mobile money method to get started.</p>' +
         '</div>';
     }
 

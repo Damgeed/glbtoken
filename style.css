@@ -1840,6 +1840,15 @@ input[type="range"]::-moz-range-thumb {
 .bg-primary-subtle { background: var(--primary-subtle); }
 .hidden { display: none; }
 .mt-xs { margin-top: 0.25rem; }
+.mr-xs { margin-right: 8px; }
+.mr-6 { margin-right: 6px; }
+.mb-xs { margin-bottom: 0.5rem; }
+.ml-xs { margin-left: 0.5rem; }
+.ml-auto { margin-left: auto; }
+.m-0 { margin: 0; }
+.mt-md { margin-top: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.pad-sm-1 { padding: 1rem; }
 .pad-md { padding: 1.25rem; }
 
 /* ── Modal ── */
