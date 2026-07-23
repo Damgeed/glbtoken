@@ -2292,21 +2292,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
     }
     function lockBodyScroll(hide){
       if(hide){
-        window._lockedScrollY = window.scrollY;
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
         var fab = document.querySelector('.chat-fab');
         if(fab) fab.style.display = 'none';
       } else {
-        var scrollY = window._lockedScrollY || 0;
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
         var fab = document.querySelector('.chat-fab');
         if(fab) fab.style.display = '';
-        window._lockedScrollY = null;
-        requestAnimationFrame(function(){
-          window.scrollTo(0, scrollY);
-        });
       }
     }
     // Auto-resize textareas
@@ -2353,6 +2343,14 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const msgs=document.getElementById('aiChatMsgs');
         if(msgs) msgs.scrollTop=msgs.scrollHeight;
       });
+      // VisualViewport: keep AI chat section filling visible area
+      if(window.visualViewport && !window._aiChatVpHandler){
+        window._aiChatVpHandler = function(){
+          var sec = document.querySelector('.ai-chat-section.chat-focused');
+          if(sec) sec.style.minHeight = window.visualViewport.height + 'px';
+        };
+        window.visualViewport.addEventListener('resize', window._aiChatVpHandler);
+      }
     }
     function closeMobileChat(){
       const section=document.querySelector('.ai-chat-section');
@@ -2363,6 +2361,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       if(btt) btt.style.display = '';
       lockBodyScroll(false);
       removeCloseBtn(section.querySelector('.chat-header'));
+      // Clean up VisualViewport handler for AI chat
+      if(window.visualViewport && window._aiChatVpHandler){
+        window.visualViewport.removeEventListener('resize', window._aiChatVpHandler);
+        window._aiChatVpHandler = null;
+      }
     }
     // ── Support Chat ──
     function toggleChat(){
@@ -2408,6 +2411,14 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
         const msgs = document.getElementById('chatMsgs');
         if(msgs) msgs.scrollTop = msgs.scrollHeight;
       });
+      // VisualViewport: keep backdrop filling visible area (no overflow change)
+      if(window.visualViewport && !window._supportChatVpHandler){
+        window._supportChatVpHandler = function(){
+          var bd = document.querySelector('.support-chat-backdrop');
+          if(bd) bd.style.minHeight = window.visualViewport.height + 'px';
+        };
+        window.visualViewport.addEventListener('resize', window._supportChatVpHandler);
+      }
     }
     function closeMobileSupportChat(){
       const win = document.getElementById('chatWindow');
@@ -2423,6 +2434,11 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       }
       removeCloseBtn(win.querySelector('.chat-header'));
       lockBodyScroll(false);
+      // Clean up VisualViewport handler for support chat
+      if(window.visualViewport && window._supportChatVpHandler){
+        window.visualViewport.removeEventListener('resize', window._supportChatVpHandler);
+        window._supportChatVpHandler = null;
+      }
     }
     // ── Draggable Chat FAB (mobile touch) ──
     (function(){
