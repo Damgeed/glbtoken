@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1091" />
+  <link rel="stylesheet" href="style.css?v=1092" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
 <link rel="stylesheet" href="presets.css?v=1007" />
@@ -196,7 +196,7 @@
         <button class="btn-primary" onclick="showPresetModal()">+ Create Preset</button>
       </div>
   <div class="dash-card">
-    <div class="dash-section-title">Your Presets <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)" id="presetCount">0 saved</span></div>
+    <div class="dash-section-title">Your Presets <span class="label-muted-sm" id="presetCount">0 saved</span></div>
     <div id="presetsList">
       <div class="presets-empty">
         <div class="pe-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto block"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>
@@ -216,11 +216,11 @@
     <h3 id="presetModalTitle">Create Preset</h3>
     <form id="presetForm" onsubmit="return false">
       <div class="form-group">
-        <label for="presetName">Name <span style="color:var(--destructive)">*</span></label>
+        <label for="presetName">Name <span class="text-destructive">*</span></label>
         <input type="text" id="presetName" placeholder="e.g. Creative Writing" required />
       </div>
       <div class="form-group">
-        <label for="presetModel">Model <span style="color:var(--destructive)">*</span></label>
+        <label for="presetModel">Model <span class="text-destructive">*</span></label>
         <input type="text" id="presetModel" placeholder="e.g. gpt-4o, claude-sonnet-4" required />
       </div>
       <div class="form-group">
@@ -338,7 +338,7 @@ async function loadPresets(){
     var html = '<div class="presets-grid">';
     for(var i=0;i<presets.length;i++){
       var p = presets[i];
-      var promptPreview = p.system_prompt ? escapeHtml(p.system_prompt.length > 100 ? p.system_prompt.substring(0,100)+'...' : p.system_prompt) : '<em style="color:var(--text-muted)">No system prompt</em>';
+      var promptPreview = p.system_prompt ? escapeHtml(p.system_prompt.length > 100 ? p.system_prompt.substring(0,100)+'...' : p.system_prompt) : '<em class="text-muted">No system prompt</em>';
       var temp = p.temperature != null ? p.temperature.toFixed(1) : '0.7';
       var topP = p.top_p != null ? p.top_p.toFixed(2) : '1.0';
       var maxT = p.max_tokens || '—';

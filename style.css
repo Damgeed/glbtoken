@@ -130,6 +130,9 @@ select,
 textarea {
   font-family: inherit;
 }
+/* ══════════════════════════════════════════
+   UTILITY & TYPOGRAPHY
+   ══════════════════════════════════════════ */
 /* ── Utility Classes ── */
 .d-none { display: none !important; }
 .cursor-pointer { cursor: pointer !important; }
@@ -167,6 +170,9 @@ textarea {
 .models-header { margin-bottom: 2rem; }
 .models-header .section-title { font-size: 1.75rem; }
 .models-header p { font-size: 0.9rem; color: var(--text-secondary); }
+/* ══════════════════════════════════════════
+   LAYOUT — containers, nav, hero, sections, grids
+   ══════════════════════════════════════════ */
 /* ── Layout ── */
 .container {
   width: 100%;
@@ -1571,6 +1577,9 @@ input[type="range"]::-moz-range-thumb {
 .topup-page {
   padding: 2rem 1.25rem 3rem;
 }
+/* ══════════════════════════════════════════
+   DASHBOARD & SIDEBAR
+   ══════════════════════════════════════════ */
 /* Dashboard - unified gap-based layout */
 .dash-balance {
   background: linear-gradient(
@@ -1738,6 +1747,17 @@ input[type="range"]::-moz-range-thumb {
   display: grid;
   gap: 0.625rem;
 }
+.model-grid-view {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  flex-shrink: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
 .carousel-dot {
   width: 8px;
   height: 8px;
@@ -1800,14 +1820,26 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── Text Utilities ── */
 .text-muted { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+.text-destructive { color: var(--destructive); }
 .text-xs { font-size: 0.75rem; }
 .text-nowrap { white-space: nowrap; }
+.text-center { text-align: center; }
 .font-normal { font-weight: 400; }
+.font-bold-sm { font-size: 16px; line-height: 1; font-weight: 700; }
 .align-middle { vertical-align: middle; }
 .mx-auto { margin: 0 auto; }
 .block { display: block; }
 .flex-1 { flex: 1; }
 .pad-sm { padding: 0.6rem; }
+.overflow-auto { overflow-x: auto; }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.btn-xs { padding: 0.4rem 1rem; font-size: 0.8rem; }
+.btn-sm { padding: 0.5rem 1.25rem; font-size: 0.85rem; }
+.opacity-4 { opacity: 0.4; }
+.opacity-5 { opacity: 0.5; }
+.h-40 { height: 40px; min-height: 0; }
+.empty-state-alt { text-align: center; color: var(--text-muted); padding: 1.5rem; font-size: 0.85rem; }
 
 /* ── Form Field ── */
 .field-label {
@@ -2074,6 +2106,9 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+/* ══════════════════════════════════════════
+   BLOG
+   ══════════════════════════════════════════ */
 /* ── Blog Listing Grid ── */
 .blog-listing-page .container {
   max-width: 1280px;
@@ -2245,6 +2280,9 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--border-light);
   font-size: 0.85rem;
 }
+/* ══════════════════════════════════════════
+   MODELS & CATEGORIES
+   ══════════════════════════════════════════ */
 /* Models grid */
 .models-page {
   padding: 2rem 1.25rem 3rem;
@@ -2491,6 +2529,9 @@ input[type="range"]::-moz-range-thumb {
 .cat-more-wrap > .model-card {
   border-top: 1px dashed var(--border-light);
 }
+/* ══════════════════════════════════════════
+   CATEGORY PILLS — filters/tabs for model browsing
+   ══════════════════════════════════════════ */
 /* ── Category Pills ── */
 .cat-pills {
   display: flex;
@@ -3454,6 +3495,9 @@ footer {
     opacity: 1;
   }
 }
+/* ══════════════════════════════════════════
+   PRICING / MISC — z-index, pricing cards, etc.
+   ══════════════════════════════════════════ */
 /* ── Z-index Tiers ──
        0   : Background (stars, hero gradients)
        2   : Carousel navigation arrows
@@ -4153,6 +4197,9 @@ html.light .modal-overlay {
     font-size: 0.7rem;
   }
 }
+/* ══════════════════════════════════════════
+   DECORATIVE — shooting stars, animations, effects
+   ══════════════════════════════════════════ */
 /* ── Shooting Stars Background ── */
 .stars-bg {
   position: fixed;

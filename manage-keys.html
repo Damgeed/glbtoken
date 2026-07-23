@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1091" />
+  <link rel="stylesheet" href="style.css?v=1092" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1009" />
   </head>
@@ -229,14 +229,14 @@
           <div id="newKeyResult" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px">
             <p style="font-size:0.85rem;color:var(--success);margin:0 0 0.5rem"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
             <code id="newKeyValue" style="display:block;padding:0.5rem;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;font-size:0.8rem;word-break:break-all;margin-bottom:0.5rem"></code>
-            <button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')" style="padding:0.4rem 1rem;font-size:0.8rem">Copy Key</button>
+            <button class="btn-primary" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')" class="btn-xs">Copy Key</button>
           </div>
         </div>
       </div>
 
       <!-- Docs Link -->
-      <div class="dash-card" style="text-align:center;padding:1.25rem">
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin:0 0 0.75rem">Need integration guides, code examples, and API reference?</p>
+      <div class="dash-card" class="text-center" style="padding:1.25rem">
+        <p class="text-secondary" style="margin:0 0 0.75rem">Need integration guides, code examples, and API reference?</p>
         <a href="apikeys.html" class="btn-primary" style="display:inline-block;padding:0.65rem 1.5rem;font-size:0.9rem;text-decoration:none">View Full Documentation →</a>
       </div>
 
@@ -246,7 +246,7 @@
 </div>
 
 <button class="dash-sidebar-toggle" id="dashSidebarToggle" onclick="toggleDashSidebar()" title="Open menu">
-  <span style="font-size:16px;line-height:1;font-weight:700">→</span>
+  <span class="font-bold-sm">→</span>
 </button>
 
   </div>
