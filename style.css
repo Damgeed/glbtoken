@@ -933,6 +933,7 @@ section {
   color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto 1.5rem;
+  text-align: center;
 }
 .faq-item .faq-q {
   font-size: 1rem;
