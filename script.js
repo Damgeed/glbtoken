@@ -230,6 +230,10 @@
     }
     
     // ── Escape HTML (XSS prevention) ──
+
+/* ══════════════════════════════════════════
+   UTILITY — escapeHtml, API helper, page routing
+   ══════════════════════════════════════════ */
     function escapeHtml(str){
       if(typeof str !== 'string'){
         if(str==null||str===false) return '';
@@ -328,6 +332,10 @@
         if (oauthTimeout) { clearTimeout(oauthTimeout); oauthTimeout = null; }
       });
     })();
+
+/* ══════════════════════════════════════════
+   AUTH — Email login/register (passwordless via Auth0)
+   ══════════════════════════════════════════ */
     async function sendLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
@@ -421,6 +429,10 @@
         btn.disabled=false;btn.textContent='Verify & Create Account';
       }
     }
+
+/* ══════════════════════════════════════════
+   AUTH — Phone SMS verification
+   ══════════════════════════════════════════ */
     function togglePhone(prefix){
       var section = document.getElementById(prefix + 'PhoneSection');
       if(!section) return;
@@ -571,6 +583,10 @@
         setBtnLoading(btn, false);
       }
     }
+
+/* ══════════════════════════════════════════
+   AUTH — OAuth (Google/GitHub)
+   ══════════════════════════════════════════ */
     function oauthLogin(provider, btn){ startOAuth(provider, btn); }
     function oauthRegister(provider, btn){ startOAuth(provider, btn); }
     function startOAuth(provider, btn){
@@ -634,6 +650,10 @@
         setBtnLoading(btn, false);
       });
     }
+
+/* ══════════════════════════════════════════
+   USER — Profile, logout, contact
+   ══════════════════════════════════════════ */
     function logoutUser(){
       // Show confirmation dialog instead of immediate logout
       showConfirm('Sign out?','Are you sure you want to sign out?',function(){
@@ -736,6 +756,10 @@
       }catch(e){showToast(e.message||'Failed to save notification settings','error')}
     }
     // ── History / Transactions ──
+
+/* ══════════════════════════════════════════
+   DASHBOARD — Transactions, notifications, billing
+   ══════════════════════════════════════════ */
     async function loadTransactions(){
       if(!token)return;
       var depBody=document.getElementById('txDepositBody');
@@ -778,6 +802,10 @@
 
     // ── Advanced Analytics Dashboard Functions ──
 
+
+/* ══════════════════════════════════════════
+   CHARTS — Cost breakdown, error rate, response times
+   ══════════════════════════════════════════ */
     async function loadCostBreakdown(days){
       try{
         var container=document.getElementById('costBreakdownSection');
@@ -954,6 +982,10 @@
       }
     }
 
+
+/* ══════════════════════════════════════════
+   FILTERS — Saved filters, spending alerts, heatmap
+   ══════════════════════════════════════════ */
     function renderHeatmap(){
       try{
         var container=document.getElementById('usageHeatmap');
@@ -2589,6 +2621,10 @@ body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.crea
       m.onclick=function(e){if(e.target===m)m.remove()};
       input.addEventListener('keydown',function(e){if(e.key==='Enter'){m.remove();var v=input.value.trim();if(v)onSubmit(v);}});
     }
+
+/* ══════════════════════════════════════════
+   UI — Mobile menu, chat, referral, copy, toast
+   ══════════════════════════════════════════ */
     function toggleMobile(){
       const overlay = document.getElementById('mobileOverlay');
       const backdrop = document.getElementById('mobileBackdrop');
