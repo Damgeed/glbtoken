@@ -997,6 +997,7 @@ section {
   grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
+/* 📱 vp-grid mobile */
 @media (max-width: 768px) {
   .vp-grid {
     grid-template-columns: 1fr;
@@ -1043,6 +1044,7 @@ section {
   grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
+/* 📱 steps-grid mobile */
 @media (max-width: 768px) {
   .steps-grid {
     grid-template-columns: 1fr;
@@ -1478,6 +1480,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--border);
   border-radius: 4px;
 }
+/* 📱 phone-dropdown mobile */
 @media (max-width: 768px) {
   .phone-dropdown {
     max-height: 260px;
@@ -2152,6 +2155,7 @@ input[type="range"]::-moz-range-thumb {
 .blog-card .blog-readmore {
   align-self: flex-start;
 }
+/* 📱 blog / faq / contact page layout */
 @media (max-width: 768px) {
   .blog-grid {
     grid-template-columns: 1fr;
@@ -4168,6 +4172,7 @@ html.light .modal-overlay {
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
+/* 📱 top models carousel */
 @media (max-width: 768px) {
   .tm-carousel {
     overflow: hidden;
@@ -4506,6 +4511,7 @@ html.light .star.white {
   height: 7px;
 }
 /* ── Mobile Chat Focused: AI chat popup ── */
+/* 📱 ai chat focused popup */
 @media (max-width: 768px) {
   .ai-chat-section.chat-focused {
     position: fixed;
@@ -5169,6 +5175,7 @@ html.light .star.white {
 .blog-article-page .section-title + p {
   text-align: center;
 }
+/* 📱 blog article page */
 @media (max-width: 768px) {
   .blog-article-page .container {
     max-width: 100%;
@@ -5781,6 +5788,7 @@ html.light .star.white {
   gap: 1rem;
   margin-top: 0.75rem;
 }
+/* 📱 analytics grid (dashboard) */
 @media (max-width: 768px) {
   .analytics-grid {
     grid-template-columns: 1fr;
@@ -6284,6 +6292,7 @@ html.light .star.white {
   gap: 1.25rem;
   margin: 2rem 0;
 }
+/* 📱 how-it-works grid */
 @media (max-width: 768px) {
   .how-it-works {
     grid-template-columns: 1fr;
@@ -6834,6 +6843,7 @@ html.light .star.white {
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .flex-row-wrap { display:flex;gap:0.5rem;flex-wrap:wrap; }
 .scroll-hint { display:none; }
+/* 📱 dashboard card scroll containers */
 @media (max-width: 768px) {
   .dash-card div[style*="overflow-x:auto"],
   .dash-card .scroll-x {
@@ -7124,6 +7134,7 @@ body {
   grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
+/* 📱 notifications grid */
 @media (max-width: 768px) {
   .notif-grid {
     grid-template-columns: 1fr;
@@ -7213,6 +7224,7 @@ body {
   white-space: nowrap;
 }
 
+/* 📱 dashboard sidebar + section-title/sub/label mobile overrides */
 /* Mobile responsive */
 @media (max-width: 768px) {
   .dash-sidebar {
