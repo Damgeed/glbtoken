@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1101" />
+  <link rel="stylesheet" href="style.css?v=1102" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1009" />
   </head>
@@ -213,7 +213,7 @@
       <div class="modal-overlay" id="createKeyModal" onclick="if(event.target===this)closeCreateKeyModal()">
         <div class="modal-content modal-dialog" onclick="event.stopPropagation()">
           <button onclick="closeCreateKeyModal()" class="modal-close">✕</button>
-          <h3 class="text-sm font-bold-sm" style="margin:0 0 0.25rem;font-size:1.15rem">Create API Key</h3>
+          <h3 class="api-key-title notranslate" id="createKeyTitle">Create API Key</h3>
           <p class="text-sm text-muted mb-lg">Name your key and set permissions</p>
           <label class="field-label">Key Name</label>
           <input type="text" id="newKeyName" value="My API Key" class="form-input-full mb-md" />
@@ -236,8 +236,8 @@
 
       <!-- Docs Link -->
       <div class="dash-card text-center pad-md">
-        <p class="text-secondary mb-sm" style="margin:0 0 0.75rem">Need integration guides, code examples, and API reference?</p>
-        <a href="apikeys.html" class="btn-primary inline-block text-decoration-none" style="padding:0.65rem 1.5rem;font-size:0.9rem">View Full Documentation →</a>
+        <p class="text-secondary m-0 mb-sm">Need integration guides, code examples, and API reference?</p>
+        <a href="apikeys.html" class="btn-primary inline-block text-decoration-none btn-docs-cta">View Full Documentation →</a>
       </div>
 
     </div>

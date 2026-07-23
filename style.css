@@ -1849,6 +1849,12 @@ input[type="range"]::-moz-range-thumb {
 .mt-md { margin-top: 1rem; }
 .mb-2 { margin-bottom: 2rem; }
 .pad-sm-1 { padding: 1rem; }
+
+/* ── Component-specific ── */
+.btn-hero-cta { padding: 1rem 2.5rem; font-size: 1.05rem; }
+.btn-docs-cta { padding: 0.65rem 1.5rem; font-size: 0.9rem; }
+.hero-balance-amount { font-size: 1.25rem; }
+.api-key-title { margin: 0 0 0.25rem; font-size: 1.15rem; }
 .pad-md { padding: 1.25rem; }
 
 /* ── Modal ── */
