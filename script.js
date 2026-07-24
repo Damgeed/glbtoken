@@ -1309,16 +1309,13 @@
         var cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
       }
-      try{
-        const data = await api('POST','/api/auth/auth0/login', {token: idToken});
-        localStorage.setItem('gt_token', data.token);
-        localStorage.setItem('gt_user', JSON.stringify(data.user));
-        // Don't call applyAuth() — callback page has no nav DOM elements
-        // Don't call showToast() — callback page has no toast DOM elements
-        window.location.href = '/dashboard.html';
-      }catch(e){
-        window.location.href = '/login.html?error=' + encodeURIComponent(e.message || 'Auth0 login failed');
-      }
+      const data = await safeApi('POST','/api/auth/auth0/login', {token: idToken},null,true);
+      if(!data) { window.location.href = '/login.html?error=' + encodeURIComponent('Auth login failed'); return; }
+      localStorage.setItem('gt_token', data.token);
+      localStorage.setItem('gt_user', JSON.stringify(data.user));
+      // Don't call applyAuth() — callback page has no nav DOM elements
+      // Don't call showToast() — callback page has no toast DOM elements
+      window.location.href = '/dashboard.html';
     }
     // Auto-run on callback page
     if (window.location.pathname.indexOf('/auth/callback.html') !== -1) {
@@ -1843,14 +1840,13 @@
     }
     async function processTopup(){
       if(!token){showToast('Please login first','error');return}
-      try{
-        const d=await api('POST','/api/topup',{amount:selectedAmount,currency:'USD',payment_method:selectedPayment});
-        userData.token_balance=d.new_balance;localStorage.setItem('gt_user',JSON.stringify(userData));updateBalance();
-        document.getElementById('topupStep1').style.display='none';
-        document.getElementById('topupSuccess').style.display='block';
-        document.getElementById('topupSuccessMsg').textContent=d.tokens_added.toLocaleString()+' tokens added!';
-        showToast('Payment successful!','success');
-      }catch(e){showToast(e.message,'error')}
+      const d=await safeApi('POST','/api/topup',{amount:selectedAmount,currency:'USD',payment_method:selectedPayment});
+      if(!d) return;
+      userData.token_balance=d.new_balance;localStorage.setItem('gt_user',JSON.stringify(userData));updateBalance();
+      document.getElementById('topupStep1').style.display='none';
+      document.getElementById('topupSuccess').style.display='block';
+      document.getElementById('topupSuccessMsg').textContent=d.tokens_added.toLocaleString()+' tokens added!';
+      showToast('Payment successful!','success');
     }
     function showPaymentModal(amount){
       if(!token){showToast('Please login first','error');showPage('register');return}
@@ -1879,9 +1875,8 @@
       const grid=document.getElementById('modelGrid');
       const filter=document.getElementById('providerFilter');
       if(!grid)return;
-      try{
-        const m=await api('GET','/api/models');
-        models=m;
+      const m=await safeApi('GET','/api/models',null,null,true); if(!m){grid.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem">Backend not connected. Start the API server.</p>';return}
+      models=m;
         document.getElementById('modelCount').textContent=`${m.length} models loaded`;
         // Populate provider filter
         const provs=[...new Set(m.map(x=>x.provider))].sort();
@@ -1904,10 +1899,6 @@
           cpills.innerHTML = pillsHtml;
         }
         renderModelCards(m);
-        // No need to re-trigger translation — Google Translate widget handles dynamic content
-      }catch(e){
-        grid.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem">Backend not connected. Start the API server.</p>';
-      }
     }
     const CATEGORY_META = {
       'Flagship':   { icon: '🚀', label: 'Flagship',   color: '#F4B400', bg: 'rgba(244,180,0,0.10)', border: 'rgba(244,180,0,0.25)', desc: 'Best all-around flagship models' },
@@ -2115,14 +2106,11 @@
 
     // ── Transactions ──
     async function loadTx(){
-      if(!token)return;
-      try{
-        const d=await api('GET','/api/transactions?limit=50');
+      const d=await safeApi('GET','/api/transactions?limit=50',null,null,true); if(!d)return;
         const dep=d.items.filter(t=>t.type==='deposit');
         const con=d.items.filter(t=>t.type==='consumption');
         document.getElementById('txDepositBody').innerHTML=dep.length?dep.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>$'+escapeHtml(t.amount.toFixed(2))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No deposits</td></tr>';
         document.getElementById('txConsumptionBody').innerHTML=con.length?con.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>').join(''):'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No consumption</td></tr>';
-      }catch(e){}
     }
     function switchTxTab(el,tab){
       document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));
@@ -3329,12 +3317,11 @@ async function loadConversation(id) {
 async function deleteConversation(id) {
   if(!token)return;
   showConfirm('Delete conversation?','This cannot be undone.',async function(){
-    try {
-      await api('DELETE','/api/playground/conversations/'+id);
-      if(playgroundCurrentId===id) createNewChat();
-      loadConversations();
-      showToast('Conversation deleted','info');
-    }catch(e){showToast(e.message||'Failed to delete conversation','error')}
+    const d=await safeApi('DELETE','/api/playground/conversations/'+id);
+    if(!d) return;
+    if(playgroundCurrentId===id) createNewChat();
+    loadConversations();
+    showToast('Conversation deleted','info');
   });
 }
 
@@ -3400,16 +3387,15 @@ async function updateConversationTitle(id) {
 }
 
 async function loadPlaygroundModels() {
-  try {
-    const d=await api('GET','/api/playground/models');
-    const sel=document.getElementById('playgroundModelSelect');
-    if(!sel)return;
-    const models=d.models||d||[];
-    if(!models.length){sel.innerHTML='<option value="">No models available</option>';return}
-    sel.innerHTML=models.map(function(m){
-      return '<option value="'+escapeHtml(m.id||m.model||m)+'">'+escapeHtml(m.name||m.id||m.model||m)+'</option>';
-    }).join('');
-  }catch(e){showToast('Failed to load models','error')}
+  const d=await safeApi('GET','/api/playground/models');
+  if(!d) return;
+  const sel=document.getElementById('playgroundModelSelect');
+  if(!sel)return;
+  const models=d.models||d||[];
+  if(!models.length){sel.innerHTML='<option value="">No models available</option>';return}
+  sel.innerHTML=models.map(function(m){
+    return '<option value="'+escapeHtml(m.id||m.model||m)+'">'+escapeHtml(m.name||m.id||m.model||m)+'</option>';
+  }).join('');
 }
 
 function toggleParams() {
