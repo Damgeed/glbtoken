@@ -5904,9 +5904,6 @@ body {
   .pricing-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-@media (max-width: 900px) {
   .hero-grid,
   .dash-grid {
     grid-template-columns: 1fr;
@@ -6120,9 +6117,6 @@ body {
     overflow-wrap: break-word;
     word-break: break-word;
   }
-}
-
-@media (max-width: 900px) {
   .lang-btn-mobile {
     display: flex;
   }
@@ -6135,15 +6129,9 @@ body {
     right: 10px;
     z-index: 300;
   }
-}
-
-@media (max-width: 900px) {
   .notif-grid {
     grid-template-columns: 1fr;
   }
-}
-
-@media (max-width: 900px) {
   .dash-grid {
     grid-template-columns: 1fr;
   }
@@ -6155,25 +6143,16 @@ body {
   .hero-badge {
     display: none;
   }
-}
-
-@media (max-width: 600px) {
   .pricing-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
-}
-
-@media (max-width: 600px) {
   .pricing-card {
     padding: 1rem;
   }
   .pricing-card .plan-price {
     font-size: 1.5rem;
   }
-}
-
-@media (max-width: 600px) {
   .pricing-card .plan-desc {
     margin-bottom: 0.75rem;
     font-size: 0.8rem;
@@ -6188,15 +6167,9 @@ body {
   .pricing-card .plan-name {
     font-size: 0.95rem;
   }
-}
-
-@media (max-width: 600px) {
   .cat-body {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-@media (max-width: 600px) {
   .billing-grid {
     grid-template-columns: 1fr;
   }
@@ -6212,9 +6185,6 @@ body {
   .payment-card p {
     display: none;
   }
-}
-
-@media (max-width: 600px) {
   .hero h1 {
     font-size: 2rem;
     text-align: center;
@@ -6508,15 +6478,9 @@ body {
   .step-card {
     padding: 1rem;
   }
-}
-
-@media (max-width: 600px) {
   .settings-grid {
     grid-template-columns: 1fr;
   }
-}
-
-@media (max-width: 600px) {
   .blog-article-page .dash-page {
     padding: 1rem 0 1.5rem;
   }
@@ -6551,9 +6515,6 @@ body {
     font-size: 1.05rem !important;
     text-align: center !important;
   }
-}
-
-@media (max-width: 600px) {
   .back-to-top {
     bottom: 1rem;
     right: 1rem;
@@ -6572,9 +6533,6 @@ body {
   .calculator-card input {
     min-width: 100%;
   }
-}
-
-@media (max-width: 600px) {
   .how-it-works {
     grid-template-columns: 1fr;
   }
@@ -6614,9 +6572,6 @@ body {
   .cat-body {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-@media (max-width: 400px) {
   .hero h1 {
     font-size: 1.65rem;
     text-align: center;
@@ -6645,9 +6600,6 @@ body {
   .payment-card {
     padding: 0.75rem;
   }
-}
-
-@media (max-width: 400px) {
   .history-filters {
     flex-direction: column;
     align-items: stretch;
