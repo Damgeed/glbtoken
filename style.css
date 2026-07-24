@@ -2201,6 +2201,11 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
+  transition: all 0.2s;
+}
+.dash-card:hover {
+  border-color: color-mix(in srgb, var(--border) 70%, var(--primary));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .chart-container {
   height: 220px;
@@ -6575,17 +6580,6 @@ body {
 }
 .dash-stat-card .chg.up {
   color: var(--success);
-}
-.dash-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  transition: all 0.2s;
-}
-.dash-card:hover {
-  border-color: color-mix(in srgb, var(--border) 70%, var(--primary));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .dash-section-title {
   font-size: 1rem;
