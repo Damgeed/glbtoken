@@ -19,6 +19,10 @@
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
+<!-- NAV: Injected by nav.js -->
+<div id="nav-container" data-active-page="how"></div>
+<!-- NAV: Original fallback (kept for reference) -->
+<!--
 <nav class="navbar"><div class="container navbar-inner">
 <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
 <div class="nav-center" id="navCenter">
@@ -102,6 +106,8 @@
       </div>
     </div>
 </div>
+-->
+
 <section><div class="container hero-center">
 <span class="section-label">Guide</span><h2 class="section-title">How GlbTOKEN Works</h2><p class="section-sub">Four simple steps.</p>
 <div class="steps-grid">
@@ -237,6 +243,10 @@
 </section>
 
 <!-- MODELS (Grid, from backend API) -->
+<!-- FOOTER: Injected by footer.js -->
+<div id="footer-container"></div>
+<!-- FOOTER: Original fallback (kept for reference) -->
+<!--
 <footer><div class="container">
 <div class="footer-grid">
 <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-mid"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Stripe</span><span class="trust-badge notranslate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-mid"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
@@ -246,6 +256,8 @@
 </div>
 <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
 </div></footer>
+-->
+
 <button class="chat-fab" onclick="toggleChat()">💬</button>
 <div class="chat-window" id="chatWindow">
 <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
@@ -257,6 +269,8 @@
 <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
 </div>
 </div>
+<script src="nav.js?v=1"></script>
+<script src="footer.js?v=1"></script>
 <script src="translations.js?v=1086"></script>
 <script data-cfasync="false" src="shared.js?v=1105"></script>
 <script data-cfasync="false" src="user.js?v=1105"></script>

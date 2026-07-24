@@ -19,6 +19,10 @@
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
+<!-- NAV: Injected by nav.js -->
+<div id="nav-container" data-active-page="home"></div>
+<!-- NAV: Original fallback (kept for reference) -->
+<!--
 <nav class="navbar"><div class="container navbar-inner">
     <a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a>
     <div class="nav-center" id="navCenter">
@@ -100,6 +104,8 @@
       </div>
     </div>
   </div>
+-->
+
 <div class="auth-page auth-hero-wrapper">
   <div class="auth-hero">
     <div class="hero-badge notranslate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-badge"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a12.29 12.29 0 015-7.69 12.29 12.29 0 015 7.69l-3 3"/><path d="M12 15v6"/><path d="M8 22h8"/></svg> AI Payment Platform</div>
@@ -161,6 +167,10 @@
 </div>
 
   <!-- REGISTER -->
+<!-- FOOTER: Injected by footer.js -->
+<div id="footer-container"></div>
+<!-- FOOTER: Original fallback (kept for reference) -->
+<!--
 <footer><div class="container">
     <div class="footer-grid">
       <div class="footer-brand notranslate"><a href="/" class="nav-logo notranslate"><span class="nav-logo-icon"><img src="logo-nav.png" alt="GlbTOKEN" width="30" height="32" class="nav-logo-img" /></span><span class="logo-full notranslate"><span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span></span></a><p data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</p><div class="trust-badges notranslate"><span class="trust-badge notranslate">💳 Stripe</span><span class="trust-badge notranslate">🔶 Paystack</span><span class="trust-badge notranslate">₿ USDT</span><span class="trust-badge notranslate">₿ BTC</span></div></div>
@@ -170,6 +180,8 @@
     </div>
     <div class="footer-bottom"><span>&copy; 2026 GlbTOKEN</span></div>
   </div></footer>
+-->
+
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
     <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
@@ -182,6 +194,8 @@
     </div>
   </div>
 
+<script src="nav.js?v=1"></script>
+<script src="footer.js?v=1"></script>
 <script src="translations.js?v=1086"></script>
 <script data-cfasync="false" src="shared.js?v=1105"></script>
 <script data-cfasync="false" src="user.js?v=1105"></script>
