@@ -482,7 +482,7 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
             }
         )
         if token_resp.status_code != 200:
-            raise HTTPException(status_code=400, detail="Authentication failed. Please try again.")
+            raise HTTPException(status_code=400, detail=token_resp.json().get("error_description", "Google OAuth token exchange failed"))
         token_data = token_resp.json()
         id_token = token_data.get("id_token")
         if not id_token:
@@ -528,7 +528,7 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         github_user = await verify_github_code(req.code)
     except Exception as e:
         print(f"❌ GitHub login error: {e}")
-        raise HTTPException(status_code=400, detail="GitHub login failed. Please try again.")
+        raise HTTPException(status_code=400, detail=str(e))
     user = db.query(User).filter(
         (User.github_id == github_user["id"]) | (User.email == github_user["email"])
     ).first()
@@ -596,7 +596,7 @@ async def send_code(request: Request, body: SendCodeRequest, db: Session = Depen
         return {"sent": True, "email": email}
     except ValueError as e:
         print(f"❌ Send code error: {e}")
-        raise HTTPException(status_code=400, detail="Authentication failed. Please try again.")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/auth/verify-code")
 @limiter.limit("10/minute")
@@ -614,7 +614,7 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
         user_info = get_user_info(payload)
     except Exception as e:
         print(f"❌ Email verify error: {e}")
-        raise HTTPException(status_code=400, detail="Invalid or expired code. Please try again.")
+        raise HTTPException(status_code=400, detail=str(e))
     
     # Find or create user
     user = db.query(User).filter(User.email == email).first()
