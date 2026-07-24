@@ -1401,18 +1401,12 @@
       var email = document.getElementById('resetEmail').value;
       var btn = document.getElementById('resetSendBtn');
       setBtnLoading(btn, true, 'Send Reset Link');
-      try{
-        await api('POST','/api/auth/forgot-password',{email:email});
-        showToast('Reset link sent! Check your email.','success');
-        // Close modal after 2 seconds
-        setTimeout(function(){
-          var m = document.querySelector('.modal-overlay');
-          if(m)m.remove();
-        },2000);
-      }catch(e){
-        var msg = e.message || 'Failed to send reset link';
-        showToast(msg,'error');
-      }
+      await safeApi('POST','/api/auth/forgot-password',{email:email});
+      showToast('Reset link sent! Check your email.','success');
+      setTimeout(function(){
+        var m = document.querySelector('.modal-overlay');
+        if(m)m.remove();
+      },2000);
       if(btn){btn.disabled=false;btn.textContent='Send Reset Link'}
     }
     function applyAuth(){
@@ -3141,12 +3135,11 @@ async function loadReferralStats() {
 
 async function generateReferralCode() {
   if(!token){showToast('Please sign in','error');return}
-  try {
-    const d=await api('POST','/api/referral/code');
-    const codeEl=document.getElementById('refCode');
-    if(codeEl) codeEl.textContent=d.code;
-    showToast('New referral code generated!','success');
-  }catch(e){showToast(e.message||'Failed to generate code','error')}
+  const d=await safeApi('POST','/api/referral/code');
+  if(!d) return;
+  const codeEl=document.getElementById('refCode');
+  if(codeEl) codeEl.textContent=d.code;
+  showToast('New referral code generated!','success');
 }
 
 function copyReferralCode() {
@@ -3162,44 +3155,40 @@ function copyReferralCode() {
 
 async function loadReferralRewards() {
   if(!token)return;
-  try {
-    const d=await api('GET','/api/referral/rewards');
-    const body=document.getElementById('refRewardsBody');
-    if(!body)return;
-    if(!d||!d.length){body.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No rewards yet</td></tr>';return}
-    body.innerHTML=d.map(function(r){
-      return '<tr><td>'+escapeHtml(r.from||'—')+'</td><td class="gold">+'+escapeHtml(String(r.amount||0))+'</td><td>'+escapeHtml(r.reason||'referral')+'</td><td>'+(r.created_at?new Date(r.created_at).toLocaleDateString():'—')+'</td></tr>';
-    }).join('');
-  }catch(e){showToast('Failed to load rewards','error')}
+  const d=await safeApi('GET','/api/referral/rewards');
+  if(!d) return;
+  const body=document.getElementById('refRewardsBody');
+  if(!body)return;
+  if(!d||!d.length){body.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No rewards yet</td></tr>';return}
+  body.innerHTML=d.map(function(r){
+    return '<tr><td>'+escapeHtml(r.from||'—')+'</td><td class="gold">+'+escapeHtml(String(r.amount||0))+'</td><td>'+escapeHtml(r.reason||'referral')+'</td><td>'+(r.created_at?new Date(r.created_at).toLocaleDateString():'—')+'</td></tr>';
+  }).join('');
 }
 
 async function claimRewards() {
   if(!token){showToast('Please sign in','error');return}
-  try {
-    const d=await api('POST','/api/referral/claim');
-    if(d.new_balance!==undefined){userData.token_balance=d.new_balance;localStorage.setItem('gt_user',JSON.stringify(userData));updateBalance()}
-    loadReferralRewards();
-    loadReferralStats();
-    showToast('Rewards claimed!','success');
-  }catch(e){showToast(e.message||'Failed to claim rewards','error')}
+  const d=await safeApi('POST','/api/referral/claim');
+  if(!d) return;
+  if(d.new_balance!==undefined){userData.token_balance=d.new_balance;localStorage.setItem('gt_user',JSON.stringify(userData));updateBalance()}
+  loadReferralRewards();
+  loadReferralStats();
+  showToast('Rewards claimed!','success');
 }
 
 // ── Team / Org Functions ──
 
 async function loadOrgs() {
   if(!token)return;
-  try {
-    const d=await api('GET','/api/orgs');
-    const selector=document.getElementById('orgSelector');
-    if(!selector)return;
-    const orgs=d.orgs||d||[];
-    if(!orgs.length){
-      // API returned no orgs — keep demo data visible instead of replacing
-      return;
-    }
-    selector.innerHTML='<option value="">Select organization</option>'+orgs.map(function(o){return '<option value="'+escapeHtml(String(o.id))+'">'+escapeHtml(o.name||'Org '+o.id)+'</option>';}).join('');
-    if(orgs.length===1){selector.value=orgs[0].id;switchOrg(orgs[0].id)}
-  }catch(e){showToast('Failed to load organizations','error')}
+  const d=await safeApi('GET','/api/orgs');
+  if(!d) return;
+  const selector=document.getElementById('orgSelector');
+  if(!selector)return;
+  const orgs=d.orgs||d||[];
+  if(!orgs.length){
+    return;
+  }
+  selector.innerHTML='<option value="">Select organization</option>'+orgs.map(function(o){return '<option value="'+escapeHtml(String(o.id))+'">'+escapeHtml(o.name||'Org '+o.id)+'</option>';}).join('');
+  if(orgs.length===1){selector.value=orgs[0].id;switchOrg(orgs[0].id)}
 }
 
 async function switchOrg(orgId) {
@@ -3209,37 +3198,35 @@ async function switchOrg(orgId) {
 
 async function loadOrgDetails(orgId) {
   if(!token||!orgId)return;
-  try {
-    const d=await api('GET','/api/orgs/'+orgId);
-    const container=document.getElementById('orgDetails');
-    if(!container)return;
-    if(d.error){container.innerHTML='<p style="color:var(--destructive);text-align:center;padding:1rem">'+escapeHtml(d.error)+'</p>';return}
-    let html='<div class="org-header"><h3>'+escapeHtml(d.name||'Organization')+'</h3><span style="color:var(--text-muted);font-size:0.85rem">'+(d.member_count||0)+' members</span></div>';
-    html+='<div class="member-list">';
-    if(d.members&&d.members.length){
-      d.members.forEach(function(m){
-        const roleCls=m.role==='owner'?'badge-role-owner':m.role==='admin'?'badge-role-admin':'badge-role-member';
-        html+='<div class="member-row"><span class="member-avatar">'+(m.name?m.name[0].toUpperCase():'?')+'</span><span class="member-name">'+escapeHtml(m.name||m.email||'User')+'</span><span class="role-badge '+roleCls+'">'+escapeHtml(m.role||'member')+'</span></div>';
-      });
-    }else{
-      html+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No members found</p>';
-    }
-    html+='</div>';
-    container.innerHTML=html;
-  }catch(e){showToast('Failed to load organization details','error')}
+  const d=await safeApi('GET','/api/orgs/'+orgId);
+  if(!d) return;
+  const container=document.getElementById('orgDetails');
+  if(!container)return;
+  if(d.error){container.innerHTML='<p style="color:var(--destructive);text-align:center;padding:1rem">'+escapeHtml(d.error)+'</p>';return}
+  let html='<div class="org-header"><h3>'+escapeHtml(d.name||'Organization')+'</h3><span style="color:var(--text-muted);font-size:0.85rem">'+(d.member_count||0)+' members</span></div>';
+  html+='<div class="member-list">';
+  if(d.members&&d.members.length){
+    d.members.forEach(function(m){
+      const roleCls=m.role==='owner'?'badge-role-owner':m.role==='admin'?'badge-role-admin':'badge-role-member';
+      html+='<div class="member-row"><span class="member-avatar">'+(m.name?m.name[0].toUpperCase():'?')+'</span><span class="member-name">'+escapeHtml(m.name||m.email||'User')+'</span><span class="role-badge '+roleCls+'">'+escapeHtml(m.role||'member')+'</span></div>';
+    });
+  }else{
+    html+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No members found</p>';
+  }
+  html+='</div>';
+  container.innerHTML=html;
 }
 
 async function createOrg() {
   if(!token){showToast('Please sign in','error');return}
   const nameEl=document.getElementById('orgNameInput');
   if(!nameEl||!nameEl.value.trim()){showToast('Enter an organization name','error');return}
-  try {
-    const d=await api('POST','/api/orgs',{name:nameEl.value.trim()});
-    nameEl.value='';
-    document.getElementById('createOrgModal').classList.remove('open');
-    loadOrgs();
-    showToast('Organization created!','success');
-  }catch(e){showToast(e.message||'Failed to create organization','error')}
+  const d=await safeApi('POST','/api/orgs',{name:nameEl.value.trim()});
+  if(!d) return;
+  nameEl.value='';
+  document.getElementById('createOrgModal').classList.remove('open');
+  loadOrgs();
+  showToast('Organization created!','success');
 }
 
 async function inviteMember(orgId) {
@@ -3247,12 +3234,10 @@ async function inviteMember(orgId) {
   const emailEl=document.getElementById('inviteEmail');
   const roleEl=document.getElementById('inviteRole');
   if(!emailEl||!emailEl.value.trim()){showToast('Enter an email address','error');return}
-  try {
-    await api('POST','/api/orgs/'+orgId+'/invite',{email:emailEl.value.trim(),role:roleEl?roleEl.value:'member'});
-    emailEl.value='';
-    showToast('Invitation sent!','success');
-    loadOrgDetails(orgId);
-  }catch(e){showToast(e.message||'Failed to send invitation','error')}
+  await safeApi('POST','/api/orgs/'+orgId+'/invite',{email:emailEl.value.trim(),role:roleEl?roleEl.value:'member'});
+  emailEl.value='';
+  showToast('Invitation sent!','success');
+  loadOrgDetails(orgId);
 }
 
 async function updateMemberRole(orgId, userId, role) {
@@ -3285,11 +3270,10 @@ async function leaveOrg(orgId) {
 
 async function joinOrg(inviteToken) {
   if(!token){showToast('Please sign in','error');return}
-  try {
-    const d=await api('POST','/api/orgs/join',{invite_token:inviteToken});
-    loadOrgs();
-    showToast('Joined organization!','success');
-  }catch(e){showToast(e.message||'Failed to join organization','error')}
+  const d=await safeApi('POST','/api/orgs/join',{invite_token:inviteToken});
+  if(!d) return;
+  loadOrgs();
+  showToast('Joined organization!','success');
 }
 
 // ── Login History Functions ──
