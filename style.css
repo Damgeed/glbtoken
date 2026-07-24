@@ -7561,6 +7561,9 @@ body {
   .chart-container {
     height: 120px;
   }
+  .chart-container canvas {
+    height: 120px !important;
+  }
   .dash-header .btn-primary,
   .dash-header .btn-secondary {
     font-size: 0.72rem;
