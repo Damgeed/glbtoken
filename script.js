@@ -814,12 +814,9 @@
    ══════════════════════════════════════════ */
     async function loadTransactions(){
       if(!token)return;
-      var depBody=document.getElementById('txDepositBody');
-      var conBody=document.getElementById('txConsumptionBody');
-      if(!depBody&&!conBody)return;
-      try{
-        var txns=await api('GET','/api/transactions');
-        if(!txns||!txns.length){depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No transactions yet</td></tr>';return}
+      var depBody=document.getElementById('depositBody'), conBody=document.getElementById('consumptionBody');
+      if(!depBody||!conBody)return;
+      var txns=await safeApi('GET','/api/transactions',null,null,true); if(!txns||!txns.length){depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No transactions yet</td></tr>';return}
         var depRows='', conRows='';
         txns.forEach(function(t){
           var date=t.created_at?new Date(t.created_at).toLocaleDateString() : '-';
@@ -831,9 +828,6 @@
         });
         depBody.innerHTML=depRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No deposits yet</td></tr>';
         conBody.innerHTML=conRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No consumption yet</td></tr>';
-      }catch(e){
-        depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">Failed to load transactions</td></tr>';
-      }
     }
     // ── Notifications ──
     function dismissNotif(el){
