@@ -423,16 +423,13 @@
       const btn=document.getElementById('loginSendBtn');
       setBtnLoading(btn, true, 'Continue');
       try{
-        await api('POST','/api/auth/send-code',{email:email});
+        if(!await safeApi('POST','/api/auth/send-code',{email:email})) return;
         document.getElementById('loginEmailGroup').style.display='none';
         document.getElementById('loginCodeGroup').style.display='block';
         document.getElementById('loginSendBtn').style.display='none';
         document.getElementById('loginVerifyBtn').style.display='block';
         document.getElementById('loginCode').focus();
         showToast('Code sent to '+email,'success');
-      }catch(e){
-        const msg=e.message||'Failed to send code';
-        showToast(msg,'error');
       }finally{
         btn.disabled=false;btn.textContent='Continue';
       }
@@ -447,14 +444,12 @@
       const btn=document.getElementById('loginVerifyBtn');
       setBtnLoading(btn, true, 'Verifying');
       try{
-        var data=await api('POST','/api/auth/verify-code',{email:email,code:code});
+        var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
+        if(!data) return;
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
         window.location.href='/dashboard.html';
-      }catch(e){
-        const msg=e.message||'Invalid code';
-        showToast(msg,'error');
       }finally{
         btn.disabled=false;btn.textContent='Verify & Sign In';
       }
@@ -469,16 +464,13 @@
       const btn=document.getElementById('regSendBtn');
       setBtnLoading(btn, true, 'Continue');
       try{
-        await api('POST','/api/auth/send-code',{email:email});
+        if(!await safeApi('POST','/api/auth/send-code',{email:email})) return;
         document.getElementById('regEmailGroup').style.display='none';
         document.getElementById('regCodeGroup').style.display='block';
         document.getElementById('regSendBtn').style.display='none';
         document.getElementById('regVerifyBtn').style.display='block';
         document.getElementById('regCode').focus();
         showToast('Code sent to '+email,'success');
-      }catch(e){
-        const msg=e.message||'Failed to send code';
-        showToast(msg,'error');
       }finally{
         btn.disabled=false;btn.textContent='Continue';
       }
@@ -494,14 +486,12 @@
       const btn=document.getElementById('regVerifyBtn');
       setBtnLoading(btn, true, 'Verifying');
       try{
-        var data=await api('POST','/api/auth/verify-code',{email:email,code:code});
+        var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
+        if(!data) return;
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Account created! Welcome.','success');
         window.location.href='/dashboard.html';
-      }catch(e){
-        const msg=e.message||'Invalid code';
-        showToast(msg,'error');
       }finally{
         btn.disabled=false;btn.textContent='Verify & Create Account';
       }
@@ -593,17 +583,13 @@
       var btn = document.getElementById(prefix + 'PhoneSendBtn');
       setBtnLoading(btn, true, 'Send Message');
       try{
-        await api('POST','/api/auth/send-sms-code',{phone:phone});
+        if(!await safeApi('POST','/api/auth/send-sms-code',{phone:phone})) return;
         document.getElementById(prefix + 'SmsCodeGroup').style.display='block';
         btn.style.display='none';
         document.getElementById(prefix + 'PhoneVerifyBtn').style.display='block';
         document.getElementById(prefix + 'SmsCode').focus();
         showToast('Code sent to ' + phone,'success');
-        // Start 3-min resend countdown
         startResendTimer(prefix);
-      }catch(e){
-        var msg = e.message || 'Failed to send code';
-        showToast(msg,'error');
       }finally{
         btn.disabled=false; btn.textContent='Send Code';
       }
@@ -647,15 +633,13 @@
       var btn = document.getElementById(prefix + 'PhoneVerifyBtn');
       setBtnLoading(btn, true, 'Verifying');
       try{
-        var data = await api('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
+        var data = await safeApi('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
+        if(!data) return;
         token=data.token;userData=data.user;
         localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
         applyAuth();
         showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
         window.location.href='/dashboard.html';
-      }catch(e){
-        var msg = e.message || 'Invalid code';
-        showToast(msg,'error');
       }finally{
         setBtnLoading(btn, false);
       }
@@ -886,8 +870,9 @@
         }
         var el=document.getElementById('costByModelChart');
         if(!el)return;
-        var data=await api('GET','/api/analytics/cost-by-model?days='+(days||7));
-        if(!data||!data.models||!data.models.length){
+        var data=await safeApi('GET','/api/analytics/cost-by-model?days='+(days||7));
+        if(!data) return;
+        if(!data.models||!data.models.length){
           if(window.costChartInst){window.costChartInst.destroy();window.costChartInst=null}
           el.parentNode.innerHTML+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No cost data available.</p>';
           return;
@@ -918,8 +903,6 @@
         if(totalCostEl)totalCostEl.textContent='$'+(data.total_cost||0).toFixed(2);
         var modelCountEl=document.getElementById('costBreakdownModels');
         if(modelCountEl)modelCountEl.textContent=data.models.length+' models';
-      }catch(e){
-        showToast('Failed to load cost breakdown','error');
       }finally{
         if(container){
           var s2=container.querySelector('.loading-indicator');
@@ -932,8 +915,9 @@
       try{
         var el=document.getElementById('errorRateChart');
         if(!el)return;
-        var data=await api('GET','/api/analytics/error-rate?days='+(days||7));
-        if(!data||!data.labels||!data.labels.length){
+        var data=await safeApi('GET','/api/analytics/error-rate?days='+(days||7));
+        if(!data) return;
+        if(!data.labels||!data.labels.length){
           if(window.errorChartInst){window.errorChartInst.destroy();window.errorChartInst=null}
           el.parentNode.innerHTML+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No error rate data available.</p>';
           return;
@@ -962,7 +946,7 @@
         var totalErrEl=document.getElementById('errorTotal');
         if(totalErrEl)totalErrEl.textContent=(data.total_errors||0).toLocaleString();
       }catch(e){
-        showToast('Failed to load error rates','error');
+        // Silently fail for error rate
       }
     }
 
@@ -1529,7 +1513,8 @@
     async function loadDashboard(){
       if(!token)return;
       try{
-        const d=await api('GET','/api/dashboard');
+        const d=await safeApi('GET','/api/dashboard');
+        if(!d) return;
         userData.token_balance=d.token_balance;
         updateBalance();
         document.getElementById('dashTotalSpent').textContent='$'+d.total_spent.toFixed(2);
@@ -1612,7 +1597,9 @@
         // Usage Analytics with filters
         loadUsageAnalytics(usageDays, usageModel, usageMode);
         populateModelFilter();
-      }catch(e){showToast('Failed to load dashboard','error')}
+      }catch(e){
+        // Silently fail — safeApi already handles errors
+      }
     }
     async function loadDashKeys(){
       if(!token)return;
