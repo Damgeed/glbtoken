@@ -2662,6 +2662,12 @@ input[type="range"]::-moz-range-thumb {
   gap: 1.25rem;
   margin-top: 1.5rem;
 }
+.logs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
 .payment-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -6869,6 +6875,9 @@ body {
   .blog-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
+  }
+  .logs-grid {
+    grid-template-columns: 1fr;
   }
   .blog-card {
     padding: 1rem;
