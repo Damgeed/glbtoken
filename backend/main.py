@@ -82,6 +82,40 @@ CRYPTO_WALLET_ADDRESSES = {
 }
 
 
+
+# ═══════════════════════════════════════════════════════════════
+# HTTP ERROR HELPERS — Uniform error responses
+# ═══════════════════════════════════════════════════════════════
+
+def _400(detail: str = "Bad request"):
+    raise HTTPException(status_code=400, detail=detail)
+
+def _401(detail: str = "Unauthorized"):
+    raise HTTPException(status_code=401, detail=detail)
+
+def _402(detail: str = "Payment required"):
+    raise HTTPException(status_code=402, detail=detail)
+
+def _403(detail: str = "Forbidden"):
+    raise HTTPException(status_code=403, detail=detail)
+
+def _404(detail: str = "Not found"):
+    raise HTTPException(status_code=404, detail=detail)
+
+def _500(detail: str = "Internal server error"):
+    raise HTTPException(status_code=500, detail=detail)
+
+def _502(detail: str = "Bad gateway"):
+    raise HTTPException(status_code=502, detail=detail)
+
+def _503(detail: str = "Service unavailable"):
+    raise HTTPException(status_code=503, detail=detail)
+
+def _not_configured(service: str):
+    """400: '{service} not configured'"""
+    _400(f"{service} not configured")
+
+
 limiter = Limiter(key_func=get_remote_address)
 
 from urllib.parse import quote as _url_quote
@@ -416,9 +450,9 @@ def record_login_event(user_id: int, request: Request, success: bool, db: Sessio
 async def register(req: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     try:
         if db.query(User).filter(User.email == req.email).first():
-            raise HTTPException(status_code=400, detail="Email already registered")
+            _400("Email already registered")
         if len(req.password) < 8:
-            raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+            _400("Password must be at least 8 characters")
         user = User(
             name=req.name,
             email=req.email,
@@ -434,7 +468,7 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         raise
     except Exception as e:
         print(f"❌ REGISTER DB ERROR: {e}")
-        raise HTTPException(status_code=500, detail="Database error. Please try again.")
+        _500("Database error. Please try again.")
     
     # ── Sync to New API (non-blocking, best-effort) ──
     newapi_user = None
@@ -486,10 +520,10 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == req.email).first()
     if not user or not user.password_hash:
         record_login_event(0, request, False, db)
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        _401("Invalid credentials")
     if not verify_password(req.password, user.password_hash):
         record_login_event(0, request, False, db)
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        _401("Invalid credentials")
     record_login_event(user.id, request, True, db)
     token = create_access_token({"sub": str(user.id)})
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "country": user.country}, "token": token}
@@ -513,7 +547,7 @@ def google_auth_url():
 async def google_callback(req: GoogleAuthRequest, request: Request, db: Session = Depends(get_db)):
     # Exchange authorization code for id_token
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
-        raise HTTPException(status_code=400, detail="Google OAuth not configured")
+        _not_configured("Google OAuth")
     import httpx
     async with httpx.AsyncClient() as client:
         token_resp = await client.post(
@@ -527,11 +561,11 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
             }
         )
         if token_resp.status_code != 200:
-            raise HTTPException(status_code=400, detail=token_resp.json().get("error_description", "Google OAuth token exchange failed"))
+            _400(token_resp.json().get("error_description", "Google OAuth token exchange failed"))
         token_data = token_resp.json()
         id_token = token_data.get("id_token")
         if not id_token:
-            raise HTTPException(status_code=400, detail="No id_token from Google")
+            _400("No id_token from Google")
     google_user = await verify_google_token(id_token)
     user = db.query(User).filter(
         (User.google_id == google_user["id"]) | (User.email == google_user["email"])
@@ -573,7 +607,7 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         github_user = await verify_github_code(req.code)
     except Exception as e:
         print(f"❌ GitHub login error: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        _400(str(e))
     user = db.query(User).filter(
         (User.github_id == github_user["id"]) | (User.email == github_user["email"])
     ).first()
@@ -633,15 +667,15 @@ async def send_code(request: Request, body: SendCodeRequest, db: Session = Depen
     """Send a verification code via Auth0 Passwordless Email to the given email."""
     email = body.email.lower().strip()
     if not email or "@" not in email:
-        raise HTTPException(status_code=400, detail="Valid email required")
+        _400("Valid email required")
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     try:
         send_passwordless_code(email)
         return {"sent": True, "email": email}
     except ValueError as e:
         print(f"❌ Send code error: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        _400(str(e))
 
 @app.post("/api/auth/verify-code")
 @limiter.limit("10/minute")
@@ -650,16 +684,16 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
     email = body.email.lower().strip()
     code = body.code.strip()
     if not email or not code:
-        raise HTTPException(status_code=400, detail="Email and code required")
+        _400("Email and code required")
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     try:
         tokens = verify_passwordless_code(email, code)
         payload = verify_auth0_token(tokens["id_token"])
         user_info = get_user_info(payload)
     except Exception as e:
         print(f"❌ Email verify error: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        _400(str(e))
     
     # Find or create user
     user = db.query(User).filter(User.email == email).first()
@@ -706,15 +740,15 @@ async def send_sms_code_endpoint(request: Request, body: SendSmsCodeRequest):
     """Send a verification code via SMS using Auth0 Passwordless SMS."""
     phone = body.phone.strip()
     if not phone:
-        raise HTTPException(status_code=400, detail="Phone number required")
+        _400("Phone number required")
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     try:
         send_sms_code(phone)
         return {"sent": True, "phone": phone}
     except ValueError as e:
         print(f"❌ Send SMS code error: {e}")
-        raise HTTPException(status_code=400, detail="Authentication failed. Please try again.")
+        _400("Authentication failed. Please try again.")
 
 @app.post("/api/auth/verify-sms-code")
 @limiter.limit("10/minute")
@@ -723,9 +757,9 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
     phone = body.phone.strip()
     code = body.code.strip()
     if not phone or not code:
-        raise HTTPException(status_code=400, detail="Phone and code required")
+        _400("Phone and code required")
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     try:
         tokens = verify_sms_code(phone, code)
         payload = verify_auth0_token(tokens["id_token"])
@@ -733,7 +767,7 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
     except Exception as e:
         err_msg = str(e)
         print(f"❌ SMS verify error for {phone}: {err_msg}")
-        raise HTTPException(status_code=400, detail="Verification failed. Please try again.")
+        _400("Verification failed. Please try again.")
     
     email = user_info.get("email", f"{phone}@phone.glbtoken.io")
     user = db.query(User).filter(User.email == email).first()
@@ -777,14 +811,14 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
 async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = Depends(get_db)):
     """Verify Auth0 ID token, create/link user, return GlbTOKEN JWT."""
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
 
     try:
         payload = verify_auth0_token(req.token)
         info = get_user_info(payload)
     except ValueError as e:
         print(f"❌ Auth0 token login error: {e}")
-        raise HTTPException(status_code=401, detail="Auth0 login failed. Invalid token.")
+        _401("Auth0 login failed. Invalid token.")
     # Find or create user by Auth0 sub
     user = db.query(User).filter(
         (User.email == info["email"]) | (User.email == "" and 1 == 0)
@@ -949,18 +983,18 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
 async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLoginRequest, db: Session = Depends(get_db)):
     """Email/password login via Auth0 Resource Owner Password Grant."""
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     email = body.email.strip()
     password = body.password
     if not email or not password:
-        raise HTTPException(status_code=400, detail="Email and password required")
+        _400("Email and password required")
     try:
         tokens = auth0_password_login(email, password)
         payload = verify_auth0_token(tokens["id_token"])
         info = get_user_info(payload)
     except ValueError as e:
         print(f"❌ Auth0 password login error: {e}")
-        raise HTTPException(status_code=401, detail="Auth0 login failed. Invalid token.")
+        _401("Auth0 login failed. Invalid token.")
 
     user = db.query(User).filter(User.email == info["email"]).first()
     if user:
@@ -992,18 +1026,18 @@ async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLog
 async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: Session = Depends(get_db)):
     """Register via Auth0 Database Connection, then auto-login."""
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     name = body.name.strip()
     email = body.email.strip()
     password = body.password
     if not name or not email or not password:
-        raise HTTPException(status_code=400, detail="Name, email, and password required")
+        _400("Name, email, and password required")
 
     try:
         auth0_signup(email, password, name)
     except ValueError as e:
         print(f"❌ Auth0 signup error: {e}")
-        raise HTTPException(status_code=400, detail="Signup failed. Please try again.")
+        _400("Signup failed. Please try again.")
 
     try:
         tokens = auth0_password_login(email, password)
@@ -1011,7 +1045,7 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
         info = get_user_info(payload)
     except ValueError as e:
         print(f"❌ Auth0 auto-login error: {e}")
-        raise HTTPException(status_code=401, detail="Account created but login failed.")
+        _401("Account created but login failed.")
 
     user = User(
         name=info["name"], email=info["email"],
@@ -1036,11 +1070,11 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
 def auth0_social_url(provider: str = Query(...), state: str = Query("")):
     """Get the Auth0 authorize URL for a social login provider."""
     if not is_auth0_configured():
-        raise HTTPException(status_code=400, detail="Auth0 not configured")
+        _not_configured("Auth0")
     redirect_uri = "https://glbtoken.com/auth/callback.html"
     url = get_social_login_url(provider, redirect_uri, state=state)
     if not url:
-        raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
+        _400(f"Unsupported provider: {provider}")
     return {"url": url, "redirect_uri": redirect_uri}
 
 # ── User Profile ──
@@ -1063,7 +1097,7 @@ def get_me(user: User = Depends(get_current_user)):
 def send_verification(req: OptionalEmailRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     email = req.email or user.email
     if not email:
-        raise HTTPException(status_code=400, detail="Email required")
+        _400("Email required")
     otp = str(random.randint(100000, 999999))
     user.email_otp = otp
     user.email_otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
@@ -1076,9 +1110,9 @@ def send_verification(req: OptionalEmailRequest, request: Request, user: User = 
 def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     now = datetime.now(timezone.utc)
     if user.email_otp != req.otp:
-        raise HTTPException(status_code=400, detail="Invalid OTP")
+        _400("Invalid OTP")
     if not user.email_otp_expiry or now > user.email_otp_expiry:
-        raise HTTPException(status_code=400, detail="OTP expired")
+        _400("OTP expired")
     user.email_verified = True
     user.email_otp = None
     user.email_otp_expiry = None
@@ -1089,9 +1123,9 @@ def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_user)
 @app.put("/api/user/password")
 def change_password(req: ChangePasswordRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.password_hash or not verify_password(req.current_password, user.password_hash):
-        raise HTTPException(status_code=400, detail="Current password is incorrect")
+        _400("Current password is incorrect")
     if len(req.new_password) < 8:
-        raise HTTPException(status_code=400, detail="New password must be at least 8 characters")
+        _400("New password must be at least 8 characters")
     user.password_hash = hash_password(req.new_password)
     db.commit()
     return {"status": "password_updated"}
@@ -1115,12 +1149,12 @@ def forgot_password(request: Request, req: ForgotPasswordRequest, db: Session = 
 def reset_password(request: Request, req: ResetPasswordRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.reset_token == req.token).first()
     if not user:
-        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+        _400("Invalid or expired reset token")
     now = datetime.now(timezone.utc)
     if not user.reset_token_expiry or now > user.reset_token_expiry:
-        raise HTTPException(status_code=400, detail="Reset token expired")
+        _400("Reset token expired")
     if len(req.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Password too short")
+        _400("Password too short")
     user.password_hash = hash_password(req.new_password)
     user.reset_token = None
     user.reset_token_expiry = None
@@ -1297,7 +1331,7 @@ def create_key(req: ApiKeyCreate, user: User = Depends(get_current_user), db: Se
         ApiKey.user_id == user.id, ApiKey.is_active == True
     ).count()
     if active_count >= 10:
-        raise HTTPException(status_code=400, detail="Maximum 10 active API keys")
+        _400("Maximum 10 active API keys")
     
     key = ApiKey(
         user_id=user.id,
@@ -1320,7 +1354,7 @@ def create_key(req: ApiKeyCreate, user: User = Depends(get_current_user), db: Se
 def update_key(key_id: int, req: ApiKeyUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     key = db.query(ApiKey).filter(ApiKey.id == key_id, ApiKey.user_id == user.id).first()
     if not key:
-        raise HTTPException(status_code=404, detail="API key not found")
+        _404("API key not found")
     if req.name is not None: key.name = req.name
     if req.permissions is not None: key.permissions = req.permissions
     if req.is_active is not None: key.is_active = req.is_active
@@ -1331,7 +1365,7 @@ def update_key(key_id: int, req: ApiKeyUpdate, user: User = Depends(get_current_
 def delete_key(key_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     key = db.query(ApiKey).filter(ApiKey.id == key_id, ApiKey.user_id == user.id).first()
     if not key:
-        raise HTTPException(status_code=404, detail="API key not found")
+        _404("API key not found")
     db.delete(key)
     db.commit()
     return {"status": "deleted"}
@@ -1405,7 +1439,7 @@ async def topup(req: TopupRequest, user: User = Depends(get_current_user), db: S
 @app.post("/api/payments/paystack/initialize")
 def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not PAYSTACK_SECRET_KEY:
-        raise HTTPException(status_code=400, detail="Paystack not configured")
+        _not_configured("Paystack")
     import httpx
     amount_kobo = int(req.amount * 100)  # Paystack uses kobo (cents)
     resp = httpx.post(
@@ -1421,7 +1455,7 @@ def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_cu
     )
     data = resp.json()
     if not data.get("status"):
-        raise HTTPException(status_code=400, detail=data.get("message", "Paystack init failed"))
+        _400(data.get("message", "Paystack init failed"))
     # Create pending transaction
     tx = Transaction(
         user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
@@ -1434,10 +1468,10 @@ def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_cu
 @app.post("/api/payments/paystack/verify")
 def paystack_verify(reference: str = Body(...), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not PAYSTACK_SECRET_KEY:
-        raise HTTPException(status_code=400, detail="Paystack not configured")
+        _not_configured("Paystack")
     import re
     if not re.match(r'^[a-zA-Z0-9_-]+$', reference):
-        raise HTTPException(status_code=400, detail="Invalid reference format")
+        _400("Invalid reference format")
     import httpx
     resp = httpx.get(
         f"https://api.paystack.co/transaction/verify/{reference}",
@@ -1445,13 +1479,13 @@ def paystack_verify(reference: str = Body(...), user: User = Depends(get_current
     )
     data = resp.json()
     if not data.get("status") or data["data"]["status"] != "success":
-        raise HTTPException(status_code=400, detail="Payment not successful")
+        _400("Payment not successful")
     tx = db.query(Transaction).filter(
         Transaction.payment_ref == reference,
         Transaction.user_id == user.id
     ).first()
     if not tx:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+        _404("Transaction not found")
     if tx.status == "completed":
         return {"status": "already_processed", "tokens_added": tx.tokens}
     amount = data["data"]["amount"] / 100  # Convert from kobo
@@ -1470,7 +1504,7 @@ def paystack_verify(reference: str = Body(...), user: User = Depends(get_current
 @app.post("/api/payments/stripe/create-checkout")
 def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not STRIPE_SECRET_KEY:
-        raise HTTPException(status_code=400, detail="Stripe not configured")
+        _not_configured("Stripe")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     tokens = int(req.amount * 1000)
@@ -1500,7 +1534,7 @@ def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get
 @app.post("/api/payments/stripe/webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     if not STRIPE_WEBHOOK_SECRET:
-        raise HTTPException(status_code=400, detail="Webhook secret not configured")
+        _not_configured("Webhook secret")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     payload = await request.body()
@@ -1509,7 +1543,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         event = stripe_lib.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
     except Exception as e:
         print(f"❌ Stripe webhook error: {e}")
-        raise HTTPException(status_code=400, detail="Invalid signature")
+        _400("Invalid signature")
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         user_id = int(session["metadata"]["user_id"])
@@ -1535,7 +1569,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 @app.get("/api/payments/crypto/addresses")
 def get_crypto_addresses(user: User = Depends(get_current_user)):
     if not any(CRYPTO_WALLET_ADDRESSES.values()):
-        raise HTTPException(status_code=500, detail="Crypto payment not configured")
+        _500("Crypto payment not configured")
     return {
         "addresses": [
             {"asset": k, "network": k.split("_")[1] if "_" in k else k, "address": v}
@@ -1548,7 +1582,7 @@ def create_crypto_payment(req: InitiatePaymentRequest, user: User = Depends(get_
     asset = req.payment_method.upper()  # USDT_TRC20, BTC, ETH
     address = CRYPTO_WALLET_ADDRESSES.get(asset)
     if not address:
-        raise HTTPException(status_code=400, detail=f"Unsupported crypto: {asset}")
+        _400(f"Unsupported crypto: {asset}")
     ref = f"crypto_{user.id}_{secrets.token_hex(8)}"
     tokens = int(req.amount * 1000)
     tx = Transaction(
@@ -1585,7 +1619,7 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
     output_tokens = min(req.max_tokens, 4096)
     cost_tokens = int((input_tokens + output_tokens) * 0.002)  # ~$0.002/1K tokens
     if user.token_balance < cost_tokens:
-        raise HTTPException(status_code=402, detail=f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
+        _402(f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
     
     # Route through New API if configured, otherwise fallback to Fallback
     newapi_key = user.newapi_token
@@ -1602,7 +1636,7 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
         # Fallback: route via Fallback directly
         fallback_key = FALLBACK_API_KEY
         if not fallback_key:
-            raise HTTPException(status_code=400, detail="No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_KEY")
+            _400("No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_KEY")
         headers = {
             "Authorization": f"Bearer {fallback_key}",
             "Content-Type": "application/json",
@@ -1611,7 +1645,7 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
         }
         fallback_url = FALLBACK_API_URL
         if not fallback_url:
-            raise HTTPException(status_code=400, detail="No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_URL")
+            _400("No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_URL")
         api_endpoint = f"{fallback_url.rstrip('/')}/v1/chat/completions"
     
     async with httpx.AsyncClient(timeout=60) as client:
@@ -1626,7 +1660,7 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
             },
         )
         if resp.status_code != 200:
-            raise HTTPException(status_code=502, detail="AI API error. Please try again later.")
+            _502("AI API error. Please try again later.")
         result = resp.json()
     
     # Deduct tokens
@@ -1691,7 +1725,7 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     cost_tokens = int((input_tokens + output_tokens) * 0.002)
     
     if user.token_balance < cost_tokens:
-        raise HTTPException(status_code=402, detail=f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
+        _402(f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
     
     newapi_key = user.newapi_token
     newapi_url = NEW_API_BASE_URL
@@ -1705,7 +1739,7 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     else:
         fallback_key = FALLBACK_API_KEY
         if not fallback_key:
-            raise HTTPException(status_code=400, detail="No AI routing configured")
+            _400("No AI routing configured")
         headers = {
             "Authorization": f"Bearer {fallback_key}",
             "Content-Type": "application/json",
@@ -1714,7 +1748,7 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
         }
         fallback_url = FALLBACK_API_URL
         if not fallback_url:
-            raise HTTPException(status_code=400, detail="No AI routing configured")
+            _400("No AI routing configured")
         api_endpoint = f"{fallback_url.rstrip('/')}/v1/chat/completions"
     
     payload = {
@@ -1731,7 +1765,7 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     async with httpx.AsyncClient(timeout=120) as client:
         resp = await client.post(api_endpoint, headers=headers, json=payload)
         if resp.status_code != 200:
-            raise HTTPException(status_code=502, detail="AI API error. Please try again later.")
+            _502("AI API error. Please try again later.")
         result = resp.json()
     
     # Deduct tokens
@@ -1803,7 +1837,7 @@ def get_conversation(conv_id: int, request: Request, user: User = Depends(get_cu
         Conversation.id == conv_id, Conversation.user_id == user.id
     ).first()
     if not conversation:
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        _404("Conversation not found")
     
     messages = json.loads(conversation.messages) if conversation.messages else []
     
@@ -1825,7 +1859,7 @@ def delete_conversation(conv_id: int, request: Request, user: User = Depends(get
         Conversation.id == conv_id, Conversation.user_id == user.id
     ).first()
     if not conversation:
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        _404("Conversation not found")
     
     db.delete(conversation)
     db.commit()
@@ -1916,7 +1950,7 @@ def generate_referral_code(request: Request, user: User = Depends(get_current_us
         if not db.query(Referral).filter(Referral.code == code).first():
             break
     else:
-        raise HTTPException(status_code=500, detail="Failed to generate unique code")
+        _500("Failed to generate unique code")
     
     referral = Referral(user_id=user.id, code=code)
     db.add(referral)
@@ -1980,11 +2014,11 @@ def get_referral_rewards(request: Request, user: User = Depends(get_current_user
 def claim_referral_reward(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Claim referral earnings (transfer to token balance)."""
     if not user.referral_code:
-        raise HTTPException(status_code=400, detail="No referral code created yet")
+        _400("No referral code created yet")
     
     pending_earnings = user.referral_earnings or 0.0
     if pending_earnings < 1.0:
-        raise HTTPException(status_code=400, detail=f"Minimum claim is 1.0 token. You have {pending_earnings:.2f}")
+        _400(f"Minimum claim is 1.0 token. You have {pending_earnings:.2f}")
     
     # Transfer to balance
     user.token_balance += pending_earnings
@@ -2012,7 +2046,7 @@ def claim_referral_reward(request: Request, user: User = Depends(get_current_use
 def create_org(req: CreateOrgRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Create a new organization."""
     if not req.name or not req.name.strip():
-        raise HTTPException(status_code=400, detail="Organization name is required")
+        _400("Organization name is required")
     
     org = Organization(name=req.name.strip(), owner_id=user.id)
     db.add(org)
@@ -2067,14 +2101,14 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
     """Get org details including members."""
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        _404("Organization not found")
     
     # Verify user is a member
     membership = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
     ).first()
     if not membership:
-        raise HTTPException(status_code=403, detail="You are not a member of this organization")
+        _403("You are not a member of this organization")
     
     members = db.query(OrgMember).filter(OrgMember.org_id == org_id).all()
     member_list = []
@@ -2106,31 +2140,31 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     """Invite a user by email to join the organization. Generates an invite token."""
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        _404("Organization not found")
     
     # Check permission (owner or admin)
     membership = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
     ).first()
     if not membership or membership.role not in ("owner", "admin"):
-        raise HTTPException(status_code=403, detail="Only owner or admin can invite members")
+        _403("Only owner or admin can invite members")
     
     # Check max members
     current_count = db.query(OrgMember).filter(OrgMember.org_id == org_id).count()
     if current_count >= org.max_members:
-        raise HTTPException(status_code=400, detail="Organization has reached maximum member capacity")
+        _400("Organization has reached maximum member capacity")
     
     # Find invited user
     invited_user = db.query(User).filter(User.email == req.email).first()
     if not invited_user:
-        raise HTTPException(status_code=404, detail="User with this email not found")
+        _404("User with this email not found")
     
     # Check if already a member
     existing = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == invited_user.id
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="User is already a member of this organization")
+        _400("User is already a member of this organization")
     
     # Generate invite token (simple random string; stored in a real system would be a separate table)
     invite_token = secrets.token_urlsafe(32)
@@ -2154,23 +2188,23 @@ def join_org(org_id: int, req: JoinOrgRequest, request: Request,
     """Accept an invite and join the organization."""
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        _404("Organization not found")
     
     # Verify token (in production, validate against stored tokens)
     if not req.token or len(req.token) < 10:
-        raise HTTPException(status_code=400, detail="Invalid invite token")
+        _400("Invalid invite token")
     
     # Check if already a member
     existing = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
     ).first()
     if existing:
-        raise HTTPException(status_code=400, detail="You are already a member of this organization")
+        _400("You are already a member of this organization")
     
     # Check max members
     current_count = db.query(OrgMember).filter(OrgMember.org_id == org_id).count()
     if current_count >= org.max_members:
-        raise HTTPException(status_code=400, detail="Organization has reached maximum member capacity")
+        _400("Organization has reached maximum member capacity")
     
     member = OrgMember(org_id=org_id, user_id=user.id, role="member")
     db.add(member)
@@ -2185,27 +2219,27 @@ def change_member_role(org_id: int, member_id: int, req: ChangeRoleRequest, requ
                        user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Change a member's role (owner only)."""
     if req.role not in ("admin", "member"):
-        raise HTTPException(status_code=400, detail="Role must be 'admin' or 'member'")
+        _400("Role must be 'admin' or 'member'")
     
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        _404("Organization not found")
     
     # Only owner can change roles
     membership = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
     ).first()
     if not membership or membership.role != "owner":
-        raise HTTPException(status_code=403, detail="Only the owner can change member roles")
+        _403("Only the owner can change member roles")
     
     target = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == member_id
     ).first()
     if not target:
-        raise HTTPException(status_code=404, detail="Member not found in this organization")
+        _404("Member not found in this organization")
     
     if target.role == "owner":
-        raise HTTPException(status_code=400, detail="Cannot change the owner's role")
+        _400("Cannot change the owner's role")
     
     target.role = req.role
     db.commit()
@@ -2220,26 +2254,26 @@ def remove_member(org_id: int, member_id: int, request: Request,
     """Remove a member from the organization (owner or admin only)."""
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        _404("Organization not found")
     
     # Check permission
     membership = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
     ).first()
     if not membership or membership.role not in ("owner", "admin"):
-        raise HTTPException(status_code=403, detail="Only owner or admin can remove members")
+        _403("Only owner or admin can remove members")
     
     # Admins cannot remove other admins or the owner
     target = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == member_id
     ).first()
     if not target:
-        raise HTTPException(status_code=404, detail="Member not found")
+        _404("Member not found")
     
     if target.role == "owner":
-        raise HTTPException(status_code=400, detail="Cannot remove the owner")
+        _400("Cannot remove the owner")
     if membership.role == "admin" and target.role == "admin":
-        raise HTTPException(status_code=403, detail="Admins cannot remove other admins")
+        _403("Admins cannot remove other admins")
     
     db.delete(target)
     db.commit()
@@ -2253,14 +2287,14 @@ def get_org_usage(org_id: int, request: Request, user: User = Depends(get_curren
     """Get aggregated org usage stats."""
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
+        _404("Organization not found")
     
     # Verify user is a member
     membership = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
     ).first()
     if not membership:
-        raise HTTPException(status_code=403, detail="You are not a member of this organization")
+        _403("You are not a member of this organization")
     
     # Get all member IDs
     member_ids = [m.user_id for m in db.query(OrgMember).filter(OrgMember.org_id == org_id).all()]
@@ -2321,7 +2355,7 @@ def get_org_usage(org_id: int, request: Request, user: User = Depends(get_curren
 # ── Admin Endpoints ──
 def admin_list_users(page: int = 1, per_page: int = 20, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        _403("Admin access required")
     total = db.query(User).count()
     users = db.query(User).order_by(desc(User.created_at)).offset((page-1)*per_page).limit(per_page).all()
     return {
@@ -2338,10 +2372,10 @@ def admin_list_users(page: int = 1, per_page: int = 20, user: User = Depends(get
 @app.post("/api/admin/adjust-balance")
 def admin_adjust_balance(req: AdminBalanceRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        _403("Admin access required")
     target = db.query(User).filter(User.id == req.user_id).first()
     if not target:
-        raise HTTPException(status_code=404, detail="User not found")
+        _404("User not found")
     target.token_balance = max(0, target.token_balance + req.tokens)
     tx = Transaction(
         user_id=target.id, type="deposit" if req.tokens > 0 else "consumption",
@@ -2356,7 +2390,7 @@ def admin_adjust_balance(req: AdminBalanceRequest, user: User = Depends(get_curr
 def admin_transactions(page: int = 1, per_page: int = 20, status_filter: Optional[str] = None,
                        user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        _403("Admin access required")
     q = db.query(Transaction)
     if status_filter: q = q.filter(Transaction.status == status_filter)
     total = q.count()
@@ -2375,7 +2409,7 @@ def admin_transactions(page: int = 1, per_page: int = 20, status_filter: Optiona
 @app.get("/api/admin/rates")
 def get_rates(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        _403("Admin access required")
     # Token rate stored as a simple KV in DB or config
     from database import SessionLocal as _s
     # Return current pricing strategy
@@ -2394,7 +2428,7 @@ def get_rates(user: User = Depends(get_current_user), db: Session = Depends(get_
 @app.get("/api/admin/providers")
 def provider_status(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        _403("Admin access required")
     providers = db.query(
         AIModel.provider,
         func.count(AIModel.id).label("model_count"),
@@ -2510,7 +2544,7 @@ def trigger_model_pull(authorization: str = Header(None)):
         api_key = authorization.removeprefix("Bearer ")
     glbtoken_secret = GLBTOKEN_SECRET
     if not glbtoken_secret or api_key != glbtoken_secret:
-        raise HTTPException(status_code=403, detail="Invalid API key")
+        _403("Invalid API key")
     auto_pull_models()
     return {"status": "ok", "message": "Models refreshed from Fallback"}
 
@@ -2539,13 +2573,13 @@ async def admin_sync_users(
     glbtoken_secret = GLBTOKEN_SECRET
     if not glbtoken_secret or api_key != glbtoken_secret:
         if not user or not user.is_admin:
-            raise HTTPException(status_code=403, detail="Admin access required")
+            _403("Admin access required")
 
     from sync_users import run_sync as _run_sync, health_check as _sync_health
 
     # Check New API connectivity
     if not _sync_health():
-        raise HTTPException(status_code=503, detail="New API is not reachable")
+        _503("New API is not reachable")
 
     # Count unsynced
     total = db.query(func.count(User.id)).scalar()
@@ -2578,7 +2612,7 @@ async def admin_sync_users(
     thread.join(timeout=120)  # 2 min timeout
 
     if "error" in result_container:
-        raise HTTPException(status_code=500, detail="Sync failed. Please try again.")
+        _500("Sync failed. Please try again.")
 
     res = result_container.get("result")
     return {
@@ -2599,9 +2633,9 @@ async def contact_form(req: ContactRequest, request: Request):
     email = req.email.strip()
     message = req.message.strip()
     if not name or not email or len(message) < 10:
-        raise HTTPException(status_code=400, detail="Invalid form data")
+        _400("Invalid form data")
     if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
-        raise HTTPException(status_code=400, detail="Invalid email")
+        _400("Invalid email")
     try:
         send_email(
             to="contact@glbtoken.com",
@@ -3258,9 +3292,9 @@ async def get_available_models(user: User = Depends(get_current_user)):
 def create_preset(req: CreatePresetRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Create a new preset for the current user."""
     if not req.name or not req.name.strip():
-        raise HTTPException(status_code=400, detail="Preset name is required")
+        _400("Preset name is required")
     if not req.model or not req.model.strip():
-        raise HTTPException(status_code=400, detail="Model is required")
+        _400("Model is required")
     preset = Preset(
         user_id=user.id,
         name=req.name.strip(),
@@ -3311,7 +3345,7 @@ def get_preset(preset_id: int, user: User = Depends(get_current_user), db: Sessi
     """Get a single preset by ID."""
     preset = db.query(Preset).filter(Preset.id == preset_id, Preset.user_id == user.id).first()
     if not preset:
-        raise HTTPException(status_code=404, detail="Preset not found")
+        _404("Preset not found")
     return {
         "id": preset.id,
         "name": preset.name,
@@ -3330,14 +3364,14 @@ def update_preset(preset_id: int, req: UpdatePresetRequest, user: User = Depends
     """Update an existing preset."""
     preset = db.query(Preset).filter(Preset.id == preset_id, Preset.user_id == user.id).first()
     if not preset:
-        raise HTTPException(status_code=404, detail="Preset not found")
+        _404("Preset not found")
     if req.name is not None:
         if not req.name.strip():
-            raise HTTPException(status_code=400, detail="Preset name cannot be empty")
+            _400("Preset name cannot be empty")
         preset.name = req.name.strip()
     if req.model is not None:
         if not req.model.strip():
-            raise HTTPException(status_code=400, detail="Model cannot be empty")
+            _400("Model cannot be empty")
         preset.model = req.model.strip()
     if req.system_prompt is not None:
         preset.system_prompt = req.system_prompt
@@ -3368,7 +3402,7 @@ def delete_preset(preset_id: int, user: User = Depends(get_current_user), db: Se
     """Delete a preset."""
     preset = db.query(Preset).filter(Preset.id == preset_id, Preset.user_id == user.id).first()
     if not preset:
-        raise HTTPException(status_code=404, detail="Preset not found")
+        _404("Preset not found")
     db.delete(preset)
     db.commit()
     return {"status": "deleted"}
