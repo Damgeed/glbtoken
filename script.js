@@ -285,9 +285,9 @@
       }
     }
     // ── Safe API (auto-toast on error) ──
-    async function safeApi(method, path, body, timeoutMs){
+    async function safeApi(method, path, body, timeoutMs, silent){
       try { return await api(method, path, body, timeoutMs); }
-      catch(e){ showToast(e.message, 'error'); return null; }
+      catch(e){ if(!silent) showToast(e.message, 'error'); return null; }
     }
     // ── Page Routing ──
     function showPage(page){
@@ -747,21 +747,20 @@
     }
     async function refreshMe(){
       if(!token)return;
-      try{const d=await api('GET','/api/auth/me');userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth()}catch(e){}
+      const d=await safeApi('GET','/api/auth/me',null,null,true); if(!d)return;
+      userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth();
     }
 
     // ── Settings Profile ──
     async function loadProfile(){
       if(!token)return;
-      try{
-        const d=await api('GET','/api/user/profile');
-        var nameInp=document.getElementById('settingsName');
-        var emailInp=document.getElementById('settingsEmail');
-        var tzInp=document.getElementById('settingsTz');
-        if(nameInp) nameInp.value=d.name||userData.name||'User';
-        if(emailInp) emailInp.value=d.email||userData.email||'';
-        if(tzInp&&d.timezone) tzInp.value=d.timezone;
-      }catch(e){}
+      const d=await safeApi('GET','/api/user/profile',null,null,true); if(!d)return;
+      var nameInp=document.getElementById('settingsName');
+      var emailInp=document.getElementById('settingsEmail');
+      var tzInp=document.getElementById('settingsTz');
+      if(nameInp) nameInp.value=d.name||userData.name||'User';
+      if(emailInp) emailInp.value=d.email||userData.email||'';
+      if(tzInp&&d.timezone) tzInp.value=d.timezone;
     }
     async function saveProfile(){
       if(!token){showToast('Please sign in first','error');return}
@@ -787,15 +786,13 @@
     // ── Notification Settings ──
     async function loadSettings(){
       if(!token)return;
-      try{
-        const d=await api('GET','/api/user/settings');
-        var el=document.getElementById('notifEmail');
-        if(el&&typeof d.email_notifications==='boolean') el.checked=d.email_notifications;
-        var el2=document.getElementById('notifLowBalance');
-        if(el2&&typeof d.low_balance_alert==='boolean') el2.checked=d.low_balance_alert;
-        var el3=document.getElementById('notifLogin');
-        if(el3&&typeof d.login_alerts==='boolean') el3.checked=d.login_alerts;
-      }catch(e){}
+      const d=await safeApi('GET','/api/user/settings',null,null,true); if(!d)return;
+      var el=document.getElementById('notifEmail');
+      if(el&&typeof d.email_notifications==='boolean') el.checked=d.email_notifications;
+      var el2=document.getElementById('notifLowBalance');
+      if(el2&&typeof d.low_balance_alert==='boolean') el2.checked=d.low_balance_alert;
+      var el3=document.getElementById('notifLogin');
+      if(el3&&typeof d.login_alerts==='boolean') el3.checked=d.login_alerts;
     }
     async function saveNotificationSettings(){
       if(!token){showToast('Please sign in first','error');return}
@@ -991,24 +988,19 @@
     }
 
     async function loadCostProjection(){
-      try{
-        var last30El=document.getElementById('projLast30');
-        var monthlyEl=document.getElementById('projMonthly');
-        var dailyEl=document.getElementById('projDailyAvg');
-        if(!last30El&&!monthlyEl&&!dailyEl)return;
-        var data=await api('GET','/api/analytics/cost-projection');
-        if(!data||data.error){
-          if(last30El)last30El.textContent='$0.00';
-          if(monthlyEl)monthlyEl.textContent='$0.00';
-          if(dailyEl)dailyEl.textContent='$0.00';
-          return;
-        }
-        if(last30El)last30El.textContent='$'+(data.last_30_days||0).toFixed(2);
-        if(monthlyEl)monthlyEl.textContent='$'+(data.projected_monthly||0).toFixed(2);
-        if(dailyEl)dailyEl.textContent='$'+(data.daily_average||0).toFixed(2);
-      }catch(e){
-        // Silently fail for cost projection
+      var last30El=document.getElementById('projLast30');
+      var monthlyEl=document.getElementById('projMonthly');
+      var dailyEl=document.getElementById('projDailyAvg');
+      if(!last30El&&!monthlyEl&&!dailyEl)return;
+      var data=await safeApi('GET','/api/analytics/cost-projection',null,null,true); if(!data||data.error){
+        if(last30El)last30El.textContent='$0.00';
+        if(monthlyEl)monthlyEl.textContent='$0.00';
+        if(dailyEl)dailyEl.textContent='$0.00';
+        return;
       }
+      if(last30El)last30El.textContent='$'+(data.last_30_days||0).toFixed(2);
+      if(monthlyEl)monthlyEl.textContent='$'+(data.projected_monthly||0).toFixed(2);
+      if(dailyEl)dailyEl.textContent='$'+(data.daily_average||0).toFixed(2);
     }
 
     async function loadSpeedComparison(){
@@ -1311,16 +1303,12 @@
       if(!tickerEl)return;
       if(window._tickerInterval)clearInterval(window._tickerInterval);
       async function updateTicker(){
-        try{
-          var data=await api('GET','/api/dashboard',null,5000);
-          if(!data)return;
-          var todayCalls=data.today_requests||data.total_requests||0;
-          var todayTokens=data.today_tokens||data.total_tokens_consumed||0;
-          var balance=data.token_balance||0;
-          tickerEl.innerHTML='<span class="ticker-item">📊 <strong>Today:</strong> '+todayCalls.toLocaleString()+' calls · '+todayTokens.toLocaleString()+' tokens</span><span class="ticker-item">💰 <strong>Balance:</strong> '+balance.toLocaleString()+' GT</span>';
-        }catch(e){
-          // Silently retry next cycle
-        }
+        var data=await safeApi('GET','/api/dashboard',null,5000,true);
+        if(!data)return;
+        var todayCalls=data.today_requests||data.total_requests||0;
+        var todayTokens=data.today_tokens||data.total_tokens_consumed||0;
+        var balance=data.token_balance||0;
+        tickerEl.innerHTML='<span class="ticker-item">📊 <strong>Today:</strong> '+todayCalls.toLocaleString()+' calls · '+todayTokens.toLocaleString()+' tokens</span><span class="ticker-item">💰 <strong>Balance:</strong> '+balance.toLocaleString()+' GT</span>';
       }
       updateTicker();
       window._tickerInterval=setInterval(updateTicker,30000);
@@ -1603,10 +1591,8 @@
     }
     async function loadDashKeys(){
       if(!token)return;
-      try{
-        const k=await api('GET','/api/keys');
-        renderDashKeys(k);
-      }catch(e){}
+      const k=await safeApi('GET','/api/keys',null,null,true); if(!k)return;
+      renderDashKeys(k);
     }
     function renderDashKeys(k){
       const list=document.getElementById('dashKeyList');
@@ -1628,15 +1614,13 @@
       `).join('');
     }
     async function loadTxTable(){
-      try{
-        const d=await api('GET','/api/transactions?limit=5');
-        const body=document.getElementById('dashTxBody');
-        if(!d.items||!d.items.length){
-          body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions</td></tr>';
-          return;
-        }
-body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join('');
-      }catch(e){}
+      const d=await safeApi('GET','/api/transactions?limit=5',null,null,true); if(!d)return;
+      const body=document.getElementById('dashTxBody');
+      if(!d.items||!d.items.length){
+        body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions</td></tr>';
+        return;
+      }
+      body.innerHTML=d.items.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleDateString():'')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join('');
     }
     async function loadActivity(){
       var container=document.getElementById('dashActivity');
@@ -3097,8 +3081,8 @@ document.addEventListener('click', function(e) {
 
 async function loadReferralStats() {
   if(!token)return;
-  try {
-    const d=await api('GET','/api/referral/stats');
+  const d=await safeApi('GET','/api/referral/stats');
+  if(!d) return;
     const codeEl=document.getElementById('refCode');
     const countEl=document.getElementById('refCount');
     const earnEl=document.getElementById('refEarnings');
@@ -3123,7 +3107,6 @@ async function loadReferralStats() {
         options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'var(--text-muted)',font:{size:10}}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'var(--text-muted)'}},x:{grid:{display:false},ticks:{color:'var(--text-muted)'}}}}
       });
     }
-  }catch(e){showToast('Failed to load referral stats','error')}
 }
 
 async function generateReferralCode() {
@@ -3254,12 +3237,11 @@ async function removeMember(orgId, userId) {
 async function leaveOrg(orgId) {
   if(!token||!orgId)return;
   showConfirm('Leave organization?','You will lose access to this organization.',async function(){
-    try {
-      await api('DELETE','/api/orgs/'+orgId+'/members/me');
-      loadOrgs();
-      document.getElementById('orgDetails').innerHTML='<div class="empty-state"><div class="empty-icon">👋</div><div class="empty-title">You left the organization</div></div>';
-      showToast('Left organization','info');
-    }catch(e){showToast(e.message||'Failed to leave organization','error')}
+    const d=await safeApi('DELETE','/api/orgs/'+orgId+'/members/me');
+    if(!d) return;
+    loadOrgs();
+    document.getElementById('orgDetails').innerHTML='<div class="empty-state"><div class="empty-icon">👋</div><div class="empty-title">You left the organization</div></div>';
+    showToast('Left organization','info');
   });
 }
 
