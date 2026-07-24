@@ -7541,6 +7541,10 @@ body {
     box-sizing: border-box;
     overflow: hidden;
   }
+  .dash-grid.grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
   .dash-section-title {
     font-size: 0.82rem;
     margin-bottom: 0.6rem;
