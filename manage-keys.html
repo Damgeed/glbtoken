@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=1112" />
+  <link rel="stylesheet" href="style.css?v=1117" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1009" />
   </head>
@@ -226,9 +226,9 @@
             <button class="btn-secondary flex-1 pad-sm" onclick="closeCreateKeyModal()">Cancel</button>
             <button class="btn-primary flex-1 pad-sm" onclick="createApiKey()">Create Key</button>
           </div>
-          <div id="newKeyResult" class="hidden mt-sm" style="padding:1rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px">
+          <div id="newKeyResult" class="hidden mt-sm key-result-box">
             <p class="text-sm text-success m-0 mb-xs"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
-            <code id="newKeyValue" class="block text-xs" style="padding:0.5rem;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;word-break:break-all;margin-bottom:0.5rem"></code>
+            <code id="newKeyValue" class="block text-xs key-value-code"></code>
             <button class="btn-primary btn-xs" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')">Copy Key</button>
           </div>
         </div>
