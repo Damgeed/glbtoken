@@ -2447,94 +2447,24 @@ def auto_pull_models():
 
 def seed_models():
     from database import SessionLocal
+    import json, os
     db = SessionLocal()
     if db.query(AIModel).count() > 0:
         db.close()
         return
-    
-    models = [
-        # OpenAI
-        AIModel(model_id="openai/gpt-5.5-pro", name="GPT-5.5 Pro", provider="OpenAI", context_length=1050000, prompt_price=0.00003, completion_price=0.00012, version="5.5", category="Flagship"),
-        AIModel(model_id="openai/gpt-5.5", name="GPT-5.5", provider="OpenAI", context_length=1050000, prompt_price=0.000005, completion_price=0.00002, version="5.5", category="Flagship"),
-        AIModel(model_id="openai/gpt-5.4", name="GPT-5.4", provider="OpenAI", context_length=272000, prompt_price=0.000008, completion_price=0.000032, version="5.4", category="Flagship"),
-        AIModel(model_id="openai/gpt-5.4-nano", name="GPT-5.4 Nano", provider="OpenAI", context_length=400000, prompt_price=0.0000002, completion_price=0.0000008, version="5.4", category="Nano"),
-        AIModel(model_id="openai/gpt-4o", name="GPT-4o", provider="OpenAI", context_length=128000, prompt_price=0.0000025, completion_price=0.00001, version="4o", category="Vision"),
-        AIModel(model_id="openai/gpt-4o-mini", name="GPT-4o Mini", provider="OpenAI", context_length=128000, prompt_price=0.00000015, completion_price=0.0000006, version="4o-mini", category="Small"),
-        AIModel(model_id="openai/o3", name="o3", provider="OpenAI", context_length=200000, prompt_price=0.00001, completion_price=0.00004, version="o3", category="Reasoning"),
-        AIModel(model_id="openai/o4-mini", name="o4-mini", provider="OpenAI", context_length=200000, prompt_price=0.0000011, completion_price=0.0000044, version="o4-mini", category="Reasoning"),
-        
-        # Anthropic
-        AIModel(model_id="anthropic/claude-sonnet-5", name="Claude Sonnet 5", provider="Anthropic", context_length=1000000, prompt_price=0.000002, completion_price=0.000008, version="5", category="Flagship"),
-        AIModel(model_id="anthropic/claude-opus-4.8", name="Claude Opus 4.8", provider="Anthropic", context_length=1000000, prompt_price=0.000005, completion_price=0.00002, version="4.8", category="Flagship"),
-        AIModel(model_id="anthropic/claude-fable-5", name="Claude Fable 5", provider="Anthropic", context_length=1000000, prompt_price=0.00001, completion_price=0.00004, version="5", category="Flagship"),
-        AIModel(model_id="anthropic/claude-3.5-sonnet", name="Claude 3.5 Sonnet", provider="Anthropic", context_length=200000, prompt_price=0.000003, completion_price=0.000015, version="3.5", category="Vision"),
-        AIModel(model_id="anthropic/claude-3-haiku", name="Claude 3 Haiku", provider="Anthropic", context_length=200000, prompt_price=0.00000025, completion_price=0.00000125, version="3", category="Small"),
-        
-        # Google
-        AIModel(model_id="google/gemini-3.5-flash", name="Gemini 3.5 Flash", provider="Google", context_length=1048576, prompt_price=0.0000015, completion_price=0.000006, version="3.5", category="Flash"),
-        AIModel(model_id="google/gemini-3.1-flash", name="Gemini 3.1 Flash", provider="Google", context_length=1048576, prompt_price=0.00000025, completion_price=0.000001, version="3.1", category="Flash"),
-        AIModel(model_id="google/gemini-3-pro", name="Gemini 3 Pro", provider="Google", context_length=65536, prompt_price=0.000002, completion_price=0.000008, version="3", category="Flagship"),
-        AIModel(model_id="google/gemini-2.0-flash", name="Gemini 2.0 Flash", provider="Google", context_length=1048576, prompt_price=0.0000001, completion_price=0.0000004, version="2.0", category="Flash"),
-        
-        # Meta Llama
-        AIModel(model_id="meta-llama/llama-4-maverick", name="Llama 4 Maverick", provider="Meta Llama", context_length=1048576, prompt_price=0.00000015, completion_price=0.0000006, version="4", category="Flagship"),
-        AIModel(model_id="meta-llama/llama-4-scout", name="Llama 4 Scout", provider="Meta Llama", context_length=10000000, prompt_price=0.0000001, completion_price=0.0000004, version="4", category="Small"),
-        AIModel(model_id="meta-llama/llama-3.3-70b", name="Llama 3.3 70B", provider="Meta Llama", context_length=131072, prompt_price=0.0000001, completion_price=0.0000004, version="3.3", category="Large"),
-        AIModel(model_id="meta-llama/llama-3.1-405b", name="Llama 3.1 405B", provider="Meta Llama", context_length=131072, prompt_price=0.000001, completion_price=0.000004, version="3.1", category="Flagship"),
-        
-        # DeepSeek
-        AIModel(model_id="deepseek/deepseek-v4-pro", name="DeepSeek V4 Pro", provider="DeepSeek", context_length=1048576, prompt_price=0.000000435, completion_price=0.00000174, version="V4", category="Flagship"),
-        AIModel(model_id="deepseek/deepseek-v4-flash", name="DeepSeek V4 Flash", provider="DeepSeek", context_length=1048576, prompt_price=0.000000089, completion_price=0.000000356, version="V4", category="Flash"),
-        AIModel(model_id="deepseek/deepseek-v3.2", name="DeepSeek V3.2", provider="DeepSeek", context_length=131072, prompt_price=0.0000002288, completion_price=0.000000915, version="V3.2", category="Flagship"),
-        AIModel(model_id="deepseek/deepseek-r1", name="DeepSeek R1", provider="DeepSeek", context_length=131072, prompt_price=0.00000055, completion_price=0.0000022, version="R1", category="Reasoning"),
-        
-        # Mistral
-        AIModel(model_id="mistralai/mistral-large-2", name="Mistral Large 2", provider="Mistral", context_length=131072, prompt_price=0.000002, completion_price=0.000006, version="2", category="Flagship"),
-        AIModel(model_id="mistralai/mistral-small-2603", name="Mistral Small", provider="Mistral", context_length=262144, prompt_price=0.00000015, completion_price=0.0000006, version="2603", category="Small"),
-        AIModel(model_id="mistralai/mistral-medium-3-5", name="Mistral Medium 3.5", provider="Mistral", context_length=262144, prompt_price=0.0000015, completion_price=0.000006, version="3.5", category="Medium"),
-        
-        # Qwen
-        AIModel(model_id="qwen/qwen3.7-plus", name="Qwen 3.7 Plus", provider="Qwen", context_length=1000000, prompt_price=0.00000032, completion_price=0.00000128, version="3.7", category="Flagship"),
-        AIModel(model_id="qwen/qwen3.7-max", name="Qwen 3.7 Max", provider="Qwen", context_length=1000000, prompt_price=0.00000125, completion_price=0.000005, version="3.7", category="Flagship"),
-        AIModel(model_id="qwen/qwen3.6-flash", name="Qwen 3.6 Flash", provider="Qwen", context_length=1000000, prompt_price=0.0000001875, completion_price=0.00000075, version="3.6", category="Flash"),
-        AIModel(model_id="qwen/qwen-2.5-72b", name="Qwen 2.5 72B", provider="Qwen", context_length=131072, prompt_price=0.00000035, completion_price=0.0000014, version="2.5", category="Large"),
-        AIModel(model_id="qwen/qwen-2.5-coder-32b", name="Qwen 2.5 Coder 32B", provider="Qwen", context_length=131072, prompt_price=0.00000035, completion_price=0.0000014, version="2.5", category="Code"),
-        
-        # Perplexity
-        AIModel(model_id="perplexity/sonar-pro", name="Sonar Pro", provider="Perplexity", context_length=200000, prompt_price=0.000003, completion_price=0.000015, version="Pro", category="Search"),
-        AIModel(model_id="perplexity/sonar-reasoning-pro", name="Sonar Reasoning Pro", provider="Perplexity", context_length=128000, prompt_price=0.000002, completion_price=0.000008, version="Pro", category="Reasoning"),
-        AIModel(model_id="perplexity/sonar-deep-research", name="Sonar Deep Research", provider="Perplexity", context_length=128000, prompt_price=0.000002, completion_price=0.000008, version="Deep", category="Research"),
-        
-        # X AI
-        AIModel(model_id="x-ai/grok-4.20", name="Grok 4.20", provider="X AI", context_length=2000000, prompt_price=0.00000125, completion_price=0.000005, version="4.20", category="Flagship"),
-        AIModel(model_id="x-ai/grok-4.3", name="Grok 4.3", provider="X AI", context_length=1000000, prompt_price=0.00000125, completion_price=0.000005, version="4.3", category="Flagship"),
-        
-        # Cohere
-        AIModel(model_id="cohere/command-a", name="Command A", provider="Cohere", context_length=256000, prompt_price=0.0000025, completion_price=0.00001, version="A", category="Flagship"),
-        AIModel(model_id="cohere/command-r-plus", name="Command R+", provider="Cohere", context_length=128000, prompt_price=0.0000025, completion_price=0.00001, version="R+", category="Flagship"),
-        
-        # Amazon
-        AIModel(model_id="amazon/nova-pro-v1", name="Nova Pro", provider="Amazon", context_length=300000, prompt_price=0.0000008, completion_price=0.0000032, version="Pro", category="Flagship"),
-        AIModel(model_id="amazon/nova-lite-v1", name="Nova Lite", provider="Amazon", context_length=300000, prompt_price=0.00000006, completion_price=0.00000024, version="Lite", category="Small"),
-        AIModel(model_id="amazon/nova-micro-v1", name="Nova Micro", provider="Amazon", context_length=128000, prompt_price=0.000000035, completion_price=0.00000014, version="Micro", category="Small"),
-        
-        # Microsoft
-        AIModel(model_id="microsoft/phi-4", name="Phi-4", provider="Microsoft", context_length=16384, prompt_price=0.00000007, completion_price=0.00000028, version="4", category="Small"),
-        
-        # Nvidia
-        AIModel(model_id="nvidia/nemotron-3-ultra", name="Nemotron 3 Ultra", provider="Nvidia", context_length=1000000, prompt_price=0.0000005, completion_price=0.000002, version="3", category="Flagship"),
-        
-        # NousResearch
-        AIModel(model_id="nousresearch/hermes-4-70b", name="Hermes 4 70B", provider="NousResearch", context_length=131072, prompt_price=0.00000013, completion_price=0.00000052, version="4", category="Large"),
-        AIModel(model_id="nousresearch/hermes-4-405b", name="Hermes 4 405B", provider="NousResearch", context_length=131072, prompt_price=0.000001, completion_price=0.000004, version="4", category="Flagship"),
-    ]
-    
+    json_path = os.path.join(os.path.dirname(__file__), "models_seed.json")
+    try:
+        with open(json_path) as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"⚠️ Could not load models_seed.json: {e}")
+        db.close()
+        return
+    models = [AIModel(**m) for m in data]
     db.add_all(models)
     db.commit()
     db.close()
-    print(f"✅ Seeded {len(models)} AI models")
-
-# ── Health ──
+    print(f"✅ Seeded {len(models)} AI models from models_seed.json")
 # ── Auto-Pull Models (manual trigger) ──
 @app.post("/api/models/pull")
 def trigger_model_pull(authorization: str = Header(None)):
