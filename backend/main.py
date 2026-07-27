@@ -104,7 +104,13 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Always add CORS headers, even on 500 errors
         origin = request.headers.get("origin")
         if origin:
-            response.headers["Access-Control-Allow-Origin"] = origin
+            # Only echo back allowed origins (prevents credential abuse)
+            allowed = ["https://glbtoken.com", "https://www.glbtoken.com",
+                       "https://damgeed.github.io",
+                       "http://localhost:5500", "http://localhost:8000",
+                       "http://127.0.0.1:5500"]
+            if origin in allowed:
+                response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
