@@ -703,8 +703,15 @@ document.addEventListener('DOMContentLoaded',function(){
     var t=e.touches[0];
     startX=t.clientX;startY=t.clientY;
     swiping=true;
-    // Don't block taps on the sidebar toggle button itself
-    if(startX<=EDGE_ZONE && !e.target.closest('#dashSidebarToggle')){e.preventDefault()}
+    if(startX<=EDGE_ZONE){
+      e.preventDefault();
+      // If touching the toggle button, toggle sidebar directly
+      if(e.target.closest('#dashSidebarToggle')){
+        toggleDashSidebar();
+        swiping=false;
+        return;
+      }
+    }
   },{passive:false});
   document.addEventListener('touchmove',function(e){
     if(!swiping||!sb)return;
