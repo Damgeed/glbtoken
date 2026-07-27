@@ -102,10 +102,10 @@
     function toggleCountryList(prefix){
       var list = document.getElementById(prefix + 'CountryList');
       if(!list) return;
-      var isOpen = list.style.display === 'block';
+      var isOpen = list.style.display === 'block' && !list.classList.contains('d-none');
       // Close all other dropdowns first
       var allLists = document.querySelectorAll('.phone-dropdown');
-      for(var i=0;i<allLists.length;i++) allLists[i].style.display = 'none';
+      for(var i=0;i<allLists.length;i++){ allLists[i].style.display = 'none'; allLists[i].classList.add('d-none'); }
       if(isOpen) return;
       // Position fixed relative to trigger button
       var btn = document.querySelector('#' + prefix + 'PhoneSection .phone-country');
@@ -127,13 +127,14 @@
       list.style.width = ddW + 'px';
       list.style.maxHeight = ddH + 'px';
       list.style.display = 'block';
+      list.classList.remove('d-none');
     }
     function selectCountry(prefix, dial, flag){
       document.getElementById(prefix + 'CountryFlag').textContent = flag;
       document.getElementById(prefix + 'CountryDial').textContent = dial;
       selectedDial[prefix] = dial;
       var list = document.getElementById(prefix + 'CountryList');
-      if(list) list.style.display = 'none';
+      if(list){ list.style.display = 'none'; list.classList.add('d-none'); }
     }
     function renderCountryOptions(prefix){
       var list = document.getElementById(prefix + 'CountryList');
@@ -152,7 +153,7 @@
       var cp = e.target.closest('.phone-wrap');
       if(!cp){
         var lists = document.querySelectorAll('.phone-dropdown');
-        for(var i=0;i<lists.length;i++) lists[i].style.display = 'none';
+        for(var i=0;i<lists.length;i++){ lists[i].style.display = 'none'; lists[i].classList.add('d-none'); }
       }
     });
     async function sendPhoneCode(prefix){
