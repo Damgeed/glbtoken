@@ -691,7 +691,9 @@ document.addEventListener('DOMContentLoaded',function(){
     if(s){
       obs.observe(s,{attributes:true,attributeFilter:['class']});
       // Block browser back/forward swipe on dash pages
+      document.documentElement.style.touchAction='pan-y';
       document.body.style.touchAction='pan-y';
+      document.body.style.overscrollBehavior='contain';
     }
   });
   
