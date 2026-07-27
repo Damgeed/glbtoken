@@ -266,11 +266,4 @@ function insertPromptSuggestion(text) {
 })();
 
 // ── Dashboard sidebar toggle (called from onclick) ──
-function toggleDashSidebar() {
-  var sb = document.getElementById('dashSidebar');
-  var toggle = document.getElementById('dashSidebarToggle');
-  if(!sb) return;
-  var isOpen = sb.classList.toggle('open');
-  if(toggle) toggle.classList.toggle('hidden', isOpen);
-}
 
