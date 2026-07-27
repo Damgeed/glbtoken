@@ -693,7 +693,6 @@ document.addEventListener('DOMContentLoaded',function(){
       // Block browser back/forward swipe on dash pages
       document.documentElement.style.touchAction='pan-y';
       document.body.style.touchAction='pan-y';
-      document.body.style.overscrollBehavior='contain';
     }
   });
   
