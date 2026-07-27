@@ -878,9 +878,10 @@ function showSessionExpired(){
     e.preventDefault();
     window.removeEventListener('popstate',_onPopState);
     token='';userData={};
-    localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+    window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
     localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
     localStorage.removeItem('gt_keys');
+    window.__secure.clear();
     applyAuth();
     m.remove();
     document.body.style.overflow = '';

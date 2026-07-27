@@ -4,11 +4,12 @@
     function logoutUser(){
       // Show confirmation dialog instead of immediate logout
       showConfirm('Sign out?','Are you sure you want to sign out?',function(){
-        token='';userData={};
-        localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
-        localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
-        localStorage.removeItem('gt_keys');
-        applyAuth();
+    token='';userData={};
+    window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
+    localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
+    localStorage.removeItem('gt_keys');
+    window.__secure.clear();
+    applyAuth();
         window.location.href='/';
       });
     }
@@ -34,7 +35,7 @@
     async function refreshMe(){
       if(!token)return;
       const d=await safeApi('GET','/api/auth/me',null,null,true); if(!d)return;
-      userData=d;localStorage.setItem('gt_user',JSON.stringify(d));applyAuth();
+      userData=d;window.__secure.setItem('gt_user',JSON.stringify(d));applyAuth();
     }
 
     // ── Settings Profile ──
@@ -55,7 +56,7 @@
       if(!settingsName){showToast('Settings form not found','error');return}
       await safeApi('PUT','/api/user/profile',{name:settingsName.value.trim(),timezone:tz?tz.value:''});
       userData.name=settingsName.value.trim();
-      localStorage.setItem('gt_user',JSON.stringify(userData));
+      window.__secure.setItem('gt_user',JSON.stringify(userData));
       applyAuth();
       showToast('Profile saved','success');
     }

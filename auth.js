@@ -35,11 +35,11 @@
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
         if(!data) return;
         token=data.token;userData=data.user;
-        localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+        window.__secure.setItem('gt_token',token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
         window.location.href='/dashboard.html';
-      }finally{
-        btn.disabled=false;btn.textContent='Verify & Sign In';
+      },
+      error: function(){showToast('Login failed','error');}
       }
     }
     async function sendRegisterCode(){
@@ -77,7 +77,7 @@
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
         if(!data) return;
         token=data.token;userData=data.user;
-        localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+        window.__secure.setItem('gt_token',token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Account created! Welcome.','success');
         window.location.href='/dashboard.html';
       }finally{
@@ -225,7 +225,7 @@
         var data = await safeApi('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
         if(!data) return;
         token=data.token;userData=data.user;
-        localStorage.setItem('gt_token',token);localStorage.setItem('gt_user',JSON.stringify(userData));
+        window.__secure.setItem('gt_token',token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();
         showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
         window.location.href='/dashboard.html';

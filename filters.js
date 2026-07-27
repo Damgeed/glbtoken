@@ -297,8 +297,8 @@
       }
       const data = await safeApi('POST','/api/auth/auth0/login', {token: idToken},null,true);
       if(!data) { window.location.href = '/login.html?error=' + encodeURIComponent('Auth login failed'); return; }
-      localStorage.setItem('gt_token', data.token);
-      localStorage.setItem('gt_user', JSON.stringify(data.user));
+      window.__secure.setItem('gt_token', data.token);
+      window.__secure.setItem('gt_user', JSON.stringify(data.user));
       // Don't call applyAuth() — callback page has no nav DOM elements
       // Don't call showToast() — callback page has no toast DOM elements
       window.location.href = '/dashboard.html';
@@ -828,7 +828,7 @@
       if(!token){showToast('Please login first','error');return}
       const d=await safeApi('POST','/api/topup',{amount:selectedAmount,currency:'USD',payment_method:selectedPayment});
       if(!d) return;
-      userData.token_balance=d.new_balance;localStorage.setItem('gt_user',JSON.stringify(userData));updateBalance();
+      userData.token_balance=d.new_balance;window.__secure.setItem('gt_user',JSON.stringify(userData));updateBalance();
       document.getElementById('topupStep1').style.display='none';
       document.getElementById('topupSuccess').style.display='block';
       document.getElementById('topupSuccessMsg').textContent=d.tokens_added.toLocaleString()+' tokens added!';

@@ -68,7 +68,7 @@ async function claimRewards() {
   if(!token){showToast('Please sign in','error');return}
   const d=await safeApi('POST','/api/referral/claim');
   if(!d) return;
-  if(d.new_balance!==undefined){userData.token_balance=d.new_balance;localStorage.setItem('gt_user',JSON.stringify(userData));updateBalance()}
+  if(d.new_balance!==undefined){userData.token_balance=d.new_balance;window.__secure.setItem('gt_user',JSON.stringify(userData));updateBalance()}
   loadReferralRewards();
   loadReferralStats();
   showToast('Rewards claimed!','success');

@@ -157,9 +157,9 @@ function insertPromptSuggestion(text) {
   var urlToken = params.get('token');
   var urlUser = params.get('user');
   if (urlToken) {
-    localStorage.setItem('gt_token', urlToken);
+    window.__secure.setItem('gt_token', urlToken);
     if (urlUser) {
-      try { localStorage.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
+      try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
     }
     var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
     window.history.replaceState({}, document.title, clean);
