@@ -91,7 +91,7 @@
     function togglePhone(prefix){
       var section = document.getElementById(prefix + 'PhoneSection');
       if(!section) return;
-      var isShow = section.style.display !== 'none';
+      var isShow = section.style.display === 'block';
       section.style.display = isShow ? 'none' : 'block';
       if(!isShow) setTimeout(function(){
         renderCountryOptions(prefix);
