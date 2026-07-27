@@ -765,3 +765,166 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 })();
 
+/* ══════════════════════════════════════════
+   UI Dialogs — Toast, Confirm, Alert, Prompt, Session Expired
+   ══════════════════════════════════════════ */
+function showToast(msg,type){
+  var t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t)}
+  t.textContent=msg;t.className='toast '+(type||'info');t.classList.add('show');
+  clearTimeout(t._timeout);t._timeout=setTimeout(function(){t.classList.remove('show')},3000);
+}
+function showConfirm(title, msg, onConfirm, confirmText){
+  confirmText = confirmText || 'Confirm';
+  var existing=document.getElementById('confirmModal');
+  if(existing)existing.remove();
+  var m=document.createElement('div');
+  m.id='confirmModal';
+  m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+  var theme=document.documentElement.className;
+  var isDark=theme==='dark';
+  var cardBg=isDark?'#1e1f29':'#ffffff';
+  var textClr=isDark?'#f8f8f2':'#1a1a2e';
+  var muted=isDark?'#6272a4':'#666';
+  var border=isDark?'#3a3a4e':'#ddd';
+  m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+    +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+    +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
+    +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">'+escapeHtml(msg)+'</p>'
+    +'<div style="display:flex;gap:0.75rem">'
+    +'<button id="confirmCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
+    +'<button id="confirmOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">'+escapeHtml(confirmText)+'</button>'
+    +'</div></div>';
+  document.body.appendChild(m);
+  if(!document.getElementById('confirmModalStyle')){
+    var s=document.createElement('style');s.id='confirmModalStyle';
+    s.textContent='@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}';
+    document.head.appendChild(s);
+  }
+  document.getElementById('confirmCancelBtn').onclick=function(){m.remove()};
+  document.getElementById('confirmOkBtn').onclick=function(){m.remove();if(onConfirm)onConfirm()};
+  m.onclick=function(e){if(e.target===m)m.remove()};
+}
+function showAlert(title, msg){
+  var existing=document.getElementById('alertModal');
+  if(existing)existing.remove();
+  var m=document.createElement('div');
+  m.id='alertModal';
+  m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+  var theme=document.documentElement.className;
+  var isDark=theme==='dark';
+  var cardBg=isDark?'#1e1f29':'#ffffff';
+  var textClr=isDark?'#f8f8f2':'#1a1a2e';
+  var muted=isDark?'#6272a4':'#666';
+  var border=isDark?'#3a3a4e':'#ddd';
+  m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+    +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+    +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
+    +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.25rem;line-height:1.5">'+escapeHtml(msg)+'</p>'
+    +'<button id="alertOkBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">OK</button>'
+    +'</div></div>';
+  document.body.appendChild(m);
+  document.getElementById('alertOkBtn').onclick=function(){m.remove()};
+  m.onclick=function(e){if(e.target===m)m.remove()};
+}
+var _sessionExpiredShown = false;
+function showSessionExpired(){
+  if(_sessionExpiredShown) return;
+  _sessionExpiredShown = true;
+  var existing=document.getElementById('sessionExpiredModal');
+  if(existing)return;
+  document.body.style.overflow = 'hidden';
+  var m=document.createElement('div');
+  m.id='sessionExpiredModal';
+  m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);animation:fadeIn 0.15s ease';
+  var theme=document.documentElement.className;
+  var isDark=theme==='dark';
+  var cardBg=isDark?'#1e1f29':'#ffffff';
+  var textClr=isDark?'#f8f8f2':'#1a1a2e';
+  var muted=isDark?'#6272a4':'#666';
+  var border=isDark?'#3a3a4e':'#ddd';
+  m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+    +'<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
+    +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">Session Expired</h3>'
+    +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">Your session has expired. Please log in again to continue using GlbTOKEN.</p>'
+    +'<button id="sessionLoginBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Log In</button>'
+    +'<a href="#" id="sessionDismissBtn" style="display:inline-block;margin-top:1rem;color:'+muted+';font-size:0.85rem;text-decoration:none;cursor:pointer">Continue browsing →</a>'
+    +'</div></div>';
+  document.body.appendChild(m);
+  document.getElementById('sessionLoginBtn').onclick=function(){
+    m.remove();
+    document.body.style.overflow = '';
+    _sessionExpiredShown=false;
+    token='';userData={};
+    localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+    window.location.href='login.html';
+  };
+  function _onPopState(){ window.location.href='login.html'; }
+  window.addEventListener('popstate',_onPopState);
+  var _origBtn=m.querySelector('#sessionLoginBtn').onclick;
+  m.querySelector('#sessionLoginBtn').onclick=function(){
+    window.removeEventListener('popstate',_onPopState);
+    _origBtn.call(this);
+  };
+  document.getElementById('sessionDismissBtn').onclick=function(e){
+    e.preventDefault();
+    window.removeEventListener('popstate',_onPopState);
+    token='';userData={};
+    localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+    localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
+    localStorage.removeItem('gt_keys');
+    applyAuth();
+    m.remove();
+    document.body.style.overflow = '';
+    _sessionExpiredShown=false;
+    window.location.href='/';
+  };
+}
+function showPrompt(title, placeholder, onSubmit){
+  var existing=document.getElementById('promptModal');
+  if(existing)existing.remove();
+  var m=document.createElement('div');
+  m.id='promptModal';
+  m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
+  var theme=document.documentElement.className;
+  var isDark=theme==='dark';
+  var cardBg=isDark?'#1e1f29':'#ffffff';
+  var textClr=isDark?'#f8f8f2':'#1a1a2e';
+  var muted=isDark?'#6272a4':'#666';
+  var border=isDark?'#3a3a4e':'#ddd';
+  m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:380px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
+    +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
+    +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
+    +'<input id="promptInput" type="text" placeholder="'+escapeHtml(placeholder||'')+'" style="width:100%;padding:0.65rem 0.75rem;border-radius:10px;border:1px solid '+border+';background:'+cardBg+';color:'+textClr+';font-size:0.9rem;margin:.75rem 0 1rem;box-sizing:border-box;outline:none" />'
+    +'<div style="display:flex;gap:0.75rem">'
+    +'<button id="promptCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
+    +'<button id="promptOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Create</button>'
+    +'</div></div>';
+  document.body.appendChild(m);
+  var input = document.getElementById('promptInput');
+  input.focus();
+  document.getElementById('promptCancelBtn').onclick=function(){m.remove()};
+  document.getElementById('promptOkBtn').onclick=function(){m.remove(); var v=input.value.trim(); if(v)onSubmit(v);};
+  m.onclick=function(e){if(e.target===m)m.remove()};
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'){m.remove();var v=input.value.trim();if(v)onSubmit(v);}});
+}
+
+// ── Dash sidebar: close sidebar first when tapping any item ──
+document.addEventListener('click',function(e){
+  var item=e.target.closest('.dash-sidebar-item');
+  if(!item)return;
+  var sb=document.getElementById('dashSidebar');
+  if(!sb)return;
+  sb.classList.remove('open');
+  var toggle=document.getElementById('dashSidebarToggle');
+  if(toggle)toggle.classList.remove('hidden');
+  var href=item.getAttribute('href');
+  if(href){
+    var curPage=window.location.pathname.split('/').pop()||'dashboard.html';
+    var targetPage=href.split('#')[0].split('?')[0]||'dashboard.html';
+    if(targetPage===curPage||(targetPage==='dashboard.html'&&curPage==='')){
+      e.preventDefault();
+    }
+  }
+});
+
