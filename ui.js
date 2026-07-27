@@ -702,7 +702,8 @@ document.addEventListener('DOMContentLoaded',function(){
     var t=e.touches[0];
     startX=t.clientX;startY=t.clientY;
     swiping=true;
-    if(startX<=EDGE_ZONE){e.preventDefault()}
+    // Don't block taps on the sidebar toggle button itself
+    if(startX<=EDGE_ZONE && !e.target.closest('#dashSidebarToggle')){e.preventDefault()}
   },{passive:false});
   document.addEventListener('touchmove',function(e){
     if(!swiping||!sb)return;
