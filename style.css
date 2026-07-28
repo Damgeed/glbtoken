@@ -7365,17 +7365,7 @@ body {
   }
   .dash-card div[style*="overflow-x:auto"]::after,
   .dash-card .scroll-x::after {
-    content: "→";
-    position: absolute;
-    right: 4px;
-    bottom: 1.4rem;
-    font-size: 1.2rem;
-    color: var(--primary);
-    opacity: 0.6;
-    pointer-events: none;
-    animation: scrollHintPulse 1.8s ease-in-out infinite;
-    z-index: 2;
-    line-height: 1;
+    content: none;
   }
   .dash-card.is-scrolled div[style*="overflow-x:auto"]::after,
   .dash-card.is-scrolled .scroll-x::after {
