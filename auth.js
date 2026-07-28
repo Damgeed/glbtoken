@@ -38,8 +38,8 @@
         window.__secure.setItem('gt_token',token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
         window.location.href='/dashboard.html';
-      },
-      error: function(){showToast('Login failed','error');}
+      } catch(e){
+        showToast('Login failed','error');
       }
     }
     async function sendRegisterCode(){
