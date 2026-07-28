@@ -29,9 +29,21 @@
   var urlUser = params.get('user');
 
   if (urlToken) {
-    window.__secure.setItem('gt_token', urlToken);
-    if (urlUser) {
-      try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
+    try {
+      if (window.__secure) {
+        window.__secure.setItem('gt_token', urlToken);
+        if (urlUser) {
+          try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
+        }
+      } else {
+        localStorage.setItem('gt_token', urlToken);
+        if (urlUser) {
+          try { localStorage.setItem('gt_user', urlUser); } catch(e) {}
+        }
+      }
+    } catch(_) {
+      localStorage.setItem('gt_token', urlToken);
+      if (urlUser) localStorage.setItem('gt_user', urlUser);
     }
     // Clean URL immediately — remove token from address bar
     var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
@@ -39,7 +51,7 @@
   }
 
   // Auth check
-  var token = localStorage.getItem('gt_token');
+  var token = (window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token'));
   if (!token) {
     window.location.replace('login.html');
     return;
