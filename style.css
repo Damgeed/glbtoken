@@ -2892,6 +2892,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--bg-alt);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
 }
 .ai-chat-inner {
   border: 1px solid var(--border);

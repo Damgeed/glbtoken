@@ -504,3 +504,42 @@ function logoutUser(){
       showToast('Notification preferences saved','success');
     }
     // ── History / Transactions ──
+
+// ── Auth UI sync (shared so it works on all pages, not just dashboard) ──
+window.applyAuth = function applyAuth(){
+  var loggedIn = !!token;
+  var ng = document.getElementById('navGuest'); if(ng) ng.style.display = loggedIn ? 'none' : 'flex';
+  var nu = document.getElementById('navUser');
+  if(nu){ nu.style.display = loggedIn ? 'flex' : 'none'; nu.classList.toggle('d-none', !loggedIn); }
+  var nb = document.getElementById('navBalance'); if(nb) nb.style.display = loggedIn ? 'inline-block' : 'none';
+  // Mobile menu sync
+  var mg = document.getElementById('mobileGuestSection'); if(mg) mg.style.display = loggedIn ? 'none' : 'block';
+  var mu = document.getElementById('mobileUserSection');
+  if(mu){ mu.style.display = loggedIn ? 'block' : 'none'; mu.classList.toggle('d-none', !loggedIn); }
+  if(loggedIn){
+    var displayName = userData && userData.name;
+    if(!displayName){
+      if(userData && userData.email){
+        if(userData.email.endsWith('@privaterelay.appleid.com')) displayName = 'Apple User';
+        else displayName = userData.email.split('@')[0];
+      } else { displayName = 'User'; }
+    }
+    var initial = (displayName || 'U')[0].toUpperCase();
+    var av = document.querySelector('.nav-avatar');
+    if(av){
+      var textNode = document.createTextNode(initial);
+      var dropdown = av.querySelector('.dropdown');
+      av.textContent = '';
+      av.appendChild(textNode);
+      if(dropdown) av.appendChild(dropdown);
+    }
+    var da = document.getElementById('ddAvatar'); if(da) da.textContent = initial;
+    var dn = document.getElementById('dropName'); if(dn) dn.textContent = displayName;
+    var de = document.getElementById('dropEmail'); if(de) de.textContent = (userData && userData.email) || '';
+    // Mobile sync
+    var ma = document.getElementById('mAvatar'); if(ma) ma.textContent = initial;
+    var mn = document.getElementById('mName'); if(mn) mn.textContent = displayName;
+    var me = document.getElementById('mEmail'); if(me) me.textContent = (userData && userData.email) || '';
+  }
+  if(typeof updateBalance === 'function') updateBalance();
+};
