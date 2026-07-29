@@ -259,8 +259,8 @@
       })();
     }
 
-// ── Auto-init auth UI on every page load ──
-  (function(){
+// ── Auto-init auth UI on every page load (deferred so nav.js has injected HTML) ──
+  document.addEventListener('DOMContentLoaded', function(){
     var t = localStorage.getItem('gt_token');
     if(t){
       try{var ud = JSON.parse(localStorage.getItem('gt_user') || '{}');}catch(e){ud={};}
@@ -268,7 +268,7 @@
       userData = ud;
       if(typeof applyAuth === 'function') applyAuth();
     }
-  })();
+  });
     function tmDragStart(clientX){
       tmDragStartX=clientX;
       tmDragOffset=0;
@@ -428,8 +428,8 @@ document.addEventListener('click', function(e) {
   });
 })();
 
-// ── Auto-init auth UI on every page load ──
-(function(){
+// ── Auto-init auth UI on every page load (deferred so nav.js has injected HTML) ──
+document.addEventListener('DOMContentLoaded', function(){
   var t = localStorage.getItem('gt_token');
   if(t){
     try{var ud = JSON.parse(localStorage.getItem('gt_user') || '{}');}catch(e){ud={};}
@@ -438,7 +438,7 @@ document.addEventListener('click', function(e) {
     userData = ud;
     if(typeof applyAuth === 'function') applyAuth();
   }
-})();
+});
 
 // ── Scroll-hint: hide gold arrow when user scrolls ──
 document.addEventListener('DOMContentLoaded', function() {
