@@ -604,6 +604,12 @@ function closeMobileSupportChat(){
 (function(){
   var fab = document.querySelector('.chat-fab');
   if(!fab) return;
+  // Initialize inline position from CSS so first touch doesn't snap to right
+  if(!fab.style.left || fab.style.left === 'auto' || fab.style.left === ''){
+    var cs = window.getComputedStyle(fab);
+    if(cs.left && cs.left !== 'auto') fab.style.left = cs.left;
+    if(cs.top && cs.top !== 'auto') fab.style.top = cs.top;
+  }
   var stored = localStorage.getItem('fab_pos');
   if(stored){var p = stored.split(',');fab.style.bottom='auto';fab.style.right='auto';fab.style.left=p[0]+'px';fab.style.top=p[1]+'px'}
   var startX, startY, startL, startT, moved = false, THRESHOLD = 10;
