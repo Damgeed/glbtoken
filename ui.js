@@ -256,11 +256,6 @@
         }
         btn.disabled = false;
         btn.textContent = '➤';
-        // Refocus input on mobile to keep keyboard open after response
-        if(window.innerWidth <= 768 && input) {
-          input.focus({preventScroll:true});
-          requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-        }
       })();
     }
 
