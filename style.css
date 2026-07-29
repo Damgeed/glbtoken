@@ -183,8 +183,6 @@ textarea {
 .faded { opacity: 0.6; }
 .link-primary { color: var(--primary); }
 .text-center { text-align: center; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-.w-full { width: 100%; }
 .inline-code { background: var(--bg-alt); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
 .models-header { margin-bottom: 2rem; }
 .models-header .section-title { font-size: 1.75rem; }
