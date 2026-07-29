@@ -428,36 +428,6 @@ document.addEventListener('click', function(e) {
   });
 })();
 
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'chat-msg ai';
-      typingDiv.id = 'aiTyping';
-      typingDiv.innerHTML = '<div class="av">🤖</div><div class="bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>';
-      msgs.appendChild(typingDiv);
-      msgs.scrollTop = msgs.scrollHeight;
-      // Call backend proxy
-      (async () => {
-        try {
-          const data = await api('POST','/api/proxy/chat',{model: aiModel, message: msg});
-          document.getElementById('aiTyping').remove();
-          const aiDiv = document.createElement('div');
-          aiDiv.className = 'chat-msg ai';
-          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble">'+escapeHtml(data.response || data.choices?.[0]?.message?.content || 'No response')+'</div>';
-          msgs.appendChild(aiDiv);
-          msgs.scrollTop = msgs.scrollHeight;
-        } catch(e){
-          const typing = document.getElementById('aiTyping');
-          if(typing) typing.remove();
-          const aiDiv = document.createElement('div');
-          aiDiv.className = 'chat-msg ai';
-          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">Connection error. Please try again.</div>';
-          msgs.appendChild(aiDiv);
-          msgs.scrollTop = msgs.scrollHeight;
-        }
-        btn.disabled = false;
-        btn.textContent = '➤';
-      })();
-    }
-
 // ── Auto-init auth UI on every page load ──
 (function(){
   var t = localStorage.getItem('gt_token');
