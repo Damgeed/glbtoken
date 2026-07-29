@@ -1756,7 +1756,6 @@ input[type="range"]::-moz-range-thumb {
 .text-xs { font-size: 0.75rem; }
 .text-sm { font-size: 0.85rem; }
 .text-nowrap { white-space: nowrap; }
-.text-center { text-align: center; }
 .font-normal { font-weight: 400; }
 .font-bold-sm { font-size: 16px; line-height: 1; font-weight: 700; }
 .align-middle { vertical-align: middle; }
@@ -1786,7 +1785,6 @@ input[type="range"]::-moz-range-thumb {
 .opacity-5 { opacity: 0.5; }
 .h-40 { height: 40px; min-height: 0; }
 .empty-state-alt { text-align: center; color: var(--text-muted); padding: 1.5rem; font-size: 0.85rem; }
-.w-full { width: 100%; }
 .cursor-pointer { cursor: pointer; }
 .text-decoration-none { text-decoration: none; }
 .relative { position: relative; }
