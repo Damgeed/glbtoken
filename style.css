@@ -59,18 +59,6 @@ html {
   --code-comment: #6272a4;
   --code-operator: #f8f8f2;
   --hr-color: rgba(255, 255, 255, 0.08);
-
-  /* ── Spacing Scale ── */
-  --space-3xs: 0.15rem;
-  --space-2xs: 0.25rem;
-  --space-xs:  0.35rem;
-  --space-sm:  0.5rem;
-  --space-md:  0.75rem;
-  --space-lg:  1rem;
-  --space-xl:  1.25rem;
-  --space-2xl: 1.5rem;
-  --space-3xl: 2rem;
-  --space-4xl: 3rem;
 }
 html.light {
   --bg: hsl(40 20% 98%);
