@@ -14,7 +14,7 @@ if not SECRET_KEY:
     raise RuntimeError("JWT_SECRET environment variable is required")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1-hour expiry for security (refresh mechanism handles extension)
-REFRESH_TOKEN_EXPIRE_DAYS = 30    # 30-day refresh token
+REFRESH_TOKEN_EXPIRE_DAYS = 90    # 90-day refresh token (industry standard)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
