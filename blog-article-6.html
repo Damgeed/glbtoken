@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1148" />
+  <link rel="stylesheet" href="style.css?v=1149" />
 
   </head>
 <body>
@@ -142,46 +142,12 @@
     </div>
   </div>
 
-<script src="nav.js?v=10"></script>
-<script src="footer.js?v=10"></script>
-<script src="translations.js?v=1095"></script>
+<script src="nav.js?v=11"></script>
+<script src="footer.js?v=11"></script>
+<script src="translations.js?v=1096"></script>
 </script>
-<script data-cfasync="false" src="shared.js?v=1116"></script>
-<script data-cfasync="false" src="ui.js?v=1209"></script>
-
-<script>
-(function(){
-  var cw = document.getElementById('chatWindow');
-  if(!cw) return;
-  var h = cw.querySelector('.chat-header');
-  if(!h) return;
-  var offX, offY, dragging = false;
-  function startDrag(e){
-    if(e.target.tagName === 'BUTTON') return;
-    dragging = true; cw.classList.add('dragging');
-    var r = cw.getBoundingClientRect();
-    var cx = e.clientX || (e.touches && e.touches[0].clientX);
-    var cy = e.clientY || (e.touches && e.touches[0].clientY);
-    offX = cx - r.left; offY = cy - r.top;
-    e.preventDefault();
-  }
-  function moveDrag(e){
-    if(!dragging) return;
-    var cx = e.clientX || (e.touches && e.touches[0].clientX);
-    var cy = e.clientY || (e.touches && e.touches[0].clientY);
-    cw.style.left = (cx - offX) + 'px';
-    cw.style.top = (cy - offY) + 'px';
-    cw.style.right = 'auto'; cw.style.bottom = 'auto';
-  }
-  function endDrag(){if(dragging){dragging=false;cw.classList.remove('dragging')}}
-  h.addEventListener('mousedown', startDrag);
-  h.addEventListener('touchstart', startDrag, {passive:false});
-  document.addEventListener('mousemove', moveDrag);
-  document.addEventListener('touchmove', moveDrag, {passive:false});
-  document.addEventListener('mouseup', endDrag);
-  document.addEventListener('touchend', endDrag);
-})();
-</script>
+<script data-cfasync="false" src="shared.js?v=1117"></script>
+<script data-cfasync="false" src="ui.js?v=1210"></script>
 
 </body>
 </html>

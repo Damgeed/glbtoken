@@ -447,7 +447,7 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
     }
 
     // ── Chat Drag Handler ──
-    function initChatDrag(){
+    (function(){
       var cw = document.getElementById('chatWindow');
       if(!cw) return;
       var h = cw.querySelector('.chat-header');
@@ -477,7 +477,7 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
       document.addEventListener('touchmove', moveDrag, {passive:false});
       document.addEventListener('mouseup', endDrag);
       document.addEventListener('touchend', endDrag);
-    }
+    })();
 
     // ── Auth (Passwordless Email via Auth0) ──
     function setBtnLoading(btn, loading, originalText) {
