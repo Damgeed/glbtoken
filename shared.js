@@ -1,6 +1,5 @@
 
-    const API_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-      ? 'https://glbtoken-backend-production.up.railway.app' : 'https://glbtoken-backend-production.up.railway.app';
+    const API_URL = 'https://glbtoken-backend-production.up.railway.app';
     let token = (window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token')) || '';
     let userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
     let keys = JSON.parse(localStorage.getItem('gt_keys') || '[]');
