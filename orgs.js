@@ -42,36 +42,6 @@ async function loadOrgDetails(orgId) {
   container.innerHTML=html;
 }
 
-async function createOrg() {
-  if(!token){showToast('Please sign in','error');return}
-  const nameEl=document.getElementById('orgNameInput');
-  if(!nameEl||!nameEl.value.trim()){showToast('Enter an organization name','error');return}
-  const d=await safeApi('POST','/api/orgs',{name:nameEl.value.trim()});
-  if(!d) return;
-  nameEl.value='';
-  document.getElementById('createOrgModal').classList.remove('open');
-  loadOrgs();
-  showToast('Organization created!','success');
-}
-
-async function inviteMember(orgId) {
-  if(!token||!orgId){showToast('Select an organization first','error');return}
-  const emailEl=document.getElementById('inviteEmail');
-  const roleEl=document.getElementById('inviteRole');
-  if(!emailEl||!emailEl.value.trim()){showToast('Enter an email address','error');return}
-  await safeApi('POST','/api/orgs/'+orgId+'/invite',{email:emailEl.value.trim(),role:roleEl?roleEl.value:'member'});
-  emailEl.value='';
-  showToast('Invitation sent!','success');
-  loadOrgDetails(orgId);
-}
-
-async function updateMemberRole(orgId, userId, role) {
-  if(!token)return;
-  await safeApi('PUT','/api/orgs/'+orgId+'/members/'+userId+'/role',{role:role});
-  loadOrgDetails(orgId);
-  showToast('Member role updated','success');
-}
-
 async function removeMember(orgId, userId) {
   if(!token)return;
   showConfirm('Remove member?','This action cannot be undone.',async function(){
@@ -91,12 +61,3 @@ async function leaveOrg(orgId) {
     showToast('Left organization','info');
   });
 }
-
-async function joinOrg(inviteToken) {
-  if(!token){showToast('Please sign in','error');return}
-  const d=await safeApi('POST','/api/orgs/join',{invite_token:inviteToken});
-  if(!d) return;
-  loadOrgs();
-  showToast('Joined organization!','success');
-}
-

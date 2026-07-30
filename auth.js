@@ -250,7 +250,6 @@
           return;
         }
         // Generate PKCE code verifier and challenge
-        function dec2hex(dec) { return ('0' + dec.toString(16)).substr(-2); }
         function generateCodeVerifier() {
           var arr = new Uint8Array(32);
           crypto.getRandomValues(arr);
