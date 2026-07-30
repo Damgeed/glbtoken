@@ -10,7 +10,8 @@ from database import get_db, User, LoginEvent
 from auth import (
     hash_password, verify_password, create_access_token, decode_token,
     get_current_user, get_optional_user, generate_api_key,
-    verify_google_token, verify_github_code, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID
+    verify_google_token, verify_github_code, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID,
+    generate_refresh_token, validate_refresh_token
 )
 from newapi_integration import create_newapi_user, create_api_token
 from auth0 import (
@@ -32,6 +33,13 @@ from schemas import (
 
 router = APIRouter()
 
+# ── Helper: build auth response with refresh token ──
+def _auth_response(user, db):
+    """Return token + refresh_token + user object."""
+    return {
+        "token": create_access_token({"sub": str(user.id)}),
+        "refresh_token": generate_refresh_token(user.id, db),
+    }
 
 def record_login_event(user_id: int, request: Request, success: bool, db: Session):
     """Record a login event for audit/history purposes."""
@@ -105,12 +113,14 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         print(f"⚠️ New API sync failed on register: {e}")
         # Don't block registration on New API failure
     
+    auth = _auth_response(user, db)
     result = {
         "user": {
             "id": user.id, "name": user.name, "email": user.email,
             "token_balance": user.token_balance,
         },
-        "token": create_access_token({"sub": str(user.id)}),
+        "token": auth["token"],
+        "refresh_token": auth["refresh_token"],
     }
     if newapi_token:
         result["newapi_token"] = newapi_token
@@ -137,7 +147,8 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
         _401("Invalid credentials")
     record_login_event(user.id, request, True, db)
     token = create_access_token({"sub": str(user.id)})
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "country": user.country}, "token": token}
+    auth = _auth_response(user, db)
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "country": user.country}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 @router.get("/api/auth/google")
@@ -199,7 +210,8 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
         db.commit()
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": token}
+    auth = _auth_response(user, db)
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 @router.get("/api/auth/github")
@@ -242,7 +254,8 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         db.commit()
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": token}
+    auth = _auth_response(user, db)
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 # ── Auth0 Routes ──
@@ -826,6 +839,23 @@ def update_profile(req: ProfileUpdateRequest, user: User = Depends(get_current_u
     db.commit()
     return {"status": "updated", "name": user.name, "country": user.country}
 
+# ── Refresh Token ──
+@router.post("/auth/refresh")
+async def refresh_access_token(
+    body: dict = Body(...),
+    db: Session = Depends(get_db)
+):
+    raw = body.get("refresh_token")
+    if not raw:
+        _400("refresh_token is required")
+    try:
+        user_id = validate_refresh_token(raw, db)
+    except HTTPException:
+        _401("Session expired. Please log in again.")
+    # Generate new access + refresh tokens
+    new_access = create_access_token({"sub": str(user_id)})
+    new_refresh = generate_refresh_token(user_id, db)
+    return {"token": new_access, "refresh_token": new_refresh}
 
 # ── Helper: send_email ──
 

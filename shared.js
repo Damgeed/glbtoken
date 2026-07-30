@@ -260,20 +260,43 @@
       try {
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
-          if(resp.status === 401){
-            // Show modal on dash pages; silently redirect elsewhere
-            var page = window.location.pathname.split('/').pop();
-            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
-            if(isDashPage){
-              showSessionExpired();
-            } else {
-              localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
-              window.location.href = 'login.html';
+          if(resp.status === 401 && token && localStorage.getItem('gt_refresh_token')){
+            // Silently attempt token refresh before declaring session expired
+            try {
+              const refreshResp = await fetch(API_URL+'/auth/refresh', {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({refresh_token: localStorage.getItem('gt_refresh_token')})
+              });
+              if(refreshResp.ok){
+                const refreshData = await refreshResp.json();
+                // Store new tokens
+                token = refreshData.token;
+                userData = JSON.parse(localStorage.getItem('gt_user') || '{}');
+                localStorage.setItem('gt_token', refreshData.token);
+                localStorage.setItem('gt_refresh_token', refreshData.refresh_token);
+                // Retry the original request with new token
+                opts.headers['Authorization'] = 'Bearer '+token;
+                const retryResp = await fetch(API_URL+path, opts);
+                if(retryResp.ok) return await retryResp.json();
+                // If retry also fails, fall through to session expired
+                const errData = await retryResp.json().catch(()=>{});
+                throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
+              }
+            } catch(refreshError){
+              // Refresh failed — fall through to normal session expired handling
             }
-            throw new Error('Session expired');
           }
-          const errData = await resp.json().catch(()=>{});
-          throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
+          // Show modal on dash pages; silently redirect elsewhere
+          var page = window.location.pathname.split('/').pop();
+          var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
+          if(isDashPage){
+            showSessionExpired();
+          } else {
+            localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');localStorage.removeItem('gt_refresh_token');
+            window.location.href = 'login.html';
+          }
+          throw new Error('Session expired');
         }
         return await resp.json();
       } catch(e) {
@@ -416,7 +439,7 @@ function logoutUser(){
     token='';userData={};
     window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
     localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
-    localStorage.removeItem('gt_keys');
+    localStorage.removeItem('gt_keys');localStorage.removeItem('gt_refresh_token');
     window.__secure.clear();
     applyAuth();
         window.location.href='/';

@@ -298,6 +298,7 @@
       const data = await safeApi('POST','/api/auth/auth0/login', {token: idToken},null,true);
       if(!data) { window.location.href = '/login.html?error=' + encodeURIComponent('Auth login failed'); return; }
       window.__secure.setItem('gt_token', data.token);
+      if(data.refresh_token) localStorage.setItem('gt_refresh_token', data.refresh_token);
       window.__secure.setItem('gt_user', JSON.stringify(data.user));
       // Don't call applyAuth() — callback page has no nav DOM elements
       // Don't call showToast() — callback page has no toast DOM elements

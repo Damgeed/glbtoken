@@ -78,6 +78,17 @@ class User(Base):
     api_keys = relationship("ApiKey", back_populates="user", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
 
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    token_hash = Column(String, unique=True, nullable=False, index=True)  # SHA-256 hash
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    revoked = Column(Boolean, default=False)
+    
+    user = relationship("User")
+
 class ApiKey(Base):
     __tablename__ = "api_keys"
     id = Column(Integer, primary_key=True, index=True)

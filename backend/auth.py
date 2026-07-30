@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from database import get_db, User
+from database import get_db, User, RefreshToken
 import httpx
 import os
 
@@ -14,6 +14,7 @@ if not SECRET_KEY:
     raise RuntimeError("JWT_SECRET environment variable is required")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1-hour expiry for security (refresh mechanism handles extension)
+REFRESH_TOKEN_EXPIRE_DAYS = 30    # 30-day refresh token
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
@@ -35,6 +36,31 @@ def create_access_token(data: dict) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc)})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def generate_refresh_token(user_id: int, db: Session) -> str:
+    """Generate a refresh token, store its SHA-256 hash, return the raw token."""
+    raw = secrets.token_hex(32)  # 64-char hex string
+    token_hash = hashlib.sha256(raw.encode()).hexdigest()
+    expires = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    db_entry = RefreshToken(user_id=user_id, token_hash=token_hash, expires_at=expires)
+    db.add(db_entry)
+    db.commit()
+    return raw
+
+def validate_refresh_token(raw: str, db: Session) -> int:
+    """Validate a refresh token. Returns user_id if valid. Raises 401 on failure."""
+    token_hash = hashlib.sha256(raw.encode()).hexdigest()
+    entry = db.query(RefreshToken).filter(
+        RefreshToken.token_hash == token_hash,
+        RefreshToken.revoked == False,
+        RefreshToken.expires_at > datetime.now(timezone.utc)
+    ).first()
+    if not entry:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+    # Rotate: revoke old token
+    entry.revoked = True
+    db.commit()
+    return entry.user_id
 
 def decode_token(token: str) -> dict:
     try:
