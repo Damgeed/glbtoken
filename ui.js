@@ -1016,3 +1016,13 @@ document.addEventListener('click',function(e){
   }
 });
 
+
+    // ── Notifications (shared — used by notifications.html + dashboard.html) ──
+    function dismissNotif(el){
+      el.closest('.notif-item').remove();
+    }
+    function markAllRead(){
+      var items=document.querySelectorAll('.notif-item .notif-dot');
+      items.forEach(function(d){d.style.display='none'});
+      showToast('All marked as read','info');
+    }

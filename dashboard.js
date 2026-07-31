@@ -18,15 +18,6 @@
         depBody.innerHTML=depRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No deposits yet</td></tr>';
         conBody.innerHTML=conRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No consumption yet</td></tr>';
     }
-    // ── Notifications ──
-    function dismissNotif(el){
-      el.closest('.notif-item').remove();
-    }
-    function markAllRead(){
-      var items=document.querySelectorAll('.notif-item .notif-dot');
-      items.forEach(function(d){d.style.display='none'});
-      showToast('All marked as read','info');
-    }
     // ── Billing ──
     function addPaymentMethod(){
       showToast('Payment method management coming soon','info');
