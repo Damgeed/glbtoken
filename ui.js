@@ -349,6 +349,14 @@ function toggleLangMenu() {
   var m = document.getElementById('langMenu');
   if (m) m.classList.toggle('open');
 }
+function toggleDropdown(){
+  var ud = document.getElementById('userDropdown');
+  if (ud) ud.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var dd = document.getElementById('userDropdown');
+  if (dd && dd.classList.contains('open') && !e.target.closest('.nav-avatar')) dd.classList.remove('open');
+});
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.lang-selector') && !e.target.closest('.lang-menu') && !e.target.closest('.lang-btn-mobile')) {
     var m = document.getElementById('langMenu');

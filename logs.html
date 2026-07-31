@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1151" />
+  <link rel="stylesheet" href="style.css?v=1152" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="logs.css?v=1021" />
+<link rel="stylesheet" href="logs.css?v=1022" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -204,12 +204,12 @@
     </div>
   </div>
 
-<script src="nav.js?v=13"></script>
-<script src="footer.js?v=13"></script>
-<script src="translations.js?v=1098"></script>
+<script src="nav.js?v=14"></script>
+<script src="footer.js?v=14"></script>
+<script src="translations.js?v=1099"></script>
 </script>
-<script data-cfasync="false" src="shared.js?v=1119"></script>
-<script data-cfasync="false" src="ui.js?v=1212"></script>
+<script data-cfasync="false" src="shared.js?v=1120"></script>
+<script data-cfasync="false" src="ui.js?v=1213"></script>
 
 <!-- ── Logs Script ── -->
 <script>
@@ -224,7 +224,7 @@ async function loadCostBreakdown(days){
     }
     var el=document.getElementById('costByModelChart');
     if(!el)return;
-    var data=await api('GET','/api/analytics/cost-by-model?days='+(days||7));
+    var data=await safeApi('GET','/api/analytics/cost-by-model?days='+(days||7));
     if(!data||!data.models||!data.models.length){
       if(window.costChartInst){window.costChartInst.destroy();window.costChartInst=null}
       el.parentNode.innerHTML+='<p class="text-muted text-center text-sm pad-sm-1">No cost data available.</p>';
@@ -270,7 +270,7 @@ async function loadErrorRate(days){
   try{
     var el=document.getElementById('errorRateChart');
     if(!el)return;
-    var data=await api('GET','/api/analytics/error-rate?days='+(days||7));
+    var data=await safeApi('GET','/api/analytics/error-rate?days='+(days||7));
     if(!data||!data.labels||!data.labels.length){
       if(window.errorChartInst){window.errorChartInst.destroy();window.errorChartInst=null}
       el.parentNode.innerHTML+='<p class="text-muted text-center text-sm pad-sm-1">No error rate data available.</p>';
@@ -309,7 +309,7 @@ async function loadResponseTimes(days){
     var body=document.getElementById('responseTimeBody');
     if(!body)return;
     body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
-    var data=await api('GET','/api/analytics/response-times?days='+(days||7));
+    var data=await safeApi('GET','/api/analytics/response-times?days='+(days||7));
     if(!data||!data.items||!data.items.length){
       body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No response time data available.</td></tr>';
       return;
@@ -330,7 +330,7 @@ async function loadSpeedComparison(){
     var body=document.getElementById('speedComparisonBody');
     if(!body)return;
     body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
-    var result=await api('GET','/api/available-models',null,8000);
+    var result=await safeApi('GET','/api/available-models',null,8000);
     var models=(result&&result.models)||[];
     if(!models.length){
       body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No speed comparison data available.</td></tr>';

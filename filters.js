@@ -424,11 +424,6 @@
       const hb=document.getElementById('heroBalance');
       if(hb)hb.textContent=b.toLocaleString();
     }
-    function toggleDropdown(){var ud=document.getElementById('userDropdown');if(ud)ud.classList.toggle('open')}
-    document.addEventListener('click',function(e){
-      const dd=document.getElementById('userDropdown');
-      if(dd&&dd.classList.contains('open')&&!e.target.closest('.nav-avatar'))dd.classList.remove('open');
-    });
 
     // ── Hash-based routing (back/forward support) ──
     window.addEventListener('hashchange',function(){
