@@ -231,9 +231,9 @@
       if(!tbody) return;
       tbody.innerHTML = '<tr><td colspan="6" class="empty-state-alt"><div class="spinner-btn"></div>Loading invoices...</td></tr>';
 
-      fetch('/api/billing/invoices',{
+      fetch(API_URL + '/api/billing/invoices',{
         method:'GET',
-        headers:{'Authorization':'Bearer '+(localStorage.getItem('gt_token')||''),'Accept':'application/json'}
+        headers:{'Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||''),'Accept':'application/json'}
       })
       .then(function(r){ return r.json(); })
       .then(function(data){

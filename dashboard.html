@@ -22,33 +22,31 @@
 <body>
 <script>
 (function() {
-  // ====== SAFE TOKEN RECOVERY ======
-  // Validates JWT shape + expiry + freshness before persisting (session-fixation guard)
-  // defined in shared.js; fallback here in case shared.js hasn't loaded yet
-  if (typeof window.recoverTokenFromUrl === 'function') {
-    window.recoverTokenFromUrl();
-  } else {
+  // shared.js (defines window.__secure + recoverTokenFromUrl) loads at the END
+  // of <body>. This head script runs BEFORE it, so we defer the token recovery
+  // + auth check to DOMContentLoaded. Previously this script called
+  // window.__secure / recoverTokenFromUrl before they existed, which silently
+  // failed for OAuth URL-token logins and bounced users back to login.html.
+  function boot(){
     try {
-      var params = new URLSearchParams(window.location.search);
-      var urlToken = params.get('token');
-      if (urlToken) {
-        var parts = String(urlToken).split('.');
-        if (parts.length === 3) {
-          window.__secure.setItem('gt_token', urlToken);
-          var urlUser = params.get('user');
-          if (urlUser) { try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {} }
-          var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
-          window.history.replaceState({}, document.title, clean);
-        }
+      if (typeof window.recoverTokenFromUrl === 'function') {
+        window.recoverTokenFromUrl();
       }
-    } catch(_) {}
+    } catch(e) {}
+    var secure = window.__secure || {
+      getItem:function(k){return localStorage.getItem(k)},
+      setItem:function(k,v){localStorage.setItem(k,v)},
+      removeItem:function(k){localStorage.removeItem(k)}
+    };
+    var token = secure.getItem('gt_token');
+    if (!token) {
+      window.location.replace('login.html');
+    }
   }
-
-  // Auth check
-  var token = (window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token'));
-  if (!token) {
-    window.location.replace('login.html');
-    return;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
 })();
 

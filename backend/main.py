@@ -126,6 +126,33 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 app.add_middleware(SecurityHeadersMiddleware)
 
 
+# ── /v1 Gateway CORS: public API-key endpoints must work from ANY origin ──
+# (users call api.glbtoken.io from their own apps / browser SDKs; auth is via
+# Bearer API key, not cookies, so a wildcard origin is safe here).
+
+class V1CORSMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        path = request.url.path
+        is_v1 = path.startswith("/v1")
+        if is_v1 and request.method == "OPTIONS":
+            from starlette.responses import Response
+            resp = Response(status_code=204)
+            resp.headers["Access-Control-Allow-Origin"] = "*"
+            resp.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+            resp.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-Requested-With"
+            resp.headers["Access-Control-Max-Age"] = "600"
+            resp.headers["Access-Control-Allow-Credentials"] = "false"
+            return resp
+        response = await call_next(request)
+        if is_v1:
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            response.headers["Access-Control-Allow-Credentials"] = "false"
+        return response
+
+
+app.add_middleware(V1CORSMiddleware)
+
+
 # ── Rate Limiting ──
 
 app.state.limiter = limiter

@@ -178,9 +178,9 @@
 window.saveProfile = function(){
   var name = document.getElementById('settingsName').value.trim();
   var tz = document.getElementById('settingsTz').value;
-  fetch('/api/user/profile', {
+  fetch(API_URL + '/api/user/profile', {
     method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('gt_token')},
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
     body: JSON.stringify({name: name, timezone: tz})
   })
   .then(function(r){ return r.json(); })
@@ -204,9 +204,9 @@ window.updatePassword = function(){
   var neu = document.getElementById('settingsNewPw').value;
   if(!cur || !neu){ showToast('Please fill in both password fields','error'); return; }
   if(neu.length < 6){ showToast('New password must be at least 6 characters','error'); return; }
-  fetch('/api/user/password', {
+  fetch(API_URL + '/api/user/password', {
     method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('gt_token')},
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
     body: JSON.stringify({current_password: cur, new_password: neu})
   })
   .then(function(r){ return r.json(); })
@@ -231,9 +231,9 @@ window.saveNotificationSettings = function(){
     low_balance: document.getElementById('notifLowBalance').checked,
     login_alerts: document.getElementById('notifLogin').checked
   };
-  fetch('/api/user/notifications', {
+  fetch(API_URL + '/api/user/notifications', {
     method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('gt_token')},
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
     body: JSON.stringify(settings)
   })
   .then(function(r){ return r.json(); })
