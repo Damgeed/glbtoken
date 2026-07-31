@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1153" />
+  <link rel="stylesheet" href="style.css?v=1154" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -23,7 +23,7 @@
 <div id="nav-container" data-active-page="home"></div>
 
 <div class="topup-page"><div class="container">
-      <div class="topup-header"><span class="section-label">Buy Tokens</span><h2 class="section-title">Top Up Wallet</h2><p class="section-sub">Select a package or custom amount. $2 minimum.</p></div>
+      <div class="topup-header" id="topupHeader"><span class="section-label">Buy Tokens</span><h2 class="section-title">Top Up Wallet</h2><p class="section-sub">Select a package or custom amount. $2 minimum.</p></div>
       <div id="topupStep1">
         <div class="pricing-grid">
           <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(5)">Buy $5</button></div>
@@ -38,7 +38,7 @@
             <button class="btn-primary btn-block" onclick="showPaymentModal('custom')" id="customBuyBtn">Buy $50</button></div>
         </div>
       </div>
-      <div id="topupSuccess" class="d-none"><div class="success-page"><div class="success-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="topup-success-title">Payment Successful!</h2><p id="topupSuccessMsg" class="topup-success-text"></p><button class="btn-primary" onclick="window.location.href='dashboard.html'">Dashboard</button><button class="btn-secondary topup-btn-secondary" onclick="window.location.href='apikeys.html'">API Keys</button></div></div>
+      <div id="topupSuccess" class="d-none"><div class="success-page topup-success-card"><div class="success-icon topup-success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="topup-success-title">Payment Successful!</h2><p id="topupSuccessMsg" class="topup-success-text"></p><div class="topup-balance-pill" id="topupBalancePill"><span class="topup-balance-label">New balance</span><span class="topup-balance-value" id="topupBalanceValue">0</span></div><div class="topup-success-actions"><button class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard</button><button class="btn-secondary topup-btn-secondary" onclick="window.location.href='apikeys.html'">API Keys</button></div></div></div>
     </div></div>
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal" onclick="closePaymentModal(event)">
@@ -68,6 +68,16 @@
       </div>
     </div></div>
 
+    <!-- Success Redirect Popup -->
+    <div class="modal-overlay topup-success-popup" id="topupSuccessPopup">
+      <div class="modal-box topup-popup-box">
+        <div class="topup-popup-icon"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <h3 class="topup-popup-title">Payment Successful!</h3>
+        <p id="topupPopupMsg" class="topup-popup-text">Your tokens have been added.</p>
+        <div class="topup-popup-redirect"><span class="topup-popup-spinner"></span><span id="topupPopupRedirect">Redirecting to Dashboard...</span></div>
+      </div>
+    </div>
+
   <!-- API KEYS (with CRUD, sort) -->
 <!-- FOOTER: Injected by footer.js -->
 <div id="footer-container"></div>
@@ -90,7 +100,7 @@
 </script>
 <script data-cfasync="false" src="shared.js?v=1120"></script>
 <script data-cfasync="false" src="ui.js?v=1214"></script>
-<script data-cfasync="false" src="checkout.js?v=3"></script>
+<script data-cfasync="false" src="checkout.js?v=4"></script>
 
 </body>
 </html>

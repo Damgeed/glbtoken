@@ -46,12 +46,22 @@
       if(!d) return;
       userData.token_balance=d.new_balance;window.__secure.setItem('gt_user',JSON.stringify(userData));
       if(typeof updateBalance==='function')updateBalance();
-      document.getElementById('topupStep1').style.display='none';
-      document.getElementById('topupSuccess').style.display='block';
-      document.getElementById('topupSuccessMsg').textContent=d.tokens_added.toLocaleString()+' tokens added!';
-      showToast('Payment successful! Redirecting to dashboard...','success');
+      var hdr=document.getElementById('topupHeader');if(hdr)hdr.style.display='none';
+      var step=document.getElementById('topupStep1');if(step)step.style.display='none';
+      var suc=document.getElementById('topupSuccess');
+      if(suc){suc.classList.remove('d-none');suc.style.display='flex';}
+      var msg=document.getElementById('topupSuccessMsg');if(msg)msg.textContent=d.tokens_added.toLocaleString()+' tokens added!';
+      var bal=document.getElementById('topupBalanceValue');if(bal)bal.textContent=(d.new_balance||0).toLocaleString()+' Tokens';
+      showTopupSuccessPopup(d.tokens_added);
       // Redirect to dashboard overview after brief confirmation
-      setTimeout(function(){ window.location.href='dashboard.html'; }, 1800);
+      setTimeout(function(){ window.location.href='dashboard.html'; }, 2200);
+    }
+    function showTopupSuccessPopup(tokensAdded){
+      var pop=document.getElementById('topupSuccessPopup');
+      if(!pop)return;
+      var msg=document.getElementById('topupPopupMsg');
+      if(msg&&tokensAdded)msg.textContent=tokensAdded.toLocaleString()+' tokens added to your wallet.';
+      pop.classList.add('open');
     }
     function showPaymentModal(amount){
       if(!token){showToast('Please login first','error');showPage('register');return}
