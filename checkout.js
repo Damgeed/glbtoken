@@ -54,7 +54,7 @@
       var bal=document.getElementById('topupBalanceValue');if(bal)bal.textContent=(d.new_balance||0).toLocaleString()+' Tokens';
       showTopupSuccessPopup(d.tokens_added);
       // Redirect to dashboard overview after brief confirmation
-      setTimeout(function(){ window.location.href='dashboard.html'; }, 2200);
+      setTimeout(function(){ window.location.href='dashboard.html'; }, 3000);
     }
     function showTopupSuccessPopup(tokensAdded){
       var pop=document.getElementById('topupSuccessPopup');

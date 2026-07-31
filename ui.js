@@ -261,9 +261,9 @@
 
 // ── Auto-init auth UI on every page load (deferred so nav.js has injected HTML) ──
   document.addEventListener('DOMContentLoaded', function(){
-    var t = localStorage.getItem('gt_token');
+    var t = window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token');
     if(t){
-      try{var ud = JSON.parse(localStorage.getItem('gt_user') || '{}');}catch(e){ud={};}
+      try{var ud = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');}catch(e){ud={};}
       token = t;
       userData = ud;
       if(typeof applyAuth === 'function') applyAuth();
@@ -438,9 +438,9 @@ document.addEventListener('click', function(e) {
 
 // ── Auto-init auth UI on every page load (deferred so nav.js has injected HTML) ──
 document.addEventListener('DOMContentLoaded', function(){
-  var t = localStorage.getItem('gt_token');
+  var t = window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token');
   if(t){
-    try{var ud = JSON.parse(localStorage.getItem('gt_user') || '{}');}catch(e){ud={};}
+    try{var ud = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');}catch(e){ud={};}
     // Re-initialize module-level vars
     token = t;
     userData = ud;

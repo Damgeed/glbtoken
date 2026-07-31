@@ -356,7 +356,7 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
                 const refreshData = await refreshResp.json();
                 // Store new tokens
                 token = refreshData.token;
-                userData = JSON.parse(localStorage.getItem('gt_user') || '{}');
+                userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
                 localStorage.setItem('gt_token', refreshData.token);
                 localStorage.setItem('gt_refresh_token', refreshData.refresh_token);
                 // Retry the original request with new token
@@ -637,6 +637,7 @@ window.applyAuth = function applyAuth(){
       } else { displayName = 'User'; }
     }
     var initial = (displayName || 'U')[0].toUpperCase();
+    var du = document.getElementById('dashUserName'); if(du) du.textContent = displayName;
     var av = document.querySelector('.nav-avatar');
     if(av){
       var textNode = document.createTextNode(initial);
