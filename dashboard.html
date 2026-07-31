@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1155" />
+  <link rel="stylesheet" href="style.css?v=1156" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="dashboard.css?v=1029" />
   </head>
@@ -453,6 +453,28 @@ function showDashSection(section) {
 <script data-cfasync="false" src="dashboard.js?v=1118"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
+  // ===== Paystack return verification =====
+  // Paystack redirects back to /dashboard.html?reference=...&trxref=...
+  (function(){
+    try{
+      var qs=new URLSearchParams(window.location.search);
+      var ref=qs.get('reference')||qs.get('trxref');
+      if(!ref) return;
+      // Clean the URL immediately so a refresh doesn't re-verify
+      var clean=window.location.protocol+'//'+window.location.host+window.location.pathname;
+      window.history.replaceState({}, document.title, clean);
+      safeApi('POST','/api/payments/paystack/verify',{reference:ref}).then(function(d){
+        if(d&&d.status==='success'){
+          if(typeof showToast==='function') showToast((d.tokens_added||0).toLocaleString()+' tokens added!','success');
+          if(typeof updateBalance==='function') updateBalance();
+        } else if(d&&d.status==='already_processed'){
+          if(typeof showToast==='function') showToast('Payment already credited.','success');
+        } else {
+          if(typeof showToast==='function') showToast('Payment verification pending. Contact support if charged.','error');
+        }
+      });
+    }catch(e){}
+  })();
   // ===== Bold Spending Donut Chart =====
   var donutCanvas = document.getElementById('spendingDonut');
   if(donutCanvas && typeof Chart !== 'undefined'){

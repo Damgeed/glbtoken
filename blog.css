@@ -78,12 +78,12 @@
 }
 .blog-article thead tr {
   border-bottom: 1px solid var(--border);
-  background: var(--card-bg);
+  background: var(--card);
 }
 .blog-article th {
   padding: 0.5rem;
   text-align: left;
-  color: var(--text-primary);
+  color: var(--text);
 }
 .blog-article tbody tr {
   border-bottom: 1px solid var(--border);
@@ -95,7 +95,7 @@
   padding: 0.5rem;
 }
 .blog-article pre {
-  background: var(--card-bg);
+  background: var(--card);
   padding: 1rem;
   border-radius: 8px;
   overflow-x: auto;

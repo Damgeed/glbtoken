@@ -42,19 +42,57 @@
     }
     async function processTopup(){
       if(!token){showToast('Please login first','error');return}
-      const d=await safeApi('POST','/api/topup',{amount:selectedAmount,currency:'USD',payment_method:selectedPayment});
-      if(!d) return;
-      userData.token_balance=d.new_balance;window.__secure.setItem('gt_user',JSON.stringify(userData));
-      if(typeof updateBalance==='function')updateBalance();
-      var hdr=document.getElementById('topupHeader');if(hdr)hdr.style.display='none';
-      var step=document.getElementById('topupStep1');if(step)step.style.display='none';
-      var suc=document.getElementById('topupSuccess');
-      if(suc){suc.classList.remove('d-none');suc.style.display='flex';}
-      var msg=document.getElementById('topupSuccessMsg');if(msg)msg.textContent=d.tokens_added.toLocaleString()+' tokens added!';
-      var bal=document.getElementById('topupBalanceValue');if(bal)bal.textContent=(d.new_balance||0).toLocaleString()+' Tokens';
-      showTopupSuccessPopup(d.tokens_added);
-      // Redirect to dashboard overview after brief confirmation
-      setTimeout(function(){ window.location.href='dashboard.html'; }, 3000);
+      const method=(selectedPayment||'stripe').toLowerCase();
+      const payload={amount:selectedAmount,currency:'USD',payment_method:method,email:userData.email||''};
+      // SECURITY: tokens are only credited after a REAL payment (webhook/verify).
+      // The direct /api/topup credit endpoint now requires a verified payment ref.
+      if(method==='stripe'){
+        const d=await safeApi('POST','/api/payments/stripe/create-checkout',payload);
+        if(d&&d.url){ window.location.href=d.url; }
+        return;
+      }
+      if(method==='paystack'){
+        const d=await safeApi('POST','/api/payments/paystack/initialize',payload);
+        if(d&&d.authorization_url){ window.location.href=d.authorization_url; }
+        return;
+      }
+      if(method==='crypto'){
+        const d=await safeApi('POST','/api/payments/crypto/create',{amount:selectedAmount,currency:'USDT_TRC20',payment_method:'USDT_TRC20'});
+        if(d&&d.address) showCryptoInstructions(d);
+        return;
+      }
+      showToast('Select a supported payment method','error');
+    }
+    function showCryptoInstructions(d){
+      var existing=document.getElementById('cryptoModal');
+      if(existing)existing.remove();
+      var m=document.createElement('div');
+      m.id='cryptoModal';
+      m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);animation:fadeIn 0.15s ease';
+      var isDark=document.documentElement.className==='dark';
+      var cardBg=isDark?'#1e1f29':'#ffffff', textClr=isDark?'#f8f8f2':'#1a1a2e', muted=isDark?'#6272a4':'#666', border=isDark?'#3a3a4e':'#ddd';
+      m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:1.75rem;max-width:400px;width:92%;box-shadow:0 16px 48px rgba(0,0,0,0.3);animation:slideUp 0.2s ease">'
+        +'<h3 style="color:'+textClr+';font-size:1.05rem;font-weight:700;margin:0 0 0.75rem">Send Crypto</h3>'
+        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1rem;line-height:1.5">Send exactly <strong style="color:'+textClr+'">'+d.crypto_amount+' '+d.asset+'</strong> to the address below. Tokens are credited after confirmation.</p>'
+        +'<div style="background:rgba(244,180,0,0.08);border:1px solid '+border+';border-radius:10px;padding:0.75rem;margin-bottom:0.5rem;word-break:break-all;font-size:0.8rem;color:'+textClr+'">'+escapeHtml(d.address)+'</div>'
+        +'<p style="color:'+muted+';font-size:0.75rem;margin:0 0 1rem">Ref: <span style="color:'+textClr+'">'+escapeHtml(d.reference)+'</span></p>'
+        +'<button id="cryptoConfirmBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">I\'ve sent it — Credit my account</button>'
+        +'<button id="cryptoCancelBtn" style="width:100%;margin-top:0.5rem;padding:0.6rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+muted+';font-size:0.82rem;cursor:pointer">Cancel</button>'
+        +'</div>';
+      document.body.appendChild(m);
+      m.querySelector('#cryptoConfirmBtn').onclick=async function(){
+        m.querySelector('#cryptoConfirmBtn').disabled=true;m.querySelector('#cryptoConfirmBtn').textContent='Confirming...';
+        const r=await safeApi('POST','/api/topup',{amount:d.usd_amount,currency:'USDT_TRC20',payment_method:'crypto',payment_ref:d.reference});
+        if(r&&r.status==='success'){
+          m.remove();
+          if(typeof showTopupSuccessPopup==='function') showTopupSuccessPopup(r.tokens_added);
+          if(typeof updateBalance==='function')updateBalance();
+          setTimeout(function(){ window.location.href='dashboard.html'; }, 2500);
+        } else {
+          m.querySelector('#cryptoConfirmBtn').disabled=false;m.querySelector('#cryptoConfirmBtn').textContent='I\'ve sent it — Credit my account';
+        }
+      };
+      m.querySelector('#cryptoCancelBtn').onclick=function(){ m.remove(); };
     }
     function showTopupSuccessPopup(tokensAdded){
       var pop=document.getElementById('topupSuccessPopup');

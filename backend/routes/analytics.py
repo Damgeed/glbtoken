@@ -162,6 +162,13 @@ async def get_log_content(
     if not user.newapi_user_id:
         return {"error": "Content not available"}
     try:
+        # SECURITY (IDOR): verify the log entry belongs to THIS user before
+        # returning prompt/completion content. Otherwise any authenticated user
+        # could enumerate log_ids and read other users' prompts.
+        logs = await get_user_logs(user.newapi_user_id, page=1, page_size=200)
+        owned_ids = {str(item.get("id")) for item in logs.get("items", [])}
+        if str(log_id) not in owned_ids:
+            return {"error": "Content not available"}
         content = await _get_log_content(log_id)
         if "error" in content:
             return {"error": "Content not available"}

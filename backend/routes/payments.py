@@ -53,29 +53,40 @@ def list_transactions(
 
 @router.post("/api/topup")
 async def topup(req: TopupRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    tokens = int(req.amount * 1000)  # 1 USD = 1000 tokens
+    # SECURITY: never mint tokens from a bare client amount. A credit is only
+    # allowed against a PENDING deposit transaction created by a real payment
+    # provider (Stripe/Paystack/crypto). This closes the free-token-mint hole.
+    amount = float(req.amount or 0)
+    if amount < 2.0 or amount > 2000.0:
+        _400("Amount must be between $2 and $2000")
+    ref = (req.payment_ref or "").strip()
+    if not ref:
+        _400("A verified payment reference is required")
+    tx = db.query(Transaction).filter(
+        Transaction.payment_ref == ref,
+        Transaction.user_id == user.id,
+        Transaction.type == "deposit",
+        Transaction.status == "pending",
+    ).first()
+    if not tx:
+        _400("No pending payment found for this reference")
+    if abs((tx.amount or 0) - amount) > 0.01:
+        _400("Amount does not match the pending payment")
+    tokens = int(amount * 1000)
+    tx.status = "completed"
+    tx.tokens = tokens
+    tx.amount = amount
     user.token_balance += tokens
-    user.total_spent += req.amount
-    
-    tx = Transaction(
-        user_id=user.id,
-        type="deposit",
-        amount=req.amount,
-        currency=req.currency,
-        payment_method=req.payment_method,
-        tokens=tokens,
-        status="completed",
-    )
-    db.add(tx)
+    user.total_spent += amount
     db.commit()
-    
+
     # ── Sync quota to New API ──
     try:
         if user.newapi_user_id:
             await add_user_quota(user.newapi_user_id, tokens)
     except Exception as e:
         print(f"⚠️ New API quota sync failed: {e}")
-    
+
     return {
         "status": "success",
         "tokens_added": tokens,
@@ -98,7 +109,7 @@ def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_cu
             "amount": amount_kobo,
             "currency": "GHS" if req.currency == "GHS" else "USD",
             "metadata": {"user_id": user.id, "payment_method": "paystack"},
-            "callback_url": "https://damgeed.github.io/glbtoken/#dashboard",
+            "callback_url": "https://glbtoken.com/dashboard.html",
         },
         headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}", "Content-Type": "application/json"},
     )
@@ -197,18 +208,21 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         _400("Invalid signature")
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
+        # Idempotency: Stripe retries webhooks — never credit twice.
+        tx = db.query(Transaction).filter(Transaction.payment_ref == session["id"]).first()
+        if not tx or tx.status == "completed":
+            return {"status": "ok"}
         user_id = int(session["metadata"]["user_id"])
-        tokens = int(session["metadata"]["tokens"])
+        # Derive tokens from the REAL charged amount, not client-supplied metadata.
         amount = session["amount_total"] / 100
+        tokens = int(amount * 1000)
         user = db.query(User).filter(User.id == user_id).first()
         if user:
             user.token_balance += tokens
             user.total_spent += amount
-        tx = db.query(Transaction).filter(Transaction.payment_ref == session["id"]).first()
-        if tx:
-            tx.status = "completed"
-            tx.tokens = tokens
-            tx.amount = amount
+        tx.status = "completed"
+        tx.tokens = tokens
+        tx.amount = amount
         db.commit()
     return {"status": "ok"}
 

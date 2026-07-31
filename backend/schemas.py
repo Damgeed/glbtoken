@@ -108,6 +108,7 @@ class TopupRequest(BaseModel):
     amount: float
     currency: str = "USD"
     payment_method: str = "stripe"
+    payment_ref: str = ""  # required: pending deposit tx reference from a payment provider
 
 
 class InitiatePaymentRequest(BaseModel):

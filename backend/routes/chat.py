@@ -68,8 +68,11 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
             _502("AI API error. Please try again later.")
         result = resp.json()
     
-    # Deduct tokens
-    actual_tokens_cost = max(1, cost_tokens)
+    # Deduct tokens — use the REAL usage reported by the model provider,
+    # falling back to the pre-flight estimate only if usage is missing.
+    usage = result.get("usage") or {}
+    real_tokens = int(usage.get("total_tokens") or 0)
+    actual_tokens_cost = max(1, real_tokens or cost_tokens)
     user.token_balance -= actual_tokens_cost
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
@@ -176,8 +179,11 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
             _502("AI API error. Please try again later.")
         result = resp.json()
     
-    # Deduct tokens
-    actual_tokens_cost = max(1, cost_tokens)
+    # Deduct tokens — use the REAL usage reported by the model provider,
+    # falling back to the pre-flight estimate only if usage is missing.
+    usage = result.get("usage") or {}
+    real_tokens = int(usage.get("total_tokens") or 0)
+    actual_tokens_cost = max(1, real_tokens or cost_tokens)
     user.token_balance -= actual_tokens_cost
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
