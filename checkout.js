@@ -49,7 +49,9 @@
       document.getElementById('topupStep1').style.display='none';
       document.getElementById('topupSuccess').style.display='block';
       document.getElementById('topupSuccessMsg').textContent=d.tokens_added.toLocaleString()+' tokens added!';
-      showToast('Payment successful!','success');
+      showToast('Payment successful! Redirecting to dashboard...','success');
+      // Redirect to dashboard overview after brief confirmation
+      setTimeout(function(){ window.location.href='dashboard.html'; }, 1800);
     }
     function showPaymentModal(amount){
       if(!token){showToast('Please login first','error');showPage('register');return}

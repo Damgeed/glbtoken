@@ -7581,3 +7581,20 @@ body {
   }
 
 }
+
+/* ── Mobile support chat: faint + auto-hide on scroll ── */
+@media (max-width: 768px) {
+  .chat-fab {
+    opacity: 0.55;
+    transition: left 0.3s ease, right 0.3s ease, bottom 0.3s ease,
+                transform 0.2s, opacity 0.3s ease;
+  }
+  .chat-fab.fab-scroll-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+  }
+  .chat-fab:hover {
+    opacity: 1;
+  }
+}

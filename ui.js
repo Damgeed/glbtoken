@@ -1026,3 +1026,25 @@ document.addEventListener('click',function(e){
       items.forEach(function(d){d.style.display='none'});
       showToast('All marked as read','info');
     }
+
+// ── Mobile support chat FAB: auto-hide on scroll down, reappear on scroll up ──
+(function(){
+  var lastY = window.pageYOffset || document.documentElement.scrollTop || 0;
+  var ticking = false;
+  function onScroll(){
+    ticking = false;
+    if(window.innerWidth > 768) return;
+    var fab = document.querySelector('.chat-fab');
+    if(!fab) return;
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    if(y > lastY && y > 120){
+      fab.classList.add('fab-scroll-hidden');
+    } else {
+      fab.classList.remove('fab-scroll-hidden');
+    }
+    lastY = y;
+  }
+  window.addEventListener('scroll', function(){
+    if(!ticking){ ticking = true; requestAnimationFrame(onScroll); }
+  }, {passive: true});
+})();
