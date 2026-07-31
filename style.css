@@ -191,6 +191,14 @@ textarea {
   border-bottom: 1px solid var(--border);
   transition: background 0.3s;
 }
+/* Sticky must live on the nav's PARENT (#nav-container is a direct child of the
+   tall body). Sticky on .navbar alone never sticks because its parent is the
+   same height as the nav — no room to travel within it. */
+#nav-container {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
 html.light .navbar {
   background: hsla(40 20% 98% / 0.85);
 }
@@ -6937,10 +6945,12 @@ body {
    📱 MOBILE — @media (max-width: 768px)
    ══════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Fixed nav on mobile — theme/language/hamburger always reachable (Bud decision 2026-07) */
-  .navbar {
+  /* Fixed nav on mobile — theme/language/hamburger always reachable (Bud decision 2026-07).
+     Sticky goes on #nav-container (the parent); .navbar alone has no room to stick. */
+  #nav-container {
     position: sticky;
     top: 0;
+    z-index: 50;
   }
   .vp-grid {
     grid-template-columns: 1fr;
