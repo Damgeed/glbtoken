@@ -127,7 +127,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 
 # ── /v1 Gateway CORS: public API-key endpoints must work from ANY origin ──
-# (users call api.glbtoken.io from their own apps / browser SDKs; auth is via
+# (users call api.glbtoken.com from their own apps / browser SDKs; auth is via
 # Bearer API key, not cookies, so a wildcard origin is safe here).
 
 class V1CORSMiddleware(BaseHTTPMiddleware):
@@ -179,7 +179,7 @@ app.include_router(analytics_router)
 app.include_router(api_keys_router)
 app.include_router(referrals_router)
 app.include_router(misc_router)
-app.include_router(v1_router)  # OpenAI-compatible /v1 gateway (api.glbtoken.io)
+app.include_router(v1_router)  # OpenAI-compatible /v1 gateway (api.glbtoken.com)
 
 
 # ── Startup check ──

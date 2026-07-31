@@ -269,7 +269,7 @@
   <text class="str" x="74" y="218">}'</text>
   <text class="op" x="96" y="218">\</text>
   <!-- L10: https://... -->
-  <text class="fn" x="54" y="242">https://api.glbtoken.io/v1/chat/completions</text>
+  <text class="fn" x="54" y="242">https://api.glbtoken.com/v1/chat/completions</text>
   <!-- L11: empty -->
   <!-- L12: # Example response -->
   <text class="cm" x="46" y="266"># Response (truncated):</text>
@@ -284,7 +284,7 @@
 
   <div class="footer">
     <div class="footer-info">
-      <strong>Base URL:</strong> https://api.glbtoken.io/v1 &nbsp;·&nbsp;
+      <strong>Base URL:</strong> https://api.glbtoken.com/v1 &nbsp;·&nbsp;
       <strong>Auth:</strong> Bearer Token &nbsp;·&nbsp;
       <strong>Models:</strong> glb-turbo, glb-pro
     </div>
@@ -344,14 +344,14 @@
       {"role": "user", "content": "Hello!"}
     ]
   }'</span> <span class="op">\</span>
-  <span class="fn">https://api.glbtoken.io/v1/chat/completions</span></pre>
+  <span class="fn">https://api.glbtoken.com/v1/chat/completions</span></pre>
 
 <!-- Python panel -->
 <pre class="code-panel panel-py"><span class="cm"># Python — openai library with custom base_url</span>
 <span class="kw">from</span> openai <span class="kw">import</span> OpenAI
 
 client <span class="op">=</span> OpenAI(
-    base_url<span class="op">=</span><span class="str">"https://api.glbtoken.io/v1"</span>,
+    base_url<span class="op">=</span><span class="str">"https://api.glbtoken.com/v1"</span>,
     api_key<span class="op">=</span><span class="str">"glb-..."</span>
 )
 
@@ -369,7 +369,7 @@ response <span class="op">=</span> client.chat.completions.create(
 <!-- JavaScript panel -->
 <pre class="code-panel panel-js"><span class="cm">// JavaScript — fetch() with Bearer auth</span>
 <span class="kw">const</span> response <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span>(
-  <span class="str">"https://api.glbtoken.io/v1/chat/completions"</span>,
+  <span class="str">"https://api.glbtoken.com/v1/chat/completions"</span>,
   {
     method<span class="op">:</span> <span class="str">"POST"</span>,
     headers<span class="op">:</span> {

@@ -1,7 +1,7 @@
 """GlbTOKEN — OpenAI-compatible /v1 API gateway.
 
 This is the core product surface: users call
-    base_url="https://api.glbtoken.io/v1"
+    base_url="https://api.glbtoken.com/v1"
 with their GlbTOKEN API key and standard OpenAI/Anthropic SDKs.
 
 Authenticates via the user's API key (gtk_... / sk-...), routes to the
