@@ -1,0 +1,256 @@
+"""GlbTOKEN — OpenAI-compatible /v1 API gateway.
+
+This is the core product surface: users call
+    base_url="https://api.glbtoken.io/v1"
+with their GlbTOKEN API key and standard OpenAI/Anthropic SDKs.
+
+Authenticates via the user's API key (gtk_... / sk-...), routes to the
+New API gateway (or fallback), and bills the user's token balance from the
+REAL usage reported by the model provider.
+"""
+
+import json
+from datetime import datetime, timezone
+
+import httpx
+from fastapi import APIRouter, Depends, Header, Request
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from common import (
+    _400, _401, _402, _404, _502, limiter,
+    NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL,
+)
+from database import get_db, User, ApiKey, Transaction, AIModel
+
+router = APIRouter()
+
+
+# ── Request Schemas ──
+
+class ChatCompletionRequest(BaseModel):
+    model: str
+    messages: list
+    max_tokens: int = 4096
+    temperature: float = 1.0
+    top_p: float = 1.0
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    stream: bool = False
+    stop: object = None
+    user: str = ""
+
+
+class ResponsesRequest(BaseModel):
+    model: str
+    input: object = None
+    instructions: str = ""
+    max_output_tokens: int = 4096
+    stream: bool = False
+
+
+class MessagesRequest(BaseModel):
+    model: str
+    messages: list
+    max_tokens: int = 4096
+    temperature: float = 1.0
+    stream: bool = False
+
+
+# ── Helpers ──
+
+def _auth_user(db: Session, authorization: str):
+    """Resolve a GlbTOKEN API key (Bearer gtk_... / sk-...) to (user, api_key)."""
+    raw = (authorization or "").strip()
+    if raw.lower().startswith("bearer "):
+        raw = raw[7:].strip()
+    if not raw:
+        _401("Not authenticated")
+    api_key = db.query(ApiKey).filter(
+        ApiKey.key == raw, ApiKey.is_active == True
+    ).first()
+    if not api_key:
+        _401("Invalid API key")
+    user = db.query(User).filter(User.id == api_key.user_id).first()
+    if not user:
+        _401("Invalid API key")
+    return user, api_key
+
+
+def _estimate_tokens(texts: list) -> int:
+    total = 0
+    for t in texts:
+        if isinstance(t, str):
+            total += len(t)
+        elif isinstance(t, (list, dict)):
+            try:
+                total += len(json.dumps(t))
+            except Exception:
+                pass
+    return max(1, total // 4)
+
+
+def _bill(db: Session, user: User, api_key: ApiKey, model: str,
+          cost_est: int, result: dict, payment_method: str = "api_key"):
+    """Deduct REAL usage from the response; fall back to estimate. Records tx."""
+    usage = result.get("usage") or {}
+    real = int(usage.get("total_tokens") or 0)
+    cost = max(1, real or cost_est)
+    user.token_balance -= cost
+    api_key.request_count = (api_key.request_count or 0) + 1
+    api_key.last_used = datetime.now(timezone.utc)
+    tx = Transaction(
+        user_id=user.id, type="consumption", amount=0,
+        payment_method=payment_method, model_used=model,
+        tokens=cost, status="completed",
+    )
+    db.add(tx)
+    db.commit()
+    result["tokens_used"] = cost
+    result["balance_remaining"] = user.token_balance
+    return result
+
+
+async def _route(endpoint_path: str, user: User, payload: dict, timeout: int = 120):
+    """POST to New API (user token) or fallback. Returns httpx.Response."""
+    newapi_key = user.newapi_token
+    newapi_url = NEW_API_BASE_URL
+    headers = {"Content-Type": "application/json"}
+    if newapi_key and newapi_url:
+        headers["Authorization"] = f"Bearer {newapi_key}"
+        url = f"{newapi_url.rstrip('/')}{endpoint_path}"
+    else:
+        fallback_key = FALLBACK_API_KEY
+        if not fallback_key:
+            _400("No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_KEY")
+        headers = {
+            "Authorization": f"Bearer {fallback_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://glbtoken.com",
+            "X-Title": "GlbTOKEN",
+        }
+        fallback_url = FALLBACK_API_URL
+        if not fallback_url:
+            _400("No AI routing configured")
+        url = f"{fallback_url.rstrip('/')}{endpoint_path}"
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        return await client.post(url, headers=headers, json=payload)
+
+
+# ── Endpoints ──
+
+@router.post("/v1/chat/completions")
+@limiter.limit("120/minute")
+async def chat_completions(
+    request: Request,
+    req: ChatCompletionRequest,
+    authorization: str = Header("", alias="Authorization"),
+    db: Session = Depends(get_db),
+):
+    user, api_key = _auth_user(db, authorization)
+
+    # Pre-flight balance check (estimate)
+    texts = []
+    for m in req.messages:
+        if isinstance(m, dict):
+            c = m.get("content", "")
+            texts.append(c)
+    cost_est = int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000
+    cost_est = max(1, cost_est)
+    if user.token_balance < cost_est:
+        _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
+
+    payload = {
+        "model": req.model,
+        "messages": req.messages,
+        "max_tokens": req.max_tokens,
+        "temperature": req.temperature,
+        "top_p": req.top_p,
+        "frequency_penalty": req.frequency_penalty,
+        "presence_penalty": req.presence_penalty,
+        "stream": req.stream,
+    }
+    resp = await _route("/v1/chat/completions", user, payload)
+    if resp.status_code != 200:
+        _502("AI API error. Please try again later.")
+    result = resp.json()
+    return _bill(db, user, api_key, req.model, cost_est, result)
+
+
+@router.get("/v1/models")
+@limiter.limit("120/minute")
+async def list_models(
+    request: Request,
+    authorization: str = Header("", alias="Authorization"),
+    db: Session = Depends(get_db),
+):
+    user, api_key = _auth_user(db, authorization)
+    models = db.query(AIModel).filter(
+        AIModel.is_active == True
+    ).order_by(AIModel.provider, AIModel.model_id).all()
+    return {
+        "object": "list",
+        "data": [
+            {
+                "id": m.model_id,
+                "object": "model",
+                "created": 0,
+                "owned_by": m.provider,
+            }
+            for m in models
+        ],
+    }
+
+
+@router.post("/v1/responses")
+@limiter.limit("60/minute")
+async def responses_api(
+    request: Request,
+    req: ResponsesRequest,
+    authorization: str = Header("", alias="Authorization"),
+    db: Session = Depends(get_db),
+):
+    """OpenAI Responses API passthrough (billed on real usage)."""
+    user, api_key = _auth_user(db, authorization)
+    inp = req.input if isinstance(req.input, list) else [req.input] if req.input else []
+    cost_est = max(1, int(_estimate_tokens([inp]) + min(req.max_output_tokens, 4096)) * 2 // 1000)
+    if user.token_balance < cost_est:
+        _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
+    payload = {
+        "model": req.model,
+        "input": req.input,
+        "instructions": req.instructions,
+        "max_output_tokens": req.max_output_tokens,
+        "stream": req.stream,
+    }
+    resp = await _route("/v1/responses", user, payload)
+    if resp.status_code != 200:
+        _502("AI API error. Please try again later.")
+    return _bill(db, user, api_key, req.model, cost_est, resp.json())
+
+
+@router.post("/v1/messages")
+@limiter.limit("60/minute")
+async def messages_api(
+    request: Request,
+    req: MessagesRequest,
+    authorization: str = Header("", alias="Authorization"),
+    db: Session = Depends(get_db),
+):
+    """Anthropic Messages API passthrough (billed on real usage)."""
+    user, api_key = _auth_user(db, authorization)
+    texts = [m.get("content", "") for m in req.messages if isinstance(m, dict)]
+    cost_est = max(1, int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000)
+    if user.token_balance < cost_est:
+        _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
+    payload = {
+        "model": req.model,
+        "messages": req.messages,
+        "max_tokens": req.max_tokens,
+        "temperature": req.temperature,
+        "stream": req.stream,
+    }
+    resp = await _route("/v1/messages", user, payload)
+    if resp.status_code != 200:
+        _502("AI API error. Please try again later.")
+    return _bill(db, user, api_key, req.model, cost_est, resp.json())

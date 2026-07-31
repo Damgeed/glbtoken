@@ -27,6 +27,7 @@ from routes.analytics import router as analytics_router
 from routes.api_keys import router as api_keys_router
 from routes.referrals import router as referrals_router
 from routes.misc import router as misc_router
+from routes.v1_gateway import router as v1_router
 
 
 # ── Lifespan ──
@@ -151,6 +152,7 @@ app.include_router(analytics_router)
 app.include_router(api_keys_router)
 app.include_router(referrals_router)
 app.include_router(misc_router)
+app.include_router(v1_router)  # OpenAI-compatible /v1 gateway (api.glbtoken.io)
 
 
 # ── Startup check ──
