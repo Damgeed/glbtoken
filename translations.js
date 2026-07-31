@@ -449,13 +449,6 @@ TRANS["30-day validity"] = {
   ja: "30日間有効",
   de: "30 Tage gültig"
 };
-TRANS["90-day validity"] = {
-  en: "90-day validity",
-  "zh-CN": "90天有效期",
-  ru: "Срок действия 90 дней",
-  ja: "90日間有効",
-  de: "90 Tage gültig"
-};
 TRANS["💳 Stripe (cards, USD) · 🔶 Paystack (NGN/GHS/KES: bank transfer, USSD, MoMo) · ₿ Crypto (USDT TRC-20/ERC-20, BTC, ETH)"] = {
   en: "💳 Stripe (cards, USD) · 🔶 Paystack (NGN/GHS/KES: bank transfer, USSD, MoMo) · ₿ Crypto (USDT TRC-20/ERC-20, BTC, ETH)",
   "zh-CN": "💳 Stripe（银行卡，USD）· 🔶 Paystack（NGN/GHS/KES：银行转账、USSD、MoMo）· ₿ 加密货币（USDT TRC-20/ERC-20、BTC、ETH）",

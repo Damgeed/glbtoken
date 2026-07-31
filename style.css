@@ -6937,6 +6937,11 @@ body {
    📱 MOBILE — @media (max-width: 768px)
    ══════════════════════════════════════════ */
 @media (max-width: 768px) {
+  /* Fixed nav on mobile — theme/language/hamburger always reachable (Bud decision 2026-07) */
+  .navbar {
+    position: sticky;
+    top: 0;
+  }
   .vp-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;

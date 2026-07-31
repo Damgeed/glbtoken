@@ -250,7 +250,12 @@
           if(typing) typing.remove();
           const aiDiv = document.createElement('div');
           aiDiv.className = 'chat-msg ai';
-          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">Connection error. Please try again.</div>';
+          const errMsg = (e && e.message) ? e.message : 'Connection error. Please try again.';
+          let bubble = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">'+escapeHtml(errMsg)+'</div>';
+          if(errMsg === 'Not authenticated'){
+            bubble = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">Please <a href="login.html" style="color:var(--primary);text-decoration:underline">log in</a> to use the AI chat.</div>';
+          }
+          aiDiv.innerHTML = bubble;
           msgs.appendChild(aiDiv);
           msgs.scrollTop = msgs.scrollHeight;
         }

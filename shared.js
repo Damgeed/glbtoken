@@ -437,39 +437,60 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       try {
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
-          if(resp.status === 401 && token && (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'))){
-            // Silently attempt token refresh before declaring session expired
-            try {
-              await refreshSession();
-              // Retry the original request with the fresh token
-              opts.headers['Authorization'] = 'Bearer '+token;
-              const retryResp = await fetch(API_URL+path, opts);
-              if(retryResp.ok) return await retryResp.json();
-              // If retry also fails, fall through to session expired
-              const errData = await retryResp.json().catch(()=>{});
-              throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
-            } catch(refreshError){
-              // Refresh failed — fall through to normal session expired handling
+          // Only 401 is a session problem — everything else is surfaced as-is
+          if(resp.status === 401){
+            const hasToken = !!token;
+            const rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+            if(hasToken && rt){
+              // Silently attempt token refresh before declaring session expired
+              try {
+                await refreshSession();
+                // Retry the original request with the fresh token
+                opts.headers['Authorization'] = 'Bearer '+token;
+                const retryResp = await fetch(API_URL+path, opts);
+                if(retryResp.ok) return await retryResp.json();
+                // If retry also fails, surface the real error (not a session problem)
+                const errData = await retryResp.json().catch(()=>{});
+                const e2 = new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
+                e2._surfaced = true;
+                throw e2;
+              } catch(refreshError){
+                // Refresh failed — fall through to normal session expired handling
+              }
             }
+            // Anonymous visitor hitting a protected endpoint — not a session problem
+            if(!hasToken){
+              const e3 = new Error('Not authenticated');
+              e3._surfaced = true;
+              throw e3;
+            }
+            // Session genuinely expired (had a token but refresh failed):
+            // show modal on dash pages, silently redirect elsewhere
+            var page = window.location.pathname.split('/').pop();
+            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
+            if(isDashPage){
+              showSessionExpired();
+            } else {
+              (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
+              (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
+              localStorage.removeItem('gt_refresh_token');
+              localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
+              window.location.href = 'login.html';
+            }
+            throw new Error('Session expired');
           }
-          // Show modal on dash pages; silently redirect elsewhere
-          var page = window.location.pathname.split('/').pop();
-          var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
-          if(isDashPage){
-            showSessionExpired();
-          } else {
-            (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
-            (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
-            localStorage.removeItem('gt_refresh_token');
-            localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
-            window.location.href = 'login.html';
-          }
-          throw new Error('Session expired');
+          // Non-401 error (402 insufficient balance, 4xx validation, 5xx): surface the real message
+          var errBody = await resp.json().catch(function(){ return null; });
+          var detail = (errBody && (errBody.detail || errBody.message)) || ('Request failed (' + resp.status + ')');
+          if(detail && typeof detail === 'object'){ detail = JSON.stringify(detail); }
+          const e4 = new Error(String(detail).replace(/^\[?\d{3}\]?\s*/,''));
+          e4._surfaced = true;
+          throw e4;
         }
         return await resp.json();
       } catch(e) {
         if (e.name === 'AbortError') throw new Error('Request timed out');
-        if(e.message === 'Session expired') throw e;
+        if(e._surfaced || e.message === 'Session expired') throw e;
         throw new Error('Network error. Check your connection.');
       } finally {
         if(timer) clearTimeout(timer);
