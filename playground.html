@@ -376,17 +376,5 @@ document.addEventListener('DOMContentLoaded', function(){
 <!-- FOOTER: Injected by footer.js -->
 <div id="footer-container"></div>
 
-<button class="chat-fab" onclick="toggleChat()">💬</button>
-  <div class="chat-window" id="chatWindow">
-    <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
-    <div class="chat-msgs" id="chatMsgs">
-      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
-    </div>
-    <div class="chat-input">
-      <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
-      <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
-    </div>
-  </div>
-
 </body>
 </html>
