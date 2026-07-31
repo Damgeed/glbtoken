@@ -151,18 +151,25 @@ function insertPromptSuggestion(text) {
   inputEl.focus();
 }
 
-// ── Token recovery from URL (payment redirect) ──
+// ── Token recovery from URL (payment redirect) — validated in shared.js ──
 (function(){
-  var params = new URLSearchParams(window.location.search);
-  var urlToken = params.get('token');
-  var urlUser = params.get('user');
-  if (urlToken) {
-    window.__secure.setItem('gt_token', urlToken);
-    if (urlUser) {
-      try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
+  if(typeof window.recoverTokenFromUrl === 'function'){
+    window.recoverTokenFromUrl();
+  } else {
+    var params = new URLSearchParams(window.location.search);
+    var urlToken = params.get('token');
+    if (urlToken) {
+      var parts = String(urlToken).split('.');
+      if(parts.length === 3){
+        window.__secure.setItem('gt_token', urlToken);
+        var urlUser = params.get('user');
+        if (urlUser) {
+          try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
+        }
+        var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.replaceState({}, document.title, clean);
+      }
     }
-    var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
-    window.history.replaceState({}, document.title, clean);
   }
 })();
 

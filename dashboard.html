@@ -15,39 +15,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1153" />
+  <link rel="stylesheet" href="style.css?v=1154" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="dashboard.css?v=1029" />
   </head>
 <body>
 <script>
 (function() {
-  // ====== ATOMIC TOKEN RECOVERY ======
-  // Path A: Read token from URL query params (Railway redirect)
-  var params = new URLSearchParams(window.location.search);
-  var urlToken = params.get('token');
-  var urlUser = params.get('user');
-
-  if (urlToken) {
+  // ====== SAFE TOKEN RECOVERY ======
+  // Validates JWT shape + expiry + freshness before persisting (session-fixation guard)
+  // defined in shared.js; fallback here in case shared.js hasn't loaded yet
+  if (typeof window.recoverTokenFromUrl === 'function') {
+    window.recoverTokenFromUrl();
+  } else {
     try {
-      if (window.__secure) {
-        window.__secure.setItem('gt_token', urlToken);
-        if (urlUser) {
-          try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}
-        }
-      } else {
-        localStorage.setItem('gt_token', urlToken);
-        if (urlUser) {
-          try { localStorage.setItem('gt_user', urlUser); } catch(e) {}
+      var params = new URLSearchParams(window.location.search);
+      var urlToken = params.get('token');
+      if (urlToken) {
+        var parts = String(urlToken).split('.');
+        if (parts.length === 3) {
+          window.__secure.setItem('gt_token', urlToken);
+          var urlUser = params.get('user');
+          if (urlUser) { try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {} }
+          var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
+          window.history.replaceState({}, document.title, clean);
         }
       }
-    } catch(_) {
-      localStorage.setItem('gt_token', urlToken);
-      if (urlUser) localStorage.setItem('gt_user', urlUser);
-    }
-    // Clean URL immediately — remove token from address bar
-    var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
-    window.history.replaceState({}, document.title, clean);
+    } catch(_) {}
   }
 
   // Auth check
@@ -453,10 +447,9 @@ function showDashSection(section) {
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1099"></script>
-</script>
-<script data-cfasync="false" src="shared.js?v=1121"></script>
-<script data-cfasync="false" src="ui.js?v=1215"></script>
-<script data-cfasync="false" src="usage-charts.js?v=1"></script>
+<script data-cfasync="false" src="shared.js?v=1123"></script>
+<script data-cfasync="false" src="ui.js?v=1216"></script>
+<script data-cfasync="false" src="usage-charts.js?v=2"></script>
 <script data-cfasync="false" src="dashboard.js?v=1118"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){

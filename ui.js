@@ -121,7 +121,7 @@
   // ── Empty State ──
   function showEmptyState(container, icon, title, desc){
     if(!container) return;
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">' + icon + '</div><div class="empty-title">' + escapeHtml(title) + '</div><div class="empty-desc">' + escapeHtml(desc) + '</div></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">' + escapeHtml(icon || '📄') + '</div><div class="empty-title">' + escapeHtml(title) + '</div><div class="empty-desc">' + escapeHtml(desc) + '</div></div>';
   }
   // ── Skeleton Loading ──
   function showSkeleton(container, count){
@@ -259,16 +259,6 @@
       })();
     }
 
-// ── Auto-init auth UI on every page load (deferred so nav.js has injected HTML) ──
-  document.addEventListener('DOMContentLoaded', function(){
-    var t = window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token');
-    if(t){
-      try{var ud = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');}catch(e){ud={};}
-      token = t;
-      userData = ud;
-      if(typeof applyAuth === 'function') applyAuth();
-    }
-  });
     function tmDragStart(clientX){
       tmDragStartX=clientX;
       tmDragOffset=0;
@@ -943,7 +933,9 @@ function showSessionExpired(){
     document.body.style.overflow = '';
     _sessionExpiredShown=false;
     token='';userData={};
-    localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');
+    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
+    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
+    localStorage.removeItem('gt_refresh_token');localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
     window.location.href='login.html';
   };
   function _onPopState(){ window.location.href='login.html'; }
@@ -957,9 +949,10 @@ function showSessionExpired(){
     e.preventDefault();
     window.removeEventListener('popstate',_onPopState);
     token='';userData={};
-    window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
-    localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
-    localStorage.removeItem('gt_keys');
+    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
+    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
+    localStorage.removeItem('gt_refresh_token');
+    localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
     window.__secure.clear();
     applyAuth();
     m.remove();

@@ -69,7 +69,7 @@
       function buildCard(m, pmeta){
         const priceIn = (m.prompt_price * 1000).toFixed(4);
         const priceOut = (m.completion_price * 1000).toFixed(4);
-        const name = escapeHtml(m.name || m.model_id.split('/').pop());
+        const name = escapeHtml(m.name || String(m.model_id||m.name||'Unknown').split('/').pop());
         const id = escapeHtml(m.model_id);
         const prov = escapeHtml(m.provider);
         const desc = m.description ? escapeHtml(m.description) : '';

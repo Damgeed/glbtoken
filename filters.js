@@ -298,7 +298,7 @@
       const data = await safeApi('POST','/api/auth/auth0/login', {token: idToken},null,true);
       if(!data) { window.location.href = '/login.html?error=' + encodeURIComponent('Auth login failed'); return; }
       window.__secure.setItem('gt_token', data.token);
-      if(data.refresh_token) localStorage.setItem('gt_refresh_token', data.refresh_token);
+      if(data.refresh_token) (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token', data.refresh_token);
       window.__secure.setItem('gt_user', JSON.stringify(data.user));
       // Don't call applyAuth() — callback page has no nav DOM elements
       // Don't call showToast() — callback page has no toast DOM elements
@@ -338,79 +338,6 @@
         if(m)m.remove();
       },2000);
       if(btn){btn.disabled=false;btn.textContent='Send Reset Link'}
-    }
-    function applyAuth(){
-      var sbName=document.getElementById('sbUserName');
-      var sbAv=document.getElementById('sbAvatar');
-      if(sbName&&userData&&userData.name)sbName.textContent=userData.name;
-      if(sbAv&&userData&&userData.name)sbAv.textContent=userData.name.charAt(0).toUpperCase();
-      const loggedIn=!!token;
-      var ng=document.getElementById('navGuest');if(ng)ng.style.display=loggedIn?'none':'flex';
-      var nu=document.getElementById('navUser');
-      if(nu){
-        nu.style.display=loggedIn?'flex':'none';
-        nu.classList.toggle('d-none',!loggedIn);
-      }
-      var nb=document.getElementById('navBalance');if(nb)nb.style.display=loggedIn?'inline-block':'none';
-      // Mobile menu sync
-      var mg=document.getElementById('mobileGuestSection');
-      var mu=document.getElementById('mobileUserSection');
-      if(mg)mg.style.display=loggedIn?'none':'block';
-      if(mu){
-        mu.style.display=loggedIn?'block':'none';
-        mu.classList.toggle('d-none',!loggedIn);
-      }
-      // Toggle Dashboard vs API/Dev in nav
-      var nal=document.getElementById('navApiLink');if(nal)nal.style.display=loggedIn?'none':'inline-block';
-      var mal=document.getElementById('mNavApiLink');
-      if(mal)mal.style.display=loggedIn?'none':'block';
-      // Toggle Buy Tokens link in nav
-      var nrl=document.getElementById('navReferralLink');if(nrl)nrl.style.display=loggedIn?'inline-block':'none';
-      var ntl=document.getElementById('navTeamLink');if(ntl)ntl.style.display=loggedIn?'inline-block':'none';
-      var npl=document.getElementById('navPlaygroundLink');if(npl)npl.style.display=loggedIn?'inline-block':'none';
-      var nhl=document.getElementById('navHistoryLink');if(nhl)nhl.style.display='inline-block';
-      // Mobile
-      var mnrl=document.getElementById('mNavReferralLink');if(mnrl)mnrl.style.display=loggedIn?'block':'none';
-      var mntl=document.getElementById('mNavTeamLink');if(mntl)mntl.style.display=loggedIn?'block':'none';
-      var mnpl=document.getElementById('mNavPlaygroundLink');if(mnpl)mnpl.style.display=loggedIn?'block':'none';
-      var mnhl=document.getElementById('mNavHistoryLink');if(mnhl)mnhl.style.display='block';
-      // API doc page: show Go to Dashboard button when logged in
-      const goBtn=document.getElementById('apiGoToDashBtn');
-      if(goBtn)goBtn.style.display=loggedIn?'inline-flex':'none';
-      if(loggedIn){
-        var displayName = userData.name;
-        if (!displayName) {
-          if (userData.email) {
-            if (userData.email.endsWith('@privaterelay.appleid.com')) {
-              displayName = 'Apple User';
-            } else {
-              displayName = userData.email.split('@')[0];
-            }
-          } else {
-            displayName = 'User';
-          }
-        }
-        var du=document.getElementById('dashUserName');if(du)du.textContent=displayName;
-        const initial=(displayName||'U')[0].toUpperCase();
-        // Update avatar initial without breaking dropdown structure
-        const av=document.querySelector('.nav-avatar');
-        if(av){
-          const textNode = document.createTextNode(initial);
-          const dropdown = av.querySelector('.dropdown');
-          av.textContent = '';
-          av.appendChild(textNode);
-          if (dropdown) av.appendChild(dropdown);
-        }
-        var da=document.getElementById('ddAvatar');if(da)da.textContent=initial;
-        var dn=document.getElementById('dropName');if(dn)dn.textContent=displayName;
-        var de=document.getElementById('dropEmail');if(de)de.textContent=userData.email||'';
-        // Mobile sync
-        var ma=document.getElementById('mAvatar');if(ma)ma.textContent=initial;
-        var mn=document.getElementById('mName');if(mn)mn.textContent=displayName;
-        var me=document.getElementById('mEmail');if(me)me.textContent=userData.email||'';
-      } else {
-      }
-      updateBalance();
     }
 
     // ── Hash-based routing (back/forward support) ──
@@ -548,8 +475,8 @@
             <div class="meta">'+escapeHtml(key.permissions)+' · '+key.request_count+' requests · '+(key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>')+'</div>
           </div>
           <div class="key-actions">
-            <button class="sort-btn" data-key-id="${key.id}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
-            <button class="sort-btn" style="color:var(--destructive)" data-key-id="${key.id}" data-action="delete">Delete</button>
+            <button class="sort-btn" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+            <button class="sort-btn" style="color:var(--destructive)" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
           </div>
         </div>
       `).join('');

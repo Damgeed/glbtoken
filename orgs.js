@@ -17,7 +17,9 @@ async function loadOrgs() {
 }
 
 async function switchOrg(orgId) {
-  if(!orgId){document.getElementById('orgDetails').innerHTML='<div class="empty-state"><div class="empty-icon">🏢</div><div class="empty-title">Select an organization</div></div>';return}
+  var detailsEl=document.getElementById('orgDetails');
+  if(!detailsEl) return;
+  if(!orgId){detailsEl.innerHTML='<div class="empty-state"><div class="empty-icon">🏢</div><div class="empty-title">Select an organization</div></div>';return}
   await loadOrgDetails(orgId);
 }
 
@@ -33,7 +35,7 @@ async function loadOrgDetails(orgId) {
   if(d.members&&d.members.length){
     d.members.forEach(function(m){
       const roleCls=m.role==='owner'?'badge-role-owner':m.role==='admin'?'badge-role-admin':'badge-role-member';
-      html+='<div class="member-row"><span class="member-avatar">'+(m.name?m.name[0].toUpperCase():'?')+'</span><span class="member-name">'+escapeHtml(m.name||m.email||'User')+'</span><span class="role-badge '+roleCls+'">'+escapeHtml(m.role||'member')+'</span></div>';
+      html+='<div class="member-row"><span class="member-avatar">'+((m.name&&m.name.length)?m.name[0].toUpperCase():'?')+'</span><span class="member-name">'+escapeHtml(m.name||m.email||'User')+'</span><span class="role-badge '+roleCls+'">'+escapeHtml(m.role||'member')+'</span></div>';
     });
   }else{
     html+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No members found</p>';

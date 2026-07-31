@@ -35,7 +35,7 @@
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
         if(!data) return;
         token=data.token;userData=data.user;
-        window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)localStorage.setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
         window.location.href='/dashboard.html';
       } catch(e){
@@ -77,7 +77,7 @@
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
         if(!data) return;
         token=data.token;userData=data.user;
-        window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)localStorage.setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Account created! Welcome.','success');
         window.location.href='/dashboard.html';
       }finally{
@@ -225,7 +225,7 @@
         var data = await safeApi('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
         if(!data) return;
         token=data.token;userData=data.user;
-        window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)localStorage.setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();
         showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
         window.location.href='/dashboard.html';

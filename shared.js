@@ -43,15 +43,30 @@
 
   function encrypt(plaintext){
     var key = deriveKey();
+    // V2: UTF-8 encode first so btoa() never throws on non-Latin1 (emoji/CJK) data
+    var enc = new TextEncoder();
+    var bytes = enc.encode(String(plaintext));
     var result = '';
-    for(var i=0;i<plaintext.length;i++){
-      var c = plaintext.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+    for(var i=0;i<bytes.length;i++){
+      var c = bytes[i] ^ key.charCodeAt(i % key.length);
       result += String.fromCharCode(c);
     }
     return btoa(result);
   }
 
   function decrypt(ciphertext){
+    var key = deriveKey();
+    var raw = atob(ciphertext);
+    // XOR back to UTF-8 bytes, then decode to string
+    var bytes = new Uint8Array(raw.length);
+    for(var i=0;i<raw.length;i++){
+      bytes[i] = raw.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+    }
+    return new TextDecoder().decode(bytes);
+  }
+
+  // Legacy V1 decrypt (XOR on UTF-16 code units — only safe for Latin-1 data)
+  function decryptV1(ciphertext){
     var key = deriveKey();
     var raw = atob(ciphertext);
     var result = '';
@@ -66,14 +81,18 @@
     getItem: function(key){
       var raw = localStorage.getItem(key);
       if(!raw) return null;
+      if(raw.indexOf('__e2:') === 0){
+        try { return decrypt(raw.substring(5)); }
+        catch(e){ return null; }
+      }
       if(raw.indexOf(STORAGE_PREFIX) === 0){
-        try { return decrypt(raw.substring(STORAGE_PREFIX.length)); }
+        try { return decryptV1(raw.substring(STORAGE_PREFIX.length)); }
         catch(e){ return null; }
       }
       return raw;
     },
     setItem: function(key, value){
-      localStorage.setItem(key, STORAGE_PREFIX + encrypt(String(value)));
+      localStorage.setItem(key, '__e2:' + encrypt(String(value)));
     },
     removeItem: function(key){
       localStorage.removeItem(key);
@@ -85,11 +104,57 @@
 })();
 
 const API_URL = 'https://glbtoken-backend-production.up.railway.app';
+
+// ── Safe token recovery from URL (auth/payment redirect) ──
+// Validates JWT shape + expiry + freshness BEFORE persisting, so a crafted
+// link can't overwrite an existing session (session-fixation) and tokens
+// never linger in the address bar.
+window.recoverTokenFromUrl = function recoverTokenFromUrl(){
+  try{
+    var params = new URLSearchParams(window.location.search);
+    var urlToken = params.get('token');
+    if(!urlToken) return false;
+    var urlUser = params.get('user');
+    var ts = params.get('_ts');
+    // JWT shape: three dot-separated base64url segments
+    var parts = String(urlToken).split('.');
+    if(parts.length !== 3){ return false; }
+    // Expiry check (JWT payload is base64url, not standard base64)
+    try{
+      var b64 = parts[1].replace(/-/g,'+').replace(/_/g,'/');
+      while(b64.length % 4) b64 += '=';
+      var payload = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      if(payload.exp && payload.exp * 1000 < Date.now()){ return false; }
+    }catch(e){ return false; }
+    // Freshness check: if the backend supplied _ts (ms), reject links older than 5 min
+    if(ts){
+      var tsNum = parseInt(ts, 10);
+      if(!isNaN(tsNum) && (Date.now() - tsNum) > 300000){ return false; }
+    }
+    // All checks passed — persist
+    var secure = window.__secure || {getItem:function(k){return localStorage.getItem(k)}, setItem:function(k,v){localStorage.setItem(k,v)}, removeItem:function(k){localStorage.removeItem(k)}};
+    secure.setItem('gt_token', urlToken);
+    token = urlToken; // keep in-memory token in sync immediately
+    if(urlUser){
+      try{ secure.setItem('gt_user', decodeURIComponent(urlUser)); }catch(e){}
+    }
+    // Persist refresh token too (social-login redirects now include it) so the
+    // 60-min access token can be renewed instead of force-logging-out the user.
+    var urlRefresh = params.get('refresh');
+    if(urlRefresh){ secure.setItem('gt_refresh_token', urlRefresh); }
+    // Strip token from the address bar immediately (no back-button leak)
+    var clean = window.location.protocol + '//' + window.location.host + window.location.pathname;
+    window.history.replaceState({}, document.title, clean);
+    return true;
+  }catch(e){ return false; }
+};
     let token = (window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token')) || '';
-    let userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
-    let keys = JSON.parse(localStorage.getItem('gt_keys') || '[]');
-    let newapiToken = localStorage.getItem('gt_newapi_token') || '';
-    let newapiEndpoint = localStorage.getItem('gt_newapi_endpoint') || '';
+    let userData = {};
+    try{ userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ userData = {}; }
+    let keys = [];
+    try{ keys = JSON.parse((window.__secure ? window.__secure.getItem('gt_keys') : localStorage.getItem('gt_keys')) || '[]'); }catch(e){ keys = []; }
+    let newapiToken = (window.__secure ? window.__secure.getItem('gt_newapi_token') : localStorage.getItem('gt_newapi_token')) || '';
+    let newapiEndpoint = (window.__secure ? window.__secure.getItem('gt_newapi_endpoint') : localStorage.getItem('gt_newapi_endpoint')) || '';
 
     // ── Usage Analytics State ──
     let usageDays = 7;
@@ -333,7 +398,35 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
     // ── API Helper ──
     let models = [], selectedAmount = 5, selectedPayment = 'stripe';
     let chartInst = null, sparkInst = null, sortDir = 'price_asc';
-    
+
+    // Single-flight token refresh: when several API calls 401 at once (common on
+    // dashboard load / chat send), they must share ONE /auth/refresh call.
+    // The backend ROTATES refresh tokens, so parallel refreshes with the same
+    // token race — the loser gets "Invalid or expired refresh token" and would
+    // otherwise trigger a false "session expired" popup.
+    let refreshPromise = null;
+    async function refreshSession(){
+      if(refreshPromise) return refreshPromise;
+      refreshPromise = (async () => {
+        const rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+        if(!rt) throw new Error('No refresh token');
+        const refreshResp = await fetch(API_URL+'/auth/refresh', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({refresh_token: rt})
+        });
+        if(!refreshResp.ok) throw new Error('Refresh failed');
+        const refreshData = await refreshResp.json();
+        // Store new tokens
+        token = refreshData.token;
+        userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
+        (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_token', refreshData.token);
+        (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token', refreshData.refresh_token);
+        return refreshData;
+      })().finally(function(){ refreshPromise = null; });
+      return refreshPromise;
+    }
+
     async function api(method, path, body, timeoutMs){
       const controller=new AbortController();
       const ms=timeoutMs||25000;
@@ -344,29 +437,17 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
       try {
         const resp=await fetch(API_URL+path,opts);
         if (!resp.ok) {
-          if(resp.status === 401 && token && localStorage.getItem('gt_refresh_token')){
+          if(resp.status === 401 && token && (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'))){
             // Silently attempt token refresh before declaring session expired
             try {
-              const refreshResp = await fetch(API_URL+'/auth/refresh', {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({refresh_token: localStorage.getItem('gt_refresh_token')})
-              });
-              if(refreshResp.ok){
-                const refreshData = await refreshResp.json();
-                // Store new tokens
-                token = refreshData.token;
-                userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
-                localStorage.setItem('gt_token', refreshData.token);
-                localStorage.setItem('gt_refresh_token', refreshData.refresh_token);
-                // Retry the original request with new token
-                opts.headers['Authorization'] = 'Bearer '+token;
-                const retryResp = await fetch(API_URL+path, opts);
-                if(retryResp.ok) return await retryResp.json();
-                // If retry also fails, fall through to session expired
-                const errData = await retryResp.json().catch(()=>{});
-                throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
-              }
+              await refreshSession();
+              // Retry the original request with the fresh token
+              opts.headers['Authorization'] = 'Bearer '+token;
+              const retryResp = await fetch(API_URL+path, opts);
+              if(retryResp.ok) return await retryResp.json();
+              // If retry also fails, fall through to session expired
+              const errData = await retryResp.json().catch(()=>{});
+              throw new Error(((errData&&errData.detail)||'API error').replace(/^\[?\d{3}\]?\s*/,''));
             } catch(refreshError){
               // Refresh failed — fall through to normal session expired handling
             }
@@ -377,7 +458,10 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
           if(isDashPage){
             showSessionExpired();
           } else {
-            localStorage.removeItem('gt_token');localStorage.removeItem('gt_user');localStorage.removeItem('gt_refresh_token');
+            (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
+            (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
+            localStorage.removeItem('gt_refresh_token');
+            localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
             window.location.href = 'login.html';
           }
           throw new Error('Session expired');
@@ -522,7 +606,7 @@ function logoutUser(){
       showConfirm('Sign out?','Are you sure you want to sign out?',function(){
     // Best-effort server-side revoke of refresh token (industry standard)
     try{
-      var rt=localStorage.getItem('gt_refresh_token');
+      var rt=(window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
       if(rt){fetch(API_URL+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})}).catch(function(){});}
     }catch(e){}
     token='';userData={};
@@ -638,6 +722,9 @@ window.applyAuth = function applyAuth(){
     }
     var initial = (displayName || 'U')[0].toUpperCase();
     var du = document.getElementById('dashUserName'); if(du) du.textContent = displayName;
+    // API doc page: show Go to Dashboard button when logged in
+    var goBtn = document.getElementById('apiGoToDashBtn');
+    if(goBtn) goBtn.style.display = loggedIn ? 'inline-flex' : 'none';
     var av = document.querySelector('.nav-avatar');
     if(av){
       var textNode = document.createTextNode(initial);

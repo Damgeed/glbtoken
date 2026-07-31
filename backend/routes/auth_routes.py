@@ -520,12 +520,15 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 callback: {e}")
     jwt_token = create_access_token({"sub": str(user.id)})
+    refresh_token = generate_refresh_token(user.id, db)
     user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
     }))
     db.close()
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&user={user_json}")
+    import time
+    ts = int(time.time() * 1000)
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
 
 
 @router.get("/api/auth/auth0/pkce-callback")
@@ -580,6 +583,7 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 PKCE: {e}")
     jwt_token = create_access_token({"sub": str(user.id)})
+    refresh_token = generate_refresh_token(user.id, db)
     user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
@@ -587,7 +591,7 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
     db.close()
     import time
     ts = int(time.time() * 1000)
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&user={user_json}&_ts={ts}")
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
 
 
 @router.post("/api/auth/auth0/password-login")

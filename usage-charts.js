@@ -28,7 +28,7 @@
         window.dailyChartInst=new Chart(canvas,{
           type:'bar',
           data:{
-            labels:(data.labels||[]).map(function(l){var p=l.split('-');return p[1]+'/'+p[2]}),
+            labels:(data.labels||[]).map(function(l){var p=String(l||'').split('-');return p[1]+'/'+p[2]}),
             datasets:[{label:label,data:values,backgroundColor:color,borderColor:border,borderWidth:1,borderRadius:4}]
           },
           options:{
@@ -128,7 +128,7 @@
       window.dailyChartInst=new Chart(canvas,{
         type:'bar',
         data:{
-          labels:dailyData.labels.map(function(l){var p=l.split('-');return p[1]+'/'+p[2]}),
+          labels:dailyData.labels.map(function(l){var p=String(l||'').split('-');return p[1]+'/'+p[2]}),
           datasets:[{
             label:'Tokens',
             data:dailyData.values,
