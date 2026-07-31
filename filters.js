@@ -412,18 +412,6 @@
       }
       updateBalance();
     }
-    function updateBalance(){
-      const b=userData.token_balance||0;
-      var nb=document.getElementById('navBalance');if(nb)nb.textContent=b.toLocaleString()+' Tokens';
-      var db2=document.getElementById('ddBalance');if(db2)db2.textContent=b.toLocaleString()+' GT';
-      var mb=document.getElementById('mBalance');if(mb)mb.textContent=b.toLocaleString();
-      const db=document.getElementById('dashBalance');
-      if(db)db.textContent=b.toLocaleString();
-      const du=document.getElementById('dashUsd');
-      if(du)du.textContent='$'+(b/1000).toFixed(2)+' USD';
-      const hb=document.getElementById('heroBalance');
-      if(hb)hb.textContent=b.toLocaleString();
-    }
 
     // ── Hash-based routing (back/forward support) ──
     window.addEventListener('hashchange',function(){

@@ -11,7 +11,7 @@ from auth import (
     hash_password, verify_password, create_access_token, decode_token,
     get_current_user, get_optional_user, generate_api_key,
     verify_google_token, verify_github_code, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID,
-    generate_refresh_token, validate_refresh_token
+    generate_refresh_token, validate_refresh_token, revoke_refresh_token
 )
 from newapi_integration import create_newapi_user, create_api_token
 from auth0 import (
@@ -856,6 +856,14 @@ async def refresh_access_token(
     new_access = create_access_token({"sub": str(user_id)})
     new_refresh = generate_refresh_token(user_id, db)
     return {"token": new_access, "refresh_token": new_refresh}
+
+@router.post("/auth/logout")
+async def logout(body: dict = Body(...), db: Session = Depends(get_db)):
+    """Revoke a refresh token server-side (industry-standard logout)."""
+    raw = body.get("refresh_token")
+    if raw:
+        revoke_refresh_token(raw, db)
+    return {"status": "success"}
 
 # ── Helper: send_email ──
 

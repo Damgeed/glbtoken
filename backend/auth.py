@@ -62,6 +62,20 @@ def validate_refresh_token(raw: str, db: Session) -> int:
     db.commit()
     return entry.user_id
 
+
+def revoke_refresh_token(raw: str, db: Session) -> bool:
+    """Revoke a refresh token server-side (logout). Returns True if revoked."""
+    token_hash = hashlib.sha256(raw.encode()).hexdigest()
+    entry = db.query(RefreshToken).filter(
+        RefreshToken.token_hash == token_hash,
+        RefreshToken.revoked == False
+    ).first()
+    if entry:
+        entry.revoked = True
+        db.commit()
+        return True
+    return False
+
 def decode_token(token: str) -> dict:
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

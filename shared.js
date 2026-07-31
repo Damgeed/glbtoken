@@ -520,6 +520,11 @@ const API_URL = 'https://glbtoken-backend-production.up.railway.app';
 function logoutUser(){
       // Show confirmation dialog instead of immediate logout
       showConfirm('Sign out?','Are you sure you want to sign out?',function(){
+    // Best-effort server-side revoke of refresh token (industry standard)
+    try{
+      var rt=localStorage.getItem('gt_refresh_token');
+      if(rt){fetch(API_URL+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})}).catch(function(){});}
+    }catch(e){}
     token='';userData={};
     window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
     localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
@@ -649,4 +654,18 @@ window.applyAuth = function applyAuth(){
     var me = document.getElementById('mEmail'); if(me) me.textContent = (userData && userData.email) || '';
   }
   if(typeof updateBalance === 'function') updateBalance();
+};
+
+// ── Balance UI sync (shared so it works on all pages, not just usage) ──
+window.updateBalance = function updateBalance(){
+  const b=userData.token_balance||0;
+  var nb=document.getElementById('navBalance');if(nb)nb.textContent=b.toLocaleString()+' Tokens';
+  var db2=document.getElementById('ddBalance');if(db2)db2.textContent=b.toLocaleString()+' GT';
+  var mb=document.getElementById('mBalance');if(mb)mb.textContent=b.toLocaleString();
+  const db=document.getElementById('dashBalance');
+  if(db)db.textContent=b.toLocaleString();
+  const du=document.getElementById('dashUsd');
+  if(du)du.textContent='$'+(b/1000).toFixed(2)+' USD';
+  const hb=document.getElementById('heroBalance');
+  if(hb)hb.textContent=b.toLocaleString();
 };
