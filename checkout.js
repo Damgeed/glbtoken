@@ -1,9 +1,9 @@
 /* ══════════════════════════════════════════
    CHECKOUT — Buy tokens, top-up, payment modal
    Shared by pricing.html and topup.html
+   NOTE: selectedAmount/selectedPayment are declared
+   in shared.js (global let) — do NOT redeclare here.
    ══════════════════════════════════════════ */
-    var selectedAmount = 0;
-    var selectedPayment = '';
 
     function updateCustomPricing(){
       var slider=document.getElementById('customSlider');
