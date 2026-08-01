@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1158" />
-<link rel="stylesheet" href="referrals.css?v=1020" />
+<link rel="stylesheet" href="referrals.css?v=1021" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -114,11 +114,9 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-lg">
               <path d="M17 20l5-5-5-5"/><path d="M7 4l-5 5 5 5"/><path d="M14 4l-4 16"/>
             </svg>
-            Referral Program
-          </h1>
+            Referral Program</h1>
           <p>Invite friends and earn rewards for every signup</p>
         </div>
-        <div><button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('refCode').textContent)">📋 Copy Code</button></div>
       </div>
 
       <!-- Referral Stats -->
@@ -157,11 +155,8 @@
         <div class="refs-share-row">
           <div class="refs-link-box">
             <span id="refCode" class="refs-link-text">https://glbtoken.com/ref/GLB-ABCD</span>
-            <button class="btn-primary refs-copy-btn" onclick="copyRefLink()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-              </svg>
-              Copy
+            <button class="refs-copy-btn" onclick="copyRefLink()" title="Copy link" aria-label="Copy link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             </button>
           </div>
         </div>
@@ -321,31 +316,9 @@
 <script src="translations.js?v=1099"></script>
 <script data-cfasync="false" src="shared.js?v=1124"></script>
 <script data-cfasync="false" src="ui.js?v=1217"></script>
-<script data-cfasync="false" src="referral.js?v=1118"></script>
+<script data-cfasync="false" src="referral.js?v=1119"></script>
 
 <script>
-// ===== Referral Functions =====
-function copyRefLink(){
-  var el = document.getElementById('refCode');
-  navigator.clipboard.writeText(el.textContent).catch(function(){});
-  var btn = el.parentElement.querySelector('button');
-  var orig = btn.innerHTML;
-  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
-  setTimeout(function(){ btn.innerHTML = orig; }, 2000);
-}
-function shareRef(platform){
-  var url = encodeURIComponent('https://glbtoken.com/ref/GLB-ABCD');
-  var text = encodeURIComponent('Join me on GlbTOKEN and get access to 100+ AI models! Use my referral link:');
-  var href = '';
-  switch(platform){
-    case 'twitter': href = 'https://twitter.com/intent/tweet?text='+text+'&url='+url; break;
-    case 'whatsapp': href = 'https://wa.me/?text='+text+'%20'+url; break;
-    case 'telegram': href = 'https://t.me/share/url?url='+url+'&text='+text; break;
-    case 'email': href = 'mailto:?subject=Join%20GlbTOKEN&body='+text+'%20'+url; break;
-  }
-  if(href) window.open(href, '_blank', 'noopener');
-}
-
 // Referral chart initialization
 document.addEventListener('DOMContentLoaded', function(){
   var ctx1 = document.getElementById('referralsChart');

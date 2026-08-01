@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1158" />
-<link rel="stylesheet" href="referral.css?v=15" />
+<link rel="stylesheet" href="referral.css?v=16" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -37,7 +37,6 @@
       </h1>
       <p>Invite friends and earn rewards for every signup</p>
     </div>
-    <div><button class="btn-action" onclick="navigator.clipboard.writeText(document.getElementById('refCode').textContent)">📋 Copy Code</button></div>
   </div>
 
   <!-- Referral Stats -->
@@ -76,11 +75,8 @@
     <div class="ref-share-row">
       <div class="ref-link-box">
         <span id="refCode" class="ref-link-text">https://glbtoken.com/ref/GLB-ABCD</span>
-        <button class="btn-primary ref-copy-btn" onclick="copyRefLink()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-          </svg>
-          Copy
+        <button class="ref-copy-btn" onclick="copyRefLink()" title="Copy link" aria-label="Copy link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         </button>
       </div>
     </div>
@@ -237,7 +233,7 @@
 <script data-cfasync="false" src="shared.js?v=1124"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1217"></script>
-<script data-cfasync="false" src="referral.js?v=1118"></script>
+<script data-cfasync="false" src="referral.js?v=1119"></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
 document.querySelectorAll('.dash-card div[style*="overflow-x:auto"], .dash-card .scroll-x').forEach(function(el){
