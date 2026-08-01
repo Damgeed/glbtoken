@@ -55,18 +55,18 @@
 /* Copy button (no left radius) */
 .ref-copy-btn {
   border: none;
-  background: rgba(244, 180, 0, 0.12);
-  color: #FFC733;
+  background: #F4B400;
+  color: #241A00;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 3rem;
   flex-shrink: 0;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease;
 }
-.ref-copy-btn:hover { background: rgba(244, 180, 0, 0.22); }
-.ref-copy-btn.copied { color: #00D68F; background: rgba(0, 214, 143, 0.14); }
+.ref-copy-btn:hover { background: #E0A500; }
+.ref-copy-btn.copied { background: #E0A500; }
 /* Share buttons row */
 .ref-share-btn-row {
   display: flex;
