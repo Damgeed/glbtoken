@@ -94,12 +94,18 @@ class ResetPasswordRequest(BaseModel):
 class ApiKeyCreate(BaseModel):
     name: str = "My API Key"
     permissions: str = "read_write"
+    expires_at: Optional[str] = None  # ISO datetime or "" for never
+    rate_limit_rpm: Optional[int] = None  # requests per minute cap
+    ip_allowlist: Optional[str] = None  # comma-separated IPs/CIDRs
 
 
 class ApiKeyUpdate(BaseModel):
     name: Optional[str] = None
     permissions: Optional[str] = None
     is_active: Optional[bool] = None
+    expires_at: Optional[str] = None
+    rate_limit_rpm: Optional[int] = None
+    ip_allowlist: Optional[str] = None
 
 
 # ── Payment Schemas ──

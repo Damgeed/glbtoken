@@ -9,7 +9,9 @@ New API gateway (or fallback), and bills the user's token balance from the
 REAL usage reported by the model provider.
 """
 
+import ipaddress
 import json
+import time
 from datetime import datetime, timezone
 
 import httpx
@@ -18,7 +20,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from common import (
-    _400, _401, _402, _404, _502, limiter,
+    _400, _401, _402, _403, _404, _429, _502, limiter,
     NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL,
 )
 from database import get_db, User, ApiKey, Transaction, AIModel
@@ -59,8 +61,46 @@ class MessagesRequest(BaseModel):
 
 # ── Helpers ──
 
-def _auth_user(db: Session, authorization: str):
-    """Resolve a GlbTOKEN API key (Bearer gtk_... / sk-...) to (user, api_key)."""
+# In-memory per-key rate limiting (sliding 60s window). Per-process; fine for
+# single-replica deployments, and the global slowapi limiter still applies too.
+_key_rate = {}
+
+
+def _check_key_rate(key_id: int, rpm: int):
+    now = time.time()
+    arr = _key_rate.setdefault(key_id, [])
+    while arr and arr[0] < now - 60:
+        arr.pop(0)
+    if len(arr) >= rpm:
+        _429("Rate limit exceeded for this API key")
+    arr.append(now)
+    if len(arr) > 2000:  # prevent unbounded growth
+        _key_rate[key_id] = arr[-1000:]
+
+
+def _ip_allowed(client_ip: str, allowlist: str) -> bool:
+    if not client_ip:
+        return False
+    for entry in allowlist.split(","):
+        entry = entry.strip()
+        if not entry:
+            continue
+        if "/" in entry:
+            try:
+                if ipaddress.ip_address(client_ip) in ipaddress.ip_network(entry, strict=False):
+                    return True
+            except Exception:
+                continue
+        elif entry == client_ip:
+            return True
+    return False
+
+
+def _auth_user(db: Session, authorization: str, request: Request = None):
+    """Resolve a GlbTOKEN API key (Bearer gtk_... / sk-...) to (user, api_key).
+
+    Enforces per-key expiry, IP allowlist, and rate limit.
+    """
     raw = (authorization or "").strip()
     if raw.lower().startswith("bearer "):
         raw = raw[7:].strip()
@@ -71,6 +111,25 @@ def _auth_user(db: Session, authorization: str):
     ).first()
     if not api_key:
         _401("Invalid API key")
+
+    # Expiry
+    if api_key.expires_at is not None:
+        exp = api_key.expires_at
+        if exp.tzinfo is None:
+            exp = exp.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) > exp:
+            _403("API key expired")
+
+    # IP allowlist
+    if api_key.ip_allowlist:
+        client_ip = request.client.host if (request and request.client) else ""
+        if not _ip_allowed(client_ip, api_key.ip_allowlist):
+            _403("IP not allowed for this API key")
+
+    # Per-key rate limit
+    if api_key.rate_limit_rpm and api_key.rate_limit_rpm > 0:
+        _check_key_rate(api_key.id, api_key.rate_limit_rpm)
+
     user = db.query(User).filter(User.id == api_key.user_id).first()
     if not user:
         _401("Invalid API key")
@@ -102,7 +161,7 @@ def _bill(db: Session, user: User, api_key: ApiKey, model: str,
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
         payment_method=payment_method, model_used=model,
-        tokens=cost, status="completed",
+        tokens=cost, status="completed", key_id=api_key.id,
     )
     db.add(tx)
     db.commit()
@@ -147,7 +206,7 @@ async def chat_completions(
     authorization: str = Header("", alias="Authorization"),
     db: Session = Depends(get_db),
 ):
-    user, api_key = _auth_user(db, authorization)
+    user, api_key = _auth_user(db, authorization, request)
 
     # Pre-flight balance check (estimate)
     texts = []
@@ -184,7 +243,7 @@ async def list_models(
     authorization: str = Header("", alias="Authorization"),
     db: Session = Depends(get_db),
 ):
-    user, api_key = _auth_user(db, authorization)
+    user, api_key = _auth_user(db, authorization, request)
     models = db.query(AIModel).filter(
         AIModel.is_active == True
     ).order_by(AIModel.provider, AIModel.model_id).all()
@@ -211,7 +270,7 @@ async def responses_api(
     db: Session = Depends(get_db),
 ):
     """OpenAI Responses API passthrough (billed on real usage)."""
-    user, api_key = _auth_user(db, authorization)
+    user, api_key = _auth_user(db, authorization, request)
     inp = req.input if isinstance(req.input, list) else [req.input] if req.input else []
     cost_est = max(1, int(_estimate_tokens([inp]) + min(req.max_output_tokens, 4096)) * 2 // 1000)
     if user.token_balance < cost_est:
@@ -238,7 +297,7 @@ async def messages_api(
     db: Session = Depends(get_db),
 ):
     """Anthropic Messages API passthrough (billed on real usage)."""
-    user, api_key = _auth_user(db, authorization)
+    user, api_key = _auth_user(db, authorization, request)
     texts = [m.get("content", "") for m in req.messages if isinstance(m, dict)]
     cost_est = max(1, int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000)
     if user.token_balance < cost_est:

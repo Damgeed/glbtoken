@@ -89,6 +89,11 @@ def _402(detail: str = "Payment required"):
 def _403(detail: str = "Forbidden"):
     raise HTTPException(status_code=403, detail=detail)
 
+
+def _429(detail: str = "Too many requests"):
+    raise HTTPException(status_code=429, detail=detail)
+
+
 def _404(detail: str = "Not found"):
     raise HTTPException(status_code=404, detail=detail)
 

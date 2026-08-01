@@ -2608,6 +2608,22 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-muted);
   margin-top: 0.15rem;
 }
+.key-copy {
+  margin-left: 0.4rem;
+  background: rgba(244, 180, 0, 0.1);
+  border: 1px solid rgba(244, 180, 0, 0.3);
+  color: #FFC733;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.18rem 0.4rem;
+  vertical-align: middle;
+  transition: background 0.15s ease;
+}
+.key-copy:hover { background: rgba(244, 180, 0, 0.2); }
+.spent { color: var(--primary); font-weight: 600; }
+.expiry-soon { color: #FFC733; font-weight: 600; }
 .api-key-card .key-actions {
   display: flex;
   gap: 0.5rem;

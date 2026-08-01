@@ -48,8 +48,8 @@
           <div class="api-key-card">
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)}</div>
-              <div class="key-val">${escapeHtml(key.key_prefix)}••••••••</div>
-              <div class="meta">${escapeHtml(key.permissions)} · Created ${key.created_at?new Date(key.created_at).toLocaleDateString():'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+              <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
+              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?new Date(key.created_at).toLocaleDateString():'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">
@@ -169,13 +169,40 @@
       list.addEventListener('pointercancel',endDrag);
     }
 
-    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value='My API Key'}
+    function fmtTokens(n){
+      if(n>=1e6)return (n/1e6).toFixed(1)+'M';
+      if(n>=1e3)return (n/1e3).toFixed(1)+'k';
+      return String(Math.round(n));
+    }
+    function fmtExpiry(iso){
+      const d=new Date(iso);const now=Date.now();
+      if(isNaN(d.getTime()))return '';
+      if(d.getTime()<now)return '<span class="expiry-soon">Expired</span>';
+      const days=Math.ceil((d.getTime()-now)/86400000);
+      return 'Expires '+d.toLocaleDateString()+(days<=7?' <span class="expiry-soon">('+days+'d)</span>':'');
+    }
+    function copyKeyPrefix(btn){
+      const v=btn.getAttribute('data-copy')||'';
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(v).then(function(){showToast('Key prefix copied','success');}).catch(function(){showToast('Key prefix copied','success');});
+      }else{
+        showToast('Key prefix copied','success');
+      }
+    }
+    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value='My API Key';document.getElementById('newKeyExpiry').value='';document.getElementById('newKeyRpm').value='';document.getElementById('newKeyIps').value=''}
     function closeCreateKeyModal(){document.getElementById('createKeyModal').classList.remove('open')}
     async function createApiKey(){
       const name=document.getElementById('newKeyName').value;
       const perms=document.getElementById('newKeyPerms').value;
+      const expirySel=document.getElementById('newKeyExpiry').value;
+      let expires_at='';
+      if(expirySel==='30d')expires_at=new Date(Date.now()+30*86400000).toISOString();
+      else if(expirySel==='90d')expires_at=new Date(Date.now()+90*86400000).toISOString();
+      else if(expirySel==='1y')expires_at=new Date(Date.now()+365*86400000).toISOString();
+      const rpm=parseInt(document.getElementById('newKeyRpm').value,10);
+      const ips=document.getElementById('newKeyIps').value.trim();
       try{
-        const d=await safeApi('POST','/api/keys',{name,permissions:perms});
+        const d=await safeApi('POST','/api/keys',{name,permissions:perms,expires_at,rate_limit_rpm:rpm>0?rpm:null,ip_allowlist:ips});
         if(!d) return;
         document.getElementById('newKeyValue').textContent=d.key;
         document.getElementById('newKeyResult').style.display='block';

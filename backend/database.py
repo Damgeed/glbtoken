@@ -100,6 +100,9 @@ class ApiKey(Base):
     request_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_active = Column(Boolean, default=True)
+    expires_at = Column(DateTime, nullable=True)          # optional auto-expiry
+    rate_limit_rpm = Column(Integer, nullable=True)       # optional per-key req/min cap
+    ip_allowlist = Column(Text, nullable=True)            # optional comma-separated IPs/CIDRs
     
     user = relationship("User", back_populates="api_keys")
 
@@ -114,6 +117,7 @@ class Transaction(Base):
     tokens = Column(Float, default=0)
     model_used = Column(String, default="")
     payment_ref = Column(String, nullable=True)  # Paystack/Stripe/Crypto reference
+    key_id = Column(Integer, ForeignKey("api_keys.id"), nullable=True, index=True)  # API key that consumed
     status = Column(String, default="completed")  # completed, pending, failed
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     

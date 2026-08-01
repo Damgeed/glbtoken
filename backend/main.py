@@ -60,6 +60,31 @@ async def lifespan(app: FastAPI):
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (non-critical): {e}")
+    # Auto-migrate: API key + transaction new columns
+    try:
+        from database import engine
+        from sqlalchemy import inspect, text
+        inspector = inspect(engine)
+        key_cols = {c['name'] for c in inspector.get_columns('api_keys')}
+        key_add = {
+            'expires_at': 'TIMESTAMP',
+            'rate_limit_rpm': 'INTEGER',
+            'ip_allowlist': 'TEXT',
+        }
+        tx_cols = {c['name'] for c in inspector.get_columns('transactions')}
+        tx_add = {'key_id': 'INTEGER'}
+        with engine.connect() as conn:
+            for col_name, col_type in key_add.items():
+                if col_name not in key_cols:
+                    conn.execute(text(f'ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}'))
+                    print(f"✅ Added missing column: api_keys.{col_name}")
+            for col_name, col_type in tx_add.items():
+                if col_name not in tx_cols:
+                    conn.execute(text(f'ALTER TABLE transactions ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}'))
+                    print(f"✅ Added missing column: transactions.{col_name}")
+            conn.commit()
+    except Exception as e:
+        print(f"⚠️ Migration error (api keys, non-critical): {e}")
     try:
         auto_pull_models()
     except Exception as e:
