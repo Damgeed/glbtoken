@@ -16,9 +16,9 @@
       list.innerHTML=k.map(key=>`
         <div class="api-key-card">
           <div class="key-info">
-            <div class="key-name">'+escapeHtml(key.name)+'</div>
-            <div class="key-val">'+escapeHtml(key.key_prefix)+'••••••••</div>
-            <div class="meta">'+escapeHtml(key.permissions)+' · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+            <div class="key-name">${escapeHtml(key.name)}</div>
+            <div class="key-val">${escapeHtml(key.key_prefix)}••••••••</div>
+            <div class="meta">${escapeHtml(key.permissions)} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
           </div>
           <div class="key-actions">
             <button class="sort-btn" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
@@ -44,8 +44,16 @@
     }
     async function toggleKeyStatus(id){
       const key=keys.find(k=>k.id===id);if(!key)return;
-      await safeApi('PUT',`/api/keys/${id}`,{is_active:!key.is_active});
-      loadKeys();
+      const pausing=key.is_active;
+      showConfirm(
+        pausing?'Pause API Key?':'Activate API Key?',
+        pausing?'Paused keys stop working immediately. You can activate it again anytime.':'This will re-enable the key and restore access.',
+        async function(){
+          await safeApi('PUT',`/api/keys/${id}`,{is_active:!key.is_active});
+          loadKeys();
+          showToast(pausing?'Key paused':'Key activated','success');
+        }
+      );
     }
     async function deleteKey(id){
       showConfirm('Delete API Key?','This cannot be undone.',async function(){

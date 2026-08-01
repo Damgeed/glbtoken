@@ -117,16 +117,18 @@
       <!-- Key Management Card -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle mr-6"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-          Your API Keys
-          <span class="text-xs font-normal text-muted ml-xs">Manage your API access</span>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;min-width:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle mr-6" style="flex-shrink:0"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            <span>Your API Keys</span>
+            <span class="text-xs font-normal text-muted">Manage your API access</span>
+          </div>
+          <button class="btn-primary btn-sm" style="flex-shrink:0" onclick="showCreateKeyModal()">+ New Key</button>
         </div>
         <div class="flex gap-sm flex-wrap">
           <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
           <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
           <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
           <button class="sort-btn" onclick="sortKeys('usage')">Usage</button>
-          <button class="btn-primary btn-sm ml-auto" onclick="showCreateKeyModal()">+ New Key</button>
         </div>
         <div id="keyList"><p class="text-muted text-sm text-center pad-sm-1">Loading keys...</p></div>
       </div>
@@ -154,12 +156,6 @@
             <button class="btn-primary btn-xs" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')">Copy Key</button>
           </div>
         </div>
-      </div>
-
-      <!-- Docs Link -->
-      <div class="dash-card text-center pad-md">
-        <p class="text-secondary m-0 mb-sm">Need integration guides, code examples, and API reference?</p>
-        <a href="apikeys.html" class="btn-primary inline-block text-decoration-none btn-docs-cta">View Full Documentation →</a>
       </div>
 
     </div>
@@ -192,7 +188,7 @@
 <script src="translations.js?v=1099"></script>
 <script data-cfasync="false" src="shared.js?v=1124"></script>
 <script data-cfasync="false" src="ui.js?v=1216"></script>
-<script data-cfasync="false" src="keys.js?v=2"></script>
+<script data-cfasync="false" src="keys.js?v=3"></script>
 
 </body>
 </html>
