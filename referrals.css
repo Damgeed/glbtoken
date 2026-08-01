@@ -108,12 +108,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
   width: 3rem;
   flex-shrink: 0;
   transition: background 0.15s ease;
 }
+.refs-copy-btn .copy-label { display: none; }
 .refs-copy-btn:hover { background: #E0A500; }
 .refs-copy-btn.copied { background: #E0A500; }
+/* Copy symbol on the Your Code card */
+.code-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.code-copy-btn {
+  border: none;
+  background: rgba(244, 180, 0, 0.12);
+  color: #F4B400;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+.code-copy-btn:hover { background: rgba(244, 180, 0, 0.22); }
+.code-copy-btn.copied { color: #00D68F; }
+@media (min-width: 769px) {
+  .refs-copy-btn { width: auto; padding: 0 1.1rem; }
+  .refs-copy-btn .copy-label { display: inline; font-size: 0.85rem; font-weight: 600; }
+  .refs-share-btn-row { justify-content: center; }
+}
 /* Share buttons row */
 .refs-share-btn-row {
   display: flex;

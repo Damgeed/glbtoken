@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redirecting…</title>
+<script>
+(function(){
+  try{
+    var p = window.location.pathname || '';
+    var m = p.match(/\/ref\/(GLB[A-Za-z0-9]{6})/i);
+    if(m){
+      window.location.replace('https://glbtoken.com/register.html?ref=' + m[1].toUpperCase());
+      return;
+    }
+    window.location.replace('https://glbtoken.com/');
+  }catch(e){
+    window.location.replace('https://glbtoken.com/');
+  }
+})();
+</script>
+</head>
+<body>
+<p style="font-family:sans-serif;text-align:center;margin-top:40vh;color:#888">Redirecting…</p>
+</body>
+</html>

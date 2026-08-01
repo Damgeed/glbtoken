@@ -15,6 +15,7 @@ class RegisterRequest(BaseModel):
     email: str
     password: str
     country: str = ""
+    ref: str = ""  # optional referral code or link
 
 
 class LoginRequest(BaseModel):
@@ -41,6 +42,7 @@ class SendCodeRequest(BaseModel):
 class VerifyCodeRequest(BaseModel):
     email: str
     code: str
+    ref: str = ""  # optional referral code or link
 
 
 class SendSmsCodeRequest(BaseModel):

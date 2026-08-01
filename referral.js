@@ -13,8 +13,9 @@ async function loadReferralStats() {
     const totalRefsEl=document.getElementById('refTotalReferrals');
     const totalEarnEl=document.getElementById('refTotalEarned');
     const code=d.referral_code||'';
-    if(codeEl) codeEl.textContent=code?('https://glbtoken.com/ref/'+code):'—';
+    if(codeEl) codeEl.textContent=code?('https://glbtoken.com/register.html?ref='+code):'—';
     if(yourCodeEl) yourCodeEl.textContent=code||'—';
+    if(yourCodeEl&&yourCodeEl.setAttribute) yourCodeEl.setAttribute('data-code',code||'');
     if(countEl) countEl.textContent=d.total_referrals||0;
     if(earnEl) earnEl.textContent=(d.total_earned||0).toFixed(2);
     if(totalRefsEl) totalRefsEl.textContent=d.total_referrals||0;
@@ -49,13 +50,26 @@ function copyRefLink(){
   if(!btn)return;
   var orig=btn.innerHTML;
   btn.classList.add('copied');
-  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copied</span>';
+  setTimeout(function(){btn.innerHTML=orig;btn.classList.remove('copied');},2000);
+}
+
+function copyRefCode(btn){
+  var el=document.getElementById('refYourCode');
+  if(!el)return;
+  var code=el.getAttribute('data-code')||el.textContent||'';
+  code=code.trim();
+  navigator.clipboard.writeText(code).catch(function(){});
+  if(!btn)return;
+  var orig=btn.innerHTML;
+  btn.classList.add('copied');
+  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   setTimeout(function(){btn.innerHTML=orig;btn.classList.remove('copied');},2000);
 }
 
 function shareRef(platform){
   var el=document.getElementById('refCode');
-  var link=(el&&el.textContent)?el.textContent:'https://glbtoken.com/ref/';
+  var link=(el&&el.textContent)?el.textContent:'https://glbtoken.com/register.html?ref=';
   var url=encodeURIComponent(link);
   var text=encodeURIComponent('Join me on GlbTOKEN and get access to 100+ AI models! Use my referral link:');
   var href='';

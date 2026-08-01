@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, Query, Body, Request, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from datetime import datetime, timezone, timedelta
-import secrets, json, random
+import secrets, json, random, re
 
-from database import get_db, User, LoginEvent
+from database import get_db, User, LoginEvent, Referral
 from auth import (
     hash_password, verify_password, create_access_token, decode_token,
     get_current_user, get_optional_user, generate_api_key,
@@ -63,6 +63,25 @@ def record_login_event(user_id: int, request: Request, success: bool, db: Sessio
 
 # ── Auth Routes ──
 
+
+def _resolve_ref(db, ref):
+    """Extract + validate a referral code from 'CODE', '?ref=CODE', or a full URL.
+
+    Tolerant by design: a bad/unknown ref never blocks signup — we just skip it.
+    """
+    if not ref:
+        return None
+    s = str(ref).strip()
+    m = re.search(r'(GLB[A-Z0-9]{6})', s, re.IGNORECASE)
+    if not m:
+        return None
+    code = m.group(1).upper()
+    if db.query(Referral).filter(Referral.code == code).first():
+        return code
+    if db.query(User).filter(User.referral_code == code).first():
+        return code
+    return None
+
 @router.post("/api/auth/register")
 @limiter.limit("5/minute")
 async def register(req: RegisterRequest, request: Request, db: Session = Depends(get_db)):
@@ -77,6 +96,7 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             password_hash=hash_password(req.password),
             country=req.country,
             token_balance=0,
+            referred_by=_resolve_ref(db, req.ref),
             is_admin=(db.query(User).count() == 0),  # First user is admin
         )
         db.add(user)
@@ -310,6 +330,7 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
             password_hash=None,
             token_balance=0,
             email_verified=True,
+            referred_by=_resolve_ref(db, body.ref),
             is_admin=(db.query(User).count() == 0),
         )
         db.add(user)

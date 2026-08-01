@@ -74,7 +74,9 @@
       const btn=document.getElementById('regVerifyBtn');
       setBtnLoading(btn, true, 'Verifying');
       try{
-        var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
+        var ref='';
+        try{ref=new URLSearchParams(window.location.search).get('ref')||'';}catch(e){}
+        var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code,ref:ref});
         if(!data) return;
         token=data.token;userData=data.user;
         window.__secure.setItem('gt_token',token);if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
