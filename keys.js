@@ -49,7 +49,7 @@
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)}</div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••</div>
-              <div class="meta">${escapeHtml(key.permissions)} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+              <div class="meta">${escapeHtml(key.permissions)} · Created ${key.created_at?new Date(key.created_at).toLocaleDateString():'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">
@@ -107,44 +107,11 @@
     }
 
     // ── Drag handle to reorder (pointer events: works on desktop + mobile) ──
-    function flipPlay(list, dragEl, firstMap){
-      const items=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
-      let any=false;
-      items.forEach(function(w){
-        const id=w.getAttribute('data-swipe-id');
-        if(!firstMap[id])return;
-        const r=w.getBoundingClientRect();
-        const dx=firstMap[id].left-r.left;
-        const dy=firstMap[id].top-r.top;
-        if(Math.abs(dx)>0.5||Math.abs(dy)>0.5){
-          any=true;
-          w.style.transition='none';
-          w.style.transform='translate('+dx+'px,'+dy+'px)';
-        }
-      });
-      if(!any)return;
-      void list.offsetHeight; // force reflow so the inverted positions register
-      items.forEach(function(w){
-        const id=w.getAttribute('data-swipe-id');
-        if(!firstMap[id])return;
-        const r=w.getBoundingClientRect();
-        const dx=firstMap[id].left-r.left;
-        const dy=firstMap[id].top-r.top;
-        if(Math.abs(dx)>0.5||Math.abs(dy)>0.5){
-          w.style.transition='transform 0.25s cubic-bezier(0.2,0.8,0.2,1)';
-          w.style.transform='';
-        }
-      });
-      clearTimeout(flipTimer);
-      flipTimer=setTimeout(function(){
-        items.forEach(function(w){w.style.transition='';w.style.transform='';});
-      },300);
-    }
     function initKeyDrag(){
       const list=document.getElementById('keyList');
       if(!list)return;
       if(list.__dragInit)return;list.__dragInit=true;
-      let dragEl=null,pointerId=null,lastY=0,grabOffset=0,rafId=null,flipTimer=null;
+      let dragEl=null,startY=0,pointerId=null,lastY=0,rafId=null;
       list.addEventListener('pointerdown',function(e){
         const handle=e.target.closest('.key-drag');
         if(!handle)return;
@@ -152,10 +119,7 @@
         if(!wrap)return;
         e.preventDefault();
         closeSwipe();
-        // clear any leftover FLIP/settle inline styles on sibling cards
-        list.querySelectorAll('.key-swipe').forEach(function(w){w.style.transition='';w.style.transform='';});
-        dragEl=wrap;pointerId=e.pointerId;lastY=e.clientY;
-        grabOffset=e.clientY-wrap.getBoundingClientRect().top;
+        dragEl=wrap;startY=e.clientY;lastY=e.clientY;pointerId=e.pointerId;
         dragEl.classList.add('dragging');
         dragEl.style.transition='none';
         dragEl.style.willChange='transform';
@@ -171,76 +135,18 @@
         rafId=requestAnimationFrame(function(){
           rafId=null;
           if(!dragEl)return;
-          // Self-correcting transform: pin the card top to the grab point every
-          // frame, so DOM reorders / page scroll never make it jump (no snapping).
-          const targetTop=lastY-grabOffset;
-          dragEl.style.transform='translateY('+(targetTop-dragEl.getBoundingClientRect().top)+'px)';
+          dragEl.style.transform='translateY('+(lastY-startY)+'px)';
           const rect=dragEl.getBoundingClientRect();
-          const cx=rect.left+rect.width/2;
-          const cy=rect.top+rect.height/2;
-          const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe'));
-          // Grid-aware reorder: map the pointer to a (row, column) slot in the
-          // current grid, then insert the dragged card at exactly that slot.
-          // This keeps the card in the column under the pointer (no sideways jumps).
-          const rows=[];
-          wraps.forEach(function(w){
-            const r=w.getBoundingClientRect();
-            let row=null;
-            for(let i=0;i<rows.length;i++){
-              if(Math.abs(rows[i].top-r.top)<24){row=rows[i];break;}
-            }
-            if(!row){row={top:r.top,height:r.height,items:[]};rows.push(row);}
-            row.items.push({el:w,rect:r});
-          });
-          rows.sort(function(a,b){return a.top-b.top;});
-          let prow=rows[0];
-          for(let i=0;i<rows.length;i++){
-            if(cy<rows[i].top+rows[i].height/2){prow=rows[i];break;}
-            prow=rows[i];
-          }
-          const colCenters=[];
-          rows.forEach(function(row){
-            row.items.forEach(function(it){
-              const c=it.rect.left+it.rect.width/2;
-              let exists=false;
-              for(let i=0;i<colCenters.length;i++){if(Math.abs(colCenters[i]-c)<24){exists=true;break;}}
-              if(!exists)colCenters.push(c);
-            });
-          });
-          colCenters.sort(function(a,b){return a-b;});
-          let pcol=0;
-          for(let i=0;i<colCenters.length;i++){
-            if(cx<colCenters[i]){pcol=i;break;}
-            pcol=i;
-          }
-          const firstMap={};
-          wraps.forEach(function(w){const rr=w.getBoundingClientRect();firstMap[w.getAttribute('data-swipe-id')]={top:rr.top,left:rr.left};});
-          let ref=null,noMove=false;
-          if(pcol<prow.items.length){
-            const target=prow.items[pcol].el;
-            if(target===dragEl){noMove=true;}
-            else ref=target;
-          }else{
-            const last=prow.items[prow.items.length-1].el;
-            if(last===dragEl){noMove=true;}
-            else ref=last.nextElementSibling;
-          }
-          if(!noMove){
-            if(ref===null){
-              if(dragEl.nextElementSibling){
-                list.appendChild(dragEl);
-                flipPlay(list,dragEl,firstMap);
-              }
-            }else if(ref!==dragEl){
-              list.insertBefore(dragEl,ref);
-              flipPlay(list,dragEl,firstMap);
+          const mid=rect.top+rect.height/2;
+          const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
+          for(let i=0;i<wraps.length;i++){
+            const r=wraps[i].getBoundingClientRect();
+            if(mid<r.top+r.height/2){
+              if(wraps[i].nextElementSibling!==dragEl){list.insertBefore(dragEl,wraps[i]);}
+              return;
             }
           }
-          // Auto-scroll when dragging near the viewport edges (mobile-app feel)
-          const dr=dragEl.getBoundingClientRect();
-          const vh=window.innerHeight||document.documentElement.clientHeight;
-          if(dr.top<90){window.scrollBy(0,-14);}
-          else if(dr.bottom>vh-90){window.scrollBy(0,14);}
+          if(dragEl.nextElementSibling)list.appendChild(dragEl);
         });
       });
       function endDrag(e){
