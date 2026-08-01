@@ -18,7 +18,22 @@ socket.setdefaulttimeout(8)
 
 WORKDIR = '/Users/openclaw_007/projects/glbtoken'
 TRANS_JS = os.path.join(WORKDIR, 'translations.js')
+STATE_FILE = os.path.join(WORKDIR, 'scripts/.i18n_state.json')
 LANG_MAP = {'zh-CN': 'zh-CN', 'ru': 'ru', 'ja': 'ja', 'de': 'de'}
+
+def load_state():
+    """Load per-language translation checkpoint so killed runs resume (SIGTERM-safe)."""
+    try:
+        with open(STATE_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def save_state(state):
+    tmp = STATE_FILE + '.tmp'
+    with open(tmp, 'w') as f:
+        json.dump(state, f, ensure_ascii=False)
+    os.replace(tmp, STATE_FILE)
 
 # Strings that should NEVER be translated
 PROTECTED = {
@@ -190,10 +205,22 @@ def main():
             budget_items.append(t)
             used += len(t)
         print(f"Translating {len(budget_items)} strings (~{used} chars) to 4 languages...")
+        state = load_state()
+        state.setdefault('plain', {})
         all_translations = {}
         for lang_code in LANG_MAP:
-            print(f"  → {lang_code}...", flush=True)
-            all_translations[lang_code] = translate_batch(budget_items, LANG_MAP[lang_code])
+            cached = state['plain'].get(lang_code, {})
+            todo = [t for t in budget_items if t not in cached]
+            if todo:
+                print(f"  → {lang_code}... ({len(todo)} new, {len(budget_items) - len(todo)} cached)", flush=True)
+                fresh = translate_batch(todo, LANG_MAP[lang_code])
+                cached.update(fresh)
+                state['plain'][lang_code] = cached
+                save_state(state)  # checkpoint after every language — SIGTERM-safe
+            else:
+                print(f"  → {lang_code}... (cached)", flush=True)
+            all_translations[lang_code] = cached
+        written_texts = []
         for text in budget_items:
             # Only write entries where ALL 4 languages translated successfully.
             # Partial/failed strings are deferred to the next run (never written as English).
@@ -207,11 +234,18 @@ def main():
                 langs[lang_code] = trans
             if not ok:
                 continue
+            written_texts.append(text)
             row = [f'TRANS[{js_str(text)}] = {{en: {js_str(text)}']
             for lang_code in LANG_MAP:
                 row.append(f'{js_str(lang_code)}: {js_str(langs[lang_code])}')
             row.append('};')
             new_entries.append(''.join(row))
+        # Prune checkpoint: drop texts that were written; keep deferred partial progress
+        if written_texts:
+            written_set = set(written_texts)
+            state['plain'] = {lang: {t: tr for t, tr in d.items() if t not in written_set}
+                              for lang, d in state['plain'].items()}
+            save_state(state)
         if len(new_entries) < len(budget_items):
             print(f"  (deferred {len(budget_items) - len(new_entries)} strings — quota/network, next run will retry)")
 
@@ -222,10 +256,20 @@ def main():
 
     new_mixed_entries = []
     if new_mixed:
+        state = load_state()
+        state.setdefault('mixed', {})
         all_translations = {}
         for lang_code in LANG_MAP:
-            print(f"Translating {len(new_mixed)} mixed keys to {lang_code}...")
-            all_translations[lang_code] = translate_batch(list(new_mixed.values()), LANG_MAP[lang_code])
+            cached = state['mixed'].get(lang_code, {})
+            todo = [v for v in new_mixed.values() if v not in cached]
+            if todo:
+                print(f"Translating {len(new_mixed)} mixed keys to {lang_code}... ({len(todo)} new)", flush=True)
+                fresh = translate_batch(todo, LANG_MAP[lang_code])
+                cached.update(fresh)
+                state['mixed'][lang_code] = cached
+                save_state(state)  # checkpoint after every language — SIGTERM-safe
+            all_translations[lang_code] = cached
+        written_mixed = []
         for key, en_text in list(new_mixed.items()):
             new_mixed[key] = {'en': en_text}
             for lang_code in LANG_MAP:
@@ -237,11 +281,17 @@ def main():
             if any(not d.get(lang) or d.get(lang) == d['en'] for lang in LANG_MAP):
                 del new_mixed[key]
         for key, d in new_mixed.items():
+            written_mixed.append(d['en'])
             row = [f'I18N_MIXED[{js_str(key)}] = {{en: {js_str(d["en"])}']
             for lang_code in LANG_MAP:
                 row.append(f'{js_str(lang_code)}: {js_str(d.get(lang_code, d["en"]))}')
             row.append('};')
             new_mixed_entries.append(''.join(row))
+        if written_mixed:
+            written_set = set(written_mixed)
+            state['mixed'] = {lang: {t: tr for t, tr in d.items() if t not in written_set}
+                              for lang, d in state['mixed'].items()}
+            save_state(state)
 
     if not new_entries and not new_mixed_entries:
         print("No new strings to translate. Up to date.")
