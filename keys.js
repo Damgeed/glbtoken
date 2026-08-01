@@ -237,7 +237,14 @@
       if(mode==='oldest')s.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
       if(mode==='name')s.sort((a,b)=>a.name.localeCompare(b.name));
       if(mode==='usage')s.sort((a,b)=>b.request_count-a.request_count);
+      // Persist the sorted order as the new display order, otherwise
+      // renderKeys→orderKeys() re-applies the old drag order and overrides the sort.
+      keyOrderSave(s.map(function(k){return String(k.id);}));
       renderKeys(s);
+      // Active-state feedback on the sort buttons
+      document.querySelectorAll('.sort-btn').forEach(function(b){b.classList.remove('active');});
+      var activeBtn=document.querySelector('.sort-btn[onclick="sortKeys(\''+mode+'\')"]');
+      if(activeBtn)activeBtn.classList.add('active');
     }
 
     // Auto-init on manage-keys.html
