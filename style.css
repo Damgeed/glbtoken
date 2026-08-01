@@ -2612,6 +2612,77 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   gap: 0.5rem;
 }
+/* ── Key swipe-reveal + drag reorder ── */
+.key-swipe {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
+}
+.key-swipe .api-key-card {
+  margin-bottom: 0;
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+.key-swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.key-swipe.open .key-swipe-actions {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.key-swipe.open .api-key-card {
+  transform: translateX(-160px);
+}
+.swipe-action {
+  width: 80px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.swipe-toggle { background: #E08E27; }
+.swipe-delete { background: #E5484D; }
+.key-drag {
+  cursor: grab;
+  touch-action: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.key-drag:active { cursor: grabbing; color: var(--primary); }
+.key-swipe.dragging { opacity: 0.95; }
+.key-swipe.dragging .api-key-card {
+  border-color: var(--primary);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+#keyList { margin-top: 1.25rem; }
+@media (min-width: 769px) {
+  .key-swipe-actions { display: none; }
+}
+@media (max-width: 768px) {
+  .api-key-card .key-actions { display: none; }
+  .api-key-card { flex-wrap: nowrap; }
+  .key-info { min-width: 0; flex: 1 1 auto; }
+}
 .history-page {
   padding: 2rem 1.25rem 3rem;
 }
