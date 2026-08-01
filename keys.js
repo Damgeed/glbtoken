@@ -42,7 +42,7 @@
       list.innerHTML=ordered.map(key=>`
         <div class="key-swipe" data-swipe-id="${escapeHtml(String(key.id))}">
           <div class="key-swipe-actions">
-            <button class="swipe-action swipe-toggle" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+            <button class="swipe-action ${key.is_active?'swipe-pause':'swipe-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
             <button class="swipe-action swipe-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
           </div>
           <div class="api-key-card">
@@ -52,8 +52,8 @@
               <div class="meta">${escapeHtml(key.permissions)} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
             </div>
             <div class="key-actions">
-              <button class="sort-btn" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
-              <button class="sort-btn" style="color:var(--destructive)" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
+              <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+              <button class="sort-btn btn-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
             </div>
             <div class="key-drag" title="Drag to reorder" aria-label="Drag to reorder">⠿</div>
           </div>
@@ -105,11 +105,40 @@
     }
 
     // ── Drag handle to reorder (pointer events: works on desktop + mobile) ──
+    function flipPlay(list, dragEl, firstMap){
+      const items=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
+      let any=false;
+      items.forEach(function(w){
+        const id=w.getAttribute('data-swipe-id');
+        if(firstMap[id]===undefined)return;
+        const delta=firstMap[id]-w.getBoundingClientRect().top;
+        if(Math.abs(delta)>0.5){
+          any=true;
+          w.style.transition='none';
+          w.style.transform='translateY('+delta+'px)';
+        }
+      });
+      if(!any)return;
+      void list.offsetHeight; // force reflow so the inverted positions register
+      items.forEach(function(w){
+        const id=w.getAttribute('data-swipe-id');
+        if(firstMap[id]===undefined)return;
+        const delta=firstMap[id]-w.getBoundingClientRect().top;
+        if(Math.abs(delta)>0.5){
+          w.style.transition='transform 0.25s cubic-bezier(0.2,0.8,0.2,1)';
+          w.style.transform='';
+        }
+      });
+      clearTimeout(flipTimer);
+      flipTimer=setTimeout(function(){
+        items.forEach(function(w){w.style.transition='';w.style.transform='';});
+      },300);
+    }
     function initKeyDrag(){
       const list=document.getElementById('keyList');
       if(!list)return;
       if(list.__dragInit)return;list.__dragInit=true;
-      let dragEl=null,startY=0,pointerId=null,lastY=0,rafId=null;
+      let dragEl=null,pointerId=null,lastY=0,grabOffset=0,rafId=null,flipTimer=null;
       list.addEventListener('pointerdown',function(e){
         const handle=e.target.closest('.key-drag');
         if(!handle)return;
@@ -117,7 +146,10 @@
         if(!wrap)return;
         e.preventDefault();
         closeSwipe();
-        dragEl=wrap;startY=e.clientY;lastY=e.clientY;pointerId=e.pointerId;
+        // clear any leftover FLIP/settle inline styles on sibling cards
+        list.querySelectorAll('.key-swipe').forEach(function(w){w.style.transition='';w.style.transform='';});
+        dragEl=wrap;pointerId=e.pointerId;lastY=e.clientY;
+        grabOffset=e.clientY-wrap.getBoundingClientRect().top;
         dragEl.classList.add('dragging');
         dragEl.style.transition='none';
         dragEl.style.willChange='transform';
@@ -133,18 +165,38 @@
         rafId=requestAnimationFrame(function(){
           rafId=null;
           if(!dragEl)return;
-          dragEl.style.transform='translateY('+(lastY-startY)+'px)';
+          // Self-correcting transform: pin the card top to the grab point every
+          // frame, so DOM reorders / page scroll never make it jump (no snapping).
+          const targetTop=lastY-grabOffset;
+          dragEl.style.transform='translateY('+(targetTop-dragEl.getBoundingClientRect().top)+'px)';
           const rect=dragEl.getBoundingClientRect();
           const mid=rect.top+rect.height/2;
           const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
+          let placed=false;
           for(let i=0;i<wraps.length;i++){
             const r=wraps[i].getBoundingClientRect();
             if(mid<r.top+r.height/2){
-              if(wraps[i].nextElementSibling!==dragEl){list.insertBefore(dragEl,wraps[i]);}
-              return;
+              if(wraps[i].nextElementSibling!==dragEl){
+                const firstMap={};
+                wraps.forEach(function(w){firstMap[w.getAttribute('data-swipe-id')]=w.getBoundingClientRect().top;});
+                list.insertBefore(dragEl,wraps[i]);
+                flipPlay(list,dragEl,firstMap);
+              }
+              placed=true;
+              break;
             }
           }
-          if(dragEl.nextElementSibling)list.appendChild(dragEl);
+          if(!placed&&dragEl.nextElementSibling){
+            const firstMap={};
+            wraps.forEach(function(w){firstMap[w.getAttribute('data-swipe-id')]=w.getBoundingClientRect().top;});
+            list.appendChild(dragEl);
+            flipPlay(list,dragEl,firstMap);
+          }
+          // Auto-scroll when dragging near the viewport edges (mobile-app feel)
+          const dr=dragEl.getBoundingClientRect();
+          const vh=window.innerHeight||document.documentElement.clientHeight;
+          if(dr.top<90){window.scrollBy(0,-14);}
+          else if(dr.bottom>vh-90){window.scrollBy(0,14);}
         });
       });
       function endDrag(e){
