@@ -7151,6 +7151,7 @@ body {
     left: -300px;
     top: 0;
     height: 100vh;
+    height: 100dvh;
     z-index: 100;
     border-radius: 0 12px 12px 0;
   }
@@ -7668,6 +7669,7 @@ body {
     z-index: 100;
     transition: left 0.3s;
     height: 100vh;
+    height: 100dvh;
     margin-left: 0;
     border-radius: 0 12px 12px 0;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
