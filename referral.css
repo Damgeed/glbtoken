@@ -73,7 +73,7 @@
 .code-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
@@ -92,6 +92,15 @@
 }
 .code-copy-btn:hover { background: rgba(244, 180, 0, 0.22); }
 .code-copy-btn.copied { color: #00D68F; }
+/* Position copy symbol top-right of the stat card */
+.dash-stat-card:has(.code-wrap) {
+  position: relative;
+}
+.dash-stat-card:has(.code-wrap) .code-copy-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+}
 @media (min-width: 769px) {
   .ref-copy-btn { width: auto; padding: 0 1.1rem; }
   .ref-copy-btn .copy-label { display: inline; font-size: 0.85rem; font-weight: 600; }
