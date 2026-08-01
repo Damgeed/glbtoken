@@ -7148,9 +7148,7 @@ body {
   }
 
   .dash-sidebar {
-    width: 240px;
-    min-width: 240px;
-    left: -240px;
+    left: -300px;
     top: 0;
     height: 100vh;
     z-index: 100;
@@ -7662,10 +7660,10 @@ body {
   }
 
   .dash-sidebar {
-    width: 280px;
-    min-width: 280px;
+    width: 240px;
+    min-width: 240px;
     position: fixed;
-    left: -300px;
+    left: -240px;
     top: 0;
     z-index: 100;
     transition: left 0.3s;
