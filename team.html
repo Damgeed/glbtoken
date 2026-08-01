@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1156" />
+  <link rel="stylesheet" href="style.css?v=1157" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="team.css?v=1025" />
   </head>
@@ -118,7 +118,7 @@
           </h1>
           <p>Manage organizations, members, and roles</p>
         </div>
-        <div><button class="btn-primary" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
+        <div><button class="btn-action" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
       </div>
 
       <!-- Org Selector -->
@@ -126,7 +126,7 @@
         <button class="sort-btn active" data-org="org1" onclick="switchOrg('org1')">Acme Corp</button>
         <button class="sort-btn" data-org="org2" onclick="switchOrg('org2')">Startup Inc</button>
         <button class="sort-btn" data-org="org3" onclick="switchOrg('org3')">Dev Team Alpha</button>
-        <button class="btn-primary btn-auto" onclick="showCreateOrgModal()">+ New Org</button>
+        <button class="btn-action" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>
       </div>
 
       <!-- Current Org Header -->
