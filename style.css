@@ -2612,6 +2612,12 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   gap: 0.5rem;
 }
+.key-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
 /* ── Key swipe-reveal + drag reorder ── */
 .key-swipe {
   position: relative;
@@ -2699,11 +2705,29 @@ input[type="range"]::-moz-range-thumb {
 #keyList { margin-top: 1.25rem; }
 @media (min-width: 769px) {
   .key-swipe-actions { display: none; }
+  #keyList {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  #keyList > p:only-child { grid-column: 1 / -1; }
+  .key-swipe { margin-bottom: 0; }
+  .api-key-card {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    height: 100%;
+  }
+  .api-key-card .key-card-footer {
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
 }
 @media (max-width: 768px) {
   .api-key-card .key-actions { display: none; }
   .api-key-card { flex-wrap: nowrap; }
   .key-info { min-width: 0; flex: 1 1 auto; }
+  .key-card-footer { flex-shrink: 0; }
 }
 .history-page {
   padding: 2rem 1.25rem 3rem;

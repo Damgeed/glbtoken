@@ -51,11 +51,13 @@
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••</div>
               <div class="meta">${escapeHtml(key.permissions)} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
             </div>
-            <div class="key-actions">
-              <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
-              <button class="sort-btn btn-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
+            <div class="key-card-footer">
+              <div class="key-actions">
+                <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+                <button class="sort-btn btn-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
+              </div>
+              <div class="key-drag" title="Drag to reorder" aria-label="Drag to reorder">⠿</div>
             </div>
-            <div class="key-drag" title="Drag to reorder" aria-label="Drag to reorder">⠿</div>
           </div>
         </div>
       `).join('');
