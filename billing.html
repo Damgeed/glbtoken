@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1168" />
+  <link rel="stylesheet" href="style.css?v=1169" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1021" />
+<link rel="stylesheet" href="billing.css?v=1022" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -158,7 +158,7 @@
         <!-- Invoices -->
         <div class="dash-card" id="invoicesCard">
           <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Invoices <span class="label-muted-sm" id="invoiceCount">0</span></div>
-          <div class="tx-table-wrap">
+          <div class="scroll-x">
             <table class="tx-table">
               <thead>
                 <tr>
@@ -247,7 +247,14 @@
         var html = '';
         for(var i=0;i<inv.length;i++){
           var invItem = inv[i];
-          var date = escapeHtml(invItem.date || invItem.created_at || '—');
+          // Date — split into date + time like the Login Attempts table
+          var dateRaw = invItem.date || invItem.created_at || '';
+          var dateMain = '—', timeMain = '';
+          if(dateRaw){
+            var parts = String(dateRaw).replace('T',' ').replace('Z','').split(' ');
+            dateMain = escapeHtml(parts[0]);
+            timeMain = parts.length > 1 ? escapeHtml(parts[1].substring(0,8)) : '';
+          }
           var amount = '';
           if(invItem.amount){
             var sym = invItem.currency === 'NGN' ? '₦' : '$';
@@ -271,9 +278,9 @@
           }
 
           html += '<tr>';
-          html += '<td class="text-nowrap">' + date + '</td>';
+          html += '<td class="td-date">' + (timeMain ? '<div class="td-date-strong">' + dateMain + '</div><div class="td-time">' + timeMain + '</div>' : '<div class="td-date-strong">' + dateMain + '</div>') + '</td>';
           html += '<td class="text-nowrap">' + amount + '</td>';
-          html += '<td>' + method + '</td>';
+          html += '<td class="td-device">' + method + '</td>';
           html += '<td class="text-nowrap">' + tokens + ' GT</td>';
           html += '<td><span class="status-badge ' + statusClass + '">' + escapeHtml(statusLabel) + '</span></td>';
           html += '<td>' + receiptHtml + '</td>';

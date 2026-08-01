@@ -98,6 +98,21 @@
   border-radius: 4px;
   font-weight: 500;
 }
+/* Table cell styles — matched to Login Attempts table (usage.css) */
+.td-date {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.td-date-strong {
+  font-weight: 600;
+}
+.td-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.td-device {
+  font-size: 0.85rem;
+}
 .status-paid {
   background: var(--success-subtle, rgba(0, 214, 143, 0.12));
   color: var(--success, #00d68f);
