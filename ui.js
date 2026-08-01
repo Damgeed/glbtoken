@@ -328,14 +328,16 @@
       tmInterval=setInterval(()=>slideTopView(1),5000);
       // Initial load: refresh top model cards (replaces hardcoded HTML)
       refreshTopModels();
-      // Delegate clicks on key action buttons (avoid inline onclick XSS)
-      document.addEventListener('click',function(e){
-        const btn=e.target.closest('[data-key-id]');
-        if(!btn)return;
-        const id=Number(btn.dataset.keyId);
-        if(btn.dataset.action==='toggle')toggleKeyStatus(id);
-        else if(btn.dataset.action==='delete')deleteKey(id);
-      });
+    });
+    // Delegate clicks on key action buttons (avoid inline onclick XSS).
+    // Attached OUTSIDE the #tmTrack-gated block above so Pause/Delete work
+    // on every page (manage-keys.html has no #tmTrack).
+    document.addEventListener('click',function(e){
+      const btn=e.target.closest('[data-key-id]');
+      if(!btn)return;
+      const id=Number(btn.dataset.keyId);
+      if(btn.dataset.action==='toggle')toggleKeyStatus(id);
+      else if(btn.dataset.action==='delete')deleteKey(id);
     });
 /* ══════════════════════════════════════════
    UI — Language & Theme
