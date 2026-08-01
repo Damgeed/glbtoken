@@ -238,11 +238,20 @@ def verify_token(id_token: str) -> dict:
         raise ValueError(f"Auth0 token verification failed: {e}")
 
 def get_user_info(payload: dict) -> dict:
-    """Extract standardized user info from Auth0 token payload."""
+    """Extract standardized user info from Auth0 token payload.
+
+    NEVER fall back to `sub` for the name — the sub is a random code like
+    "auth0|64f2ab..." and would overwrite the user's real display name.
+    Fall back to the email local part instead (e.g. "john@x.com" -> "john").
+    """
+    email = payload.get("email", "")
+    name = payload.get("name", payload.get("nickname", "") or "")
+    if not name and email:
+        name = email.split("@")[0]
     return {
         "sub": payload.get("sub", ""),
-        "email": payload.get("email", ""),
-        "name": payload.get("name", payload.get("nickname", payload.get("sub", ""))),
+        "email": email,
+        "name": name,
         "picture": payload.get("picture", ""),
         "email_verified": payload.get("email_verified", False),
     }

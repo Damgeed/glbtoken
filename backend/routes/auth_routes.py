@@ -686,13 +686,17 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
         _401("Account created but login failed.")
 
     user = User(
-        name=info["name"], email=info["email"],
+        # Use the name the user actually typed — reading it back from the
+        # Auth0 id_token can yield the random `sub` when the token has no
+        # name claim, which is what made "full name switch to random code".
+        name=name or info["name"] or info["email"].split("@")[0],
+        email=info["email"],
         google_id=info["sub"], token_balance=0,
         email_verified=info["email_verified"],
     )
     db.add(user); db.commit(); db.refresh(user)
     try:
-        await create_newapi_user(email=info["email"], name=info["name"], quota=0)
+        await create_newapi_user(email=info["email"], name=user.name, quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 signup user: {e}")
 

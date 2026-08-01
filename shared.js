@@ -664,49 +664,7 @@ function logoutUser(){
       userData=d;window.__secure.setItem('gt_user',JSON.stringify(d));applyAuth();
     }
 
-    // ── Settings Profile ──
-    async function loadProfile(){
-      if(!token)return;
-      const d=await safeApi('GET','/api/user/profile',null,null,true); if(!d)return;
-      var nameInp=document.getElementById('settingsName');
-      var emailInp=document.getElementById('settingsEmail');
-      var tzInp=document.getElementById('settingsTz');
-      if(nameInp) nameInp.value=d.name||userData.name||'User';
-      if(emailInp) emailInp.value=d.email||userData.email||'';
-      if(tzInp&&d.timezone) tzInp.value=d.timezone;
-    }
-    async function saveProfile(){
-      if(!token){showToast('Please sign in first','error');return}
-      var settingsName=document.getElementById('settingsName');
-      var tz=document.getElementById('settingsTz');
-      if(!settingsName){showToast('Settings form not found','error');return}
-      await safeApi('PUT','/api/user/profile',{name:settingsName.value.trim(),timezone:tz?tz.value:''});
-      userData.name=settingsName.value.trim();
-      window.__secure.setItem('gt_user',JSON.stringify(userData));
-      applyAuth();
-      showToast('Profile saved','success');
-    }
-    async function updatePassword(){
-      if(!token){showToast('Please sign in first','error');return}
-      var cur=document.getElementById('settingsCurPw');
-      var nw=document.getElementById('settingsNewPw');
-      if(!cur||!nw||!cur.value||!nw.value){showToast('Fill in both password fields','error');return}
-      if(nw.value.length<6){showToast('New password must be at least 6 characters','error');return}
-      await safeApi('PUT','/api/user/password',{current_password:cur.value,new_password:nw.value});
-      cur.value='';nw.value='';
-      showToast('Password updated','success');
-    }
     // ── Notification Settings ──
-    async function loadSettings(){
-      if(!token)return;
-      const d=await safeApi('GET','/api/user/settings',null,null,true); if(!d)return;
-      var el=document.getElementById('notifEmail');
-      if(el&&typeof d.email_notifications==='boolean') el.checked=d.email_notifications;
-      var el2=document.getElementById('notifLowBalance');
-      if(el2&&typeof d.low_balance_alert==='boolean') el2.checked=d.low_balance_alert;
-      var el3=document.getElementById('notifLogin');
-      if(el3&&typeof d.login_alerts==='boolean') el3.checked=d.login_alerts;
-    }
     async function saveNotificationSettings(){
       if(!token){showToast('Please sign in first','error');return}
       var emailEl=document.getElementById('notifEmail');

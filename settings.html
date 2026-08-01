@@ -168,7 +168,7 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1099"></script>
-<script data-cfasync="false" src="shared.js?v=1124"></script>
+<script data-cfasync="false" src="shared.js?v=1125"></script>
 <script data-cfasync="false" src="ui.js?v=1217"></script>
 <script data-cfasync="false" src="login-history.js?v=1118"></script>
 
@@ -178,18 +178,27 @@
 window.saveProfile = function(){
   var name = document.getElementById('settingsName').value.trim();
   var tz = document.getElementById('settingsTz').value;
+  if(!name){ showToast('Please enter your name','error'); return; }
   fetch(API_URL + '/api/user/profile', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
     body: JSON.stringify({name: name, timezone: tz})
   })
-  .then(function(r){ return r.json(); })
-  .then(function(data){
-    if(data && data.name) {
-      var u = JSON.parse(window.__secure.getItem('gt_user') || '{}');
-      u.name = data.name;
-      window.__secure.setItem('gt_user', JSON.stringify(u));
+  .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, d: d}; }); })
+  .then(function(res){
+    var data = res.d;
+    if(!res.ok || !data || data.status !== 'updated'){
+      showToast((data && data.detail) || 'Failed to save profile','error');
+      return;
     }
+    // Update cached user + in-memory state so the nav name updates immediately
+    try{
+      var u = JSON.parse(window.__secure.getItem('gt_user') || '{}');
+      u.name = data.name || name;
+      window.__secure.setItem('gt_user', JSON.stringify(u));
+      if(typeof userData !== 'undefined' && userData){ userData.name = u.name; }
+      if(typeof applyAuth === 'function') applyAuth();
+    }catch(e){}
     showToast('Profile saved!','success');
   })
   .catch(function(e){
