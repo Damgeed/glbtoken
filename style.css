@@ -2655,8 +2655,8 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   justify-content: center;
 }
-.swipe-toggle { background: #E08E27; }
-.swipe-delete { background: #E5484D; }
+.swipe-toggle { background: #F4B860; color: #2A1D08; }
+.swipe-delete { background: #F2766F; color: #3A0D0B; }
 .key-drag {
   cursor: grab;
   touch-action: none;
@@ -2668,11 +2668,11 @@ input[type="range"]::-moz-range-thumb {
   user-select: none;
   -webkit-user-select: none;
 }
-.key-drag:active { cursor: grabbing; color: var(--primary); }
-.key-swipe.dragging { opacity: 0.95; }
+.key-drag:active { cursor: grabbing; color: #F4B860; }
+.key-swipe.dragging { opacity: 0.95; will-change: transform; }
 .key-swipe.dragging .api-key-card {
-  border-color: var(--primary);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  border-color: #F4B860;
+  box-shadow: 0 10px 28px rgba(244, 184, 96, 0.22);
 }
 #keyList { margin-top: 1.25rem; }
 @media (min-width: 769px) {

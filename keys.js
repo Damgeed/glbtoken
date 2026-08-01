@@ -109,7 +109,7 @@
       const list=document.getElementById('keyList');
       if(!list)return;
       if(list.__dragInit)return;list.__dragInit=true;
-      let dragEl=null,startY=0,pointerId=null;
+      let dragEl=null,startY=0,pointerId=null,lastY=0,rafId=null;
       list.addEventListener('pointerdown',function(e){
         const handle=e.target.closest('.key-drag');
         if(!handle)return;
@@ -117,9 +117,10 @@
         if(!wrap)return;
         e.preventDefault();
         closeSwipe();
-        dragEl=wrap;startY=e.clientY;pointerId=e.pointerId;
+        dragEl=wrap;startY=e.clientY;lastY=e.clientY;pointerId=e.pointerId;
         dragEl.classList.add('dragging');
         dragEl.style.transition='none';
+        dragEl.style.willChange='transform';
         dragEl.style.zIndex='50';
         dragEl.style.position='relative';
         try{handle.setPointerCapture(pointerId);}catch(err){}
@@ -127,27 +128,40 @@
       list.addEventListener('pointermove',function(e){
         if(!dragEl||e.pointerId!==pointerId)return;
         e.preventDefault();
-        dragEl.style.transform='translateY('+(e.clientY-startY)+'px)';
-        const rect=dragEl.getBoundingClientRect();
-        const mid=rect.top+rect.height/2;
-        const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
-        for(let i=0;i<wraps.length;i++){
-          const r=wraps[i].getBoundingClientRect();
-          if(mid<r.top+r.height/2){
-            if(wraps[i].nextElementSibling!==dragEl){list.insertBefore(dragEl,wraps[i]);}
-            return;
+        lastY=e.clientY;
+        if(rafId)return;
+        rafId=requestAnimationFrame(function(){
+          rafId=null;
+          if(!dragEl)return;
+          dragEl.style.transform='translateY('+(lastY-startY)+'px)';
+          const rect=dragEl.getBoundingClientRect();
+          const mid=rect.top+rect.height/2;
+          const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
+          for(let i=0;i<wraps.length;i++){
+            const r=wraps[i].getBoundingClientRect();
+            if(mid<r.top+r.height/2){
+              if(wraps[i].nextElementSibling!==dragEl){list.insertBefore(dragEl,wraps[i]);}
+              return;
+            }
           }
-        }
-        if(dragEl.nextElementSibling)list.appendChild(dragEl);
+          if(dragEl.nextElementSibling)list.appendChild(dragEl);
+        });
       });
       function endDrag(e){
         if(!dragEl||e.pointerId!==pointerId)return;
-        dragEl.style.transform='';dragEl.style.transition='';dragEl.style.zIndex='';dragEl.style.position='';
-        dragEl.classList.remove('dragging');
+        const el=dragEl;
+        dragEl=null;pointerId=null;
+        if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+        // persist the new display order (DOM is already in final position)
         const ids=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).map(function(w){return w.getAttribute('data-swipe-id');});
         keyOrderSave(ids);
-        dragEl=null;pointerId=null;
-        renderKeys(keys); // normalize transforms with persisted order
+        // smooth settle: animate translateY -> 0, then clean up (no full re-render flash)
+        el.style.transition='transform 0.2s cubic-bezier(0.2,0.8,0.2,1)';
+        el.style.transform='';
+        el.classList.remove('dragging');
+        setTimeout(function(){
+          el.style.transition='';el.style.willChange='';el.style.zIndex='';el.style.position='';
+        },220);
       }
       list.addEventListener('pointerup',endDrag);
       list.addEventListener('pointercancel',endDrag);
