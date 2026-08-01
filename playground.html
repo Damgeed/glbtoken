@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1156" />
-  <link rel="stylesheet" href="playground.css?v=1020" />
+  <link rel="stylesheet" href="playground.css?v=1021" />
   <link rel="stylesheet" href="dashboard.css?v=1029" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 </head>
@@ -100,24 +100,26 @@
   <div class="dash-content">
 
 <div class="playground-shell">
+  <!-- API Request Code Panel (left) -->
+  <div class="playground-code-panel" id="codePanel">
+    <div class="playground-code-header" id="codePanelHeader" onclick="toggleCodePanel()">
+      <span class="playground-code-title">API Request</span>
+      <div class="playground-code-tabs">
+        <button type="button" class="playground-code-tab active" data-tab="py" onclick="event.stopPropagation();switchCodeTab('py')">Python</button>
+        <button type="button" class="playground-code-tab" data-tab="curl" onclick="event.stopPropagation();switchCodeTab('curl')">cURL</button>
+      </div>
+      <button type="button" class="playground-code-copy" onclick="event.stopPropagation();copyPlaygroundCode(this)" title="Copy code">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span class="pg-copy-label">Copy</span>
+      </button>
+    </div>
+    <div class="playground-code-body">
+      <pre class="playground-code-pre" id="playgroundCodePy"></pre>
+      <pre class="playground-code-pre" id="playgroundCodeCurl" style="display:none"></pre>
+    </div>
+  </div>
   <!-- Main Chat Area -->
   <div class="playground-main">
-    <!-- Top Bar -->
-    <div class="playground-topbar" id="topBar">
-      <span class="playground-topbar-title" id="conversationTitle">GPT-4o API integration</span>
-      <div class="playground-topbar-model">
-        <select id="modelSelect">
-          <option value="gpt-4o">GPT-4o — OpenAI</option>
-          <option value="claude-3.5-sonnet" selected>Claude 3.5 Sonnet — Anthropic</option>
-          <option value="claude-3-opus">Claude 3 Opus — Anthropic</option>
-          <option value="gemini-2.0">Gemini 2.0 Flash — Google</option>
-          <option value="llama-3.1-405b">Llama 3.1 405B — Meta</option>
-          <option value="deepseek-v3">DeepSeek V3 — DeepSeek</option>
-          <option value="gpt-4-turbo">GPT-4 Turbo — OpenAI</option>
-          <option value="mistral-large">Mistral Large — Mistral</option>
-        </select>
-      </div>
-    </div>
 
     <!-- Chat Messages -->
     <div class="playground-chat" id="chatMessages">
@@ -142,6 +144,19 @@
     <div class="playground-input-area">
       <div class="playground-input-inner">
         <div class="playground-input-row">
+          <div class="playground-model-wrap">
+            <label class="playground-model-label" for="modelSelect">Model</label>
+            <select id="modelSelect" onchange="renderPlaygroundCode()">
+              <option value="gpt-4o">GPT-4o — OpenAI</option>
+              <option value="claude-3.5-sonnet" selected>Claude 3.5 Sonnet — Anthropic</option>
+              <option value="claude-3-opus">Claude 3 Opus — Anthropic</option>
+              <option value="gemini-2.0">Gemini 2.0 Flash — Google</option>
+              <option value="llama-3.1-405b">Llama 3.1 405B — Meta</option>
+              <option value="deepseek-v3">DeepSeek V3 — DeepSeek</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo — OpenAI</option>
+              <option value="mistral-large">Mistral Large — Mistral</option>
+            </select>
+          </div>
           <textarea id="chatInput" placeholder="Message GlbTOKEN..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendPlaygroundMessage()}"></textarea>
           <button class="playground-send-btn" id="sendBtn" onclick="sendPlaygroundMessage()" disabled>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -196,7 +211,8 @@ function switchConversation(el){
   currentConversationId = parseInt(el.getAttribute('data-id'));
   var title = el.querySelector('.conv-title');
   if(title){
-    document.getElementById('conversationTitle').textContent = title.textContent;
+    var ct = document.getElementById('conversationTitle');
+    if(ct) ct.textContent = title.textContent;
   }
   clearChat();
 }
@@ -216,6 +232,7 @@ function clearChat(){
   var chat = document.getElementById('chatMessages');
   chat.innerHTML = '';
   showEmptyState();
+  renderPlaygroundCode();
 }
 
 function showEmptyState(){
@@ -261,11 +278,12 @@ function sendPlaygroundMessage(){
   var userMsg = document.createElement('div');
   userMsg.className = 'playground-msg user';
   userMsg.innerHTML = '<div class="msg-avatar"></div><div class="msg-body"><div class="bubble">'+escapeHtml(text)+'</div><div class="msg-meta">Just now</div></div>';
-  chat.appendChild(userMsg);
+    chat.appendChild(userMsg);
 
   input.value = '';
   input.style.height = 'auto';
   updateSendButton();
+  renderPlaygroundCode();
 
   chat.scrollTop = chat.scrollHeight;
 
@@ -293,6 +311,7 @@ function sendPlaygroundMessage(){
       + '</div>';
     chat.appendChild(aiMsg);
     chat.scrollTop = chat.scrollHeight;
+    renderPlaygroundCode();
 
     isProcessing = false;
     document.getElementById('sendBtn').disabled = false;
@@ -302,7 +321,8 @@ function sendPlaygroundMessage(){
     var active = document.querySelector('.playground-history-item.active .conv-title');
     if(active && active.textContent === 'New conversation'){
       active.textContent = text.substring(0, 30) + (text.length > 30 ? '...' : '');
-      document.getElementById('conversationTitle').textContent = active.textContent;
+      var ct = document.getElementById('conversationTitle');
+      if(ct) ct.textContent = active.textContent;
     }
   }, 1500 + Math.random() * 1000);
 }
@@ -355,6 +375,128 @@ function autoResizeTextarea(el){
   el.style.height = Math.min(el.scrollHeight, 180) + 'px';
 }
 
+// ── API Request Code Panel ──
+function getPlaygroundMessages(){
+  var chat = document.getElementById('chatMessages');
+  if(!chat) return [];
+  var msgs = [];
+  chat.querySelectorAll('.playground-msg').forEach(function(m){
+    var bubble = m.querySelector('.bubble');
+    if(!bubble) return;
+    var role = m.classList.contains('user') ? 'user' : 'assistant';
+    var content = bubble.textContent.trim();
+    if(!content) return;
+    msgs.push({role: role, content: content});
+  });
+  return msgs;
+}
+
+function getSelectedModel(){
+  var sel = document.getElementById('modelSelect');
+  return sel ? sel.value : 'claude-3.5-sonnet';
+}
+
+function renderPlaygroundCode(){
+  var pyEl = document.getElementById('playgroundCodePy');
+  var curlEl = document.getElementById('playgroundCodeCurl');
+  if(!pyEl && !curlEl) return;
+  var model = getSelectedModel();
+  var msgs = getPlaygroundMessages();
+  if(!msgs.length) msgs = [{role:'user', content:'Hello!'}];
+  var msgsJson = msgs.map(function(m){
+    return '      {"role": "' + m.role + '", "content": "' + escapeCodeStr(m.content) + '"}';
+  }).join(',\n');
+
+  var py = 'from openai import OpenAI\n'
+    + '\n'
+    + 'client = OpenAI(\n'
+    + '    base_url="https://api.glbtoken.com/v1",\n'
+    + '    api_key="YOUR_GLBTOKEN_API_KEY",\n'
+    + ')\n'
+    + '\n'
+    + 'response = client.chat.completions.create(\n'
+    + '    model="' + model + '",\n'
+    + '    messages=[\n' + msgsJson + '\n'
+    + '    ]\n'
+    + ')\n'
+    + '\n'
+    + 'print(response.choices[0].message.content)';
+
+  var curl = 'curl https://api.glbtoken.com/v1/chat/completions \\\n'
+    + '  -H "Content-Type: application/json" \\\n'
+    + '  -H "Authorization: Bearer YOUR_GLBTOKEN_API_KEY" \\\n'
+    + '  -d \'{\n'
+    + '    "model": "' + model + '",\n'
+    + '    "messages": [\n' + msgsJson + '\n'
+    + '    ]\n'
+    + '  }\'';
+
+  if(pyEl) pyEl.textContent = py;
+  if(curlEl) curlEl.textContent = curl;
+}
+
+function escapeCodeStr(s){
+  return String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n');
+}
+
+function switchCodeTab(tab){
+  document.querySelectorAll('.playground-code-tab').forEach(function(t){
+    t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+  });
+  var pyEl = document.getElementById('playgroundCodePy');
+  var curlEl = document.getElementById('playgroundCodeCurl');
+  if(pyEl) pyEl.style.display = (tab === 'py') ? '' : 'none';
+  if(curlEl) curlEl.style.display = (tab === 'curl') ? '' : 'none';
+}
+
+function copyPlaygroundCode(btn){
+  var activeTab = document.querySelector('.playground-code-tab.active');
+  var tab = activeTab ? activeTab.getAttribute('data-tab') : 'py';
+  var el = document.getElementById(tab === 'py' ? 'playgroundCodePy' : 'playgroundCodeCurl');
+  if(!el) return;
+  var text = el.textContent;
+  var fallback = function(){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    animatePgCopy(btn);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    var settled = false;
+    var timer = setTimeout(function(){
+      if(!settled){ settled = true; fallback(); }
+    }, 400);
+    navigator.clipboard.writeText(text).then(function(){
+      if(!settled){ settled = true; clearTimeout(timer); animatePgCopy(btn); }
+    }).catch(function(){
+      if(!settled){ settled = true; clearTimeout(timer); fallback(); }
+    });
+  } else {
+    fallback();
+  }
+}
+
+function animatePgCopy(btn){
+  var label = btn.querySelector('.pg-copy-label');
+  var orig = label ? label.textContent : '';
+  if(label) label.textContent = '✔ Copied';
+  btn.classList.add('copied');
+  setTimeout(function(){
+    if(label) label.textContent = orig;
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+function toggleCodePanel(){
+  var panel = document.getElementById('codePanel');
+  if(panel) panel.classList.toggle('open');
+}
+
 // ── Init ──
 document.addEventListener('DOMContentLoaded', function(){
   var input = document.getElementById('chatInput');
@@ -365,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   updateSendButton();
+  renderPlaygroundCode();
 });
 </script>
 
