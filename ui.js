@@ -220,9 +220,13 @@
       userDiv.innerHTML = '<div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div>';
       msgs.appendChild(userDiv);
       input.value = '';
-      // Keep keyboard open on mobile — immediate focus + RAF chain
-      input.focus();
-      requestAnimationFrame(function(){ input.focus(); requestAnimationFrame(function(){ input.focus(); }); });
+      // Keep keyboard open on mobile — focus cascade, NO synchronous height reset (shifts layout and dismisses keyboard)
+      if(window.innerWidth <= 768){
+        input.focus({preventScroll:true});
+        requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
+        setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 100);
+        setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 300);
+      }
       msgs.scrollTop = msgs.scrollHeight;
       // Disable button
       const btn = document.getElementById('aiSendBtn');
@@ -245,6 +249,11 @@
           aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble">'+escapeHtml(data.response || data.choices?.[0]?.message?.content || 'No response')+'</div>';
           msgs.appendChild(aiDiv);
           msgs.scrollTop = msgs.scrollHeight;
+          // Refocus on mobile so the keyboard stays up after the AI response arrives
+          if(window.innerWidth <= 768 && input){
+            input.focus({preventScroll:true});
+            requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
+          }
         } catch(e){
           const typing = document.getElementById('aiTyping');
           if(typing) typing.remove();
@@ -258,6 +267,11 @@
           aiDiv.innerHTML = bubble;
           msgs.appendChild(aiDiv);
           msgs.scrollTop = msgs.scrollHeight;
+          // Refocus on mobile even on error — keep keyboard up for retry
+          if(window.innerWidth <= 768 && input){
+            input.focus({preventScroll:true});
+            requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
+          }
         }
         btn.disabled = false;
         btn.textContent = '➤';
