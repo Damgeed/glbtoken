@@ -6241,13 +6241,16 @@ body {
     display: none !important;
   }
   .mobile-right-group {
-    gap: 6px;
+    gap: 2px;
   }
   .theme-toggle-mobile {
     padding: 6px 4px;
   }
   .lang-btn-mobile {
     padding: 6px 4px;
+  }
+  .hamburger {
+    margin-left: 8px;
   }
   .mobile-auth-grid {
     display: grid;
@@ -6377,7 +6380,7 @@ body {
   .lang-menu {
     position: fixed;
     top: 62px;
-    right: 10px;
+    right: 70px;
     z-index: 300;
   }
   .notif-grid {

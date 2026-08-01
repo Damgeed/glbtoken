@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1156" />
+  <link rel="stylesheet" href="style.css?v=1167" />
   <link rel="stylesheet" href="playground.css?v=1022" />
   <link rel="stylesheet" href="dashboard.css?v=1029" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -158,7 +158,7 @@
             </select>
           </div>
           <textarea id="chatInput" placeholder="Message GlbTOKEN..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendPlaygroundMessage()}"></textarea>
-          <button class="playground-send-btn" id="sendBtn" onclick="sendPlaygroundMessage()" disabled>
+          <button class="playground-send-btn" id="sendBtn" onclick="sendPlaygroundMessage()" onmousedown="event.preventDefault()" disabled>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>
@@ -281,9 +281,15 @@ function sendPlaygroundMessage(){
     chat.appendChild(userMsg);
 
   input.value = '';
-  input.style.height = 'auto';
   updateSendButton();
   renderPlaygroundCode();
+  // Keep keyboard open on mobile — focus cascade, NO synchronous height reset (shifts layout and dismisses keyboard)
+  if(window.innerWidth <= 768){
+    input.focus({preventScroll:true});
+    requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
+    setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 100);
+    setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 300);
+  }
 
   chat.scrollTop = chat.scrollHeight;
 
@@ -315,7 +321,13 @@ function sendPlaygroundMessage(){
 
     isProcessing = false;
     document.getElementById('sendBtn').disabled = false;
-    document.getElementById('chatInput').focus();
+    // Refocus on mobile so the keyboard stays up after the AI response arrives
+    if(window.innerWidth <= 768){
+      document.getElementById('chatInput').focus({preventScroll:true});
+      requestAnimationFrame(function(){ document.getElementById('chatInput').focus({preventScroll:true}); });
+    } else {
+      document.getElementById('chatInput').focus();
+    }
 
     // Update conversation title
     var active = document.querySelector('.playground-history-item.active .conv-title');
