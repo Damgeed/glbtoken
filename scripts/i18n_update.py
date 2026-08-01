@@ -214,7 +214,7 @@ def main():
             if todo:
                 print(f"  → {lang_code}... ({len(todo)} new, {len(budget_items) - len(todo)} cached)", flush=True)
                 fresh = translate_batch(todo, LANG_MAP[lang_code])
-                cached.update(fresh)
+                cached.update({t: tr for t, tr in fresh.items() if tr})  # only cache successful translations
                 state['plain'][lang_code] = cached
                 save_state(state)  # checkpoint after every language — SIGTERM-safe
             else:
@@ -265,7 +265,7 @@ def main():
             if todo:
                 print(f"Translating {len(new_mixed)} mixed keys to {lang_code}... ({len(todo)} new)", flush=True)
                 fresh = translate_batch(todo, LANG_MAP[lang_code])
-                cached.update(fresh)
+                cached.update({t: tr for t, tr in fresh.items() if tr})  # only cache successful translations
                 state['mixed'][lang_code] = cached
                 save_state(state)  # checkpoint after every language — SIGTERM-safe
             all_translations[lang_code] = cached

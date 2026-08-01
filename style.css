@@ -546,8 +546,8 @@ html.dark .nav-logo-img {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 300px;
-  max-width: 85vw;
+  width: 260px;
+  max-width: 80vw;
   background: var(--bg);
   border-left: 1px solid var(--border);
   z-index: 200;
@@ -7100,6 +7100,18 @@ body {
    📱 MOBILE — @media (max-width: 768px)
    ══════════════════════════════════════════ */
 @media (max-width: 768px) {
+  /* Prevent iOS auto-zoom on focus — any input/textarea under 16px triggers it.
+     !important beats component-level sizes (e.g. playground model select keeps its size
+     because it's a <select>, which doesn't zoom the same way). */
+  textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"] {
+    font-size: 16px !important;
+  }
   /* Fixed nav on mobile — theme/language/hamburger always reachable (Bud decision 2026-07).
      Sticky goes on #nav-container (the parent); .navbar alone has no room to stick. */
   #nav-container {
@@ -7135,7 +7147,9 @@ body {
   }
 
   .dash-sidebar {
-    left: -300px;
+    width: 240px;
+    min-width: 240px;
+    left: -240px;
     top: 0;
     height: 100vh;
     z-index: 100;
