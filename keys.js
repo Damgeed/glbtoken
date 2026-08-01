@@ -178,41 +178,62 @@
           const rect=dragEl.getBoundingClientRect();
           const cx=rect.left+rect.width/2;
           const cy=rect.top+rect.height/2;
-          const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe')).filter(function(w){return w!==dragEl;});
-          // 2D grid reorder: pick the card whose center is nearest, then decide
-          // before/after in reading order (row-major), so drag works across
-          // both columns instead of only vertically.
-          let best=null,bestDist=Infinity;
-          for(let i=0;i<wraps.length;i++){
-            const r=wraps[i].getBoundingClientRect();
-            const tcx=r.left+r.width/2;
-            const tcy=r.top+r.height/2;
-            const d=Math.sqrt((tcx-cx)*(tcx-cx)+(tcy-cy)*(tcy-cy));
-            if(d<bestDist){bestDist=d;best=wraps[i];}
+          const wraps=Array.prototype.slice.call(list.querySelectorAll('.key-swipe'));
+          // Grid-aware reorder: map the pointer to a (row, column) slot in the
+          // current grid, then insert the dragged card at exactly that slot.
+          // This keeps the card in the column under the pointer (no sideways jumps).
+          const rows=[];
+          wraps.forEach(function(w){
+            const r=w.getBoundingClientRect();
+            let row=null;
+            for(let i=0;i<rows.length;i++){
+              if(Math.abs(rows[i].top-r.top)<24){row=rows[i];break;}
+            }
+            if(!row){row={top:r.top,height:r.height,items:[]};rows.push(row);}
+            row.items.push({el:w,rect:r});
+          });
+          rows.sort(function(a,b){return a.top-b.top;});
+          let prow=rows[0];
+          for(let i=0;i<rows.length;i++){
+            if(cy<rows[i].top+rows[i].height/2){prow=rows[i];break;}
+            prow=rows[i];
           }
-          if(best){
-            const r=best.getBoundingClientRect();
-            const tcx=r.left+r.width/2;
-            const tcy=r.top+r.height/2;
-            const before=(cy<tcy-2)||(Math.abs(cy-tcy)<=2&&cx<tcx-2);
-            const firstMap={};
-            wraps.forEach(function(w){const rr=w.getBoundingClientRect();firstMap[w.getAttribute('data-swipe-id')]={top:rr.top,left:rr.left};});
-            if(before){
-              if(best!==dragEl&&best.nextElementSibling!==dragEl){
-                list.insertBefore(dragEl,best);
+          const colCenters=[];
+          rows.forEach(function(row){
+            row.items.forEach(function(it){
+              const c=it.rect.left+it.rect.width/2;
+              let exists=false;
+              for(let i=0;i<colCenters.length;i++){if(Math.abs(colCenters[i]-c)<24){exists=true;break;}}
+              if(!exists)colCenters.push(c);
+            });
+          });
+          colCenters.sort(function(a,b){return a-b;});
+          let pcol=0;
+          for(let i=0;i<colCenters.length;i++){
+            if(cx<colCenters[i]){pcol=i;break;}
+            pcol=i;
+          }
+          const firstMap={};
+          wraps.forEach(function(w){const rr=w.getBoundingClientRect();firstMap[w.getAttribute('data-swipe-id')]={top:rr.top,left:rr.left};});
+          let ref=null,noMove=false;
+          if(pcol<prow.items.length){
+            const target=prow.items[pcol].el;
+            if(target===dragEl){noMove=true;}
+            else ref=target;
+          }else{
+            const last=prow.items[prow.items.length-1].el;
+            if(last===dragEl){noMove=true;}
+            else ref=last.nextElementSibling;
+          }
+          if(!noMove){
+            if(ref===null){
+              if(dragEl.nextElementSibling){
+                list.appendChild(dragEl);
                 flipPlay(list,dragEl,firstMap);
               }
-            }else{
-              const ref=best.nextElementSibling;
-              if(ref===null){
-                if(dragEl.nextElementSibling){
-                  list.appendChild(dragEl);
-                  flipPlay(list,dragEl,firstMap);
-                }
-              }else if(ref!==dragEl){
-                list.insertBefore(dragEl,ref);
-                flipPlay(list,dragEl,firstMap);
-              }
+            }else if(ref!==dragEl){
+              list.insertBefore(dragEl,ref);
+              flipPlay(list,dragEl,firstMap);
             }
           }
           // Auto-scroll when dragging near the viewport edges (mobile-app feel)

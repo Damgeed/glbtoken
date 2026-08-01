@@ -2713,14 +2713,13 @@ input[type="range"]::-moz-range-thumb {
   #keyList > p:only-child { grid-column: 1 / -1; }
   .key-swipe { margin-bottom: 0; }
   .api-key-card {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
     flex-wrap: nowrap;
+    align-items: center;
     height: 100%;
   }
   .api-key-card .key-card-footer {
-    justify-content: flex-start;
-    margin-top: 0.25rem;
+    margin-left: auto;
   }
 }
 @media (max-width: 768px) {
