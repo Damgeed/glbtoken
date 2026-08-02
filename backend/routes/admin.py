@@ -175,3 +175,57 @@ async def admin_sync_users(
         "errors": (res.errors[:20] if res and res.errors else []),
         "message": f"Synced {res.created} user(s), {res.failed} failed." if res else "Sync completed",
     }
+
+
+@router.delete("/api/admin/users/{user_id}")
+@limiter.limit("5/minute")
+def admin_delete_user(
+    user_id: int,
+    request: Request,
+    user: Optional[User] = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+    authorization: str = Header(None),
+):
+    """Delete a user and ALL their data (keys, transactions, presets, referrals,
+    login history, org memberships, conversations, refresh tokens).
+
+    Admin-only: valid admin JWT, OR `Authorization: Bearer <GLBTOKEN_SECRET>`.
+    Refuses to delete admin accounts.
+    """
+    api_key = ""
+    if authorization and authorization.startswith("Bearer "):
+        api_key = authorization.removeprefix("Bearer ")
+    glbtoken_secret = GLBTOKEN_SECRET
+    if not glbtoken_secret or api_key != glbtoken_secret:
+        if not user or not user.is_admin:
+            _403("Admin access required")
+
+    target = db.query(User).filter(User.id == user_id).first()
+    if not target:
+        _404("User not found")
+    if target.is_admin:
+        _403("Cannot delete an admin account")
+
+    from database import (
+        RefreshToken, ApiKey, Transaction, Preset, Referral,
+        ReferralRedemption, LoginEvent, Organization, OrgMember, Conversation,
+    )
+
+    uid = target.id
+    # FK-safe deletion order: children first, then the user
+    db.query(RefreshToken).filter(RefreshToken.user_id == uid).delete(synchronize_session=False)
+    db.query(LoginEvent).filter(LoginEvent.user_id == uid).delete(synchronize_session=False)
+    db.query(Conversation).filter(Conversation.user_id == uid).delete(synchronize_session=False)
+    db.query(OrgMember).filter(OrgMember.user_id == uid).delete(synchronize_session=False)
+    db.query(Organization).filter(Organization.owner_id == uid).delete(synchronize_session=False)
+    db.query(Preset).filter(Preset.user_id == uid).delete(synchronize_session=False)
+    db.query(Transaction).filter(Transaction.user_id == uid).delete(synchronize_session=False)
+    db.query(ApiKey).filter(ApiKey.user_id == uid).delete(synchronize_session=False)
+    db.query(ReferralRedemption).filter(ReferralRedemption.referred_user_id == uid).delete(synchronize_session=False)
+    db.query(Referral).filter(Referral.user_id == uid).delete(synchronize_session=False)
+
+    email = target.email
+    db.delete(target)
+    db.commit()
+    return {"status": "deleted", "user_id": uid, "email": email}
+
