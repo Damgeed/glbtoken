@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 """
 GlbTOKEN i18n incremental updater.
-Extracts English UI text from all HTML files, compares against existing
-translations.js (TRANS + I18N_MIXED), translates ONLY missing strings via
-Google Translate, and appends new entries. Existing translations are never
-overwritten. Runs safely on a cron schedule (30 min).
+Extracts English UI text from all HTML files, compares against the single
+translations.js I18N dictionary, translates ONLY missing strings via
+Google Translate / MyMemory, and appends new entries. Existing translations
+are never overwritten. Runs safely on a cron schedule (30 min).
+
+DICTIONARY FORMAT (single object, industry-standard):
+    I18N["English Text"] = {"zh-CN": "...", ru: "...", ja: "...", de: "..."};
+    I18N["kebab-key"]    = {"zh-CN": "...", ru: "...", ja: "...", de: "..."};
+  - English (en) is the key itself — no en: field is stored.
+  - Plain text keys are auto-matched against DOM text nodes.
+  - data-i18n keys are looked up via translatePage() (HTML-safe).
 
 Usage:
   python3 scripts/i18n_update.py [--commit]
@@ -58,7 +65,7 @@ def is_protected(text):
     return False
 
 def extract_ui_text():
-    """Extract unique UI text strings from all HTML files (same as before)."""
+    """Extract unique UI text strings from all HTML files."""
     texts = OrderedDict()
     for fname in sorted(os.listdir(WORKDIR)):
         if not fname.endswith('.html'):
@@ -68,11 +75,20 @@ def extract_ui_text():
         cleaned = re.sub(r'<(script|style|svg)[^>]*>.*?</\1>', '', content, flags=re.DOTALL)
         cleaned = re.sub(r'<pre[^>]*>.*?</pre>', '', cleaned, flags=re.DOTALL)
         cleaned = re.sub(r'<code[^>]*>.*?</code>', '', cleaned, flags=re.DOTALL)
+        # Skip content inside data-i18n elements — those are translated as keyed
+        # entries (extract_mixed_keys), NOT as standalone text nodes. Extracting
+        # them here would create broken fragments ("Or browse all models on the")
+        # that never match a real text node and pollute the dictionary.
+        cleaned = re.sub(r'<[^>]*data-i18n="[^"]*"[^>]*>.*?</[^>]+>', '', cleaned, flags=re.DOTALL)
         text = re.sub(r'<[^>]+>', '\n', cleaned)
         text = htmlmod.unescape(text)
         for line in text.split('\n'):
             line = line.strip()
             if len(line) < 2: continue
+            # Skip sentence fragments — HTML tag splits produce lowercase-start
+            # leftovers ("after signing up.", "page.") that never match a real
+            # text node and would only pollute the dictionary as dead entries.
+            if not (line[0].isupper() or line[0].isdigit()): continue
             if re.match(r'^[\d\s,.%$#(){}\[\]/\\@:;"\'+=*&|^~`<>!?°©®™€¥₿\-\s]+$', line): continue
             if line.startswith(('http://', 'https://', '/api', 'sk-', 'Bearer ')): continue
             if len(line) > 200: continue
@@ -82,29 +98,30 @@ def extract_ui_text():
     return texts
 
 def load_existing():
-    """Parse translations.js and return existing TRANS keys + I18N_MIXED keys."""
+    """Parse translations.js and return the set of existing I18N keys (single dictionary).
+
+    Uses ast.literal_eval (not json.loads) because keys are JS string literals and
+    may contain JS-only escapes such as \\U0001f4ac (emoji), \\' or \\" — json.loads
+    would reject those and silently drop the key, causing the updater to re-translate
+    and overwrite existing translations (violating "never overwrite").
+    """
+    import ast
     existing = set()
-    mixed = set()
     if not os.path.exists(TRANS_JS):
-        return existing, mixed
+        return existing
     with open(TRANS_JS) as f:
         content = f.read()
-    # TRANS["..."] = {...};
-    for m in re.finditer(r'TRANS\[((?:"[^"]*")|(?:\'[^\']*\'))\]\s*=', content):
+    # I18N["..."] = {...};  — escape-aware: keys may contain \" or \' inside
+    key_re = r'I18N\[((?:"(?:[^"\\]|\\.)*")|(?:\'(?:[^\'\\]|\\.)*\'))\]\s*='
+    for m in re.finditer(key_re, content):
         try:
-            existing.add(json.loads(m.group(1)))
+            existing.add(ast.literal_eval(m.group(1)))
         except Exception:
             pass
-    # I18N_MIXED["key"] = {...};
-    for m in re.finditer(r'I18N_MIXED\[((?:"[^"]*")|(?:\'[^\']*\'))\]\s*=', content):
-        try:
-            mixed.add(json.loads(m.group(1)))
-        except Exception:
-            pass
-    return existing, mixed
+    return existing
 
 def extract_mixed_keys():
-    """Find data-i18n attributes in HTML that reference I18N_MIXED keys."""
+    """Find data-i18n attributes in HTML that reference dictionary keys."""
     keys = OrderedDict()  # key -> English text content
     for fname in sorted(os.listdir(WORKDIR)):
         if not fname.endswith('.html'):
@@ -145,7 +162,7 @@ def translate_text(text, target_lang):
                 return out
     except Exception:
         pass
-    # 2) Google translate via urllib (hard timeout — deep_translator ignores socket timeouts)
+    # 2) Google translate via urllib (hard timeout)
     try:
         import urllib.parse, urllib.request
         gurl = ('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl='
@@ -172,10 +189,20 @@ def translate_batch(items, target_lang):
 def js_str(s):
     return json.dumps(s, ensure_ascii=False)
 
+def i18n_row(key, langs):
+    """Build 'I18N[key] = {"zh-CN": ..., ru: ..., ja: ..., de: ...};' (no en field)."""
+    row = [f'I18N[{js_str(key)}] = {{']
+    parts = []
+    for lang_code in LANG_MAP:
+        parts.append(f'{js_str(lang_code)}: {js_str(langs[lang_code])}')
+    row.append(', '.join(parts))
+    row.append('};')
+    return ''.join(row)
+
 def main():
     commit = '--commit' in sys.argv
-    existing, mixed = load_existing()
-    print(f"Existing TRANS keys: {len(existing)}, I18N_MIXED keys: {len(mixed)}")
+    existing = load_existing()
+    print(f"Existing I18N keys: {len(existing)}")
 
     # 1. Plain text strings
     texts = extract_ui_text()
@@ -234,11 +261,7 @@ def main():
             if not ok:
                 continue
             written_texts.append(text)
-            row = [f'TRANS[{js_str(text)}] = {{en: {js_str(text)}']
-            for lang_code in LANG_MAP:
-                row.append(f'{js_str(lang_code)}: {js_str(langs[lang_code])}')
-            row.append('};')
-            new_entries.append(''.join(row))
+            new_entries.append(i18n_row(text, langs))
         # Prune checkpoint: drop texts that were written; keep deferred partial progress
         if written_texts:
             written_set = set(written_texts)
@@ -248,10 +271,10 @@ def main():
         if len(new_entries) < len(budget_items):
             print(f"  (deferred {len(budget_items) - len(new_entries)} strings — quota/network, next run will retry)")
 
-    # 2. New I18N_MIXED keys (plain-text data-i18n elements)
+    # 2. New data-i18n keys (plain-text data-i18n elements)
     mixed_keys = extract_mixed_keys()
-    new_mixed = OrderedDict((k, v) for k, v in mixed_keys.items() if k not in mixed)
-    print(f"data-i18n keys: {len(mixed_keys)}; {len(new_mixed)} NEW I18N_MIXED to translate")
+    new_mixed = OrderedDict((k, v) for k, v in mixed_keys.items() if k not in existing)
+    print(f"data-i18n keys: {len(mixed_keys)}; {len(new_mixed)} NEW to translate")
 
     new_mixed_entries = []
     if new_mixed:
@@ -270,22 +293,18 @@ def main():
             all_translations[lang_code] = cached
         written_mixed = []
         for key, en_text in list(new_mixed.items()):
-            new_mixed[key] = {'en': en_text}
+            d = {}
+            ok = True
             for lang_code in LANG_MAP:
-                trans = all_translations[lang_code].get(en_text, en_text)
-                new_mixed[key][lang_code] = trans
-        # Only keep keys where all languages translated; defer partial ones
-        for key in list(new_mixed.keys()):
-            d = new_mixed[key]
-            if any(not d.get(lang) or d.get(lang) == d['en'] for lang in LANG_MAP):
-                del new_mixed[key]
-        for key, d in new_mixed.items():
-            written_mixed.append(d['en'])
-            row = [f'I18N_MIXED[{js_str(key)}] = {{en: {js_str(d["en"])}']
-            for lang_code in LANG_MAP:
-                row.append(f'{js_str(lang_code)}: {js_str(d.get(lang_code, d["en"]))}')
-            row.append('};')
-            new_mixed_entries.append(''.join(row))
+                trans = all_translations[lang_code].get(en_text)
+                if not trans or trans == en_text:
+                    ok = False
+                    break
+                d[lang_code] = trans
+            if not ok:
+                continue
+            written_mixed.append(en_text)
+            new_mixed_entries.append(i18n_row(key, d))
         if written_mixed:
             written_set = set(written_mixed)
             state['mixed'] = {lang: {t: tr for t, tr in d.items() if t not in written_set}
@@ -296,11 +315,12 @@ def main():
         print("No new strings to translate. Up to date.")
         return
 
-    # 3. Append to translations.js before the I18N_MIXED section marker
+    # 3. Append to translations.js
     with open(TRANS_JS) as f:
         content = f.read()
 
-    marker = '// ── I18N_MIXED: HTML-safe translations for mixed-content elements ──'
+    # Plain-text entries go right before the data-i18n section marker
+    marker = '// ── data-i18n (HTML-safe) entries ──'
     if new_entries:
         block = '\n\n' + '\n'.join(new_entries) + '\n\n'
         if marker in content:
@@ -309,9 +329,8 @@ def main():
             content = content.rstrip() + '\n' + block
 
     if new_mixed_entries:
-        # Append new mixed entries after the last I18N_MIXED line (before the IIFE at end)
+        # data-i18n entries go at the end of the data section (before the auto-translate IIFE)
         block = '\n' + '\n'.join(new_mixed_entries) + '\n'
-        # Insert before the final auto-translate IIFE
         iife_marker = '(function() {\n  var saved = localStorage.getItem'
         if iife_marker in content:
             content = content.replace(iife_marker, block + '\n' + iife_marker, 1)
@@ -321,7 +340,7 @@ def main():
     with open(TRANS_JS, 'w') as f:
         f.write(content)
 
-    print(f"\n✅ Appended {len(new_entries)} TRANS entries + {len(new_mixed_entries)} I18N_MIXED entries")
+    print(f"\n✅ Appended {len(new_entries)} I18N text entries + {len(new_mixed_entries)} I18N data-i18n entries")
 
     # 4. Verify JS syntax
     r = subprocess.run(['node', '--check', TRANS_JS], capture_output=True, text=True)
@@ -333,7 +352,7 @@ def main():
     if commit:
         r = subprocess.run(['git', '-C', WORKDIR, 'add', 'translations.js'], capture_output=True, text=True)
         r = subprocess.run(['git', '-C', WORKDIR, 'commit', '-m',
-                            f'i18n: auto-translate {len(new_entries)} new strings + {len(new_mixed_entries)} mixed keys'],
+                            f'i18n: auto-translate {len(new_entries)} new strings + {len(new_mixed_entries)} data-i18n keys'],
                            capture_output=True, text=True)
         if r.returncode == 0:
             r = subprocess.run(['git', '-C', WORKDIR, 'push'], capture_output=True, text=True)
