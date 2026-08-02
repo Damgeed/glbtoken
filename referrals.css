@@ -244,3 +244,38 @@
   font-size: 0.7rem;
   color: var(--text-muted);
 }
+
+/* ── No-code CTA ── */
+.ref-no-code {
+  text-align: center;
+  padding: 1rem 0;
+}
+.ref-no-code-text {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ref-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* ── Claim rewards button ── */
+.ref-claim-btn {
+  border: none;
+  background: #F4B400;
+  color: #241A00;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background 0.15s ease;
+  vertical-align: middle;
+}
+.ref-claim-btn:hover { background: #E0A500; }
+.ref-claim-btn:disabled { opacity: 0.6; cursor: default; }

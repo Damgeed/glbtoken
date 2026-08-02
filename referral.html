@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1171" />
-<link rel="stylesheet" href="referral.css?v=20" />
+<link rel="stylesheet" href="referral.css?v=21" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -42,14 +42,14 @@
   <!-- Referral Stats -->
   <div class="dash-grid ref-hero-sub">
     <div class="dash-stat-card">
-      <div class="num ref-code-text code-wrap" id="refYourCode" data-code="GLB-ABCD">GLB-ABCD<button class="code-copy-btn" onclick="copyRefCode(this)" title="Copy code" aria-label="Copy code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
+      <div class="num ref-code-text code-wrap" id="refYourCode" data-code="">—<button class="code-copy-btn" onclick="copyRefCode(this)" title="Copy code" aria-label="Copy code"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button></div>
       <div class="lbl">Your Code</div>
       <div class="chg text-muted">Share this code</div>
     </div>
     <div class="dash-stat-card">
       <div class="num" id="refTotalReferrals">—</div>
       <div class="lbl">Total Referrals</div>
-      <div class="chg up">↑ +3 this month</div>
+      <div class="chg up" id="refMonthChg">No referrals yet</div>
     </div>
     <div class="dash-stat-card">
       <div class="num" id="refTotalEarned">—</div>
@@ -59,7 +59,7 @@
     <div class="dash-stat-card">
       <div class="num" id="refPendingRewards">—</div>
       <div class="lbl">Pending Rewards</div>
-      <div class="chg ref-pending">⏳ Awaiting confirmation</div>
+      <div class="chg ref-pending" id="refPendingChg">⏳ Awaiting confirmation <button id="refClaimBtn" class="ref-claim-btn" style="display:none" onclick="claimRefRewards()">Claim Rewards</button></div>
     </div>
   </div>
 
@@ -72,9 +72,13 @@
       </svg>
       Share Your Referral Link
     </div>
+    <div id="refNoCode" class="ref-no-code" style="display:none">
+      <p class="ref-no-code-text">You haven't created your referral code yet. Generate one to start earning rewards for every friend who joins.</p>
+      <button class="btn-primary ref-generate-btn" onclick="generateRefCode()">Generate My Referral Code</button>
+    </div>
     <div class="ref-share-row">
       <div class="ref-link-box">
-        <span id="refCode" class="ref-link-text">https://glbtoken.com/register.html?ref=GLB-ABCD</span>
+        <span id="refCode" class="ref-link-text">—</span>
         <button class="ref-copy-btn" onclick="copyRefLink()" title="Copy link" aria-label="Copy link">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           <span class="copy-label">Copy</span>
@@ -222,7 +226,7 @@
 <script data-cfasync="false" src="shared.js?v=1130"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="referral.js?v=1123"></script>
+<script data-cfasync="false" src="referral.js?v=1124"></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
 document.querySelectorAll('.dash-card div[style*="overflow-x:auto"], .dash-card .scroll-x').forEach(function(el){

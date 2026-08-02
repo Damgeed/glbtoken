@@ -14,9 +14,19 @@ async function loadReferralStats() {
     const totalEarnEl=document.getElementById('refTotalEarned');
     const pendingEl=document.getElementById('refPendingRewards');
     const code=d.referral_code||'';
+    const hasCode=!!code;
     if(codeEl) codeEl.textContent=code?('https://glbtoken.com/register.html?ref='+code):'—';
     if(yourCodeEl) yourCodeEl.textContent=code||'—';
     if(yourCodeEl&&yourCodeEl.setAttribute) yourCodeEl.setAttribute('data-code',code||'');
+    // Toggle no-code CTA vs share UI (both referral.html + referrals.html)
+    document.querySelectorAll('#refNoCode').forEach(function(el){el.style.display=hasCode?'none':'';});
+    document.querySelectorAll('.ref-link-box, .refs-link-box, .ref-share-btn-row, .refs-share-btn-row, #share-socials').forEach(function(el){el.style.display=hasCode?'':'none';});
+    if(yourCodeEl){var cp=yourCodeEl.querySelector('.code-copy-btn'); if(cp) cp.style.display=hasCode?'':'none';}
+    const monthEl=document.getElementById('refMonthChg');
+    if(monthEl){
+      var monthCount=(d.history||[]).reduce(function(s,h){return s+(h.referrals||0);},0);
+      monthEl.textContent=monthCount>0?('↑ '+monthCount+' this month'):'No referrals yet';
+    }
     if(countEl) countEl.textContent=d.total_referrals||0;
     if(earnEl) earnEl.textContent=(d.total_earned||0).toFixed(2);
     if(totalRefsEl) totalRefsEl.textContent=d.total_referrals||0;
@@ -29,7 +39,10 @@ async function loadReferralStats() {
     if(totalEarnEl) totalEarnEl.textContent=lifetime.toFixed(0)+' GT';
     const valEl=document.getElementById('refTotalEarnedVal');
     if(valEl) valEl.textContent='↑ Value: $'+(lifetime*0.001).toFixed(2);
-    if(pendingEl) pendingEl.textContent=(d.pending_earnings!=null?d.pending_earnings:(d.total_earned||0)).toFixed(0)+' GT';
+    const pendingAmt=(d.pending_earnings!=null?d.pending_earnings:(d.total_earned||0));
+    if(pendingEl) pendingEl.textContent=pendingAmt.toFixed(0)+' GT';
+    const claimBtn=document.getElementById('refClaimBtn');
+    if(claimBtn) claimBtn.style.display=(pendingAmt>=1.0)?'':'none';
     // Referrals table (recent_referrals — name/email/joined_at/reward)
     const tableBody=document.getElementById('refTableBody');
     if(tableBody){
@@ -78,6 +91,32 @@ function drawReferralCharts(history){
       data:{labels:labels,datasets:[{label:'Earnings (GT)',data:earnData,borderColor:'#00D68F',backgroundColor:'rgba(0,214,143,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#00D68F',pointBorderColor:'#00D68F'}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}}}}
     });
+  }
+}
+
+// ── Generate code (POST /api/referral/code) ──
+async function generateRefCode(){
+  if(!token) return;
+  var btn=document.querySelector('.ref-generate-btn');
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="btn-spinner"></span> Generating…'; }
+  var d=await safeApi('POST','/api/referral/code',null,25000);
+  if(btn){ btn.disabled=false; btn.innerHTML='Generate My Referral Code'; }
+  if(d&&d.referral_code){
+    showToast('Referral code created: '+d.referral_code,'success');
+    loadReferralStats();
+  }
+}
+
+// ── Claim rewards (POST /api/referral/claim) ──
+async function claimRefRewards(){
+  if(!token) return;
+  var btn=document.getElementById('refClaimBtn');
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="btn-spinner"></span> Claiming…'; }
+  var d=await safeApi('POST','/api/referral/claim',null,25000);
+  if(btn){ btn.disabled=false; btn.innerHTML='Claim Rewards'; }
+  if(d&&d.status==='claimed'){
+    showToast('Claimed '+d.amount+' GT → balance '+d.new_balance+' GT','success');
+    loadReferralStats();
   }
 }
 
