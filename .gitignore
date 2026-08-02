@@ -3,3 +3,4 @@ __pycache__/
 *.pyo
 backend/glbtoken.db
 .env
+scripts/.i18n_state.json
