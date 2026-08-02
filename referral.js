@@ -23,7 +23,7 @@ async function loadReferralStats() {
     const tableBody=document.getElementById('refTableBody');
     if(tableBody&&d.referrals&&d.referrals.length){
       tableBody.innerHTML=d.referrals.map(function(r){
-        return '<tr><td>'+escapeHtml(r.email||r.name||'—')+'</td><td>'+escapeHtml(r.status||'joined')+'</td><td>'+(r.joined_at?new Date(r.joined_at).toLocaleDateString():'—')+'</td><td class="gold">+'+(r.reward||0)+'</td></tr>';
+        return '<tr><td>'+escapeHtml(r.email||r.name||'—')+'</td><td>'+escapeHtml(r.status||'joined')+'</td><td>'+(r.joined_at?fmtDT(r.joined_at):'—')+'</td><td class="gold">+'+(r.reward||0)+'</td></tr>';
       }).join('');
     }else if(tableBody){
       tableBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No referrals yet</td></tr>';

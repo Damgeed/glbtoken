@@ -759,6 +759,16 @@ window.applyAuth = function applyAuth(){
   if(typeof updateBalance === 'function') updateBalance();
 };
 
+// ── Date+time formatter (YYYY-MM-DD HH:MM, 24h) — used by tables that
+//    need a real timestamp (Recent Transactions, Reward History, keys…)
+window.fmtDT = function fmtDT(iso){
+  if(!iso) return '';
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  function p(n){ return (n<10?'0':'')+n; }
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+};
+
 // ── Balance UI sync (shared so it works on all pages, not just usage) ──
 window.updateBalance = function updateBalance(){
   const b=userData.token_balance||0;

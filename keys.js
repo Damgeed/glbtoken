@@ -49,7 +49,7 @@
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)}</div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
-              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?new Date(key.created_at).toLocaleDateString():'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+new Date(key.last_used).toLocaleDateString():'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?fmtDT(key.created_at):'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+fmtDT(key.last_used):'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">

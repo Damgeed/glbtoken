@@ -8,7 +8,7 @@
       var txns=await safeApi('GET','/api/transactions',null,null,true); if(!txns||!txns.length){depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No transactions yet</td></tr>';return}
         var depRows='', conRows='';
         txns.forEach(function(t){
-          var date=t.created_at?new Date(t.created_at).toLocaleDateString() : '-';
+          var date=t.created_at?fmtDT(t.created_at) : '-';
           var amtClass=t.type==='deposit'?'green':'red';
           var amtSign=t.type==='deposit'?'+':'-';
           var amount='<span class="amount '+amtClass+'">'+amtSign+Math.abs(t.amount).toFixed(2)+'</span>';
@@ -148,7 +148,7 @@
           return;
         }
         body.innerHTML=data.keys.map(function(k){
-          return '<tr><td>'+escapeHtml(k.name||'Key '+k.id)+'</td><td>'+escapeHtml(k.key_prefix||'')+'...</td><td>'+(k.request_count||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td><td>'+escapeHtml(k.last_used?new Date(k.last_used).toLocaleDateString():'Never')+'</td></tr>';
+          return '<tr><td>'+escapeHtml(k.name||'Key '+k.id)+'</td><td>'+escapeHtml(k.key_prefix||'')+'...</td><td>'+(k.request_count||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td><td>'+escapeHtml(k.last_used?fmtDT(k.last_used):'Never')+'</td></tr>';
         }).join('');
 
     }
@@ -416,7 +416,7 @@ async function loadRecentTx(){
     return;
   }
   body.innerHTML = d.items.map(function(t){
-    var date = t.created_at ? new Date(t.created_at).toLocaleDateString() : '';
+    var date = t.created_at ? fmtDT(t.created_at) : '';
     var type = escapeHtml(t.type||'');
     var detail = escapeHtml(t.model_used || t.payment_method || '-');
     var amtCls = (t.type==='deposit'||t.type==='topup') ? 'gold' : 'red';
