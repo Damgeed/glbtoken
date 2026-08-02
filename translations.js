@@ -964,6 +964,27 @@ I18N["Member removed"] = {"zh-CN": "成员已移除", "ru": "Участник у
 I18N["Left organization"] = {"zh-CN": "已退出组织", "ru": "Вы покинули организацию", "ja": "組織を退出しました", "de": "Organisation verlassen"};
 I18N["0 models"] = {"zh-CN": "0 个模型", "ru": "0 моделей", "ja": "0 モデル", "de": "0 Modelle"};
 
+
+
+I18N["Available Models"] = {"zh-CN": "可用模型", "ru": "Доступные модели", "ja": "利用可能なモデル", "de": "Verfügbare Modelle"};
+I18N["Usage & History"] = {"zh-CN": "用量与历史", "ru": "Использование и история", "ja": "利用状況と履歴", "de": "Nutzung & Verlauf"};
+I18N["One Token. Every AI Model. Infinite Possibilities."] = {"zh-CN": "一个通证。所有 AI 模型。无限可能。", "ru": "Один токен. Каждая ИИ-модель. Безграничные возможности.", "ja": "一つのトークン。あらゆるAIモデル。無限の可能性。", "de": "Ein Token. Jedes KI-Modell. Unbegrenzte Möglichkeiten."};
+I18N["AI Models"] = {"zh-CN": "AI 模型", "ru": "ИИ-модели", "ja": "AIモデル", "de": "KI-Modelle"};
+I18N["Legacy text completions (GPT-3.5 style)"] = {"zh-CN": "旧版文本补全(GPT-3.5 风格)", "ru": "Устаревшие текстовые завершения (стиль GPT-3.5)", "ja": "レガシーテキスト補完（GPT-3.5 スタイル）", "de": "Legacy-Textvervollständigungen (GPT-3.5-Stil)"};
+I18N["Usage"] = {"zh-CN": "用量", "ru": "Использование", "ja": "利用状況", "de": "Nutzung"};
+I18N["All Models"] = {"zh-CN": "全部模型", "ru": "Все модели", "ja": "すべてのモデル", "de": "Alle Modelle"};
+I18N["Your Models"] = {"zh-CN": "您的模型", "ru": "Ваши модели", "ja": "あなたのモデル", "de": "Ihre Modelle"};
+I18N["Top Models This Week"] = {"zh-CN": "本周热门模型", "ru": "Лучшие модели недели", "ja": "今週の人気モデル", "de": "Top-Modelle diese Woche"};
+I18N["PAYMENTS"] = {"zh-CN": "支付", "ru": "ОПЛАТА", "ja": "支払い", "de": "ZAHLUNG"};
+I18N["MODELS"] = {"zh-CN": "模型", "ru": "МОДЕЛИ", "ja": "モデル", "de": "MODELLE"};
+I18N["AI Model Catalog"] = {"zh-CN": "AI 模型目录", "ru": "Каталог ИИ-моделей", "ja": "AIモデルカタログ", "de": "KI-Modellkatalog"};
+I18N["CODE"] = {"zh-CN": "代码", "ru": "КОД", "ja": "コード", "de": "CODE"};
+I18N["GUIDE"] = {"zh-CN": "指南", "ru": "РУКОВОДСТВО", "ja": "ガイド", "de": "LEITFADEN"};
+I18N["Cost Breakdown by Model"] = {"zh-CN": "按模型划分的成本明细", "ru": "Разбивка затрат по моделям", "ja": "モデル別コスト内訳", "de": "Kostenaufschlüsselung nach Modell"};
+I18N["Most Expensive Model"] = {"zh-CN": "最昂贵的模型", "ru": "Самая дорогая модель", "ja": "最も高額なモデル", "de": "Teuerstes Modell"};
+I18N["Response Time by Model"] = {"zh-CN": "按模型划分的响应时间", "ru": "Время ответа по моделям", "ja": "モデル別応答時間", "de": "Antwortzeit nach Modell"};
+I18N["Model Speed Comparison"] = {"zh-CN": "模型速度对比", "ru": "Сравнение скорости моделей", "ja": "モデル速度比較", "de": "Modellgeschwindigkeitsvergleich"};
+
 // ── data-i18n (HTML-safe) entries ──
 
 

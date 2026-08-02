@@ -58,11 +58,15 @@ PROTECTED = {
 }
 
 def is_protected(text):
+    """Word-boundary match — protects exact brand/term words, NOT every text that
+    contains them as a substring. Substring matching wrongly skipped real UI text
+    like 'Available Models' or 'Top Models This Week' (contains 'Model')."""
     text_stripped = text.strip()
-    for p in PROTECTED:
-        if p in text_stripped or text_stripped in p:
-            return True
-    return False
+    # exact full-string match (fast path)
+    if text_stripped in PROTECTED:
+        return True
+    words = re.findall(r"[A-Za-z0-9&'-]+", text_stripped)
+    return any(w in PROTECTED for w in words)
 
 def extract_ui_text():
     """Extract unique UI text strings from all HTML files."""
