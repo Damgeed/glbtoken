@@ -437,6 +437,8 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
         try{ sessionStorage.setItem('gt_token', refreshData.token); }catch(e){}
         userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
         (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token', refreshData.refresh_token);
+        // Session restored asynchronously — re-sync nav/UI now that token is ready
+        if(typeof window.applyAuth === 'function'){ window.applyAuth(); }
         return refreshData;
       })().finally(function(){ refreshPromise = null; });
       return refreshPromise;
