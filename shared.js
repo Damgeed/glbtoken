@@ -525,17 +525,15 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       }
     });
 
-    // ── Hero Variants ──
+    // ── Hero Variants (reads the single I18N dictionary) ──
     function initHeroVariants(){
       var tagline = document.getElementById('heroTagline');
       if(tagline){
         var n = Math.floor(Math.random() * 6) + 1;
         var key = 'hero-variant-' + n;
         var lang = localStorage.getItem('gt_lang') || 'en';
-        if(typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key][lang]){
-          tagline.textContent = TRANS[key][lang];
-        } else if(typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key]['en']){
-          tagline.textContent = TRANS[key]['en'];
+        if(typeof I18N !== 'undefined' && I18N[key]){
+          tagline.textContent = I18N[key][lang] || I18N[key]['en'] || '';
         }
       }
       var headline = document.getElementById('heroHeadline');
@@ -543,10 +541,8 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
         var n2 = Math.floor(Math.random() * 5) + 1;
         var key2 = 'hero-headline-' + n2;
         var lang2 = localStorage.getItem('gt_lang') || 'en';
-        if(typeof TRANS !== 'undefined' && TRANS[key2] && TRANS[key2][lang2]){
-          headline.innerHTML = TRANS[key2][lang2];
-        } else if(typeof TRANS !== 'undefined' && TRANS[key2] && TRANS[key2]['en']){
-          headline.innerHTML = TRANS[key2]['en'];
+        if(typeof I18N !== 'undefined' && I18N[key2]){
+          headline.innerHTML = I18N[key2][lang2] || I18N[key2]['en'] || '';
         }
       }
     }

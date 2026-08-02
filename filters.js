@@ -315,7 +315,7 @@
       var overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
       overlay.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;inset:0;z-index:9999';
-      var t = function(key, fallback) { return (typeof TRANS !== 'undefined' && TRANS[key] && TRANS[key][curLang]) ? TRANS[key][curLang] : fallback; };
+      var t = window.t || function(key, fallback) { return (typeof I18N !== 'undefined' && I18N[key] && I18N[key][curLang]) ? I18N[key][curLang] : fallback; };
       overlay.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
         '<h3 style="margin:0 0 0.5rem;color:var(--text)">' + t("Reset Password","Reset Password") + '</h3>' +
         '<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">' + t("Enter your email and we'll send a reset link.","Enter your email and we'll send a reset link.") + '</p>' +
