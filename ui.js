@@ -340,6 +340,10 @@
         if(tmIsDragging){tmIsDragging=false;document.body.style.userSelect='';document.body.style.webkitUserSelect=''}
       });
       tmInterval=setInterval(()=>slideTopView(1),5000);
+      // Initial title via t() — tmTitle is .notranslate so translatePage skips it;
+      // set it once here (carousel slides re-set it in slideTopView).
+      var t0=document.getElementById('tmTitle');
+      if(t0)t0.textContent=t(tmTitles[0],tmTitles[0]);
       // Initial load: refresh top model cards (replaces hardcoded HTML)
       refreshTopModels();
     });
