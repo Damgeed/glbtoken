@@ -127,17 +127,17 @@
           <div class="chg text-muted">Share this code</div>
         </div>
         <div class="dash-stat-card">
-          <div class="num" id="refTotalReferrals">27</div>
+          <div class="num" id="refTotalReferrals">—</div>
           <div class="lbl">Total Referrals</div>
           <div class="chg up">↑ +3 this month</div>
         </div>
         <div class="dash-stat-card">
-          <div class="num" id="refTotalEarned">1,250 GT</div>
+          <div class="num" id="refTotalEarned">—</div>
           <div class="lbl">Total Earned</div>
-          <div class="chg up">↑ Value: $12.50</div>
+          <div class="chg up" id="refTotalEarnedVal">↑ Value: $0.00</div>
         </div>
         <div class="dash-stat-card">
-          <div class="num" id="refPendingRewards">350 GT</div>
+          <div class="num" id="refPendingRewards">—</div>
           <div class="lbl">Pending Rewards</div>
           <div class="chg refs-pending">⏳ Awaiting confirmation</div>
         </div>
@@ -224,13 +224,7 @@
         <div class="scroll-x">
           <table class="tx-table">
             <thead><tr><th>Name</th><th>Email</th><th>Date Joined</th><th>Status</th><th>Reward Earned</th></tr></thead>
-            <tbody id="refTableBody">
-              <tr><td>Alice Johnson</td><td>alice@example.com</td><td>Jun 12, 2026</td><td><span class="refs-status-success">● Active</span></td><td>50 GT</td></tr>
-              <tr><td>Bob Smith</td><td>bob@example.com</td><td>Jun 10, 2026</td><td><span class="refs-status-success">● Active</span></td><td>50 GT</td></tr>
-              <tr><td>Carol Williams</td><td>carol@example.com</td><td>Jun 5, 2026</td><td><span class="refs-pending">◉ Pending</span></td><td>—</td></tr>
-              <tr><td>Dave Brown</td><td>dave@example.com</td><td>May 28, 2026</td><td><span class="refs-status-success">● Active</span></td><td>50 GT</td></tr>
-              <tr><td>Eve Davis</td><td>eve@example.com</td><td>May 20, 2026</td><td><span class="refs-status-failed">○ Inactive</span></td><td>25 GT</td></tr>
-            </tbody>
+            <tbody id="refTableBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Loading…</td></tr></tbody>
           </table>
         </div>
         
@@ -247,13 +241,7 @@
         <div class="scroll-x">
           <table class="tx-table">
             <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
-            <tbody id="refRewardsBody">
-              <tr><td>Jun 12, 2026</td><td>Signup Bonus</td><td>50 GT</td><td><span class="refs-status-success">● Claimed</span></td></tr>
-              <tr><td>Jun 10, 2026</td><td>Signup Bonus</td><td>50 GT</td><td><span class="refs-status-success">● Claimed</span></td></tr>
-              <tr><td>Jun 5, 2026</td><td>Signup Bonus</td><td>50 GT</td><td><span class="refs-pending">◉ Pending</span></td></tr>
-              <tr><td>May 28, 2026</td><td>Signup Bonus</td><td>50 GT</td><td><span class="refs-status-success">● Claimed</span></td></tr>
-              <tr><td>May 20, 2026</td><td>Referral Milestone</td><td>100 GT</td><td><span class="refs-status-success">● Claimed</span></td></tr>
-            </tbody>
+            <tbody id="refRewardsBody"><tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">Loading…</td></tr></tbody>
           </table>
         </div>
         
@@ -317,69 +305,7 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1129"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="referral.js?v=1121"></script>
-
-<script>
-// Referral chart initialization
-document.addEventListener('DOMContentLoaded', function(){
-  var ctx1 = document.getElementById('referralsChart');
-  if(ctx1){
-    new Chart(ctx1, {
-      type: 'line',
-      data: {
-        labels: ['May 20', 'May 27', 'Jun 3', 'Jun 10', 'Jun 17'],
-        datasets: [{
-          label: 'Referrals',
-          data: [2, 5, 8, 6, 6],
-          borderColor: '#F4B400',
-          backgroundColor: 'rgba(244,180,0,0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#F4B400',
-          pointBorderColor: '#F4B400'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6B7280', maxTicksLimit: 5 } },
-          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6B7280', maxTicksLimit: 5 } }
-        }
-      }
-    });
-  }
-  var ctx2 = document.getElementById('earningsChart');
-  if(ctx2){
-    new Chart(ctx2, {
-      type: 'line',
-      data: {
-        labels: ['May 20', 'May 27', 'Jun 3', 'Jun 10', 'Jun 17'],
-        datasets: [{
-          label: 'Earnings (GT)',
-          data: [100, 250, 400, 300, 200],
-          borderColor: '#00D68F',
-          backgroundColor: 'rgba(0,214,143,0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#00D68F',
-          pointBorderColor: '#00D68F'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6B7280', maxTicksLimit: 5 } },
-          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6B7280', maxTicksLimit: 5 } }
-        }
-      }
-    });
-  }
-});
-</script>
+<script data-cfasync="false" src="referral.js?v=1122"></script>
 
 </body>
 </html>

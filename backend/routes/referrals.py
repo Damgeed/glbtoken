@@ -2,8 +2,9 @@
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 import random, string
+from datetime import datetime, timezone, timedelta
 
 from database import get_db, User, Referral, ReferralRedemption, Transaction
 from auth import get_current_user
@@ -53,17 +54,45 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
     
     # Recent referrals
     recent = []
+    redemptions = {}
     if code:
+        for r in db.query(ReferralRedemption).filter(ReferralRedemption.referrer_code == code).all():
+            redemptions[r.referred_user_id] = r.amount
         recent_users = db.query(User).filter(
             User.referred_by == code
         ).order_by(desc(User.created_at)).limit(10).all()
-        recent = [{"id": u.id, "name": u.name, "joined_at": u.created_at.isoformat() if u.created_at else None} for u in recent_users]
+        recent = [{
+            "id": u.id, "name": u.name, "email": u.email,
+            "joined_at": u.created_at.isoformat() if u.created_at else None,
+            "status": "active",
+            "reward": float(redemptions.get(u.id, 0) or 0),
+        } for u in recent_users]
+    
+    # History for charts (last 14 days: referrals + earnings per day)
+    history = []
+    if code:
+        hist_start = datetime.now(timezone.utc) - timedelta(days=13)
+        ref_by_day = dict(db.query(func.date(User.created_at), func.count(User.id)).filter(
+            User.referred_by == code, User.created_at >= hist_start
+        ).group_by(func.date(User.created_at)).all())
+        earn_by_day = dict(db.query(func.date(ReferralRedemption.created_at), func.sum(ReferralRedemption.amount)).filter(
+            ReferralRedemption.referrer_code == code, ReferralRedemption.created_at >= hist_start
+        ).group_by(func.date(ReferralRedemption.created_at)).all())
+        for i in range(13, -1, -1):
+            d = (datetime.now(timezone.utc) - timedelta(days=i)).strftime("%Y-%m-%d")
+            history.append({
+                "date": d,
+                "referrals": int(ref_by_day.get(d, 0) or 0),
+                "earnings": float(earn_by_day.get(d, 0) or 0),
+            })
     
     return {
         "referral_code": code,
         "total_referrals": total_referrals,
         "total_earned": total_earned,
+        "pending_earnings": total_earned,
         "recent_referrals": recent,
+        "history": history,
     }
 
 

@@ -12,6 +12,7 @@ async function loadReferralStats() {
     const earnEl=document.getElementById('refEarnings');
     const totalRefsEl=document.getElementById('refTotalReferrals');
     const totalEarnEl=document.getElementById('refTotalEarned');
+    const pendingEl=document.getElementById('refPendingRewards');
     const code=d.referral_code||'';
     if(codeEl) codeEl.textContent=code?('https://glbtoken.com/register.html?ref='+code):'—';
     if(yourCodeEl) yourCodeEl.textContent=code||'—';
@@ -19,26 +20,79 @@ async function loadReferralStats() {
     if(countEl) countEl.textContent=d.total_referrals||0;
     if(earnEl) earnEl.textContent=(d.total_earned||0).toFixed(2);
     if(totalRefsEl) totalRefsEl.textContent=d.total_referrals||0;
-    if(totalEarnEl) totalEarnEl.textContent=(d.total_earned||0).toFixed(2)+' GT';
+    // Reward history (real, /api/referral/rewards) — lifetime earned + rows
+    let lifetime=0, rewards=[];
+    try{
+      const rw=await safeApi('GET','/api/referral/rewards');
+      if(rw){ rewards=rw.rewards||[]; lifetime=rw.total||0; }
+    }catch(e){}
+    if(totalEarnEl) totalEarnEl.textContent=lifetime.toFixed(0)+' GT';
+    const valEl=document.getElementById('refTotalEarnedVal');
+    if(valEl) valEl.textContent='↑ Value: $'+(lifetime*0.001).toFixed(2);
+    if(pendingEl) pendingEl.textContent=(d.pending_earnings!=null?d.pending_earnings:(d.total_earned||0)).toFixed(0)+' GT';
+    // Referrals table (recent_referrals — name/email/joined_at/reward)
     const tableBody=document.getElementById('refTableBody');
-    if(tableBody&&d.referrals&&d.referrals.length){
-      tableBody.innerHTML=d.referrals.map(function(r){
-        return '<tr><td>'+escapeHtml(r.email||r.name||'—')+'</td><td>'+escapeHtml(r.status||'joined')+'</td><td>'+(r.joined_at?fmtDT(r.joined_at):'—')+'</td><td class="gold">+'+(r.reward||0)+'</td></tr>';
-      }).join('');
-    }else if(tableBody){
-      tableBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No referrals yet</td></tr>';
+    if(tableBody){
+      const refs=d.recent_referrals||[];
+      if(refs.length){
+        tableBody.innerHTML=refs.map(function(r){
+          return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td>'+(r.joined_at?fmtDT(r.joined_at):'—')+'</td><td><span class="text-success-color">● Active</span></td><td>'+(r.reward>0?(r.reward+' GT'):'—')+'</td></tr>';
+        }).join('');
+      }else{
+        tableBody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No referrals yet</td></tr>';
+      }
     }
-    // Chart
-    const chartEl=document.getElementById('refChart');
-    if(chartEl&&d.history&&d.history.length&&typeof Chart!=='undefined'){
-      if(window._refChartInst)window._refChartInst.destroy();
-      window._refChartInst=new Chart(chartEl,{
-        type:'line',
-        data:{labels:d.history.map(function(h){return h.date}),datasets:[{label:'Referrals',data:d.history.map(function(h){return h.count}),borderColor:'#F4B400',backgroundColor:'rgba(244,180,0,0.1)',fill:true,tension:0.3}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'var(--text-muted)',font:{size:10}}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'var(--text-muted)'}},x:{grid:{display:false},ticks:{color:'var(--text-muted)'}}}}
-      });
+    // Reward History table (real, /api/referral/rewards — fmtDT timestamps)
+    const rewardsBody=document.getElementById('refRewardsBody');
+    if(rewardsBody){
+      if(rewards.length){
+        rewardsBody.innerHTML=rewards.map(function(r){
+          return '<tr><td>'+fmtDT(r.created_at)+'</td><td>Referral Reward</td><td>'+(r.amount||0)+' GT</td><td><span class="text-success-color">● Claimed</span></td></tr>';
+        }).join('');
+      }else{
+        rewardsBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No rewards yet</td></tr>';
+      }
     }
+    // Charts (real history — referrals + earnings over last 14 days)
+    drawReferralCharts(d.history||[]);
 }
+
+function drawReferralCharts(history){
+  var labels=history.map(function(h){ return String(h.date||'').slice(5); });
+  var refData=history.map(function(h){ return h.referrals||0; });
+  var earnData=history.map(function(h){ return h.earnings||0; });
+  var ctx1=document.getElementById('referralsChart');
+  if(ctx1&&typeof Chart!=='undefined'){
+    if(window._refChartInst)window._refChartInst.destroy();
+    window._refChartInst=new Chart(ctx1,{
+      type:'line',
+      data:{labels:labels,datasets:[{label:'Referrals',data:refData,borderColor:'#F4B400',backgroundColor:'rgba(244,180,0,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#F4B400',pointBorderColor:'#F4B400'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}}}}
+    });
+  }
+  var ctx2=document.getElementById('earningsChart');
+  if(ctx2&&typeof Chart!=='undefined'){
+    if(window._earnChartInst)window._earnChartInst.destroy();
+    window._earnChartInst=new Chart(ctx2,{
+      type:'line',
+      data:{labels:labels,datasets:[{label:'Earnings (GT)',data:earnData,borderColor:'#00D68F',backgroundColor:'rgba(0,214,143,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#00D68F',pointBorderColor:'#00D68F'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}}}}
+    });
+  }
+}
+
+// ── Boot: load real referral data on referral.html + referrals.html ──
+(function(){
+  function bootReferral(){
+    if(!token) return;
+    loadReferralStats();
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', bootReferral);
+  } else {
+    bootReferral();
+  }
+})();
 
 // ── Copy + share (shared by referrals.html + referral.html) ──
 
@@ -81,4 +135,3 @@ function shareRef(platform){
   }
   if(href) window.open(href,'_blank','noopener');
 }
-
