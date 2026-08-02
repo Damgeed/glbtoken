@@ -16,12 +16,17 @@ async function loadReferralStats() {
     const code=d.referral_code||'';
     const hasCode=!!code;
     if(codeEl) codeEl.textContent=code?('https://glbtoken.com/register.html?ref='+code):'—';
-    if(yourCodeEl) yourCodeEl.textContent=code||'—';
-    if(yourCodeEl&&yourCodeEl.setAttribute) yourCodeEl.setAttribute('data-code',code||'');
+    if(yourCodeEl){
+      var cpBtn=yourCodeEl.querySelector('.code-copy-btn');  // capture BEFORE wiping children
+      yourCodeEl.innerHTML='';
+      yourCodeEl.appendChild(document.createTextNode(code||'—'));
+      if(cpBtn) yourCodeEl.appendChild(cpBtn);
+      yourCodeEl.setAttribute('data-code',code||'');
+      if(cpBtn) cpBtn.style.display=hasCode?'':'none';
+    }
     // Toggle no-code CTA vs share UI (both referral.html + referrals.html)
     document.querySelectorAll('#refNoCode').forEach(function(el){el.style.display=hasCode?'none':'';});
-    document.querySelectorAll('.ref-link-box, .refs-link-box, .ref-share-btn-row, .refs-share-btn-row, #share-socials').forEach(function(el){el.style.display=hasCode?'':'none';});
-    if(yourCodeEl){var cp=yourCodeEl.querySelector('.code-copy-btn'); if(cp) cp.style.display=hasCode?'':'none';}
+    document.querySelectorAll('.ref-link-box, .refs-link-box, .ref-share-row, .refs-share-row, .ref-share-btn-row, .refs-share-btn-row, #share-socials').forEach(function(el){el.style.display=hasCode?'':'none';});
     const monthEl=document.getElementById('refMonthChg');
     if(monthEl){
       var monthCount=(d.history||[]).reduce(function(s,h){return s+(h.referrals||0);},0);
