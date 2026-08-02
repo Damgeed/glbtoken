@@ -71,6 +71,34 @@ def is_protected(text):
 def extract_ui_text():
     """Extract unique UI text strings from all HTML files."""
     texts = OrderedDict()
+    # Data-like strings that should never be translated (prices, units, currency
+    # codes, abbreviations, chart numbers). Kept here so the updater never adds
+    # dead entries for them.
+    SKIP_RE = re.compile(
+        r'^(?:'
+        r'\d[\d,.]*\s*(GT|Tokens?|ctx|ms|k|$|\$|₦|₵|KSh|R)'   # prices/amounts
+        r'|\$[\d.]+'                                             # dollar amounts
+        r'|(NGN|GHS|KES|ZAR)(\s*\(|$)'                           # currency codes
+        r'|(KSh|R|₦|₵)\s*\d'                                     # currency amounts
+        r'|(RPM|TPM|GT|SHA-256)$'                                # tech abbreviations
+        r'|\d+(\.\d+)?k$'                                        # chart numbers
+        r'|\d+ms$'
+        r'|\d+(\.\d+)? (min|h) ago$|\d+h ago$|\d+d ▼?$'          # sample timestamps
+        r'|(7d|30d|90d)$'                                        # range labels
+        r'|^1M ctx'                                              # model spec lines
+        r'|^GLB-[A-Z0-9]+$'                                      # sample invite codes
+        r'|^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d+'   # dates
+        r'|^(Anthropic|Google|GitHub|Microsoft|Apple|Twitter|Meta|xAI|Cohere|Stripe|Paystack)$'  # brands
+        r'|^(Qwen|Grok|Command|Phi|GPT|Claude|Gemini|Llama|Mistral|DeepSeek)[-\s]'  # model names
+        r'|^[A-Z][a-z]+ [A-Z][a-z]+$'                            # person names (sample data)
+        r'|^UTC[+-]\d'                                           # timezones
+        r'|^[A-Z]{2}$'                                           # avatar initials (JD, JS...)
+        r'|^(Berlin|New York|London|Tokyo|Seoul)$'               # cities
+        r'|^Sent (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)'  # sent dates
+        r'|^(Windows|Linux|Android|Chrome|Firefox|Safari|Edge|iOS|macOS)$'  # devices/browsers
+        r'|^(Chrome|Firefox|Safari|Edge|Android Chrome)\s+\d+'   # device+browser combos
+        r')'
+    )
     for fname in sorted(os.listdir(WORKDIR)):
         if not fname.endswith('.html'):
             continue
@@ -93,6 +121,7 @@ def extract_ui_text():
             # leftovers ("after signing up.", "page.") that never match a real
             # text node and would only pollute the dictionary as dead entries.
             if not (line[0].isupper() or line[0].isdigit()): continue
+            if SKIP_RE.match(line): continue
             if re.match(r'^[\d\s,.%$#(){}\[\]/\\@:;"\'+=*&|^~`<>!?°©®™€¥₿\-\s]+$', line): continue
             if line.startswith(('http://', 'https://', '/api', 'sk-', 'Bearer ')): continue
             if len(line) > 200: continue
