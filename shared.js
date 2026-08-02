@@ -718,12 +718,20 @@ window.applyAuth = function applyAuth(){
   var mu = document.getElementById('mobileUserSection');
   if(mu){ mu.style.display = loggedIn ? 'block' : 'none'; mu.classList.toggle('d-none', !loggedIn); }
   if(loggedIn){
-    var displayName = userData && userData.name;
-    if(!displayName){
-      if(userData && userData.email){
-        if(userData.email.endsWith('@privaterelay.appleid.com')) displayName = 'Apple User';
-        else displayName = userData.email.split('@')[0];
-      } else { displayName = 'User'; }
+    // Display name = email prefix (example@mail.com → Example), first letter
+    // capitalized, @domain dropped. Falls back to stored name, then "User".
+    var displayName = 'User';
+    if(userData){
+      if(userData.email && userData.email.indexOf('@') > 0){
+        if(userData.email.endsWith('@privaterelay.appleid.com')){
+          displayName = 'Apple User';
+        } else {
+          var prefix = userData.email.split('@')[0];
+          displayName = prefix ? prefix.charAt(0).toUpperCase() + prefix.slice(1) : 'User';
+        }
+      } else if(userData.name){
+        displayName = userData.name;
+      }
     }
     var initial = (displayName || 'U')[0].toUpperCase();
     var du = document.getElementById('dashUserName'); if(du) du.textContent = displayName;
