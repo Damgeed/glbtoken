@@ -188,6 +188,12 @@ def get_social_login_url(provider: str, redirect_uri: str, state: str = "") -> s
         "scope": "openid email profile",
         "connection": connection,
         "nonce": str(int(datetime.now(timezone.utc).timestamp())),
+        # Force Auth0 to re-authenticate instead of silently reusing an existing
+        # session. Without this, a browser that already logged in via Apple would
+        # silently return that SAME user when the user clicks "Google" — every
+        # social login lands in the first account ("same dashboard" bug).
+        "prompt": "login",
+        "max_age": 0,
     }
     if state:
         params["state"] = state
