@@ -22,6 +22,12 @@ var curLang = localStorage.getItem('gt_lang') || 'en';
 
 function t(key, fallback) {
   if (I18N[key] && I18N[key][curLang]) return I18N[key][curLang];
+  // emoji-prefix tolerant: t('🔥 Top Models This Week') → 'Top Models This Week'
+  var em = String(key).match(/^(\p{Extended_Pictographic}\s*)+/u);
+  if (em) {
+    var target = key.slice(em[0].length).trim();
+    if (I18N[target] && I18N[target][curLang]) return em[0] + I18N[target][curLang];
+  }
   return (fallback !== undefined) ? fallback : key;
 }
 
@@ -47,8 +53,18 @@ function translatePage() {
     if (n.parentNode.closest && n.parentNode.closest('.notranslate,[translate="no"],script,style,svg,code,pre,option,.lang-selector,.lang-menu,.lang-option,.nav-logo,.logo-glb,.logo-token,.trust-badge,.star,.tm-dot,.tm-arrow,.copying,select,input,textarea,.lang-btn,.lang-btn-mobile')) continue;
     var text = n.textContent.trim();
     if (!text || text.length < 2 || text.length > 2000) continue;
+    // exact match first (some keys intentionally include the emoji, e.g. "💬 Support")
     if (I18N[text] && I18N[text][curLang]) {
       n.textContent = I18N[text][curLang];
+      continue;
+    }
+    // emoji-prefix tolerant: "🔥 Top Models This Week" → "Top Models This Week"
+    var em = text.match(/^(\p{Extended_Pictographic}\s*)+/u);
+    if (em) {
+      var target = text.slice(em[0].length).trim();
+      if (target && I18N[target] && I18N[target][curLang]) {
+        n.textContent = em[0] + I18N[target][curLang];
+      }
     }
   }
 }
@@ -984,6 +1000,13 @@ I18N["Cost Breakdown by Model"] = {"zh-CN": "按模型划分的成本明细", "r
 I18N["Most Expensive Model"] = {"zh-CN": "最昂贵的模型", "ru": "Самая дорогая модель", "ja": "最も高額なモデル", "de": "Teuerstes Modell"};
 I18N["Response Time by Model"] = {"zh-CN": "按模型划分的响应时间", "ru": "Время ответа по моделям", "ja": "モデル別応答時間", "de": "Antwortzeit nach Modell"};
 I18N["Model Speed Comparison"] = {"zh-CN": "模型速度对比", "ru": "Сравнение скорости моделей", "ja": "モデル速度比較", "de": "Modellgeschwindigkeitsvergleich"};
+
+
+
+I18N["API Quick Start"] = {"zh-CN": "API 快速开始", "ru": "Быстрый старт API", "ja": "API クイックスタート", "de": "API-Schnellstart"};
+I18N["Responses"] = {"zh-CN": "响应", "ru": "Ответы", "ja": "応答", "de": "Antworten"};
+I18N["View all 100+"] = {"zh-CN": "查看全部 100+", "ru": "Смотреть все 100+", "ja": "すべて表示 100+", "de": "Alle 100+ ansehen"};
+I18N["Loading models..."] = {"zh-CN": "正在加载模型…", "ru": "Загрузка моделей…", "ja": "モデルを読み込み中…", "de": "Modelle werden geladen…"};
 
 // ── data-i18n (HTML-safe) entries ──
 

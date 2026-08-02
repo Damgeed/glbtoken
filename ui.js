@@ -49,7 +49,7 @@
       tmIndex=(tmIndex+dir+tmTotal)%tmTotal;
       track.style.transform='translateX(-'+(tmIndex*100)+'%)';
       const title=document.getElementById('tmTitle');
-      if(title)title.textContent=tmTitles[tmIndex];
+      if(title)title.textContent=t(tmTitles[tmIndex],tmTitles[tmIndex]);
       // Auto-refresh models when sliding to slide 0
       if(tmIndex===0)refreshTopModels();
       document.querySelectorAll('.tm-dot').forEach((d,i)=>{
