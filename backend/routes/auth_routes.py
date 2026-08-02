@@ -3,8 +3,9 @@
 from fastapi import APIRouter, Depends, Query, Body, Request, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone, timedelta
-import secrets, json, random, re
+import secrets, json, random, re, hashlib
 
 from database import get_db, User, LoginEvent, Referral
 from auth import (
@@ -493,6 +494,67 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
     }
 
 
+def _resolve_social_user(db, info):
+    """Secure social-login identity resolution.
+
+    Provider `sub` is the AUTHORITATIVE key (unique per user per provider).
+    Email is used ONLY as a secondary link when: non-empty, verified, and the
+    matching account is not already bound to a DIFFERENT provider identity.
+
+    Critical: Apple omits `email` on repeat sign-ins when the user chose
+    "Hide My Email" — matching by empty email would bucket ALL such users into
+    one account (= account takeover, the reported bug). Empty email NEVER
+    matches; users without an email get a deterministic synthetic address so
+    the unique-email constraint holds and a later real email can replace it.
+
+    Raises ValueError if the user cannot be safely identified/created.
+    Returns (user, created).
+    """
+    sub = (info.get("sub") or "").strip()
+    email = (info.get("email") or "").strip().lower()
+    email_verified = bool(info.get("email_verified"))
+
+    user = None
+    # 1) Authoritative: provider identity (sub)
+    if sub:
+        user = db.query(User).filter(User.google_id == sub).first()
+    # 2) Secondary: verified email, only if the account is unclaimed OR belongs to this sub
+    if not user and email and email_verified:
+        existing = db.query(User).filter(User.email == email).first()
+        if existing and (not existing.google_id or existing.google_id == sub):
+            user = existing
+    # 3) Create a new account
+    if not user:
+        if not sub and not email:
+            raise ValueError("Social login response missing both sub and email")
+        db_email = email
+        if not db_email and sub:
+            db_email = "apple-" + hashlib.sha256(sub.encode()).hexdigest()[:16] + "@privaterelay.local"
+        user = User(
+            name=info.get("name") or (db_email.split("@")[0] if db_email else "User"),
+            email=db_email,
+            google_id=sub or None,
+            token_balance=0,
+            email_verified=email_verified,
+        )
+        db.add(user)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise ValueError("This email is linked to another account. Sign in with that method or contact support.")
+        db.refresh(user)
+        return user, True
+    # Existing account: bind identity + verified email if missing
+    if sub and not user.google_id:
+        user.google_id = sub
+    if email_verified and email and not user.email:
+        user.email = email
+    user.email_verified = user.email_verified or email_verified
+    db.commit()
+    return user, False
+
+
 @router.get("/api/auth/auth0/callback")
 async def auth0_callback_redirect(id_token: str = Query(...)):
     """Callback redirect endpoint for social login. Validates Auth0 id_token and redirects to frontend dashboard with JWT."""
@@ -509,35 +571,16 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
     from sqlalchemy.orm import Session
     db = next(get_db())
     try:
-        user = db.query(User).filter(
-            (User.email == info["email"]) | (User.email == "" and 1 == 0)
-        ).first()
-        if not user and info.get("sub"):
-            user = db.query(User).filter(User.google_id == info["sub"]).first()
-        if not user and info["email"]:
-            user = db.query(User).filter(User.email == info["email"]).first()
-        if user:
-            if not user.google_id:
-                user.google_id = info["sub"]
-            user.email_verified = user.email_verified or info["email_verified"]
-            db.commit()
-        else:
-            user = User(
-                name=info["name"],
-                email=info["email"],
-                google_id=info["sub"],
-                token_balance=0,
-                email_verified=info["email_verified"],
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
+        user, _ = _resolve_social_user(db, info)
+    except ValueError as e:
+        db.close()
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
     except Exception as e:
         db.close()
         return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}")
     try:
         from newapi_integration import create_newapi_user
-        await create_newapi_user(email=info["email"], name=info["name"], quota=0)
+        await create_newapi_user(email=user.email, name=user.name, quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 callback: {e}")
     jwt_token = create_access_token({"sub": str(user.id)})
@@ -572,35 +615,16 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
     from sqlalchemy.orm import Session
     db = next(get_db())
     try:
-        user = db.query(User).filter(
-            (User.email == info["email"]) | (User.email == "" and 1 == 0)
-        ).first()
-        if not user and info.get("sub"):
-            user = db.query(User).filter(User.google_id == info["sub"]).first()
-        if not user and info["email"]:
-            user = db.query(User).filter(User.email == info["email"]).first()
-        if user:
-            if not user.google_id:
-                user.google_id = info["sub"]
-            user.email_verified = user.email_verified or info["email_verified"]
-            db.commit()
-        else:
-            user = User(
-                name=info["name"],
-                email=info["email"],
-                google_id=info["sub"],
-                token_balance=0,
-                email_verified=info["email_verified"],
-            )
-            db.add(user)
-            db.commit()
-            db.refresh(user)
+        user, _ = _resolve_social_user(db, info)
+    except ValueError as e:
+        db.close()
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
     except Exception as e:
         db.close()
         return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}")
     try:
         from newapi_integration import create_newapi_user
-        await create_newapi_user(email=info["email"], name=info["name"], quota=0)
+        await create_newapi_user(email=user.email, name=user.name, quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 PKCE: {e}")
     jwt_token = create_access_token({"sub": str(user.id)})
