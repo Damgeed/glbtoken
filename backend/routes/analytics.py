@@ -53,9 +53,14 @@ async def get_dashboard(
         print(f"⚠️ New API usage fetch failed: {e}")
     
     # Calculate active days from registration
+    # NOTE: DB returns naive datetimes (DateTime column w/o timezone=True);
+    # stored values are UTC, so tag tzinfo before subtracting aware now().
     days_active = 0
     if user.created_at:
-        days_active = (datetime.now(timezone.utc) - user.created_at).days or 1
+        created = user.created_at
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        days_active = (datetime.now(timezone.utc) - created).days or 1
     
     # Total consumption from local DB (fallback when New API not connected)
     total_consumption = db.query(func.sum(Transaction.tokens)).filter(
