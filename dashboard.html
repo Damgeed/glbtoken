@@ -204,58 +204,29 @@ function showDashSection(section) {
             <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-gold"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg> API Calls per Model</span>
             <span class="legend-label">7d ▼</span>
           </div>
-          <div class="bar-chart-wrap">
-            <div  class="flex-col-center">
-              <span  class="label-tiny">2.1k</span>
-              <div class="bar-chart-bar bar-gold" style="height:90%"></div>
-              <span  class="label-micro">GPT-4o</span>
-            </div>
-            <div  class="flex-col-center">
-              <span  class="label-tiny">1.8k</span>
-              <div class="bar-chart-bar bar-teal" style="height:78%"></div>
-              <span  class="label-micro">Claude</span>
-            </div>
-            <div  class="flex-col-center">
-              <span  class="label-tiny">1.4k</span>
-              <div class="bar-chart-bar bar-purple" style="height:62%"></div>
-              <span  class="label-micro">DeepSeek</span>
-            </div>
-            <div  class="flex-col-center">
-              <span  class="label-tiny">1.2k</span>
-              <div class="bar-chart-bar bar-blue" style="height:55%"></div>
-              <span  class="label-micro">Gemini</span>
-            </div>
-            <div  class="flex-col-center">
-              <span  class="label-tiny">0.9k</span>
-              <div class="bar-chart-bar bar-orange" style="height:42%"></div>
-              <span  class="label-micro">Llama</span>
-            </div>
-            <div  class="flex-col-center">
-              <span  class="label-tiny">0.6k</span>
-              <div class="bar-chart-bar bar-red" style="height:32%"></div>
-              <span  class="label-micro">Mistral</span>
-            </div>
+          <div class="bar-chart-wrap" id="apiModelBars">
+            <div class="flex-col-center" style="width:100%"><span class="label-tiny" style="color:var(--text-muted)">Loading…</span></div>
           </div>
           <div class="api-stats-grid model-grid">
             <div  class="text-center">
-              <div  class="stat-value">8.3k</div>
+              <div  class="stat-value" id="statTotalCalls">—</div>
               <div  class="text-tiny-muted">Total Calls</div>
-              <div  class="text-tiny-success">↑ 23%</div>
+              <div  class="text-tiny-success" id="statTotalCallsChg">—</div>
             </div>
             <div  class="text-center">
-              <div  class="stat-value">276</div>
+              <div  class="stat-value" id="statAvgDay">—</div>
               <div  class="text-tiny-muted">Avg / Day</div>
-              <div  class="text-tiny-success">↑ 8%</div>
+              <div  class="text-tiny-success" id="statAvgDayChg">—</div>
             </div>
             <div  class="text-center">
-              <div  class="stat-value">99.2%</div>
+              <div  class="stat-value" id="statSuccess">—</div>
               <div  class="text-tiny-muted">Success</div>
-              <div  class="text-tiny-success">↑ 0.4%</div>
+              <div  class="text-tiny-success" id="statSuccessChg">—</div>
             </div>
             <div  class="text-center">
-              <div  class="stat-value">187ms</div>
+              <div  class="stat-value" id="statLatency">—</div>
               <div  class="text-tiny-muted">Latency</div>
-              <div class="model-error">↓ 12ms</div>
+              <div class="model-error" id="statLatencyChg">—</div>
             </div>
           </div>
         </div>
@@ -270,31 +241,12 @@ function showDashSection(section) {
             <div class="donut-wrap">
               <canvas id="spendingDonut" width="150" height="150" class="donut-canvas"></canvas>
             <div class="donut-center">
-                <div class="donut-value">$0.00</div>
+                <div class="donut-value" id="donutCenterVal">$0.00</div>
                 <div  class="text-tiny-muted">spent</div>
               </div>
             </div>
-            <div class="legend-item-flex spending-list">
-              <div  class="provider-row">
-                <div  class="flex-row-sm"><span class="legend-dot legend-dot-gold"></span><span  class="text-sm-secondary">OpenAI</span><span  class="text-xs-muted">42%</span></div>
-                <span  class="text-sm-medium">$30.41</span>
-              </div>
-              <div  class="provider-row">
-                <div  class="flex-row-sm"><span class="legend-dot legend-dot-teal"></span><span  class="text-sm-secondary">Anthropic</span><span  class="text-xs-muted">25%</span></div>
-                <span  class="text-sm-medium">$18.10</span>
-              </div>
-              <div  class="provider-row">
-                <div  class="flex-row-sm"><span class="legend-dot legend-dot-purple"></span><span  class="text-sm-secondary">DeepSeek</span><span  class="text-xs-muted">15%</span></div>
-                <span  class="text-sm-medium">$10.86</span>
-              </div>
-              <div  class="provider-row">
-                <div  class="flex-row-sm"><span class="legend-dot legend-dot-blue"></span><span  class="text-sm-secondary">Google</span><span  class="text-xs-muted">10%</span></div>
-                <span  class="text-sm-medium">$7.24</span>
-              </div>
-              <div class="legend-row">
-                <div  class="flex-row-sm"><span class="legend-dot legend-dot-red"></span><span  class="text-sm-secondary">Other</span><span  class="text-xs-muted">8%</span></div>
-                <span  class="text-sm-medium">$5.79</span>
-              </div>
+            <div class="legend-item-flex spending-list" id="spendingList">
+              <div class="provider-row" style="opacity:0.6"><span class="text-sm-secondary">Loading…</span></div>
             </div>
           </div>
         </div>
@@ -333,49 +285,10 @@ function showDashSection(section) {
             <span class="view-details-link">Live ▸</span>
           </div>
           <div id="dashActivity" class="dash-activity activity-scroll">
-            <div class="activity-item activity-row" >
-              <div  class="color-dot-blue">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-              </div>
-              <div  class="flex-grow">
-                <div  class="text-desc">GPT-4o call — 2,134 tokens</div>
-                <div  class="text-micro-top">Just now</div>
-              </div>
-            </div>
-            <div class="activity-item activity-row" >
-              <div  class="color-dot-blue">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-              </div>
-              <div  class="flex-grow">
-                <div  class="text-desc">Claude 3.5 call — 856 tokens</div>
-                <div  class="text-micro-top">2 min ago</div>
-              </div>
-            </div>
-            <div class="activity-item activity-row" >
-              <div class="activity-icon activity-icon-teal">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-              </div>
-              <div  class="flex-grow">
-                <div  class="text-desc">500 tokens added via Stripe</div>
-                <div  class="text-micro-top">14 min ago</div>
-              </div>
-            </div>
-            <div class="activity-item activity-row" >
-              <div class="activity-icon activity-icon-gold">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>
-              </div>
-              <div  class="flex-grow">
-                <div  class="text-desc">New key: <strong class="activity-model">glb_prod_7f3a…</strong></div>
-                <div  class="text-micro-top">32 min ago</div>
-              </div>
-            </div>
-            <div class="activity-item activity-row">
-              <div class="activity-icon activity-icon-red">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              </div>
-              <div  class="flex-grow">
-                <div  class="text-desc">Usage threshold: 85% — below 500</div>
-                <div  class="text-micro-top">1h ago</div>
+            <div class="activity-item activity-row" style="opacity:0.6">
+              <div class="flex-grow">
+                <div class="text-desc">Loading activity…</div>
+                <div class="text-micro-top"></div>
               </div>
             </div>
           </div>
@@ -396,7 +309,7 @@ function showDashSection(section) {
           <span id="remainingTokens" class="text-muted">0 remaining</span>
         </div>
         <div class="progress-track">
-<div class="progress-fill">
+<div class="progress-fill" id="quotaBar">
         </div>
       </div>
     </div>
@@ -449,7 +362,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1128"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
 <script data-cfasync="false" src="usage-charts.js?v=2"></script>
-<script data-cfasync="false" src="dashboard.js?v=1118"></script>
+<script data-cfasync="false" src="dashboard.js?v=1119"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====
@@ -474,51 +387,6 @@ document.addEventListener('DOMContentLoaded', function(){
       });
     }catch(e){}
   })();
-  // ===== Bold Spending Donut Chart =====
-  var donutCanvas = document.getElementById('spendingDonut');
-  if(donutCanvas && typeof Chart !== 'undefined'){
-    new Chart(donutCanvas, {
-      type: 'doughnut',
-      data: {
-        labels: ['OpenAI', 'Anthropic', 'DeepSeek', 'Google', 'Other'],
-        datasets: [{
-          data: [42, 25, 15, 10, 8],
-          backgroundColor: ['#F4B400', '#00D68F', '#7C4DFF', '#4FC3F7', '#FF6B6B'],
-          borderColor: ['rgba(244,180,0,0.3)', 'rgba(0,214,143,0.3)', 'rgba(124,77,255,0.3)', 'rgba(79,195,247,0.3)', 'rgba(255,107,107,0.3)'],
-          borderWidth: 2,
-          hoverBorderWidth: 3,
-          hoverOffset: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '65%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            position: 'nearest',
-            backgroundColor: 'rgba(10,11,20,0.9)',
-            titleColor: '#F4B400',
-            bodyColor: '#fff',
-            borderColor: 'rgba(244,180,0,0.2)',
-            borderWidth: 1,
-            padding: 10,
-            cornerRadius: 8,
-            callbacks: {
-              label: function(ctx){
-                return ctx.label + ': ' + ctx.parsed + '%';
-              }
-            }
-          }
-        },
-        animation: {
-          animateRotate: true,
-          duration: 1000
-        }
-      }
-    });
-  }
 });
 </script>
 
