@@ -11,7 +11,6 @@ Usage:
 """
 import os, re, json, html as htmlmod, sys, subprocess, socket
 from collections import OrderedDict
-from deep_translator import GoogleTranslator
 
 # Fail fast on unreachable translation hosts — don't hang the cron run
 socket.setdefaulttimeout(8)
