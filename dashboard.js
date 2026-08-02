@@ -148,7 +148,7 @@
           return;
         }
         body.innerHTML=data.keys.map(function(k){
-          return '<tr><td>'+escapeHtml(k.name||'Key '+k.id)+'</td><td>'+escapeHtml(k.key_prefix||'')+'...</td><td>'+(k.request_count||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td><td>'+escapeHtml(k.last_used?fmtDT(k.last_used):'Never')+'</td></tr>';
+          return '<tr><td>'+escapeHtml(k.name||'Key '+k.id)+'</td><td>'+escapeHtml(k.key_prefix||'')+'...</td><td>'+(k.request_count||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td><td class="td-date">'+(k.last_used?fmtDTStack(k.last_used):'<div class="td-date-strong">Never</div>')+'</td></tr>';
         }).join('');
 
     }
@@ -416,12 +416,12 @@ async function loadRecentTx(){
     return;
   }
   body.innerHTML = d.items.map(function(t){
-    var date = t.created_at ? fmtDT(t.created_at) : '';
+    var date = t.created_at ? fmtDTStack(t.created_at) : '<div class="td-date-strong">—</div>';
     var type = escapeHtml(t.type||'');
     var detail = escapeHtml(t.model_used || t.payment_method || '-');
     var amtCls = (t.type==='deposit'||t.type==='topup') ? 'gold' : 'red';
     var amt = ((t.type==='deposit'||t.type==='topup')?'+':'') + String(t.tokens||0);
-    return '<tr><td>'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status||'completed')+'</span></td></tr>';
+    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status||'completed')+'</span></td></tr>';
   }).join('');
 }
 

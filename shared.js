@@ -720,19 +720,27 @@ window.applyAuth = function applyAuth(){
   var mu = document.getElementById('mobileUserSection');
   if(mu){ mu.style.display = loggedIn ? 'block' : 'none'; mu.classList.toggle('d-none', !loggedIn); }
   if(loggedIn){
-    // Display name = email prefix (example@mail.com → Example), first letter
-    // capitalized, @domain dropped. Falls back to stored name, then "User".
+    // Display name priority: saved profile name (when it's a real custom
+    // name) > email prefix (example@mail.com → Example) > "User".
     var displayName = 'User';
     if(userData){
+      var prefixName = '';
       if(userData.email && userData.email.indexOf('@') > 0){
         if(userData.email.endsWith('@privaterelay.appleid.com')){
-          displayName = 'Apple User';
+          prefixName = 'Apple User';
         } else {
           var prefix = userData.email.split('@')[0];
-          displayName = prefix ? prefix.charAt(0).toUpperCase() + prefix.slice(1) : 'User';
+          prefixName = prefix ? prefix.charAt(0).toUpperCase() + prefix.slice(1) : '';
         }
-      } else if(userData.name){
-        displayName = userData.name;
+      }
+      var storedName = (userData.name || '').trim();
+      var rawPrefix = userData.email ? userData.email.split('@')[0].toLowerCase() : '';
+      if(storedName && storedName.toLowerCase() !== rawPrefix){
+        displayName = storedName;
+      } else if(prefixName){
+        displayName = prefixName;
+      } else if(storedName){
+        displayName = storedName;
       }
     }
     var initial = (displayName || 'U')[0].toUpperCase();
@@ -767,6 +775,18 @@ window.fmtDT = function fmtDT(iso){
   if(isNaN(d.getTime())) return '';
   function p(n){ return (n<10?'0':'')+n; }
   return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+};
+
+// ── Two-line timestamp cell (bold date on top, time below) — matches the
+//    Login Attempts / billing invoices tables (td-date-strong + td-time)
+window.fmtDTStack = function fmtDTStack(iso){
+  if(!iso) return '<div class="td-date-strong">—</div>';
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '<div class="td-date-strong">—</div>';
+  function p(n){ return (n<10?'0':'')+n; }
+  var date = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+  var time = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  return '<div class="td-date-strong">'+date+'</div><div class="td-time">'+time+'</div>';
 };
 
 // ── Balance UI sync (shared so it works on all pages, not just usage) ──

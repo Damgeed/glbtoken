@@ -168,7 +168,7 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
-<script data-cfasync="false" src="shared.js?v=1129"></script>
+<script data-cfasync="false" src="shared.js?v=1130"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
 <script data-cfasync="false" src="login-history.js?v=1118"></script>
 
@@ -268,8 +268,8 @@ window.markAllRead = function(){
 
 /* ── DOMContentLoaded: Load user profile data ── */
 document.addEventListener('DOMContentLoaded', function(){
-  // Populate user info if available
-  var storedUser = localStorage.getItem('gt_user');
+  // Populate user info if available (use __secure so encrypted gt_user is decrypted)
+  var storedUser = (window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user'));
   if(storedUser){
     try {
       var parsed = JSON.parse(storedUser);

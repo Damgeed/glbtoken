@@ -1198,3 +1198,16 @@
   padding: 1.5rem;
   font-size: 0.8rem;
 }
+
+/* Timestamp cell — matched to Login Attempts / billing tables */
+.td-date {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.td-date-strong {
+  font-weight: 600;
+}
+.td-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
