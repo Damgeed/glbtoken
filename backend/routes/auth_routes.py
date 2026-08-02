@@ -212,23 +212,13 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
         if not id_token:
             _400("No id_token from Google")
     google_user = await verify_google_token(id_token)
-    user = db.query(User).filter(
-        (User.google_id == google_user["id"]) | (User.email == google_user["email"])
-    ).first()
-    if not user:
-        user = User(
-            name=google_user["name"],
-            email=google_user["email"],
-            google_id=google_user["id"],
-            token_balance=0,
-            email_verified=True,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    elif not user.google_id:
-        user.google_id = google_user["id"]
-        db.commit()
+    info = {
+        "sub": google_user.get("id") or "",
+        "email": google_user.get("email") or "",
+        "name": google_user.get("name") or "",
+        "email_verified": True,
+    }
+    user, _ = _resolve_social_user(db, info)
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
     auth = _auth_response(user, db)
@@ -256,23 +246,13 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
     except Exception as e:
         print(f"❌ GitHub login error: {e}")
         _400(str(e))
-    user = db.query(User).filter(
-        (User.github_id == github_user["id"]) | (User.email == github_user["email"])
-    ).first()
-    if not user:
-        user = User(
-            name=github_user["name"],
-            email=github_user["email"],
-            github_id=github_user["id"],
-            token_balance=0,
-            email_verified=True,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    elif not user.github_id:
-        user.github_id = github_user["id"]
-        db.commit()
+    info = {
+        "sub": github_user.get("id") or "",
+        "email": github_user.get("email") or "",
+        "name": github_user.get("name") or "",
+        "email_verified": True,
+    }
+    user, _ = _resolve_social_user(db, info, id_field="github_id")
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
     auth = _auth_response(user, db)
@@ -494,7 +474,7 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
     }
 
 
-def _resolve_social_user(db, info):
+def _resolve_social_user(db, info, id_field="google_id"):
     """Secure social-login identity resolution.
 
     Provider `sub` is the AUTHORITATIVE key (unique per user per provider).
@@ -507,21 +487,29 @@ def _resolve_social_user(db, info):
     matches; users without an email get a deterministic synthetic address so
     the unique-email constraint holds and a later real email can replace it.
 
+    id_field: "google_id" (default, used by Auth0 social + Google) or
+    "github_id" (direct GitHub OAuth).
+
     Raises ValueError if the user cannot be safely identified/created.
     Returns (user, created).
     """
     sub = (info.get("sub") or "").strip()
     email = (info.get("email") or "").strip().lower()
     email_verified = bool(info.get("email_verified"))
+    id_attr = User.github_id if id_field == "github_id" else User.google_id
 
     user = None
     # 1) Authoritative: provider identity (sub)
     if sub:
-        user = db.query(User).filter(User.google_id == sub).first()
+        user = db.query(User).filter(id_attr == sub).first()
     # 2) Secondary: verified email, only if the account is unclaimed OR belongs to this sub
     if not user and email and email_verified:
         existing = db.query(User).filter(User.email == email).first()
-        if existing and (not existing.google_id or existing.google_id == sub):
+        if existing and (
+            (not existing.google_id and not existing.github_id) or
+            (id_field == "github_id" and existing.github_id == sub) or
+            (id_field != "github_id" and existing.google_id == sub)
+        ):
             user = existing
     # 3) Create a new account
     if not user:
@@ -533,7 +521,8 @@ def _resolve_social_user(db, info):
         user = User(
             name=info.get("name") or (db_email.split("@")[0] if db_email else "User"),
             email=db_email,
-            google_id=sub or None,
+            google_id=(sub or None) if id_field != "github_id" else None,
+            github_id=(sub or None) if id_field == "github_id" else None,
             token_balance=0,
             email_verified=email_verified,
         )
@@ -546,8 +535,12 @@ def _resolve_social_user(db, info):
         db.refresh(user)
         return user, True
     # Existing account: bind identity + verified email if missing
-    if sub and not user.google_id:
-        user.google_id = sub
+    if sub:
+        if id_field == "github_id":
+            if not user.github_id:
+                user.github_id = sub
+        elif not user.google_id:
+            user.google_id = sub
     if email_verified and email and not user.email:
         user.email = email
     user.email_verified = user.email_verified or email_verified
