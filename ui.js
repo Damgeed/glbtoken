@@ -453,11 +453,11 @@ document.addEventListener('click', function(e) {
 
 // ── Auto-init auth UI on every page load (deferred so nav.js has injected HTML) ──
 document.addEventListener('DOMContentLoaded', function(){
-  var t = window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token');
-  if(t){
+  // Access token is memory-only (shared.js restores it via silent refresh).
+  // Here we restore only the USER PROFILE for nav/UI; `token` is owned by shared.js.
+  var rt = window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token');
+  if(rt){
     try{var ud = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');}catch(e){ud={};}
-    // Re-initialize module-level vars
-    token = t;
     userData = ud;
     if(typeof applyAuth === 'function') applyAuth();
   }
@@ -958,6 +958,7 @@ function showSessionExpired(){
     document.body.style.overflow = '';
     _sessionExpiredShown=false;
     token='';userData={};
+    sessionStorage.removeItem('gt_token');
     (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
     (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
     localStorage.removeItem('gt_refresh_token');localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
@@ -974,6 +975,7 @@ function showSessionExpired(){
     e.preventDefault();
     window.removeEventListener('popstate',_onPopState);
     token='';userData={};
+    sessionStorage.removeItem('gt_token');
     (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
     (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
     localStorage.removeItem('gt_refresh_token');

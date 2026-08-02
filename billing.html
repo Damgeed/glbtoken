@@ -212,8 +212,8 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
-<script data-cfasync="false" src="shared.js?v=1125"></script>
-<script data-cfasync="false" src="ui.js?v=1220"></script>
+<script data-cfasync="false" src="shared.js?v=1126"></script>
+<script data-cfasync="false" src="ui.js?v=1221"></script>
 
 <!-- ── Billing Script ── -->
 <script>
@@ -233,7 +233,7 @@
 
       fetch(API_URL + '/api/billing/invoices',{
         method:'GET',
-        headers:{'Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||''),'Accept':'application/json'}
+        headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/json'}
       })
       .then(function(r){ return r.json(); })
       .then(function(data){

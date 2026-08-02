@@ -168,8 +168,8 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
-<script data-cfasync="false" src="shared.js?v=1125"></script>
-<script data-cfasync="false" src="ui.js?v=1220"></script>
+<script data-cfasync="false" src="shared.js?v=1126"></script>
+<script data-cfasync="false" src="ui.js?v=1221"></script>
 <script data-cfasync="false" src="login-history.js?v=1118"></script>
 
 <!-- ── Settings Scripts ── -->
@@ -181,7 +181,7 @@ window.saveProfile = function(){
   if(!name){ showToast('Please enter your name','error'); return; }
   fetch(API_URL + '/api/user/profile', {
     method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({name: name, timezone: tz})
   })
   .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, d: d}; }); })
@@ -215,7 +215,7 @@ window.updatePassword = function(){
   if(neu.length < 6){ showToast('New password must be at least 6 characters','error'); return; }
   fetch(API_URL + '/api/user/password', {
     method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({current_password: cur, new_password: neu})
   })
   .then(function(r){ return r.json(); })
@@ -242,7 +242,7 @@ window.saveNotificationSettings = function(){
   };
   fetch(API_URL + '/api/user/notifications', {
     method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+((window.__secure||{getItem:function(k){return localStorage.getItem(k)}}).getItem('gt_token')||'')},
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify(settings)
   })
   .then(function(r){ return r.json(); })

@@ -161,7 +161,8 @@ function insertPromptSuggestion(text) {
     if (urlToken) {
       var parts = String(urlToken).split('.');
       if(parts.length === 3){
-        window.__secure.setItem('gt_token', urlToken);
+        token = urlToken; // in-memory + per-tab cache (never localStorage)
+        try{ sessionStorage.setItem('gt_token', urlToken); }catch(e){}
         var urlUser = params.get('user');
         if (urlUser) {
           try { window.__secure.setItem('gt_user', decodeURIComponent(urlUser)); } catch(e) {}

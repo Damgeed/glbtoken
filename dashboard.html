@@ -38,8 +38,9 @@
       setItem:function(k,v){localStorage.setItem(k,v)},
       removeItem:function(k){localStorage.removeItem(k)}
     };
-    var token = secure.getItem('gt_token');
-    if (!token) {
+    // Access token is memory-only; a stored refresh token = logged-in session
+    var rt = secure.getItem('gt_refresh_token');
+    if (!rt) {
       window.location.replace('login.html');
     }
   }
@@ -445,8 +446,8 @@ function showDashSection(section) {
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
-<script data-cfasync="false" src="shared.js?v=1125"></script>
-<script data-cfasync="false" src="ui.js?v=1220"></script>
+<script data-cfasync="false" src="shared.js?v=1126"></script>
+<script data-cfasync="false" src="ui.js?v=1221"></script>
 <script data-cfasync="false" src="usage-charts.js?v=2"></script>
 <script data-cfasync="false" src="dashboard.js?v=1118"></script>
 <script>

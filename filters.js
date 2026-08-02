@@ -297,7 +297,8 @@
       }
       const data = await safeApi('POST','/api/auth/auth0/login', {token: idToken},null,true);
       if(!data) { window.location.href = '/login.html?error=' + encodeURIComponent('Auth login failed'); return; }
-      window.__secure.setItem('gt_token', data.token);
+      token = data.token; // in-memory + per-tab cache (redirect to dashboard follows)
+      try{ sessionStorage.setItem('gt_token', data.token); }catch(e){}
       if(data.refresh_token) (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token', data.refresh_token);
       window.__secure.setItem('gt_user', JSON.stringify(data.user));
       // Don't call applyAuth() — callback page has no nav DOM elements

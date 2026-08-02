@@ -4,6 +4,9 @@
 // Uses XOR cipher with a key derived from a random salt + app pepper.
 // Protects against: casual DevTools inspection, simple localStorage exfiltration.
 // Key limitation: an attacker with XSS/runtime access can still read values.
+// Access-token policy (2026-08): the JWT access token is NEVER written to
+// localStorage. It lives in per-tab sessionStorage (cleared on tab close,
+// unreadable cross-tab) + memory; sessions restore via the refresh token.
 
 (function(){
   const STORAGE_PREFIX = '__e:';
@@ -133,8 +136,8 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     }
     // All checks passed — persist
     var secure = window.__secure || {getItem:function(k){return localStorage.getItem(k)}, setItem:function(k,v){localStorage.setItem(k,v)}, removeItem:function(k){localStorage.removeItem(k)}};
-    secure.setItem('gt_token', urlToken);
-    token = urlToken; // keep in-memory token in sync immediately
+    token = urlToken; // in-memory + per-tab cache (never localStorage)
+    try{ sessionStorage.setItem('gt_token', urlToken); }catch(e){}
     if(urlUser){
       try{ secure.setItem('gt_user', decodeURIComponent(urlUser)); }catch(e){}
     }
@@ -148,7 +151,19 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     return true;
   }catch(e){ return false; }
 };
-    let token = (window.__secure ? window.__secure.getItem('gt_token') : localStorage.getItem('gt_token')) || '';
+    let token = sessionStorage.getItem('gt_token') || '';  // Access token: per-tab sessionStorage cache (never localStorage)
+    // Drop expired cached access tokens so the silent restore mints a fresh one
+    if(token){
+      try{
+        var _p = token.split('.')[1];
+        var _b64 = _p.replace(/-/g,'+').replace(/_/g,'/');
+        while(_b64.length % 4) _b64 += '=';
+        var _payload = JSON.parse(decodeURIComponent(escape(atob(_b64))));
+        if(_payload.exp && _payload.exp * 1000 < Date.now()){
+          token = ''; sessionStorage.removeItem('gt_token');
+        }
+      }catch(e){ token = ''; sessionStorage.removeItem('gt_token'); }
+    }
     let userData = {};
     try{ userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ userData = {}; }
     let keys = [];
@@ -417,15 +432,25 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
         });
         if(!refreshResp.ok) throw new Error('Refresh failed');
         const refreshData = await refreshResp.json();
-        // Store new tokens
+        // Store new tokens — access token caches per-tab (sessionStorage), never localStorage
         token = refreshData.token;
+        try{ sessionStorage.setItem('gt_token', refreshData.token); }catch(e){}
         userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}');
-        (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_token', refreshData.token);
         (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token', refreshData.refresh_token);
         return refreshData;
       })().finally(function(){ refreshPromise = null; });
       return refreshPromise;
     }
+
+    // ── Silent session restore ──
+    // Access token lives in per-tab sessionStorage (never localStorage). On page
+    // load, if there's no cached access token but a refresh token exists, mint a
+    // fresh one. Failure is silent — api() still handles 401 → refresh → retry.
+    (function(){
+      var cached = sessionStorage.getItem('gt_token');
+      var rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+      if(!cached && rt){ refreshSession().catch(function(){}); }
+    })();
 
     async function api(method, path, body, timeoutMs){
       const controller=new AbortController();
@@ -441,7 +466,9 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
           if(resp.status === 401){
             const hasToken = !!token;
             const rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
-            if(hasToken && rt){
+            // hasSession: access token in memory (restored) OR refresh token present
+            const hasSession = hasToken || !!rt;
+            if(hasSession && rt){
               // Silently attempt token refresh before declaring session expired
               try {
                 await refreshSession();
@@ -459,7 +486,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
               }
             }
             // Anonymous visitor hitting a protected endpoint — not a session problem
-            if(!hasToken){
+            if(!hasSession){
               const e3 = new Error('Not authenticated');
               e3._surfaced = true;
               throw e3;
@@ -473,6 +500,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
             } else {
               (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
               (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
+              sessionStorage.removeItem('gt_token');
               localStorage.removeItem('gt_refresh_token');
               localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
               window.location.href = 'login.html';
@@ -513,14 +541,15 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
 
     // ── Auth Guard ──
     function requireAuth(){
-      if(!localStorage.getItem('gt_token')){
+      var hasSession = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+      if(!hasSession){
         window.location.replace('login.html');
         return false;
       }
       return true;
     }
     window.addEventListener('pageshow',function(e){
-      if(e.persisted && !localStorage.getItem('gt_token')){
+      if(e.persisted && !(window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'))){
         window.location.replace('login.html');
       }
     });
@@ -627,6 +656,7 @@ function logoutUser(){
       if(rt){fetch(API_URL+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})}).catch(function(){});}
     }catch(e){}
     token='';userData={};
+    sessionStorage.removeItem('gt_token');
     window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
     localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
     localStorage.removeItem('gt_keys');localStorage.removeItem('gt_refresh_token');
