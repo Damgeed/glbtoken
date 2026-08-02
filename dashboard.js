@@ -241,6 +241,35 @@ async function loadDashboardStats(){
     if(qb){ qb.style.width = (totalEver>0 ? Math.min(totalConsumed/totalEver*100, 100) : 0) + '%'; }
     var us = document.getElementById('usageSubtitle');
     if(us) us.textContent = totalConsumed.toLocaleString() + ' of ' + totalEver.toLocaleString() + ' tokens used';
+    // ── Balance trend badge + sparkline (real, from daily_usage) ──
+    var du = d.daily_usage || {};
+    var vals = (du.values || []).map(Number);
+    var badge = document.getElementById('dashTrendBadge');
+    if(badge){
+      var n = vals.length;
+      var recent = vals.slice(Math.max(0, n-3)).reduce(function(a,b){return a+b;},0);
+      var prev = vals.slice(0, Math.max(1, n-3)).reduce(function(a,b){return a+b;},0);
+      if(prev > 0 && n > 1){
+        var pct = (recent - prev) / prev * 100;
+        var up = pct >= 0;
+        badge.style.display = '';
+        badge.innerHTML = '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="' + (up ? '18 15 12 9 6 15' : '6 9 12 15 18 9') + '"/></svg> ' + (up ? '+' : '') + pct.toFixed(1) + '%';
+        badge.style.color = up ? '#00D68F' : '#FF6B6B';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+    var spark = document.getElementById('sparkline');
+    if(spark && typeof Chart !== 'undefined'){
+      try{
+        if(window._sparkInst) window._sparkInst.destroy();
+        window._sparkInst = new Chart(spark, {
+          type:'line',
+          data:{ labels: vals.map(function(_,i){return i;}), datasets:[{ data: vals, borderColor:'#00D68F', backgroundColor:'rgba(0,214,143,0.15)', fill:true, tension:0.4, pointRadius:0, borderWidth:1.5 }]},
+          options:{ responsive:true, maintainAspectRatio:false, animation:false, plugins:{ legend:{display:false}, tooltip:{enabled:false} }, scales:{ x:{display:false}, y:{display:false} } }
+        });
+      }catch(e){}
+    }
     return d;
   }catch(e){ return null; }
 }
@@ -404,7 +433,7 @@ async function loadRecentTx(){
     loadActivityFeed();
     loadRecentTx();
     renderApiCallsChart(7);
-    renderSpendingDonut(7);
+    renderSpendingDonut(30);
     if(typeof loadAvailableModels === 'function') loadAvailableModels();
   }
   if(document.readyState === 'loading'){
@@ -419,7 +448,7 @@ async function loadRecentTx(){
       loadActivityFeed();
       loadRecentTx();
       renderApiCallsChart(7);
-      renderSpendingDonut(7);
+      renderSpendingDonut(30);
     }, 30000);
   }
 })();

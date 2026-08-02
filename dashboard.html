@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1171" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1029" />
+<link rel="stylesheet" href="dashboard.css?v=1030" />
   </head>
 <body>
 <script>
@@ -181,7 +181,7 @@ function showDashSection(section) {
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> +12.4%</span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline" id="dashTrendBadge" style="display:none"></span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
           <div class="actions dash-actions-mt"><button class="btn-primary dash-action-btn" onclick="showPage('topup')">Buy Tokens</button></div>
@@ -293,8 +293,8 @@ function showDashSection(section) {
             </div>
           </div>
           <div class="activity-footer">
-            <span id="activityCount">5 events</span>
-            <span class="activity-view-all">View all →</span>
+            <span id="activityCount">0 events</span>
+            <a href="usage.html" class="activity-view-all">View all →</a>
           </div>
         </div>
       </div>
@@ -329,10 +329,12 @@ function showDashSection(section) {
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-blue"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Recent Transactions <span  class="text-sm-muted">Last 5</span></span>
           <a href="usage.html" class="view-models-link">View all →</a>
         </div>
-        <table class="tx-table tx-table-full">
-          <thead><tr><th  class="table-header">Date</th><th  class="table-header">Type</th><th  class="table-header">Detail</th><th class="tx-th tx-th-right">Amount</th><th class="tx-th tx-th-center">Status</th></tr></thead>
-          <tbody id="dashTxBody"><tr><td colspan="5" class="td-empty">No transactions yet</td></tr></tbody>
-        </table>
+        <div class="scroll-x">
+          <table class="tx-table tx-table-full">
+            <thead><tr><th  class="table-header">Date</th><th  class="table-header">Type</th><th  class="table-header">Detail</th><th class="tx-th tx-th-right">Amount</th><th class="tx-th tx-th-center">Status</th></tr></thead>
+            <tbody id="dashTxBody"><tr><td colspan="5" class="td-empty">No transactions yet</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
     </div>
@@ -362,7 +364,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1128"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
 <script data-cfasync="false" src="usage-charts.js?v=2"></script>
-<script data-cfasync="false" src="dashboard.js?v=1119"></script>
+<script data-cfasync="false" src="dashboard.js?v=1120"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====
