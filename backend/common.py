@@ -46,6 +46,10 @@ FALLBACK_API_URL = os.getenv("FALLBACK_API_URL", "")
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY", "")
 
+# Referral program — GT granted to a referrer when a referred user makes their
+# first real (paid) consumption. 0 disables rewards.
+REFERRAL_REWARD_GT = float(os.getenv("REFERRAL_REWARD_GT", "2.0"))
+
 # Payments: Stripe
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")

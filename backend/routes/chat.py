@@ -9,6 +9,7 @@ from database import get_db, User, AIModel, Conversation, Transaction
 from auth import get_current_user
 from newapi_integration import get_user_models
 from common import _400, _402, _404, _502, limiter, NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL
+from routes.referrals import grant_referral_reward
 from schemas import ProxyChatRequest, PlaygroundChatRequest, SaveConversationRequest
 
 router = APIRouter()
@@ -81,6 +82,8 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
     )
     db.add(tx)
     db.commit()
+    # Referral: reward the referrer on the referred user's FIRST paid call
+    grant_referral_reward(db, user)
     result["tokens_used"] = actual_tokens_cost
     result["balance_remaining"] = user.token_balance
     return result
@@ -192,6 +195,8 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     )
     db.add(tx)
     db.commit()
+    # Referral: reward the referrer on the referred user's FIRST paid call
+    grant_referral_reward(db, user)
     result["tokens_used"] = actual_tokens_cost
     result["balance_remaining"] = user.token_balance
     return result

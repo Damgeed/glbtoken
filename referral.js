@@ -32,6 +32,8 @@ async function loadReferralStats() {
       var monthCount=(d.history||[]).reduce(function(s,h){return s+(h.referrals||0);},0);
       monthEl.textContent=monthCount>0?('↑ '+monthCount+' this month'):'No referrals yet';
     }
+    const hintEl=document.getElementById('refShareHint');
+    if(hintEl) hintEl.textContent=hasCode?'Share this code':'Generate to start earning';
     if(countEl) countEl.textContent=d.total_referrals||0;
     if(earnEl) earnEl.textContent=(d.total_earned||0).toFixed(2);
     if(totalRefsEl) totalRefsEl.textContent=d.total_referrals||0;

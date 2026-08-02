@@ -23,6 +23,7 @@ from common import (
     _400, _401, _402, _403, _404, _429, _502, limiter,
     NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL,
 )
+from routes.referrals import grant_referral_reward
 from database import get_db, User, ApiKey, Transaction, AIModel
 
 router = APIRouter()
@@ -165,6 +166,8 @@ def _bill(db: Session, user: User, api_key: ApiKey, model: str,
     )
     db.add(tx)
     db.commit()
+    # Referral: reward the referrer on the referred user's FIRST paid call
+    grant_referral_reward(db, user)
     result["tokens_used"] = cost
     result["balance_remaining"] = user.token_balance
     return result
