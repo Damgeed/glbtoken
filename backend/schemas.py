@@ -253,6 +253,10 @@ class CreateOrgRequest(BaseModel):
     name: str
 
 
+class UpdateOrgRequest(BaseModel):
+    name: str
+
+
 class InviteMemberRequest(BaseModel):
     email: str
     role: str = "member"  # admin | member | viewer (owner reserved for creator)

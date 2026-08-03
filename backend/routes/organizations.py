@@ -9,7 +9,7 @@ import secrets
 from database import get_db, User, Organization, OrgMember, Transaction
 from auth import get_current_user
 from common import _400, _403, _404, _500, limiter
-from schemas import CreateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest
+from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest
 
 router = APIRouter()
 
@@ -104,6 +104,59 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
         "members": member_list,
         "my_role": membership.role,
     }
+
+
+@router.put("/api/orgs/{org_id}")
+@limiter.limit("10/minute")
+def update_org(org_id: int, req: UpdateOrgRequest, request: Request,
+               user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Rename an organization (owner or admin only)."""
+    if not req.name or not req.name.strip():
+        _400("Organization name is required")
+
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        _404("Organization not found")
+
+    membership = db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id == user.id
+    ).first()
+    if not membership:
+        _403("You are not a member of this organization")
+    if membership.role not in ("owner", "admin"):
+        _403("Only the owner or an admin can edit the organization")
+
+    org.name = req.name.strip()
+    db.commit()
+
+    return {
+        "status": "updated",
+        "id": org.id,
+        "name": org.name,
+    }
+
+
+@router.delete("/api/orgs/{org_id}")
+@limiter.limit("5/minute")
+def delete_org(org_id: int, request: Request,
+               user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Delete an organization permanently (owner only). Cascades to all memberships."""
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        _404("Organization not found")
+
+    membership = db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id == user.id
+    ).first()
+    if not membership:
+        _403("You are not a member of this organization")
+    if membership.role != "owner":
+        _403("Only the owner can delete the organization")
+
+    db.delete(org)  # cascade="all, delete-orphan" removes OrgMember rows
+    db.commit()
+
+    return {"status": "deleted", "org_id": org_id}
 
 
 @router.post("/api/orgs/{org_id}/invite")

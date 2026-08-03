@@ -146,6 +146,7 @@
             </svg>
             Member
           </span>
+          <div id="orgActions" class="flex-row-gap" style="margin-left:0.5rem"></div>
         </div>
 
       </div>
@@ -282,6 +283,8 @@ function resetTeamView(){
   document.getElementById('orgAvatar').textContent = '—';
   document.getElementById('orgMemberCount').textContent = '0 members';
   document.getElementById('orgRoleBadge').textContent = '—';
+  var actionsEl = document.getElementById('orgActions');
+  if(actionsEl) actionsEl.innerHTML = '';
   document.getElementById('orgTotalSpend').textContent = '$0.00';
   document.getElementById('orgTotalCalls').textContent = '0';
   document.getElementById('orgActiveMembers').textContent = '0';
@@ -312,6 +315,19 @@ async function loadOrgDetails(orgId){
   document.getElementById('orgMemberCount').textContent = (d.members ? d.members.length : 0)+' members';
   var roleEl = document.getElementById('orgRoleBadge');
   roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+(d.my_role ? d.my_role.charAt(0).toUpperCase()+d.my_role.slice(1) : 'Member');
+  // Org actions (edit/delete by role)
+  var actionsEl = document.getElementById('orgActions');
+  if(actionsEl){
+    var role = d.my_role || 'member';
+    var btns = '';
+    if(role === 'owner' || role === 'admin'){
+      btns += '<button class="btn-secondary" onclick="editOrg('+orgId+')" title="Rename organization">✏️ Edit</button>';
+    }
+    if(role === 'owner'){
+      btns += '<button class="btn-secondary badge-red" onclick="deleteOrg('+orgId+')" title="Delete organization">🗑️ Delete</button>';
+    }
+    actionsEl.innerHTML = btns;
+  }
   // Members table
   var tbody = document.getElementById('teamMembersBody');
   if(!tbody) return;
@@ -395,6 +411,34 @@ async function showCreateOrgModal(){
     if(d && d.id){ showToast('Organization created','success'); await loadTeamOrgs(); }
     else if(d && d.detail){ showToast(d.detail,'error'); }
   });
+}
+
+// Rename org (owner/admin)
+async function editOrg(orgId){
+  showPrompt('Rename Organization','Enter new organization name', async function(name){
+    if(!name || !name.trim()) return;
+    var d = await safeApi('PUT','/api/orgs/'+orgId,{name:name.trim()});
+    if(d && d.status==='updated'){
+      showToast('Organization renamed','success');
+      await loadTeamOrgs();
+      if(currentOrgId === String(orgId)){ await loadOrgDetails(orgId); }
+    }
+    else if(d && d.detail){ showToast(d.detail,'error'); }
+  });
+}
+
+// Delete org (owner only)
+async function deleteOrg(orgId){
+  showConfirm('Delete Organization','This will permanently delete the organization and all its members. This cannot be undone.', async function(){
+    var d = await safeApi('DELETE','/api/orgs/'+orgId);
+    if(d && d.status==='deleted'){
+      showToast('Organization deleted','success');
+      currentOrgId = '';
+      await loadTeamOrgs();
+      resetTeamView();
+    }
+    else if(d && d.detail){ showToast(d.detail,'error'); }
+  }, 'Delete');
 }
 
 // Leave org
