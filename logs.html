@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1180" />
+  <link rel="stylesheet" href="style.css?v=1181" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="logs.css?v=1022" />
+<link rel="stylesheet" href="logs.css?v=1023" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -214,11 +214,6 @@
 
 async function loadCostBreakdown(days){
   try{
-    var container=document.getElementById('costBreakdownSection');
-    if(container){
-      var s=container.querySelector('.loading-indicator');
-      if(s)s.style.display='flex';
-    }
     var el=document.getElementById('costByModelChart');
     if(!el)return;
     var data=await safeApi('GET','/api/analytics/cost-by-model?days='+(days||7));
@@ -249,17 +244,14 @@ async function loadCostBreakdown(days){
         }
       }
     });
-    var totalCostEl=document.getElementById('costBreakdownTotal');
+    var totalCostEl=document.getElementById('cbTotalCost');
     if(totalCostEl)totalCostEl.textContent='$'+(data.total_cost||0).toFixed(2);
-    var modelCountEl=document.getElementById('costBreakdownModels');
-    if(modelCountEl)modelCountEl.textContent=data.models.length+' models';
+    var maxModel='—',maxCost=-1;
+    data.models.forEach(function(m){var c=m.cost||0;if(c>maxCost){maxCost=c;maxModel=m.model||'Unknown';}});
+    var mostEl=document.getElementById('cbMostExpensive');
+    if(mostEl)mostEl.textContent=maxModel;
   }catch(e){
     showToast('Failed to load cost breakdown','error');
-  }finally{
-    if(container){
-      var s2=container.querySelector('.loading-indicator');
-      if(s2)s2.style.display='none';
-    }
   }
 }
 
@@ -292,9 +284,9 @@ async function loadErrorRate(days){
         }
       }
     });
-    var errRateEl=document.getElementById('errorRatePct');
+    var errRateEl=document.getElementById('erErrorRate');
     if(errRateEl)errRateEl.textContent=((data.error_rate||0)*100).toFixed(1)+'%';
-    var totalErrEl=document.getElementById('errorTotal');
+    var totalErrEl=document.getElementById('erTotalErrors');
     if(totalErrEl)totalErrEl.textContent=(data.total_errors||0).toLocaleString();
   }catch(e){
     showToast('Failed to load error rates','error');
@@ -305,17 +297,18 @@ async function loadResponseTimes(days){
   try{
     var body=document.getElementById('responseTimeBody');
     if(!body)return;
+    clearTableCollapse('responseTimeCollapse','responseTimeMoreBtn');
     body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
     var data=await safeApi('GET','/api/analytics/response-times?days='+(days||7));
     if(!data||!data.items||!data.items.length){
       body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No response time data available.</td></tr>';
       return;
     }
-    body.innerHTML=data.items.map(function(item){
+    renderTableWithCollapse('responseTimeBody', data.items.map(function(item){
       var ms=item.response_time_ms||0;
       var cls=ms<500?'speed-fast':ms<2000?'speed-medium':'speed-slow';
       return '<tr><td>'+escapeHtml(item.model||'-')+'</td><td>'+escapeHtml(item.provider||'-')+'</td><td class="'+cls+'">'+ms.toFixed(0)+' ms</td><td>'+escapeHtml(item.date||'')+'</td></tr>';
-    }).join('');
+    }), 'responseTimeCollapse', 'responseTimeMoreBtn');
   }catch(e){
     var b2=document.getElementById('responseTimeBody');
     if(b2)b2.innerHTML='<tr><td colspan="4" class="empty-state-sm">Failed to load response times.</td></tr>';
@@ -326,6 +319,7 @@ async function loadSpeedComparison(){
   try{
     var body=document.getElementById('speedComparisonBody');
     if(!body)return;
+    clearTableCollapse('speedComparisonCollapse','speedComparisonMoreBtn');
     body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
     var result=await safeApi('GET','/api/available-models',null,8000);
     var models=(result&&result.models)||[];
@@ -334,18 +328,68 @@ async function loadSpeedComparison(){
       return;
     }
     var sorted=models.filter(function(m){return m.prompt_price>0;}).sort(function(a,b){return (a.prompt_price||0)-(b.prompt_price||0);}).slice(0,20);
-    body.innerHTML=sorted.map(function(m){
+    renderTableWithCollapse('speedComparisonBody', sorted.map(function(m){
       var name=m.name||m.model||m.model_id||'Unknown';
       var provider=m.provider||'-';
       var price=m.prompt_price||0;
       var speedCls=price<0.0000005?'speed-fast':price<0.000002?'speed-medium':'speed-slow';
       var speedLabel=price<0.0000005?'Fast':price<0.000002?'Medium':'Slower';
       return '<tr><td>'+escapeHtml(name)+'</td><td>'+escapeHtml(provider)+'</td><td class="'+speedCls+'">'+speedLabel+'</td><td>$'+(price*1000).toFixed(4)+'/1K</td></tr>';
-    }).join('');
+    }), 'speedComparisonCollapse', 'speedComparisonMoreBtn');
   }catch(e){
     var b2=document.getElementById('speedComparisonBody');
     if(b2)b2.innerHTML='<tr><td colspan="4" class="empty-state-sm">Failed to load speed comparison.</td></tr>';
   }
+}
+
+/* ── Mobile show-more collapse for logs tables (show 3 on mobile, all on desktop) ── */
+function renderTableWithCollapse(bodyId, rows, collapseId, btnId){
+  var body=document.getElementById(bodyId);
+  if(!body)return;
+  var first=rows.slice(0,3).join('');
+  var rest=rows.slice(3);
+  body.innerHTML=first;
+  var oldC=document.getElementById(collapseId);
+  if(oldC)oldC.remove();
+  var oldB=document.getElementById(btnId);
+  if(oldB)oldB.remove();
+  if(!rest.length)return;
+  var table=body.closest('table');
+  var tb=document.createElement('tbody');
+  tb.id=collapseId;
+  tb.className='tx-collapse';
+  tb.setAttribute('data-count',rest.length);
+  tb.innerHTML=rest.join('');
+  table.appendChild(tb);
+  var btn=document.createElement('button');
+  btn.id=btnId;
+  btn.type='button';
+  btn.className='list-more-btn';
+  btn.innerHTML='Show More ('+rest.length+') ▼';
+  btn.onclick=function(){toggleTableMore(collapseId,btnId);};
+  var wrap=table.parentNode;
+  wrap.parentNode.insertBefore(btn,wrap.nextSibling);
+  refreshTableMoreBtn(collapseId,btnId);
+}
+function clearTableCollapse(collapseId,btnId){
+  var c=document.getElementById(collapseId);if(c)c.remove();
+  var b=document.getElementById(btnId);if(b)b.remove();
+}
+function toggleTableMore(collapseId,btnId){
+  var collapse=document.getElementById(collapseId);
+  if(!collapse)return;
+  collapse.classList.toggle('open');
+  refreshTableMoreBtn(collapseId,btnId);
+}
+function refreshTableMoreBtn(collapseId,btnId){
+  var collapse=document.getElementById(collapseId);
+  var btn=document.getElementById(btnId);
+  if(!collapse||!btn)return;
+  var count=collapse.querySelectorAll(':scope > tr').length;
+  collapse.setAttribute('data-count',count);
+  if(!count){btn.style.display='none';return;}
+  btn.style.display='';
+  btn.innerHTML=collapse.classList.contains('open')?'Show Less ▲':'Show More ('+count+') ▼';
 }
 
 document.addEventListener('DOMContentLoaded', function(){

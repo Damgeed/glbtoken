@@ -189,3 +189,12 @@
 #section-logs {
   display: block;
 }
+
+/* ── Mobile show-more collapse for logs tables (Bud: show 3 on mobile) ── */
+.tx-collapse { display: table-row-group; }   /* desktop: show all rows */
+#responseTimeMoreBtn, #speedComparisonMoreBtn { display: none; }
+@media (max-width: 767px) {
+  .tx-collapse { display: none; }
+  .tx-collapse.open { display: table-row-group; }
+  #responseTimeMoreBtn, #speedComparisonMoreBtn { display: block; }
+}
