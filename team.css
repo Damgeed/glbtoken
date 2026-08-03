@@ -472,3 +472,86 @@
     box-sizing: border-box;
   }
 }
+
+/* ── Mobile: member cards with swipe-reveal actions (≤767px) ── */
+.member-mobile-list { display: none; }
+@media (max-width: 767px) {
+  .member-mobile-list { display: block; }
+  .scroll-x { display: none; }
+  .member-swipe {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 0.6rem;
+  }
+  .member-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    transition: transform 0.25s ease;
+    will-change: transform;
+  }
+  .member-swipe-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: stretch;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .member-swipe.open .member-swipe-actions {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .member-swipe.open .member-card {
+    transform: translateX(calc(-1 * var(--swipe-w, 150px)));
+  }
+  .member-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .member-card-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  .member-card-name span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .member-card-role { flex-shrink: 0; }
+  .member-card-email {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .member-card-tokens {
+    text-align: center;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px dashed var(--border);
+    padding-top: 0.3rem;
+  }
+}
+.swipe-transfer { background: rgba(0, 214, 143, 0.16); color: #00D68F; }
+.swipe-remove { background: rgba(255, 92, 92, 0.16); color: #FF6B6B; }
+@media (min-width: 768px) {
+  .member-swipe-actions { display: none; }
+  .member-swipe.open .member-card { transform: none; }
+}
