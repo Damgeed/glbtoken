@@ -1012,7 +1012,6 @@ function showPrompt(title, placeholder, onSubmit, initialValue){
   var input = document.getElementById('promptInput');
   if(initialValue){ input.value = initialValue; }
   input.focus();
-  if(initialValue){ try{ input.setSelectionRange(initialValue.length, initialValue.length); }catch(e){} }
   document.getElementById('promptCancelBtn').onclick=function(){m.remove()};
   document.getElementById('promptOkBtn').onclick=function(){m.remove(); var v=input.value.trim(); if(v)onSubmit(v);};
   m.onclick=function(e){if(e.target===m)m.remove()};
