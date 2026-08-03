@@ -4,7 +4,7 @@ All request/response models extracted from the main.py monolith.
 Do NOT modify — these are auto-generated from the original main.py.
 """
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 
 
@@ -250,16 +250,16 @@ class ClaimReferralRequest(BaseModel):
 # ── Organization Schemas ──
 
 class CreateOrgRequest(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
 
 
 class UpdateOrgRequest(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
 
 
 class InviteMemberRequest(BaseModel):
-    email: str
-    role: str = "member"  # admin | member | viewer (owner reserved for creator)
+    email: str = Field(min_length=3, max_length=254)
+    role: str = "member"  # admin | member (owner reserved for creator)
     resend: bool = False  # if an active invite already exists for this email, resend it instead of creating a duplicate
 
 

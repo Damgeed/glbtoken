@@ -3,9 +3,11 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone, timedelta
 import secrets
 import os
+import re
 
 from database import get_db, User, Organization, OrgMember, OrgInvite, Transaction
 from auth import get_current_user
@@ -97,21 +99,24 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
             "joined_at": m.joined_at.isoformat() if m.joined_at else None,
         })
 
-    # Pending invites — strictly scoped to THIS org (never mixed across orgs)
-    pending = db.query(OrgInvite).filter(
-        OrgInvite.org_id == org_id,
-        OrgInvite.used == False,  # noqa: E712
-    ).order_by(desc(OrgInvite.created_at)).all()
-    base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
-    pending_invites = [{
-        "id": inv.id,
-        "email": inv.email,
-        "role": inv.role or "member",
-        "invite_token": inv.token,
-        "join_link": f"{base_url}/join.html?org={org_id}&token={inv.token}",
-        "created_at": inv.created_at.isoformat() if inv.created_at else None,
-        "expires_at": inv.expires_at.isoformat() if inv.expires_at else None,
-    } for inv in pending]
+    # Pending invites — strictly scoped to THIS org and only visible to owner/admin.
+    # Invite tokens/join links are sensitive: regular members must never receive them.
+    pending_invites = []
+    if membership.role in ("owner", "admin"):
+        pending = db.query(OrgInvite).filter(
+            OrgInvite.org_id == org_id,
+            OrgInvite.used == False,  # noqa: E712
+        ).order_by(desc(OrgInvite.created_at)).all()
+        base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
+        pending_invites = [{
+            "id": inv.id,
+            "email": inv.email,
+            "role": inv.role or "member",
+            "invite_token": inv.token,
+            "join_link": f"{base_url}/join.html?org={org_id}&token={inv.token}",
+            "created_at": inv.created_at.isoformat() if inv.created_at else None,
+            "expires_at": inv.expires_at.isoformat() if inv.expires_at else None,
+        } for inv in pending]
 
     return {
         "id": org.id,
@@ -202,7 +207,7 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
         _400("Organization has reached maximum member capacity")
     
     email = (req.email or "").strip().lower()
-    if not email or "@" not in email:
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$", email):
         _400("Please enter a valid email address")
 
     # Already a member? (only relevant if the email belongs to a registered user)
@@ -362,10 +367,15 @@ def join_org(org_id: int, req: JoinOrgRequest, request: Request,
     if current_count >= org.max_members:
         _400("Organization has reached maximum member capacity")
     
-    member = OrgMember(org_id=org_id, user_id=user.id, role=invite.role or "member")
-    db.add(member)
-    invite.used = True
-    db.commit()
+    try:
+        member = OrgMember(org_id=org_id, user_id=user.id, role=invite.role or "member")
+        db.add(member)
+        invite.used = True
+        db.commit()
+    except IntegrityError:
+        # Unique (org_id, user_id) index — concurrent/double join is a no-op
+        db.rollback()
+        _400("You are already a member of this organization")
     
     return {"status": "joined", "org_id": org_id, "org_name": org.name}
 

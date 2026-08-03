@@ -247,6 +247,21 @@ class Conversation(Base):
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)
+    # ── Security/consistency migration: prevent duplicate memberships ──
+    # 1) collapse any existing duplicates (keep the earliest row)
+    # 2) enforce (org_id, user_id) uniqueness going forward (idempotent on existing DBs)
+    try:
+        from sqlalchemy import text
+        with engine.begin() as conn:
+            conn.execute(text(
+                "DELETE FROM org_members WHERE id NOT IN "
+                "(SELECT MIN(id) FROM org_members GROUP BY org_id, user_id)"
+            ))
+            conn.execute(text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS uq_org_member ON org_members (org_id, user_id)"
+            ))
+    except Exception as e:
+        print(f"⚠️ org_members unique index migration failed (non-critical): {e}")
 
 if __name__ == "__main__":
     init_db()
