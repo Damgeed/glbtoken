@@ -562,16 +562,19 @@ function renderMembers(myRole, orgId){
           : '';
         var hasActions = transferBtn || removeBtn;
         var swipeW = (transferBtn && removeBtn) ? 150 : 75;
-        return '<div class="member-swipe"'+(hasActions ? ' style="--swipe-w:'+swipeW+'px"' : '')+'>'
-          + (hasActions ? '<div class="member-swipe-actions">'+transferBtn+removeBtn+'</div>' : '')
-          + '<div class="member-card" data-member="'+m.user_id+'">'
+        var cardBody = '<div class="member-card" data-member="'+m.user_id+'">'
           + '<div class="member-card-top">'
           + '<div class="member-card-name"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
           + '<div class="member-card-role">'+roleCell+'</div>'
           + '</div>'
           + '<div class="member-card-email">'+escapeHtml(m.email||'—')+'</div>'
           + '<div class="member-card-tokens" id="tokm-'+m.user_id+'">…</div>'
-          + '</div></div>';
+          + '</div>';
+        // Only wrap in a swipe container when there are actions to reveal —
+        // otherwise a plain card (no pointless empty slide).
+        return hasActions
+          ? '<div class="member-swipe" style="--swipe-w:'+swipeW+'px"><div class="member-swipe-actions">'+transferBtn+removeBtn+'</div>'+cardBody+'</div>'
+          : cardBody;
       }).join('');
     }
     fillTokens();
@@ -925,6 +928,7 @@ function initMemberSwipe(){
   list.addEventListener('touchstart', function(e){
     var wrap = e.target.closest ? e.target.closest('.member-swipe') : null;
     if(!wrap) return;
+    if(!wrap.querySelector('.member-swipe-actions .swipe-action')) return; // nothing to reveal
     if(e.target.closest('.member-swipe-actions')) return;
     var t = e.touches[0];
     startX = t.clientX; startY = t.clientY; dx = 0; dy = 0;
@@ -932,6 +936,7 @@ function initMemberSwipe(){
   }, {passive:true});
   list.addEventListener('touchmove', function(e){
     if(!tracking || !trackingWrap) return;
+    if(!trackingWrap.querySelector('.member-swipe-actions .swipe-action')){ tracking = false; return; }
     var t = e.touches[0];
     dx = t.clientX - startX; dy = t.clientY - startY;
     if(!decided){
