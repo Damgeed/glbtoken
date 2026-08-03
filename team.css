@@ -227,15 +227,46 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border);
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  background: var(--bg-alt);
 }
 .invite-main {
   min-width: 0;
+  flex: 1;
+}
+.invite-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.invite-email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.invite-role {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+.invite-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 .invite-exp {
   display: inline;
-  margin-left: 0.4rem;
 }
 .invite-exp b {
   font-weight: 700;
@@ -243,7 +274,7 @@
 }
 .invite-link {
   display: block;
-  margin-top: 0.15rem;
+  margin-top: 0.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -253,14 +284,8 @@
   .invite-item {
     align-items: flex-start;
   }
-  .invite-exp {
-    display: block;
-    margin-left: 0;
-    margin-top: 0.2rem;
-  }
   .invite-link {
     max-width: none;
-    margin-top: 0.2rem;
   }
 }
 

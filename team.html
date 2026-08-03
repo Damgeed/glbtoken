@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1178" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1028" />
+<link rel="stylesheet" href="team.css?v=1029" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -222,9 +222,6 @@
         <!-- Pending Invites -->
         <div  class="section-divider">
           <div class="dash-section-title text-sm-mb" >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
             Pending Invites
           </div>
           <div id="pendingInvitesList">
@@ -454,7 +451,11 @@ async function loadOrgDetails(orgId){
         }
         return '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
           + '<div class="invite-main">'
-          + '<div class="text-sm">'+escapeHtml(iv.email)+' <span class="text-xs-muted-2">— '+capRole(iv.role)+'</span>'+exp+' <span class="invite-sent">'+sent+'</span></div>'
+          + '<div class="invite-top">'
+          + '<span class="invite-email">'+escapeHtml(iv.email)+'</span>'
+          + '<span class="invite-role">'+capRole(iv.role||'member')+'</span>'
+          + '</div>'
+          + '<div class="invite-meta">'+exp+sent+'</div>'
           + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
           + actions
           + '</div>'
@@ -625,7 +626,11 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
       + '</div>';
   }
   div.innerHTML = '<div class="invite-main">'
-    + '<div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+capRole(role)+'</span>'+exp+' <span class="invite-sent">'+sent+'</span></div>'
+    + '<div class="invite-top">'
+    + '<span class="invite-email">'+escapeHtml(email)+'</span>'
+    + '<span class="invite-role">'+capRole(role)+'</span>'
+    + '</div>'
+    + '<div class="invite-meta">'+exp+sent+'</div>'
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link || 'Token active')+'</div>'
     + actions
     + '</div>'
