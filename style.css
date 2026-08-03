@@ -7929,7 +7929,7 @@ body {
   height: 30px;
   border-radius: 50%;
   border: none;
-  background: transparent;
+  background: var(--card);
   color: var(--text-muted);
   font-size: 1.05rem;
   line-height: 1;
@@ -7937,7 +7937,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.75;
   transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
