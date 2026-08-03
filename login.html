@@ -67,7 +67,7 @@
           <div class="phone-dropdown d-none" id="loginCountryList" ></div>
         </div>
       </div>
-      <div class="auth-field d-none" id="loginSmsCodeGroup" ><label>SMS Code</label><input type="text" id="loginSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" oninput="document.getElementById('loginPhoneVerifyBtn').disabled=false;document.getElementById('loginPhoneVerifyBtn').classList.remove('btn-loading')"></div>
+      <div class="auth-field d-none" id="loginSmsCodeGroup" ><label>SMS Code</label><input type="text" id="loginSmsCode" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" oninput="document.getElementById('loginPhoneVerifyBtn').disabled=false;document.getElementById('loginPhoneVerifyBtn').classList.remove('btn-loading')"></div>
       <button class="btn-primary btn-block" id="loginPhoneSendBtn" onclick="sendPhoneCode('login')">Send Code</button>
       <button class="btn-primary btn-block btn-hidden" id="loginPhoneVerifyBtn" onclick="verifyPhoneCode('login')">Verify & Sign In</button>
     </div>
