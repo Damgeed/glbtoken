@@ -903,11 +903,17 @@ async function updateRole(select, memberId, orgId){
   else { showToast('Failed to update role','error'); loadOrgDetails(orgId); }
 }
 
+// Shared email validation — same rule as the backend (routes/organizations.py):
+// local@domain.tld, no spaces, TLD at least 2 chars
+function isValidEmail(email){
+  return /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email || '');
+}
+
 // Send invite (owner/admin only) — works for any email, registered or not
 async function sendInvite(){
   if(!currentOrgId){ showToast('Select an organization first','error'); return; }
   var email = document.getElementById('inviteEmail').value.trim();
-  if(!email || !email.includes('@')){ showToast('Please enter a valid email address','error'); return; }
+  if(!isValidEmail(email)){ showToast('Please enter a valid email address','error'); return; }
   var role = document.getElementById('inviteRole').value;
   var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role});
   if(d && d.status === 'already_invited'){
@@ -1308,14 +1314,27 @@ async function sendBatchInvites(){
   if(!currentOrgId){ showToast('Select an organization first','error'); return; }
   var raw = document.getElementById('batchEmails').value || '';
   var parts = raw.split(/[\n,;]+/).map(function(s){ return s.trim(); }).filter(Boolean);
+  var seen = {};
   var emails = [], invalid = [];
   parts.forEach(function(p){
-    if(p.indexOf('@') !== -1) emails.push(p); else invalid.push(p);
+    var key = p.toLowerCase();            // dedupe case-insensitively
+    if(seen[key]) return;
+    seen[key] = true;
+    if(isValidEmail(p)) emails.push(p);
+    else invalid.push(p);
   });
-  if(!emails.length){ showToast('Enter at least one valid email','error'); return; }
+  if(!emails.length){
+    showToast(invalid.length ? 'No valid emails to send' : 'Enter at least one valid email','error');
+    if(invalid.length) renderBatchResult(0,0,0,[],invalid);
+    return;
+  }
+  var MAX_BATCH = 50;                     // backend invite limit is 60/min — keep under it
+  if(emails.length > MAX_BATCH){
+    showToast('Batch limited to '+MAX_BATCH+' emails at a time ('+emails.length+' entered)','error');
+    emails = emails.slice(0, MAX_BATCH);
+  }
   var role = document.getElementById('batchRole').value || 'member';
   var btn = document.getElementById('batchSendBtn');
-  var resultEl = document.getElementById('batchResult');
   btn.disabled = true;
   var sent=0, dup=0, fail=0, fails=[];
   for(var i=0;i<emails.length;i++){
@@ -1333,15 +1352,25 @@ async function sendBatchInvites(){
   }
   btn.disabled = false;
   btn.textContent = 'Send Invites';
+  renderBatchResult(sent, dup, fail, fails, invalid);
+  document.getElementById('batchEmails').value = '';
+  renderInviteStats();
+  if(sent) showToast(sent+' invite'+(sent===1?'':'s')+' sent','success');
+}
+function renderBatchResult(sent, dup, fail, fails, invalid){
+  var resultEl = document.getElementById('batchResult');
+  if(!resultEl) return;
   var html = '<span class="ok">✓ '+sent+' sent</span>'
     + (dup ? ' <span class="warn">'+dup+' already invited</span>' : '')
     + (fail ? ' <span class="bad">'+fail+' failed</span>' : '')
     + (invalid.length ? ' <span class="bad">'+invalid.length+' invalid skipped</span>' : '');
   if(fails.length) html += '<div class="batch-fail-list">'+fails.map(function(f){ return '<div>'+escapeHtml(f)+'</div>'; }).join('')+'</div>';
+  if(invalid.length){
+    var shown = invalid.slice(0,10);
+    if(invalid.length > 10) shown.push('… +'+(invalid.length-10)+' more');
+    html += '<div class="batch-invalid-list">'+shown.map(function(e){ return '<div>✗ '+escapeHtml(e)+'</div>'; }).join('')+'</div>';
+  }
   resultEl.innerHTML = html;
-  document.getElementById('batchEmails').value = '';
-  renderInviteStats();
-  if(sent) showToast(sent+' invite'+(sent===1?'':'s')+' sent','success');
 }
 
 // Boot

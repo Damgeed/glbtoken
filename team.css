@@ -803,3 +803,4 @@ body.drawer-open { overflow: hidden; }
 .batch-result .warn { color: #FFB700; }
 .batch-result .bad { color: #FF6B6B; }
 .batch-fail-list { margin-top: 0.3rem; color: var(--text-muted); font-size: 0.75rem; }
+.batch-invalid-list { margin-top: 0.3rem; color: #FF6B6B; font-size: 0.75rem; }
