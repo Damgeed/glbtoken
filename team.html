@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1180" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1035" />
+<link rel="stylesheet" href="team.css?v=1036" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -569,9 +569,6 @@ function renderMembers(myRole, orgId){
           + '</div>'
           + '<div class="member-card-email">'+escapeHtml(m.email||'—')+'</div>'
           + '<div class="member-card-tokens" id="tokm-'+m.user_id+'">…</div>'
-          + ((role === 'owner' && isOwner)
-              ? '<div class="member-card-hint">You are the Owner — swipe other members to manage them</div>'
-              : '')
           + '</div>';
         // Only wrap in a swipe container when there are actions to reveal —
         // otherwise a plain card (no pointless empty slide).
