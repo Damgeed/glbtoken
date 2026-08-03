@@ -16,6 +16,7 @@ class RegisterRequest(BaseModel):
     password: str
     country: str = ""
     ref: str = ""  # optional referral code or link
+    src: str = ""  # optional channel attribution (twitter/whatsapp/telegram/email/facebook/linkedin)
 
 
 class LoginRequest(BaseModel):
@@ -43,6 +44,7 @@ class VerifyCodeRequest(BaseModel):
     email: str
     code: str
     ref: str = ""  # optional referral code or link
+    src: str = ""  # optional channel attribution (twitter/whatsapp/telegram/email/facebook/linkedin)
 
 
 class SendSmsCodeRequest(BaseModel):

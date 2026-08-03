@@ -77,6 +77,8 @@ class User(Base):
     referral_code = Column(String, unique=True, nullable=True)
     referral_earnings = Column(Float, default=0.0)
     referred_by = Column(String, nullable=True)
+    signup_ip = Column(String, default="")             # anti-fraud: registration IP
+    referral_source = Column(String, default="")       # channel attribution (src=twitter etc.)
     
     api_keys = relationship("ApiKey", back_populates="user", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")

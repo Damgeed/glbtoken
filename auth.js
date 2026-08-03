@@ -73,6 +73,41 @@
         btn.disabled=false;btn.textContent='Continue';
       }
     }
+    function _getReferralAttribution(){
+      /* P0-2 attribution window: persist ?ref= in localStorage for 30 days so
+         a click → register days later still credits the referrer. URL wins;
+         otherwise fall back to stored ref if within window. */
+      var ref='', src='';
+      try{
+        var qs=new URLSearchParams(window.location.search);
+        ref=qs.get('ref')||'';
+        src=qs.get('src')||'';
+      }catch(e){}
+      if(ref){
+        try{
+          localStorage.setItem('gt_ref',ref);
+          localStorage.setItem('gt_ref_ts',String(Date.now()));
+          if(src)localStorage.setItem('gt_ref_src',src);
+          else localStorage.removeItem('gt_ref_src');
+        }catch(e){}
+      }else{
+        try{
+          var ts=parseInt(localStorage.getItem('gt_ref_ts')||'0',10);
+          if(ts && (Date.now()-ts) < 30*24*3600*1000){
+            ref=localStorage.getItem('gt_ref')||'';
+            src=localStorage.getItem('gt_ref_src')||'';
+          }
+        }catch(e){}
+      }
+      return {ref:ref, src:src};
+    }
+    function _clearReferralAttribution(){
+      try{
+        localStorage.removeItem('gt_ref');
+        localStorage.removeItem('gt_ref_ts');
+        localStorage.removeItem('gt_ref_src');
+      }catch(e){}
+    }
     async function verifyRegisterCode(){
       const email=document.getElementById('regEmail').value.trim();
       const code=document.getElementById('regCode').value.trim();
@@ -84,10 +119,10 @@
       const btn=document.getElementById('regVerifyBtn');
       setBtnLoading(btn, true, 'Verifying');
       try{
-        var ref='';
-        try{ref=new URLSearchParams(window.location.search).get('ref')||'';}catch(e){}
-        var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code,ref:ref});
+        var att=_getReferralAttribution();
+        var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code,ref:att.ref,src:att.src});
         if(!data) return;
+        _clearReferralAttribution();
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));

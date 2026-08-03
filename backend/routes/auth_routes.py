@@ -42,10 +42,21 @@ def _auth_response(user, db):
         "refresh_token": generate_refresh_token(user.id, db),
     }
 
+def _client_ip(request: Request) -> str:
+    """Get real client IP, honoring X-Forwarded-For behind Railway proxy."""
+    try:
+        fwd = request.headers.get("x-forwarded-for", "")
+        if fwd:
+            return fwd.split(",")[0].strip()
+    except Exception:
+        pass
+    return request.client.host if request.client else ""
+
+
 def record_login_event(user_id: int, request: Request, success: bool, db: Session):
     """Record a login event for audit/history purposes."""
     try:
-        ip_address = request.client.host if request.client else ""
+        ip_address = _client_ip(request)
         user_agent = request.headers.get("user-agent", "")
         device_type = "mobile" if any(k in user_agent.lower() for k in ["mobile", "android", "iphone", "ipad"]) else "desktop"
         event = LoginEvent(
@@ -63,6 +74,15 @@ def record_login_event(user_id: int, request: Request, success: bool, db: Sessio
 
 
 # ── Auth Routes ──
+
+
+def _clean_src(src):
+    """Sanitize channel attribution — allowlist only known platforms."""
+    if not src:
+        return ""
+    s = str(src).strip().lower()
+    allowed = {"twitter", "whatsapp", "telegram", "email", "facebook", "linkedin", "direct"}
+    return s if s in allowed else "direct"
 
 
 def _resolve_ref(db, ref):
@@ -98,6 +118,8 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             country=req.country,
             token_balance=0,
             referred_by=_resolve_ref(db, req.ref),
+            signup_ip=_client_ip(request),
+            referral_source=_clean_src(req.src),
             is_admin=(db.query(User).count() == 0),  # First user is admin
         )
         db.add(user)
@@ -312,6 +334,8 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
             token_balance=0,
             email_verified=True,
             referred_by=_resolve_ref(db, body.ref),
+            signup_ip=_client_ip(request),
+            referral_source=_clean_src(body.src),
             is_admin=(db.query(User).count() == 0),
         )
         db.add(user)

@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1182" />
-<link rel="stylesheet" href="referrals.css?v=1026" />
+<link rel="stylesheet" href="referrals.css?v=1027" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -140,6 +140,10 @@
           <div class="num" id="refPendingRewards">—</div>
           <div class="lbl">Pending Rewards</div>
           <div class="chg refs-pending" id="refPendingChg">⏳ Awaiting confirmation <button id="refClaimBtn" class="ref-claim-btn" style="display:none" onclick="claimRefRewards()">Claim Rewards</button></div>
+          <div class="refs-threshold" id="refThresholdWrap" style="display:none">
+            <div class="refs-threshold-bar"><div class="refs-threshold-fill" id="refThresholdFill"></div></div>
+            <div class="refs-threshold-txt" id="refThresholdTxt"></div>
+          </div>
         </div>
       </div>
 
@@ -215,6 +219,17 @@
           </div>
           <div class="chart-container chart-container-wide"><canvas id="earningsChart"></canvas></div>
         </div>
+      </div>
+
+      <!-- Top Channels — channel attribution -->
+      <div class="dash-card" id="refSourcesCard" style="display:none">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          Top Channels
+        </div>
+        <div id="refSourcesBody"><p style="color:var(--text-muted);padding:0.5rem 0">Share via the buttons above to start tracking which channel brings the most referrals.</p></div>
       </div>
 
       <!-- Referrals Table -->
@@ -309,7 +324,7 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1131"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="referral.js?v=1128"></script>
+<script data-cfasync="false" src="referral.js?v=1129"></script>
 
 </body>
 </html>

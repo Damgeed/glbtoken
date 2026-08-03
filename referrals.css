@@ -279,3 +279,65 @@
 }
 .ref-claim-btn:hover { background: #E0A500; }
 .ref-claim-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ── Claim threshold progress (P0-3) ── */
+.refs-threshold {
+  margin-top: 0.6rem;
+  width: 100%;
+}
+.refs-threshold-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+.refs-threshold-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #F4B400, #E0A500);
+  transition: width 0.4s ease;
+}
+.refs-threshold-txt {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ── Top Channels (P1-4) ── */
+.refs-source-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+}
+.refs-source-name {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary, #E5E7EB);
+}
+.refs-source-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+.refs-source-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4FC3F7, #00D68F);
+  transition: width 0.4s ease;
+}
+.refs-source-count {
+  width: 90px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+@media (max-width: 480px) {
+  .refs-source-name { width: 70px; font-size: 0.78rem; }
+  .refs-source-count { width: 70px; font-size: 0.72rem; }
+}

@@ -55,6 +55,41 @@ async function loadReferralStats() {
     if(pendingEl) pendingEl.textContent=pendingAmt.toFixed(0)+' GT';
     const claimBtn=document.getElementById('refClaimBtn');
     if(claimBtn) claimBtn.style.display=(pendingAmt>=1.0)?'':'none';
+    // Claim threshold progress (P0-3): show how close to the 1 GT minimum
+    const thrWrap=document.getElementById('refThresholdWrap');
+    const thrFill=document.getElementById('refThresholdFill');
+    const thrTxt=document.getElementById('refThresholdTxt');
+    if(thrWrap&&thrFill&&thrTxt){
+      var threshold=(d.claim_threshold!=null?d.claim_threshold:1.0);
+      if(pendingAmt>=threshold){
+        thrWrap.style.display='';
+        thrFill.style.width='100%';
+        thrTxt.textContent='Ready to claim!';
+      }else if(pendingAmt>0){
+        thrWrap.style.display='';
+        thrFill.style.width=Math.min(100,Math.round(100*pendingAmt/threshold))+'%';
+        thrTxt.textContent='Earn '+(threshold-pendingAmt).toFixed(1)+' more GT to reach the '+threshold.toFixed(1)+' GT claim minimum';
+      }else{
+        thrWrap.style.display='none';
+      }
+    }
+    // Top channels (P1-4): which share source drove the most signups
+    const srcCard=document.getElementById('refSourcesCard');
+    const srcBody=document.getElementById('refSourcesBody');
+    if(srcCard&&srcBody){
+      var sources=d.sources||[];
+      if(sources.length){
+        srcCard.style.display='';
+        srcBody.innerHTML=sources.map(function(s){
+          var label=s.source.charAt(0).toUpperCase()+s.source.slice(1);
+          return '<div class="refs-source-row"><div class="refs-source-name">'+escapeHtml(label)+'</div>'+
+            '<div class="refs-source-bar"><div class="refs-source-fill" style="width:'+s.pct+'%"></div></div>'+
+            '<div class="refs-source-count">'+s.count+' · '+s.pct+'%</div></div>';
+        }).join('');
+      }else{
+        srcCard.style.display='none';
+      }
+    }
     // Referrals table (recent_referrals — name/email/joined_at/reward)
     const tableBody=document.getElementById('refTableBody');
     if(tableBody){
@@ -176,7 +211,8 @@ function copyRefCode(btn){
 
 function shareRef(platform){
   var el=document.getElementById('refCode');
-  var link=(el&&el.textContent)?el.textContent:'https://glbtoken.com/register.html?ref=';
+  var base=(el&&el.textContent)?el.textContent:'https://glbtoken.com/register.html?ref=';
+  var link=base+(base.indexOf('?')>=0?'&':'?')+'src='+platform;
   var url=encodeURIComponent(link);
   var text=encodeURIComponent('Join me on GlbTOKEN and get access to 100+ AI models! Use my referral link:');
   var href='';

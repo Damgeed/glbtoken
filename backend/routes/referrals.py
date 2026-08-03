@@ -8,7 +8,7 @@ from datetime import datetime, timezone, timedelta
 
 from database import get_db, User, Referral, ReferralRedemption, Transaction
 from auth import get_current_user
-from common import _400, _500, limiter, REFERRAL_REWARD_GT
+from common import _400, _500, limiter, REFERRAL_REWARD_GT, REFERRAL_MIN_SPEND_TOKENS, DISPOSABLE_EMAIL_DOMAINS
 
 router = APIRouter()
 
@@ -36,13 +36,29 @@ def _build_rewards(db: Session, code: str):
 def grant_referral_reward(db: Session, user: User):
     """Grant the referrer a reward when `user` (who signed up via a ref) makes
     their FIRST real consumption. Idempotent — one redemption per referred user.
-    Never raises: a reward failure must not break the chat response."""
+
+    Anti-fraud gates (all must pass before a reward is granted):
+      1. Referred user must not have a disposable/temp-mail domain
+      2. Referred user must not share a signup IP with an already-rewarded
+         referral of the same referrer (blocks multi-account self-farming)
+      3. Referred user's cumulative paid consumption must meet the minimum
+         spend threshold (blocks signup-and-abandon farming)
+
+    Never raises: a reward failure must not break the chat response.
+    """
     try:
         code = user.referred_by
         if not code:
             return
         if db.query(ReferralRedemption).filter(ReferralRedemption.referred_user_id == user.id).first():
             return  # already rewarded
+
+        # ── Gate 1: disposable email domain ──
+        email_domain = (user.email or "").split("@")[-1].lower() if user.email and "@" in user.email else ""
+        if email_domain and email_domain in DISPOSABLE_EMAIL_DOMAINS:
+            print(f"🚫 Referral reward blocked: disposable email {user.email}")
+            return
+
         referrer = db.query(User).filter(User.referral_code == code).first()
         if not referrer:
             ref_row = db.query(Referral).filter(Referral.code == code).first()
@@ -52,6 +68,33 @@ def grant_referral_reward(db: Session, user: User):
             return
         if REFERRAL_REWARD_GT <= 0:
             return
+
+        # ── Gate 2: same-IP farming detection ──
+        if user.signup_ip:
+            already_rewarded_ids = [
+                r.referred_user_id for r in db.query(ReferralRedemption).filter(
+                    ReferralRedemption.referrer_code == code
+                ).all()
+            ]
+            if already_rewarded_ids:
+                same_ip_users = db.query(User).filter(
+                    User.id.in_(already_rewarded_ids),
+                    User.signup_ip == user.signup_ip,
+                ).first()
+                if same_ip_users:
+                    print(f"🚫 Referral reward blocked: same signup IP {user.signup_ip} as user {same_ip_users.id}")
+                    return
+
+        # ── Gate 3: minimum spend threshold (cumulative consumption) ──
+        if REFERRAL_MIN_SPEND_TOKENS > 0:
+            consumed = float(db.query(func.coalesce(func.sum(Transaction.tokens), 0.0)).filter(
+                Transaction.user_id == user.id,
+                Transaction.type == "consumption",
+                Transaction.status == "completed",
+            ).scalar() or 0.0)
+            if consumed < REFERRAL_MIN_SPEND_TOKENS:
+                return  # not enough real usage yet — wait for next paid call
+
         db.add(ReferralRedemption(
             referred_user_id=user.id,
             referrer_code=code,
@@ -147,6 +190,21 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
                 "earnings": float(earn_by_day.get(d, 0) or 0),
             })
 
+    # Channel attribution — count referred signups by source (src=twitter etc.)
+    sources = []
+    if code:
+        src_counts = db.query(User.referral_source, func.count(User.id)).filter(
+            User.referred_by == code
+        ).group_by(User.referral_source).all()
+        total_src = sum(c for _, c in src_counts)
+        for src, cnt in sorted(src_counts, key=lambda x: -x[1]):
+            label = src or "direct"
+            sources.append({
+                "source": label,
+                "count": cnt,
+                "pct": round(100.0 * cnt / total_src, 1) if total_src else 0,
+            })
+
     # Reward history merged into stats so the frontend needs ONE request
     # (previously the client serialized stats → rewards = 2 round-trips on
     # every load, making generate + table populate feel slow).
@@ -161,6 +219,9 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
         "history": history,
         "rewards": rewards,
         "rewards_total": float(sum(r["amount"] for r in rewards)),
+        "sources": sources,
+        "claim_threshold": 1.0,
+        "min_spend_tokens": REFERRAL_MIN_SPEND_TOKENS,
     }
 
 

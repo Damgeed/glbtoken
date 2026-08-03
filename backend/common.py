@@ -49,6 +49,19 @@ PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY", "")
 # Referral program — GT granted to a referrer when a referred user makes their
 # first real (paid) consumption. 0 disables rewards.
 REFERRAL_REWARD_GT = float(os.getenv("REFERRAL_REWARD_GT", "2.0"))
+# Anti-fraud: minimum real consumption (tokens) before a referred user triggers
+# the referrer's reward. Blocks signup-and-abandon farming.
+REFERRAL_MIN_SPEND_TOKENS = int(os.getenv("REFERRAL_MIN_SPEND_TOKENS", "1000"))
+# Disposable / temp-mail domains whose signups never trigger a referral reward.
+DISPOSABLE_EMAIL_DOMAINS = set(
+    d.strip().lower() for d in os.getenv(
+        "REFERRAL_BLOCKED_DOMAINS",
+        "mailinator.com,guerrillamail.com,10minutemail.com,sharklasers.com,"
+        "yopmail.com,tempmail.com,temp-mail.org,maildrop.cc,mailnesia.com,"
+        "discard.email,trashmail.com,getnada.com,tempmailo.com,emailondeck.com,"
+        "mohmal.com,throwawaymail.com,33mail.com,spamgourmet.com,"
+    ).split(",") if d.strip()
+)
 
 # Payments: Stripe
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")

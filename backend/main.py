@@ -50,6 +50,8 @@ async def lifespan(app: FastAPI):
             'referral_code': 'VARCHAR',
             'referral_earnings': "FLOAT DEFAULT 0.0",
             'referred_by': 'VARCHAR',
+            'signup_ip': "VARCHAR DEFAULT ''",
+            'referral_source': "VARCHAR DEFAULT ''",
         }
         with engine.connect() as conn:
             for col_name, col_type in all_columns.items():
