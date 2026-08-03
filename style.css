@@ -7979,3 +7979,18 @@ body {
   .key-collapse.open, .activity-collapse.open { display: block; }
   #keyMoreBtn, #activityMoreBtn { display: block; }
 }
+
+/* ── Table show-more collapse (logs/usage/billing/referrals): second tbody ── */
+.tx-collapse { display: table-row-group; }   /* desktop: show all rows */
+#loginMoreBtn, #invoicesMoreBtn, #refMoreBtn, #refRewardsMoreBtn { display: none; }
+/* presets (card grid variant) */
+.presets-collapse { display: grid; }
+#presetsMoreBtn { display: none; }
+@media (max-width: 767px) {
+  .tx-collapse { display: none; }
+  .tx-collapse.open { display: table-row-group; }
+  #loginMoreBtn, #invoicesMoreBtn, #refMoreBtn, #refRewardsMoreBtn { display: block; }
+  .presets-grid.presets-collapse { display: none; }
+  .presets-grid.presets-collapse.open { display: grid; }
+  #presetsMoreBtn { display: block; }
+}

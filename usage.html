@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1180" />
+  <link rel="stylesheet" href="style.css?v=1182" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="usage.css?v=1023" />
   </head>
@@ -300,7 +300,7 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
-<script data-cfasync="false" src="shared.js?v=1130"></script>
+<script data-cfasync="false" src="shared.js?v=1131"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
 <script data-cfasync="false" src="filters.js?v=1123"></script>
 
@@ -365,6 +365,7 @@ function loadMoreHistory(){
   var tbody = document.getElementById('historyBody');
   var remaining = moreData.length;
   var toLoad = Math.min(8, remaining);
+  var html = '';
 
   // Save backup on first load
   if(backupMoreData.length === 0){
@@ -372,10 +373,13 @@ function loadMoreHistory(){
   }
 
   for(var i = 0; i < toLoad; i++){
-    tbody.insertAdjacentHTML('beforeend', renderHistoryRow(moreData[i]));
+    html += renderHistoryRow(moreData[i]);
     loadedCount++;
   }
+  var collapse = document.getElementById('loginCollapse');
+  (collapse || tbody).insertAdjacentHTML('beforeend', html);
   moreData.splice(0, toLoad);
+  refreshTableMoreBtn('loginCollapse','loginMoreBtn');
   document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
 
   if(moreData.length === 0){
@@ -388,13 +392,11 @@ function loadMoreHistory(){
 
 function showLessHistory(){
   var btn = document.getElementById('loadMoreBtn');
-  var tbody = document.getElementById('historyBody');
 
-  // Restore tbody to initial 8 rows
-  tbody.innerHTML = '';
-  historyData.forEach(function(item){
-    tbody.insertAdjacentHTML('beforeend', renderHistoryRow(item));
-  });
+  // Restore tbody to initial 8 rows (re-split into 3 visible + collapse)
+  renderTableWithCollapse('historyBody', historyData.map(function(item){
+    return renderHistoryRow(item);
+  }), 'loginCollapse', 'loginMoreBtn');
 
   // Restore moreData from backup
   moreData = backupMoreData.slice();
@@ -430,23 +432,28 @@ function applyFilters(){
     return true;
   });
 
-  var tbody = document.getElementById('historyBody');
-  tbody.innerHTML = '';
   var emptyState = document.getElementById('historyEmptyState');
 
   if(filtered.length === 0){
     emptyState.style.display = 'block';
+    clearTableCollapse('loginCollapse','loginMoreBtn');
     document.getElementById('loadMoreBtn').style.display = 'none';
     document.getElementById('historyCount').textContent = 'Showing 0 entries';
   } else {
     emptyState.style.display = 'none';
     document.getElementById('loadMoreBtn').style.display = '';
-    filtered.forEach(function(item){
-      tbody.insertAdjacentHTML('beforeend', renderHistoryRow(item));
-    });
+    renderTableWithCollapse('historyBody', filtered.map(function(item){
+      return renderHistoryRow(item);
+    }), 'loginCollapse', 'loginMoreBtn');
     document.getElementById('historyCount').textContent = 'Showing '+filtered.length+' entries';
   }
 }
+
+// Split the initial static login rows into 3 visible + collapse (mobile show-more)
+(function initLoginCollapse(){
+  var rows = Array.prototype.map.call(document.querySelectorAll('#historyBody > tr'), function(tr){ return tr.outerHTML; });
+  if(rows.length > 3) renderTableWithCollapse('historyBody', rows, 'loginCollapse', 'loginMoreBtn');
+})();
 </script>
 
 </body>

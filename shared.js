@@ -802,3 +802,55 @@ window.updateBalance = function updateBalance(){
   const hb=document.getElementById('heroBalance');
   if(hb)hb.textContent=b.toLocaleString();
 };
+
+// ── Mobile show-more collapse for TABLES (show 3 on mobile, all on desktop) ──
+// Generic helpers used by logs/usage/billing/referrals. See skill
+// static-html-maintenance refs/mobile-show-more-collapse.md (tbody variant).
+window.renderTableWithCollapse = function renderTableWithCollapse(bodyId, rows, collapseId, btnId){
+  var body=document.getElementById(bodyId);
+  if(!body)return;
+  var first=rows.slice(0,3).join('');
+  var rest=rows.slice(3);
+  body.innerHTML=first;
+  var oldC=document.getElementById(collapseId);
+  if(oldC)oldC.remove();
+  var oldB=document.getElementById(btnId);
+  if(oldB)oldB.remove();
+  if(!rest.length)return;
+  var table=body.closest('table');
+  var tb=document.createElement('tbody');
+  tb.id=collapseId;
+  tb.className='tx-collapse';
+  tb.setAttribute('data-count',rest.length);
+  tb.innerHTML=rest.join('');
+  table.appendChild(tb);
+  var btn=document.createElement('button');
+  btn.id=btnId;
+  btn.type='button';
+  btn.className='list-more-btn';
+  btn.innerHTML='Show More ('+rest.length+') ▼';
+  btn.onclick=function(){toggleTableMore(collapseId,btnId);};
+  var wrap=table.parentNode;
+  wrap.parentNode.insertBefore(btn,wrap.nextSibling);
+  refreshTableMoreBtn(collapseId,btnId);
+};
+window.clearTableCollapse = function clearTableCollapse(collapseId,btnId){
+  var c=document.getElementById(collapseId);if(c)c.remove();
+  var b=document.getElementById(btnId);if(b)b.remove();
+};
+window.toggleTableMore = function toggleTableMore(collapseId,btnId){
+  var collapse=document.getElementById(collapseId);
+  if(!collapse)return;
+  collapse.classList.toggle('open');
+  refreshTableMoreBtn(collapseId,btnId);
+};
+window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
+  var collapse=document.getElementById(collapseId);
+  var btn=document.getElementById(btnId);
+  if(!collapse||!btn)return;
+  var count=collapse.querySelectorAll(':scope > tr').length;
+  collapse.setAttribute('data-count',count);
+  if(!count){btn.style.display='none';return;}
+  btn.style.display='';
+  btn.innerHTML=collapse.classList.contains('open')?'Show Less ▲':'Show More ('+count+') ▼';
+};

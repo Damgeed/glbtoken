@@ -60,10 +60,11 @@ async function loadReferralStats() {
     if(tableBody){
       const refs=d.recent_referrals||[];
       if(refs.length){
-        tableBody.innerHTML=refs.map(function(r){
+        renderTableWithCollapse('refTableBody', refs.map(function(r){
           return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td class="td-date">'+(r.joined_at?fmtDTStack(r.joined_at):'<div class="td-date-strong">—</div>')+'</td><td><span class="text-success-color">● Active</span></td><td>'+(r.reward>0?(r.reward+' GT'):'—')+'</td></tr>';
-        }).join('');
+        }), 'refCollapse', 'refMoreBtn');
       }else{
+        clearTableCollapse('refCollapse','refMoreBtn');
         tableBody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No referrals yet</td></tr>';
       }
     }
@@ -71,10 +72,11 @@ async function loadReferralStats() {
     const rewardsBody=document.getElementById('refRewardsBody');
     if(rewardsBody){
       if(rewards.length){
-        rewardsBody.innerHTML=rewards.map(function(r){
+        renderTableWithCollapse('refRewardsBody', rewards.map(function(r){
           return '<tr><td class="td-date">'+fmtDTStack(r.created_at)+'</td><td>Referral Reward</td><td>'+(r.amount||0)+' GT</td><td><span class="text-success-color">● Claimed</span></td></tr>';
-        }).join('');
+        }), 'refRewardsCollapse', 'refRewardsMoreBtn');
       }else{
+        clearTableCollapse('refRewardsCollapse','refRewardsMoreBtn');
         rewardsBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No rewards yet</td></tr>';
       }
     }
