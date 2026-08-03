@@ -248,7 +248,7 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1130"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="orgs.js?v=1120"></script>
+<script data-cfasync="false" src="orgs.js?v=1121"></script>
 
 <script>
 // ===== Team Management — real data from /api/orgs (orgs.js provides API calls) =====
@@ -260,11 +260,9 @@ async function loadTeamOrgs(){
   var d = await safeApi('GET','/api/orgs');
   var selector = document.getElementById('orgSelector');
   if(!selector) return;
-  var orgs = (d && d.orgs) || d || [];
+  var orgs = (d && (d.organizations || d.orgs)) || (Array.isArray(d) ? d : []);
   var html = '';
-  if(!orgs.length){
-    html += '<button class="sort-btn active" data-org="" onclick="switchOrg(\'\')">No organization</button>';
-  } else {
+  if(orgs.length){
     orgs.forEach(function(o){
       var active = (currentOrgId === String(o.id)) ? ' active' : '';
       html += '<button class="sort-btn'+active+'" data-org="'+escapeHtml(String(o.id))+'" onclick="switchOrg(\''+escapeHtml(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';

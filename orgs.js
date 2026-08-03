@@ -8,7 +8,7 @@ async function loadOrgs() {
   if(!d) return;
   const selector=document.getElementById('orgSelector');
   if(!selector)return;
-  const orgs=d.orgs||d||[];
+  const orgs=(d&&(d.organizations||d.orgs))||(Array.isArray(d)?d:[]);
   if(!orgs.length){
     return;
   }
