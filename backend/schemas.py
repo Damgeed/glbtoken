@@ -260,6 +260,7 @@ class UpdateOrgRequest(BaseModel):
 class InviteMemberRequest(BaseModel):
     email: str
     role: str = "member"  # admin | member | viewer (owner reserved for creator)
+    resend: bool = False  # if an active invite already exists for this email, resend it instead of creating a duplicate
 
 
 class JoinOrgRequest(BaseModel):

@@ -418,19 +418,37 @@ async function sendInvite(){
   if(!email || !email.includes('@')){ showToast('Please enter a valid email address','error'); return; }
   var role = document.getElementById('inviteRole').value;
   var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role});
+  if(d && d.status === 'already_invited'){
+    // Duplicate guard: an active invite already exists — don't create another one, offer a resend
+    var expires = d.expires_at ? ' (expires '+new Date(d.expires_at).toLocaleDateString()+')' : '';
+    showConfirm('Invite already exists',
+      'An active invite was already sent to '+email+expires+'. Resend it instead of creating a duplicate?',
+      async function(){
+        var d2 = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role, resend:true});
+        if(d2 && (d2.status === 'resent' || d2.invite_token)){
+          showToast(d2.email_sent ? 'Invite email resent to '+email : 'Invite link already active — share it','success');
+          addPendingInviteRow(email, role, d2.join_link || d.invite_token);
+        } else if(d2 && d2.detail){ showToast(d2.detail,'error'); }
+      }, 'Resend');
+    return;
+  }
   if(d && d.invite_token){
     showToast(d.email_sent ? 'Invite email sent to '+email : 'Invite link generated — share it','success');
     document.getElementById('inviteEmail').value = '';
-    var list = document.getElementById('pendingInvitesList');
-    var div = document.createElement('div');
-    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border)';
-    div.innerHTML = '<div style="min-width:0"><div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div>'
-      + '<div class="text-xs-gold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">'+escapeHtml(d.join_link || ('Token: '+d.invite_token.slice(0,12)+'…'))+'</div></div>'
-      + '<button class="btn-secondary" onclick="copyInviteLink(\''+escapeHtml(d.join_link || d.invite_token)+'\')">Copy</button>';
-    list.prepend(div);
+    addPendingInviteRow(email, role, d.join_link || d.invite_token);
   } else if(d && d.detail){
     showToast(d.detail,'error');
   }
+}
+function addPendingInviteRow(email, role, link){
+  var list = document.getElementById('pendingInvitesList');
+  if(!list) return;
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border)';
+  div.innerHTML = '<div style="min-width:0"><div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div>'
+    + '<div class="text-xs-gold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">'+escapeHtml(link || 'Token active')+'</div></div>'
+    + '<button class="btn-secondary" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>';
+  list.prepend(div);
 }
 function copyInviteLink(link){
   if(navigator.clipboard && navigator.clipboard.writeText){

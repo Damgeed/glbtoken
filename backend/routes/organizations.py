@@ -200,46 +200,95 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     if req.role not in ("admin", "member", "viewer"):
         _400("Role must be 'admin', 'member' or 'viewer'")
 
-    # Invalidate any previous unused invites for this org + email
+    base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
+    inviter_name = user.name or user.email or "Someone"
+    subject = f"You're invited to join {org.name} on GlbTOKEN"
+
+    def _send(invite_token):
+        """Build the join link + email body and attempt delivery (best-effort)."""
+        join_link = f"{base_url}/join.html?org={org_id}&token={invite_token}"
+        body = (
+            f"Hello,\n\n"
+            f"{inviter_name} invited you to join the organization \"{org.name}\" "
+            f"on GlbTOKEN as {req.role}.\n\n"
+            f"Accept the invitation:\n{join_link}\n\n"
+            f"If the link doesn't work, sign in with {email} and use this invite code: {invite_token}\n\n"
+            f"This invitation expires in 7 days."
+        )
+        email_sent = send_email(email, subject, body)
+        return join_link, email_sent
+
+    now = datetime.now(timezone.utc)
+
+    # ── Duplicate invite guard: if an active (unused, unexpired) invite already
+    #    exists for this org + email, DON'T create another one. Inform the caller
+    #    and offer a resend (reuses the same token/link).
+    existing_invite = db.query(OrgInvite).filter(
+        OrgInvite.org_id == org_id,
+        OrgInvite.email == email,
+        OrgInvite.used == False,  # noqa: E712
+        (OrgInvite.expires_at.is_(None)) | (OrgInvite.expires_at > now),
+    ).first()
+
+    if existing_invite:
+        if req.resend:
+            # Resend the SAME invite — refresh role if the inviter changed it, keep token
+            if req.role != existing_invite.role:
+                existing_invite.role = req.role
+                db.commit()
+            join_link, email_sent = _send(existing_invite.token)
+            return {
+                "status": "resent",
+                "invite_token": existing_invite.token,
+                "join_link": join_link,
+                "org_name": org.name,
+                "invited_email": email,
+                "role": existing_invite.role or req.role,
+                "expires_at": existing_invite.expires_at.isoformat() if existing_invite.expires_at else None,
+                "email_sent": email_sent,
+                "message": f"Invite resent to {email}." + (" Email delivered." if email_sent else " Share the invite link with them."),
+            }
+        # No duplicate creation — surface the existing invite so the owner can resend or share
+        return {
+            "status": "already_invited",
+            "invite_token": existing_invite.token,
+            "join_link": f"{base_url}/join.html?org={org_id}&token={existing_invite.token}",
+            "org_name": org.name,
+            "invited_email": email,
+            "role": existing_invite.role or req.role,
+            "expires_at": existing_invite.expires_at.isoformat() if existing_invite.expires_at else None,
+            "message": f"An active invite already exists for {email}. Resend it instead of creating a duplicate?",
+        }
+
+    # No active invite — clean up any leftover expired invites for this org + email,
+    # then persist a fresh token with a 7-day expiry (join validates against the DB)
     db.query(OrgInvite).filter(
         OrgInvite.org_id == org_id,
         OrgInvite.email == email,
         OrgInvite.used == False,  # noqa: E712
     ).delete(synchronize_session=False)
 
-    # Persist the invite token with a 7-day expiry (join validates against the DB)
     invite_token = secrets.token_urlsafe(32)
     invite = OrgInvite(
         org_id=org_id,
         email=email,
         token=invite_token,
         role=req.role,
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        expires_at=now + timedelta(days=7),
     )
     db.add(invite)
     db.commit()
 
-    # Best-effort email with a one-click join link (fall back to sharing the link/token)
-    base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
-    join_link = f"{base_url}/join.html?org={org_id}&token={invite_token}"
-    inviter_name = user.name or user.email or "Someone"
-    subject = f"You're invited to join {org.name} on GlbTOKEN"
-    body = (
-        f"Hello,\n\n"
-        f"{inviter_name} invited you to join the organization \"{org.name}\" "
-        f"on GlbTOKEN as {req.role}.\n\n"
-        f"Accept the invitation:\n{join_link}\n\n"
-        f"If the link doesn't work, sign in with {email} and use this invite code: {invite_token}\n\n"
-        f"This invitation expires in 7 days."
-    )
-    email_sent = send_email(email, subject, body)
+    join_link, email_sent = _send(invite_token)
 
     return {
+        "status": "invited",
         "invite_token": invite_token,
         "join_link": join_link,
         "org_name": org.name,
         "invited_email": email,
         "role": req.role,
+        "expires_at": invite.expires_at.isoformat() if invite.expires_at else None,
         "email_sent": email_sent,
         "message": f"Invite sent to {email}." + (" Email delivered." if email_sent else " Share the invite link with them."),
     }
