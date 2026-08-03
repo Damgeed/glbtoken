@@ -218,3 +218,48 @@
 #section-team {
   display: block;
 }
+
+/* ── Pending invite rows ──
+   Desktop: email — role (expires inline), link below, Copy right.
+   Mobile : email — role on top, **Expires:** date in the middle, link below (as is). */
+.invite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.invite-main {
+  min-width: 0;
+}
+.invite-exp {
+  display: inline;
+  margin-left: 0.4rem;
+}
+.invite-exp b {
+  font-weight: 700;
+  color: var(--text);
+}
+.invite-link {
+  display: block;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+@media (max-width: 767px) {
+  .invite-item {
+    align-items: flex-start;
+  }
+  .invite-exp {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.2rem;
+  }
+  .invite-link {
+    max-width: none;
+    margin-top: 0.2rem;
+  }
+}

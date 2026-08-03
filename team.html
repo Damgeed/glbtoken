@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1178" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1025" />
+<link rel="stylesheet" href="team.css?v=1026" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -394,11 +394,13 @@ async function loadOrgDetails(orgId){
     } else {
       invitesEl.innerHTML = invites.map(function(iv){
         var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
-        var exp = iv.expires_at ? ' — expires '+new Date(iv.expires_at).toLocaleDateString() : '';
+        var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> '+new Date(iv.expires_at).toLocaleDateString()+'</span>' : '';
         var roleLabel = iv.role ? iv.role.charAt(0).toUpperCase()+iv.role.slice(1) : 'Member';
-        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border)">'
-          + '<div style="min-width:0"><div class="text-sm">'+escapeHtml(iv.email)+' <span class="text-xs-muted-2">— '+roleLabel+exp+'</span></div>'
-          + '<div class="text-xs-gold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">'+escapeHtml(link)+'</div></div>'
+        return '<div class="invite-item">'
+          + '<div class="invite-main">'
+          + '<div class="text-sm">'+escapeHtml(iv.email)+' <span class="text-xs-muted-2">— '+roleLabel+'</span>'+exp+'</div>'
+          + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
+          + '</div>'
           + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button></div>';
       }).join('');
     }
@@ -445,7 +447,7 @@ async function sendInvite(){
         var d2 = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role, resend:true});
         if(d2 && (d2.status === 'resent' || d2.invite_token)){
           showToast(d2.email_sent ? 'Invite email resent to '+email : 'Invite link already active — share it','success');
-          addPendingInviteRow(email, role, d2.join_link || d.invite_token);
+          addPendingInviteRow(email, role, d2.join_link || d2.invite_token, d2.expires_at);
         } else if(d2 && d2.detail){ showToast(d2.detail,'error'); }
       }, 'Resend');
     return;
@@ -453,18 +455,22 @@ async function sendInvite(){
   if(d && d.invite_token){
     showToast(d.email_sent ? 'Invite email sent to '+email : 'Invite link generated — share it','success');
     document.getElementById('inviteEmail').value = '';
-    addPendingInviteRow(email, role, d.join_link || d.invite_token);
+    addPendingInviteRow(email, role, d.join_link || d.invite_token, d.expires_at);
   } else if(d && d.detail){
     showToast(d.detail,'error');
   }
 }
-function addPendingInviteRow(email, role, link){
+function addPendingInviteRow(email, role, link, expiresAt){
   var list = document.getElementById('pendingInvitesList');
   if(!list) return;
   var div = document.createElement('div');
-  div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border)';
-  div.innerHTML = '<div style="min-width:0"><div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div>'
-    + '<div class="text-xs-gold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">'+escapeHtml(link || 'Token active')+'</div></div>'
+  div.className = 'invite-item';
+  var roleLabel = role.charAt(0).toUpperCase()+role.slice(1);
+  var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> '+new Date(expiresAt).toLocaleDateString()+'</span>' : '';
+  div.innerHTML = '<div class="invite-main">'
+    + '<div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+roleLabel+'</span>'+exp+'</div>'
+    + '<div class="invite-link text-xs-gold">'+escapeHtml(link || 'Token active')+'</div>'
+    + '</div>'
     + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>';
   list.prepend(div);
 }
