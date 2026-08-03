@@ -135,12 +135,17 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
         redemptions = db.query(ReferralRedemption).filter(
             ReferralRedemption.referrer_code == code
         ).order_by(desc(ReferralRedemption.created_at)).all()
+        # Batch-fetch referred users (avoid N+1: one query for all ids)
+        referred_ids = {r.referred_user_id for r in redemptions}
+        referred_names = {}
+        if referred_ids:
+            for u in db.query(User).filter(User.id.in_(referred_ids)).all():
+                referred_names[u.id] = u.name
         for r in redemptions:
-            referred_user = db.query(User).filter(User.id == r.referred_user_id).first()
             rewards.append({
                 "amount": r.amount,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
-                "referred_user_name": referred_user.name if referred_user else "Unknown",
+                "referred_user_name": referred_names.get(r.referred_user_id, "Unknown"),
             })
 
     return {
@@ -166,13 +171,19 @@ def get_referral_rewards(request: Request, user: User = Depends(get_current_user
         ReferralRedemption.referrer_code == user.referral_code
     ).order_by(desc(ReferralRedemption.created_at)).all()
     
+    # Batch-fetch referred users (avoid N+1: one query for all ids)
+    referred_ids = {r.referred_user_id for r in redemptions}
+    referred_names = {}
+    if referred_ids:
+        for u in db.query(User).filter(User.id.in_(referred_ids)).all():
+            referred_names[u.id] = u.name
+    
     rewards = []
     for r in redemptions:
-        referred_user = db.query(User).filter(User.id == r.referred_user_id).first()
         rewards.append({
             "amount": r.amount,
             "created_at": r.created_at.isoformat() if r.created_at else None,
-            "referred_user_name": referred_user.name if referred_user else "Unknown",
+            "referred_user_name": referred_names.get(r.referred_user_id, "Unknown"),
         })
     
     total = sum(r.amount for r in redemptions)
