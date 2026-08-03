@@ -341,3 +341,96 @@
   .refs-source-name { width: 70px; font-size: 0.78rem; }
   .refs-source-count { width: 70px; font-size: 0.72rem; }
 }
+
+/* ── Conversion Funnel (v1131) ── */
+.refs-funnel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+.refs-funnel-label {
+  width: 110px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary, #E5E7EB);
+}
+.refs-funnel-sub {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+.refs-funnel-bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+.refs-funnel-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.refs-funnel-fill.f-teal   { background: linear-gradient(90deg, #00D68F, #00B377); }
+.refs-funnel-fill.f-gold   { background: linear-gradient(90deg, #F4B400, #E0A500); }
+.refs-funnel-fill.f-green  { background: linear-gradient(90deg, #4CAF50, #2E7D32); }
+.refs-funnel-count {
+  width: 64px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary, #E5E7EB);
+}
+.refs-funnel-count em {
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-left: 0.2rem;
+}
+.refs-funnel-note {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.refs-funnel-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+.refs-funnel-chip.ch-pending { background: rgba(79,195,247,0.15); color: #4FC3F7; }
+.refs-funnel-chip.ch-idle    { background: rgba(255,152,0,0.15); color: #FF9800; }
+.refs-funnel-conv {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.refs-funnel-conv strong { color: #00D68F; font-size: 0.9rem; }
+@media (max-width: 480px) {
+  .refs-funnel-label { width: 80px; font-size: 0.78rem; }
+  .refs-funnel-count { width: 54px; font-size: 0.75rem; }
+  .refs-funnel-conv { margin-left: 0; width: 100%; }
+}
+
+/* ── Referral status badges (v1131) ── */
+.refs-status-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.refs-status-badge.refs-st-rewarded { background: rgba(0,214,143,0.15); color: #00D68F; }
+.refs-status-badge.refs-st-active   { background: rgba(244,180,0,0.15);  color: #F4B400; }
+.refs-status-badge.refs-st-pending  { background: rgba(79,195,247,0.15); color: #4FC3F7; }
+.refs-status-badge.refs-st-idle     { background: rgba(255,152,0,0.15);  color: #FF9800; }

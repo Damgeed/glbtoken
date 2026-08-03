@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1182" />
-<link rel="stylesheet" href="referrals.css?v=1027" />
+<link rel="stylesheet" href="referrals.css?v=1028" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   </head>
 <body>
@@ -221,6 +221,17 @@
         </div>
       </div>
 
+      <!-- Conversion Funnel — invited → activated → rewarded -->
+      <div class="dash-card" id="refFunnelCard" style="display:none">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          Conversion Funnel
+        </div>
+        <div id="refFunnelBody"></div>
+      </div>
+
       <!-- Top Channels — channel attribution -->
       <div class="dash-card" id="refSourcesCard" style="display:none">
         <div class="dash-section-title">
@@ -324,7 +335,7 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1131"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="referral.js?v=1130"></script>
+<script data-cfasync="false" src="referral.js?v=1131"></script>
 
 </body>
 </html>

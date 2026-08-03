@@ -13,6 +13,15 @@ from common import _400, _500, limiter, REFERRAL_REWARD_GT, REFERRAL_MIN_SPEND_T
 router = APIRouter()
 
 
+def _aware(dt):
+    """Ensure a datetime is timezone-aware (SQLite returns naive, Postgres aware)."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
 def _build_rewards(db: Session, code: str):
     """Build reward-history rows for a referral code (shared by stats + rewards endpoints).
     Batch-fetches referred users to avoid N+1 queries."""
@@ -156,21 +165,74 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
     # Count referrals (users who used this user's code)
     total_referrals = db.query(User).filter(User.referred_by == code).count() if code else 0
     
-    # Recent referrals
+    # Recent referrals — with lifecycle status for the funnel (v1131):
+    #   rewarded = already triggered a referral reward
+    #   active   = has paid consumption but not yet rewarded
+    #   pending  = signed up, no consumption yet
+    #   idle     = signed up >30d ago, never consumed (churn risk)
     recent = []
     redemptions = {}
+    consumed_ids = set()
     if code:
         for r in db.query(ReferralRedemption).filter(ReferralRedemption.referrer_code == code).all():
             redemptions[r.referred_user_id] = r.amount
         recent_users = db.query(User).filter(
             User.referred_by == code
-        ).order_by(desc(User.created_at)).limit(10).all()
-        recent = [{
-            "id": u.id, "name": u.name, "email": u.email,
-            "joined_at": u.created_at.isoformat() if u.created_at else None,
-            "status": "active",
-            "reward": float(redemptions.get(u.id, 0) or 0),
-        } for u in recent_users]
+        ).order_by(desc(User.created_at)).limit(50).all()
+        # Batch: which referred users have ANY completed consumption tx?
+        referred_ids = [u.id for u in recent_users]
+        if referred_ids:
+            consumed_ids = set(x[0] for x in db.query(Transaction.user_id).filter(
+                Transaction.user_id.in_(referred_ids),
+                Transaction.type == "consumption",
+                Transaction.status == "completed",
+            ).distinct().all())
+        now = datetime.now(timezone.utc)
+        recent = []
+        for u in recent_users:
+            has_reward = u.id in redemptions
+            has_consumed = u.id in consumed_ids
+            if has_reward:
+                st = "rewarded"
+            elif has_consumed:
+                st = "active"
+            elif _aware(u.created_at) and (now - _aware(u.created_at)) > timedelta(days=30):
+                st = "idle"
+            else:
+                st = "pending"
+            recent.append({
+                "id": u.id, "name": u.name, "email": u.email,
+                "joined_at": u.created_at.isoformat() if u.created_at else None,
+                "status": st,
+                "reward": float(redemptions.get(u.id, 0) or 0),
+            })
+
+    # Conversion funnel — all referred users (not just recent 50)
+    funnel = {"total": 0, "rewarded": 0, "active": 0, "pending": 0, "idle": 0}
+    if code:
+        all_referred = db.query(User).filter(User.referred_by == code).all()
+        all_ids = [u.id for u in all_referred]
+        funnel["total"] = len(all_ids)
+        funnel["rewarded"] = len(redemptions)
+        if all_ids:
+            consumed_all = set(x[0] for x in db.query(Transaction.user_id).filter(
+                Transaction.user_id.in_(all_ids),
+                Transaction.type == "consumption",
+                Transaction.status == "completed",
+            ).distinct().all())
+            funnel["active"] = len(consumed_all - set(redemptions.keys()))
+            now2 = datetime.now(timezone.utc)
+            pending_cnt = 0
+            idle_cnt = 0
+            for u in all_referred:
+                if u.id in redemptions or u.id in consumed_all:
+                    continue
+                if _aware(u.created_at) and (now2 - _aware(u.created_at)) > timedelta(days=30):
+                    idle_cnt += 1
+                else:
+                    pending_cnt += 1
+            funnel["pending"] = pending_cnt
+            funnel["idle"] = idle_cnt
     
     # History for charts (last 14 days: referrals + earnings per day)
     history = []
@@ -220,6 +282,7 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
         "rewards": rewards,
         "rewards_total": float(sum(r["amount"] for r in rewards)),
         "sources": sources,
+        "funnel": funnel,
         "claim_threshold": 1.0,
         "min_spend_tokens": REFERRAL_MIN_SPEND_TOKENS,
     }

@@ -90,13 +90,46 @@ async function loadReferralStats() {
         srcCard.style.display='none';
       }
     }
-    // Referrals table (recent_referrals — name/email/joined_at/reward)
+    // Conversion funnel (v1131): invited → consumed → rewarded, with idle risk
+    const funnelCard=document.getElementById('refFunnelCard');
+    const funnelBody=document.getElementById('refFunnelBody');
+    if(funnelCard&&funnelBody){
+      var f=d.funnel||{};
+      var total=f.total||0;
+      if(total>0){
+        funnelCard.style.display='';
+        var activeN=f.active||0, rewardedN=f.rewarded||0, pendingN=f.pending||0, idleN=f.idle||0;
+        var consumedN=activeN+rewardedN;
+        function pct(n){ return Math.round(100*n/total); }
+        function row(label,n,sub,barCls){
+          return '<div class="refs-funnel-row"><div class="refs-funnel-label">'+label+'<span class="refs-funnel-sub">'+sub+'</span></div>'+
+            '<div class="refs-funnel-bar"><div class="refs-funnel-fill '+barCls+'" style="width:'+pct(n)+'%"></div></div>'+
+            '<div class="refs-funnel-count">'+n+' <em>'+pct(n)+'%</em></div></div>';
+        }
+        var convPct = total>0 ? Math.round(100*consumedN/total) : 0;
+        funnelBody.innerHTML =
+          row('Invited', total, 'signed up via your link', 'f-teal') +
+          row('Activated', consumedN, 'made first paid call', 'f-gold') +
+          row('Rewarded', rewardedN, 'earned you GT', 'f-green') +
+          '<div class="refs-funnel-note">'+
+            (pendingN>0 ? '<span class="refs-funnel-chip ch-pending">'+pendingN+' pending</span> ' : '')+
+            (idleN>0 ? '<span class="refs-funnel-chip ch-idle">'+idleN+' idle 30d+</span> ' : '')+
+            '<span class="refs-funnel-conv"><strong>'+convPct+'%</strong> activation rate</span>'+
+          '</div>';
+      }else{
+        funnelCard.style.display='none';
+      }
+    }
+    // Referrals table (recent_referrals — name/email/joined_at/reward + status)
     const tableBody=document.getElementById('refTableBody');
     if(tableBody){
       const refs=d.recent_referrals||[];
       if(refs.length){
         renderTableWithCollapse('refTableBody', refs.map(function(r){
-          return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td class="td-date">'+(r.joined_at?fmtDTStack(r.joined_at):'<div class="td-date-strong">—</div>')+'</td><td><span class="text-success-color">● Active</span></td><td>'+(r.reward>0?(r.reward+' GT'):'—')+'</td></tr>';
+          var st=r.status||'pending';
+          var stLabel=st.charAt(0).toUpperCase()+st.slice(1);
+          var stCls='refs-st-'+st;
+          return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td class="td-date">'+(r.joined_at?fmtDTStack(r.joined_at):'<div class="td-date-strong">—</div>')+'</td><td><span class="refs-status-badge '+stCls+'">'+stLabel+'</span></td><td>'+(r.reward>0?(r.reward+' GT'):'—')+'</td></tr>';
         }), 'refCollapse', 'refMoreBtn');
       }else{
         clearTableCollapse('refCollapse','refMoreBtn');
