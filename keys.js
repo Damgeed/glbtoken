@@ -39,7 +39,7 @@
       const list=document.getElementById('keyList');
       if(!k||!k.length){list.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem;font-size:0.85rem">No API keys yet. Create one to get started.</p>';return}
       const ordered=orderKeys(k);
-      list.innerHTML=ordered.map(key=>`
+      const cards=ordered.map(key=>`
         <div class="key-swipe" data-swipe-id="${escapeHtml(String(key.id))}">
           <div class="key-swipe-actions">
             <button class="swipe-action ${key.is_active?'swipe-pause':'swipe-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
@@ -60,9 +60,34 @@
             </div>
           </div>
         </div>
-      `).join('');
+      `);
+      // Mobile: first 3 visible, rest behind a Show-More toggle (desktop shows all)
+      const first=cards.slice(0,3).join('');
+      const rest=cards.slice(3);
+      list.innerHTML=first
+        + (rest.length
+            ? '<div id="keyCollapse" class="key-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
+              + '<button id="keyMoreBtn" class="list-more-btn" onclick="toggleKeyMore()">Show More ('+rest.length+') ▼</button>'
+            : '');
       initKeySwipe();
       initKeyDrag();
+      refreshKeyMoreBtn();
+    }
+    function toggleKeyMore(){
+      const collapse=document.getElementById('keyCollapse');
+      if(!collapse)return;
+      collapse.classList.toggle('open');
+      refreshKeyMoreBtn();
+    }
+    function refreshKeyMoreBtn(){
+      const collapse=document.getElementById('keyCollapse');
+      const btn=document.getElementById('keyMoreBtn');
+      if(!collapse||!btn)return;
+      const count=collapse.querySelectorAll('.key-swipe').length;
+      collapse.setAttribute('data-count',count);
+      if(!count){btn.style.display='none';return;}
+      btn.style.display='';
+      btn.innerHTML=collapse.classList.contains('open')?'Show Less ▲':'Show More ('+count+') ▼';
     }
 
     // ── Swipe-left to reveal Pause/Delete (mobile, iOS-mail style) ──

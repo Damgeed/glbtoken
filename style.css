@@ -7955,3 +7955,27 @@ body {
 @media (max-width: 480px) {
   .org-scroll-arrow { width: 26px; height: 26px; font-size: 0.95rem; }
 }
+
+/* ── Shared show-more collapse (mobile): keys, activity, etc. ── */
+.key-collapse, .activity-collapse { display: block; }   /* desktop: show all */
+#keyMoreBtn, #activityMoreBtn { display: none; }
+.list-more-btn {
+  display: block;
+  width: 100%;
+  margin: 0.6rem auto 0;
+  padding: 0.5rem;
+  background: rgba(244, 180, 0, 0.08);
+  border: 1px dashed rgba(244, 180, 0, 0.35);
+  color: #FFC733;
+  font-size: 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.list-more-btn:active { background: rgba(244, 180, 0, 0.16); }
+@media (max-width: 767px) {
+  .key-collapse, .activity-collapse { display: none; }
+  .key-collapse.open, .activity-collapse.open { display: block; }
+  #keyMoreBtn, #activityMoreBtn { display: block; }
+}

@@ -395,15 +395,42 @@ async function loadActivityFeed(){
     return;
   }
   if(countEl) countEl.textContent = items.length + ' events';
-  container.innerHTML = items.slice(0,8).map(function(a){
+  var activityCards = items.slice(0,8).map(function(a){
     var type = a.type||'';
     var time = timeAgo(a.created_at);
     var desc;
-    if(type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+(a.payment_method||'payment'); }
+    if(type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+escapeHtml(a.payment_method||'payment'); }
     else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call — '+(a.tokens||0).toLocaleString()+' tokens'; }
     else { desc = escapeHtml(a.model||a.payment_method||a.type||'Activity'); }
     return itemHtml(type, desc, time);
-  }).join('');
+  });
+  // Mobile: first 3 visible, rest behind a Show-More toggle (desktop shows all 8)
+  var actFirst = activityCards.slice(0,3).join('');
+  var actRest = activityCards.slice(3);
+  container.innerHTML = actFirst
+    + (actRest.length
+        ? '<div id="activityCollapse" class="activity-collapse" data-count="'+actRest.length+'">'+actRest.join('')+'</div>'
+          + '<button id="activityMoreBtn" class="list-more-btn" onclick="toggleActivityMore()">Show More ('+actRest.length+') ▼</button>'
+        : '');
+  refreshActivityMoreBtn();
+}
+function toggleActivityMore(){
+  var collapse = document.getElementById('activityCollapse');
+  if(!collapse) return;
+  collapse.classList.toggle('open');
+  refreshActivityMoreBtn();
+}
+function refreshActivityMoreBtn(){
+  var collapse = document.getElementById('activityCollapse');
+  var btn = document.getElementById('activityMoreBtn');
+  if(!collapse || !btn) return;
+  var count = collapse.querySelectorAll('.activity-item').length;
+  collapse.setAttribute('data-count', count);
+  if(!count){ btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  btn.innerHTML = collapse.classList.contains('open')
+    ? 'Show Less ▲'
+    : 'Show More ('+count+') ▼';
 }
 
 // ── Recent Transactions (real, 5-col table) ──
