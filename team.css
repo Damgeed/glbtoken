@@ -325,35 +325,61 @@
     display: none;
   }
   .tx-table tbody tr {
-    display: block;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "member tokens"
+      "email email"
+      "role actions";
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 0.5rem 0.65rem;
+    padding: 0.6rem 0.75rem;
     margin-bottom: 0.6rem;
     background: var(--bg-alt);
   }
   .tx-table tbody td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
+    display: block;
     border: none;
-    padding: 0.3rem 0;
+    padding: 0.15rem 0;
     white-space: normal;
-    text-align: right;
-  }
-  .tx-table tbody td::before {
-    content: attr(data-label);
-    color: var(--text-muted);
-    font-size: 0.72rem;
-    flex-shrink: 0;
     text-align: left;
   }
-  .tx-table tbody td:first-child {
-    padding-top: 0.05rem;
+  .tx-table tbody td::before {
+    display: none;
   }
-  .tx-table tbody td:last-child {
-    padding-bottom: 0.05rem;
+  .tx-table tbody td[data-label="Member"] {
+    grid-area: member;
+  }
+  .tx-table tbody td[data-label="Email"] {
+    grid-area: email;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .tx-table tbody td[data-label="Role"] {
+    grid-area: role;
+    align-self: center;
+  }
+  .tx-table tbody td[data-label="Tokens Used"] {
+    grid-area: tokens;
+    text-align: right;
+    align-self: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .tx-table tbody td[data-label="Actions"] {
+    grid-area: actions;
+    text-align: right;
+    align-self: center;
+  }
+  .tx-table tbody td[data-label="Actions"] .flex-row-gap {
+    justify-content: flex-end;
+  }
+  .tx-table tbody td[data-label="Actions"] .btn-secondary {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+  }
+  .tx-table tbody td.no-actions {
+    display: none;
   }
   .member-toolbar {
     flex-direction: column;
