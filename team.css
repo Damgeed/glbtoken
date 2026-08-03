@@ -544,11 +544,29 @@
   }
   .member-card-tokens {
     text-align: center;
-    margin-top: 0.35rem;
-    font-size: 0.8rem;
-    color: var(--text-muted);
+    margin-top: 0.45rem;
+    padding-top: 0.35rem;
     border-top: 1px dashed var(--border);
-    padding-top: 0.3rem;
+  }
+  .member-card-tokens b {
+    display: inline-block;
+    background: rgba(244, 180, 0, 0.12);
+    border: 1px solid rgba(244, 180, 0, 0.28);
+    color: #FFC733;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    padding: 0.1rem 0.7rem;
+    border-radius: 20px;
+    line-height: 1.45;
+  }
+  .member-card-tokens span {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
   }
 }
 .swipe-transfer { background: rgba(0, 214, 143, 0.16); color: #00D68F; }
