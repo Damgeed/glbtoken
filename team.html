@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1180" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1039" />
+<link rel="stylesheet" href="team.css?v=1040" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -176,6 +176,33 @@
         <div class="dash-stat-card"><div class="num" id="orgAvgCost">$0.000</div><div class="lbl">Avg Cost / Call</div><div class="chg down">—</div></div>
       </div>
 
+      <!-- Team Insights (mix / capacity / top consumers) -->
+      <div class="dash-card mt-lg" id="orgInsightCard" style="display:none">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFC733" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+          </svg>
+          Team Insights
+        </div>
+        <div class="insight-grid">
+          <div class="insight-block">
+            <div class="insight-lbl">Member Mix</div>
+            <div id="mixBars"></div>
+          </div>
+          <div class="insight-block">
+            <div class="insight-lbl">Capacity</div>
+            <div class="capacity-row">
+              <span id="capText" class="cap-text">0 / 0</span>
+              <div class="capacity-track"><div class="capacity-fill" id="capFill"></div></div>
+            </div>
+          </div>
+          <div class="insight-block">
+            <div class="insight-lbl">Top Consumers</div>
+            <div id="topConsumers"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Members Table -->
       <div class="dash-card" id="membersCard">
         <div class="dash-section-title">
@@ -187,6 +214,20 @@
         <div class="member-toolbar">
           <input type="search" id="memberSearch" class="input-search" placeholder="Search members by name or email..." oninput="onMemberSearch(this.value)" />
           <span id="memberCount" class="text-sm-muted-3"></span>
+        </div>
+        <div class="member-filters">
+          <div class="filter-chips" id="memberFilterChips">
+            <button class="chip active" data-role="all" onclick="onMemberFilter('all')">All</button>
+            <button class="chip" data-role="owner" onclick="onMemberFilter('owner')">Owner</button>
+            <button class="chip" data-role="admin" onclick="onMemberFilter('admin')">Admin</button>
+            <button class="chip" data-role="member" onclick="onMemberFilter('member')">Member</button>
+          </div>
+          <select id="memberSort" class="tag-filter" onchange="onMemberSort(this.value)" title="Sort members">
+            <option value="name">Name A–Z</option>
+            <option value="tokens-desc">Most tokens</option>
+            <option value="tokens-asc">Least tokens</option>
+            <option value="role">Role</option>
+          </select>
         </div>
         <div  class="scroll-x">
           <table class="tx-table">
@@ -219,12 +260,27 @@
             <option value="member" selected>Member</option>
           </select>
           <button class="btn-primary btn-nowrap" onclick="sendInvite()" >Send Invite</button>
+          <button class="btn-secondary btn-nowrap" id="batchToggleBtn" onclick="toggleBatchInvite()">Batch</button>
+        </div>
+        <!-- Batch invite panel -->
+        <div class="batch-invite" id="batchInvitePanel" style="display:none">
+          <textarea id="batchEmails" class="batch-emails" rows="3" placeholder="Paste multiple emails — separated by commas or new lines:&#10;alice@acme.com, bob@acme.com&#10;carol@acme.com"></textarea>
+          <div class="batch-row">
+            <select id="batchRole" class="input-field">
+              <option value="member">Member</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button class="btn-primary btn-nowrap" id="batchSendBtn" onclick="sendBatchInvites()">Send Invites</button>
+            <button class="btn-secondary btn-nowrap" onclick="toggleBatchInvite(false)">Cancel</button>
+          </div>
+          <div id="batchResult" class="batch-result"></div>
         </div>
         <!-- Pending Invites -->
         <div  class="section-divider">
           <div class="dash-section-title text-sm-mb" >
             Pending Invites
           </div>
+          <div id="inviteStats" class="invite-stats"></div>
           <div id="pendingInvitesList">
             <p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Pending invites appear here after sending.</p>
           </div>
@@ -265,6 +321,28 @@
     
   </div>
 
+<!-- Member detail drawer -->
+<div class="member-drawer-overlay" id="memberDrawerOverlay" onclick="closeMemberDrawer()"></div>
+<aside class="member-drawer" id="memberDrawer" role="dialog" aria-modal="true" aria-labelledby="mdName">
+  <div class="member-drawer-head">
+    <div class="avatar-lg-gold" id="mdAvatar">—</div>
+    <div class="member-drawer-id">
+      <h3 id="mdName">—</h3>
+      <div class="member-drawer-email"><span id="mdEmail">—</span><button class="btn-copy-mini" onclick="copyEmail(document.getElementById('mdEmail').textContent)" title="Copy email">⧉</button></div>
+    </div>
+    <button class="member-drawer-close" onclick="closeMemberDrawer()" aria-label="Close">✕</button>
+  </div>
+  <div class="member-drawer-body">
+    <div id="mdMeta" class="member-drawer-meta"></div>
+    <div id="mdStats" class="md-stats"></div>
+    <div class="md-usage">
+      <div class="md-usage-track"><div class="md-usage-fill" id="mdUsageFill"></div></div>
+      <div class="md-usage-lbl">Usage vs top member</div>
+    </div>
+    <div id="mdActions" class="member-drawer-actions"></div>
+  </div>
+</aside>
+
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
@@ -280,6 +358,11 @@ var memberQuery = '';         // live search filter (name / email)
 var memberPage = 1;
 var memberPageSize = 10;
 var lastUsageBreakdown = [];  // cached per-member tokens from /usage for re-fill after search/pagination
+var memberRoleFilter = 'all'; // 'all' | 'owner' | 'admin' | 'member'
+var memberSort = 'name';      // 'name' | 'tokens-desc' | 'tokens-asc' | 'role'
+var pendingInvites = [];      // server-truth invite list for stats/countdown
+var currentMaxMembers = 0;    // org member capacity (for insight bar)
+var drawerUserId = null;      // member currently shown in the detail drawer
 
 function timeAgo(iso){
   if(!iso) return '';
@@ -294,9 +377,171 @@ function timeAgo(iso){
 }
 function capRole(r){ return r ? r.charAt(0).toUpperCase()+r.slice(1) : 'Member'; }
 
+// ── Member helpers (usage lookup / sort / filter) ──
+function memberTokens(userId){
+  if(!lastUsageBreakdown) return 0;
+  for(var i=0;i<lastUsageBreakdown.length;i++){
+    if(String(lastUsageBreakdown[i].user_id) === String(userId)) return lastUsageBreakdown[i].tokens_used||0;
+  }
+  return 0;
+}
+function memberTotalTokens(){
+  var t = 0;
+  (lastUsageBreakdown||[]).forEach(function(x){ t += (x.tokens_used||0); });
+  return t;
+}
+function getMemberById(userId){
+  for(var i=0;i<allMembers.length;i++) if(String(allMembers[i].user_id) === String(userId)) return allMembers[i];
+  return null;
+}
+function sortMembers(list){
+  var arr = list.slice();
+  if(memberSort === 'tokens-desc') arr.sort(function(a,b){ return memberTokens(b.user_id)-memberTokens(a.user_id) || (a.name||'').localeCompare(b.name||''); });
+  else if(memberSort === 'tokens-asc') arr.sort(function(a,b){ return memberTokens(a.user_id)-memberTokens(b.user_id) || (a.name||'').localeCompare(b.name||''); });
+  else if(memberSort === 'role') arr.sort(function(a,b){ return (a.role||'member').localeCompare(b.role||'member') || (a.name||'').localeCompare(b.name||''); });
+  else arr.sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); });
+  return arr;
+}
+function updateFilterChips(){
+  var counts = {all: allMembers.length, owner:0, admin:0, member:0};
+  allMembers.forEach(function(m){
+    var r = m.role || 'member';
+    if(counts[r] !== undefined) counts[r]++;
+  });
+  document.querySelectorAll('#memberFilterChips .chip').forEach(function(c){
+    var r = c.getAttribute('data-role');
+    c.innerHTML = (r==='all' ? 'All' : capRole(r)) + ' <span class="chip-count">'+(counts[r]||0)+'</span>';
+    c.classList.toggle('active', memberRoleFilter === r);
+  });
+}
+function onMemberFilter(role){
+  memberRoleFilter = role;
+  memberPage = 1;
+  updateFilterChips();
+  renderMembers();
+}
+function onMemberSort(val){
+  memberSort = val || 'name';
+  memberPage = 1;
+  renderMembers();
+}
+
+// ── Invite helpers (countdown / stats) ──
+function fmtCountdown(iso){
+  if(!iso) return '';
+  var then = new Date(iso).getTime();
+  if(isNaN(then)) return '';
+  var diff = then - Date.now();
+  if(diff <= 0) return 'Expired';
+  var s = Math.floor(diff/1000);
+  var d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60);
+  if(d >= 2) return d+'d '+h+'h left';
+  if(d === 1) return '1d '+h+'h '+m+'m left';
+  if(h >= 1) return h+'h '+m+'m left';
+  return m+'m left';
+}
+function inviteStatus(iv){
+  if(!iv.expires_at) return 'active';
+  var diff = new Date(iv.expires_at).getTime() - Date.now();
+  if(diff <= 0) return 'expired';
+  if(diff <= 48*3600*1000) return 'soon';
+  return 'active';
+}
+function upsertPendingInvite(iv){
+  pendingInvites = pendingInvites.filter(function(x){ return x.email !== iv.email; });
+  pendingInvites.unshift(iv);
+}
+function renderInviteStats(){
+  var el = document.getElementById('inviteStats');
+  if(!el) return;
+  if(!pendingInvites.length){ el.innerHTML = ''; return; }
+  var pending=0, soon=0, expired=0;
+  pendingInvites.forEach(function(iv){
+    var st = inviteStatus(iv);
+    if(st === 'expired'){ expired++; }
+    else { pending++; if(st === 'soon') soon++; }
+  });
+  var html = '<span class="invite-stat"><b>'+pending+'</b> pending</span>';
+  if(soon) html += '<span class="invite-stat warn"><b>'+soon+'</b> expiring ≤48h</span>';
+  if(expired) html += '<span class="invite-stat expired"><b>'+expired+'</b> expired</span>';
+  el.innerHTML = html;
+}
+function startInviteTicker(){
+  if(window.__inviteTicker) return;
+  window.__inviteTicker = setInterval(function(){
+    document.querySelectorAll('.invite-countdown').forEach(function(el){
+      var exp = el.getAttribute('data-exp');
+      if(!exp) return;
+      var txt = fmtCountdown(exp);
+      el.textContent = txt;
+      el.classList.toggle('invite-countdown-expired', txt === 'Expired');
+      var item = el.closest('.invite-item');
+      if(item) item.classList.toggle('invite-expired', txt === 'Expired');
+    });
+    renderInviteStats();
+  }, 30000);
+}
+function expireInviteStyles(){
+  // Apply expired styling immediately on (re)render — countdown ticker keeps it fresh
+  document.querySelectorAll('.invite-countdown').forEach(function(el){
+    var exp = el.getAttribute('data-exp');
+    if(!exp) return;
+    var txt = fmtCountdown(exp);
+    el.textContent = txt;
+    el.classList.toggle('invite-countdown-expired', txt === 'Expired');
+    var item = el.closest('.invite-item');
+    if(item) item.classList.toggle('invite-expired', txt === 'Expired');
+  });
+}
+
+// ── Team insights (mix / capacity / top consumers) ──
+function renderOrgInsights(){
+  var card = document.getElementById('orgInsightCard');
+  if(!card) return;
+  if(!allMembers.length){ card.style.display = 'none'; return; }
+  card.style.display = '';
+  var counts = {owner:0, admin:0, member:0};
+  allMembers.forEach(function(m){
+    var r = m.role || 'member';
+    if(counts[r] !== undefined) counts[r]++; else counts.member++;
+  });
+  var mixHtml = '';
+  ['owner','admin','member'].forEach(function(r){
+    var pct = allMembers.length ? Math.round(counts[r]/allMembers.length*100) : 0;
+    mixHtml += '<div class="mix-row"><span class="mix-label">'+capRole(r)+'</span>'
+      + '<div class="mix-track"><div class="mix-fill mix-'+r+'" style="width:'+pct+'%"></div></div>'
+      + '<span class="mix-count">'+counts[r]+'</span></div>';
+  });
+  document.getElementById('mixBars').innerHTML = mixHtml;
+  var capText = document.getElementById('capText');
+  var capFill = document.getElementById('capFill');
+  if(capText) capText.textContent = allMembers.length + ' / ' + (currentMaxMembers || '—') + ' members';
+  if(capFill && currentMaxMembers){
+    var pct = Math.min(100, Math.round(allMembers.length/currentMaxMembers*100));
+    capFill.style.width = pct + '%';
+    capFill.classList.toggle('warn', pct >= 90);
+  } else if(capFill){ capFill.style.width = '0%'; }
+  var withTokens = allMembers.filter(function(m){ return memberTokens(m.user_id) > 0; })
+    .sort(function(a,b){ return memberTokens(b.user_id)-memberTokens(a.user_id); })
+    .slice(0,3);
+  var topEl = document.getElementById('topConsumers');
+  if(!topEl) return;
+  if(!withTokens.length){
+    topEl.innerHTML = '<div class="text-sm-muted-3">No usage yet this period</div>';
+    return;
+  }
+  var maxTok = memberTokens(withTokens[0].user_id);
+  topEl.innerHTML = withTokens.map(function(m){
+    var w = maxTok ? Math.max(4, Math.round(memberTokens(m.user_id)/maxTok*100)) : 0;
+    return '<div class="top-row"><span class="top-name">'+escapeHtml(m.name||'User')+'</span>'
+      + '<div class="top-track"><div class="top-fill" style="width:'+w+'%"></div></div>'
+      + '<span class="top-tokens">'+memberTokens(m.user_id).toLocaleString()+'</span></div>';
+  }).join('');
+}
+
 // Hide/show the org-specific sections (stats, members, invite, membership) + empty state
 function setOrgSectionsVisible(visible){
-  var ids = ['orgSwipeWrap','orgStatsGrid','membersCard','inviteSection','membershipSection'];
+  var ids = ['orgSwipeWrap','orgStatsGrid','orgInsightCard','membersCard','inviteSection','membershipSection'];
   ids.forEach(function(id){
     var el = document.getElementById(id);
     if(el) el.style.display = visible ? '' : 'none';
@@ -346,8 +591,17 @@ function resetTeamView(){
   var mobReset = document.getElementById('teamMembersMobile');
   if(mobReset) mobReset.innerHTML = '';
   document.getElementById('pendingInvitesList').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Pending invites appear here after sending.</p>';
-  // Reset member search / pagination state
+  var statsEl = document.getElementById('inviteStats');
+  if(statsEl) statsEl.innerHTML = '';
+  var insightEl = document.getElementById('orgInsightCard');
+  if(insightEl) insightEl.style.display = 'none';
+  // Reset member search / pagination / filter / sort state
   allMembers = []; currentMyRole = 'member'; memberQuery = ''; memberPage = 1; lastUsageBreakdown = [];
+  memberRoleFilter = 'all'; memberSort = 'name'; pendingInvites = []; currentMaxMembers = 0;
+  var sortEl = document.getElementById('memberSort');
+  if(sortEl) sortEl.value = 'name';
+  updateFilterChips();
+  closeMemberDrawer();
   var searchEl = document.getElementById('memberSearch');
   if(searchEl) searchEl.value = '';
   var countEl = document.getElementById('memberCount');
@@ -378,6 +632,7 @@ async function loadOrgDetails(orgId){
   avatar.textContent = (d.name && d.name.length) ? d.name[0].toUpperCase() : 'O';
   var members = d.members || [];
   document.getElementById('orgMemberCount').textContent = members.length + ' / ' + (d.max_members || '—') + ' members';
+  currentMaxMembers = d.max_members || 0;
   var myRole = d.my_role || 'member';
   var canManage = (myRole === 'owner' || myRole === 'admin');
   var roleEl = document.getElementById('orgRoleBadge');
@@ -438,12 +693,13 @@ async function loadOrgDetails(orgId){
   var invitesEl = document.getElementById('pendingInvitesList');
   if(invitesEl){
     var invites = d.pending_invites || [];
+    pendingInvites = invites.slice();
     if(!invites.length){
       invitesEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">No pending invites for this organization.</p>';
     } else {
       invitesEl.innerHTML = invites.map(function(iv){
         var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
-        var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> '+new Date(iv.expires_at).toLocaleDateString()+'</span>' : '';
+        var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(iv.expires_at)+'">'+fmtCountdown(iv.expires_at)+'</span></span>' : '';
         var sent = iv.created_at ? '<span class="invite-sent">sent '+timeAgo(iv.created_at)+'</span>' : '';
         var actions = '';
         var swipeActions = '';
@@ -473,7 +729,12 @@ async function loadOrgDetails(orgId){
           + '</div></div>';
       }).join('');
     }
+    renderInviteStats();
+    expireInviteStyles();
+    startInviteTicker();
   }
+  updateFilterChips();
+  renderOrgInsights();
 }
 
 // Render members with live search filter + pagination (client-side; list is fully loaded)
@@ -490,6 +751,10 @@ function renderMembers(myRole, orgId){
       return (m.name||'').toLowerCase().indexOf(q) !== -1 || (m.email||'').toLowerCase().indexOf(q) !== -1;
     });
   }
+  if(memberRoleFilter !== 'all'){
+    filtered = filtered.filter(function(m){ return (m.role||'member') === memberRoleFilter; });
+  }
+  filtered = sortMembers(filtered);
   var totalPages = Math.max(1, Math.ceil(filtered.length / memberPageSize));
   if(memberPage > totalPages) memberPage = totalPages;
   var pageRows = filtered.slice((memberPage-1)*memberPageSize, memberPage*memberPageSize);
@@ -507,7 +772,7 @@ function renderMembers(myRole, orgId){
       if(isOwner){
         roleCell = '<span class="badge-role-owner">Owner</span>';
       } else if(role === 'owner'){
-        roleCell = '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+        roleCell = '<select class="role-select tag-filter" onclick="event.stopPropagation()" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
           + ['admin','member'].map(function(r){
               return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+capRole(r)+'</option>';
             }).join('')
@@ -518,18 +783,18 @@ function renderMembers(myRole, orgId){
       // Remove: owner/admin only; nobody can remove the owner; admins cannot remove other admins
       var showRemove = canManage && !isOwner && !(role === 'admin' && m.role === 'admin');
       var removeBtn = showRemove
-        ? '<button class="btn-secondary badge-red" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>'
+        ? '<button class="btn-secondary badge-red" onclick="event.stopPropagation();removeMember('+orgId+','+m.user_id+')">Remove</button>'
         : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>';
       // Transfer ownership: owner only, to a non-owner member
       var transferBtn = (role === 'owner' && !isOwner)
-        ? '<button class="btn-secondary btn-copy" onclick="transferOwnership('+orgId+','+m.user_id+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
+        ? '<button class="btn-secondary btn-copy" onclick="event.stopPropagation();transferOwnership('+orgId+','+m.user_id+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
         : '';
       var hasActions = transferBtn || showRemove;
       var actionsCell = hasActions
         ? '<div class="flex-row-gap">'+transferBtn+removeBtn+'</div>'
         : '';
-      return '<tr data-member="'+m.user_id+'">'+
-        '<td data-label="Member"><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div></td>'+
+      return '<tr data-member="'+m.user_id+'" onclick="openMemberDrawer('+m.user_id+')" title="View member details">'+
+        '<td data-label="Member"><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
         '<td data-label="Email">'+escapeHtml(m.email||'—')+'</td>'+
         '<td data-label="Role">'+roleCell+'</td>'+
         '<td data-label="Tokens Used" id="tok-'+m.user_id+'">…</td>'+
@@ -545,7 +810,7 @@ function renderMembers(myRole, orgId){
         if(isOwner){
           roleCell = '<span class="badge-role-owner">Owner</span>';
         } else if(role === 'owner'){
-          roleCell = '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+          roleCell = '<select class="role-select tag-filter" onclick="event.stopPropagation()" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
             + ['admin','member'].map(function(r){
                 return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+capRole(r)+'</option>';
               }).join('')
@@ -562,7 +827,7 @@ function renderMembers(myRole, orgId){
           : '';
         var hasActions = transferBtn || removeBtn;
         var swipeW = (transferBtn && removeBtn) ? 150 : 75;
-        var cardBody = '<div class="member-card" data-member="'+m.user_id+'">'
+        var cardBody = '<div class="member-card" data-member="'+m.user_id+'" onclick="openMemberDrawer('+m.user_id+')">'
           + '<div class="member-card-top">'
           + '<div class="member-card-name"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
           + '<div class="member-card-role">'+roleCell+'</div>'
@@ -621,13 +886,20 @@ async function loadOrgUsage(orgId){
   // Cache per-member tokens so search/pagination re-renders keep the numbers
   lastUsageBreakdown = d.member_breakdown || [];
   fillTokens();
+  renderOrgInsights();
+  // Refresh an open member drawer with the latest usage numbers
+  if(drawerUserId !== null) openMemberDrawer(drawerUserId);
 }
 
 // Role update (owner only)
 async function updateRole(select, memberId, orgId){
   var role = select.value;
   var d = await safeApi('PUT','/api/orgs/'+orgId+'/members/'+memberId+'/role',{role:role});
-  if(d && d.status==='updated'){ showToast('Role updated','success'); }
+  if(d && d.status==='updated'){
+    showToast('Role updated','success');
+    await loadOrgDetails(orgId);
+    if(drawerUserId !== null && String(drawerUserId) === String(memberId)) openMemberDrawer(memberId);
+  }
   else { showToast('Failed to update role','error'); loadOrgDetails(orgId); }
 }
 
@@ -681,9 +953,10 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   if(!list) return;
   // Dedupe: remove any existing row for the same email (prevents duplicates after resend)
   removeInviteByEmail(email);
+  upsertPendingInvite({email:email, role:role, join_link:link, invite_token:(link||''), expires_at:expiresAt, created_at:createdAt, id:inviteId});
   var div = document.createElement('div');
   div.className = 'invite-swipe';
-  var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> '+new Date(expiresAt).toLocaleDateString()+'</span>' : '';
+  var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(expiresAt)+'">'+fmtCountdown(expiresAt)+'</span></span>' : '';
   var sent = createdAt ? '<span class="invite-sent">sent '+timeAgo(createdAt)+'</span>' : '';
   var actions = '';
   var swipeActions = '';
@@ -711,6 +984,8 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
     + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
     + '</div>';
   list.prepend(div);
+  expireInviteStyles();
+  renderInviteStats();
 }
 // Resend an invite (owner/admin) — same token/link, refreshed expiry
 async function resendInvite(orgId, email, role){
@@ -728,6 +1003,8 @@ async function revokeInvite(orgId, inviteId, email){
     if(d && d.status === 'revoked'){
       showToast('Invite revoked','success');
       removeInviteByEmail(email);
+      pendingInvites = pendingInvites.filter(function(x){ return x.email !== email; });
+      renderInviteStats();
     }
     else if(d && d.detail){ showToast(d.detail,'error'); }
   }, 'Revoke');
@@ -738,6 +1015,7 @@ async function transferOwnership(orgId, userId, name){
     var d = await safeApi('PUT','/api/orgs/'+orgId+'/owner',{user_id:userId});
     if(d && d.status === 'transferred'){
       showToast('Ownership transferred to '+name,'success');
+      closeMemberDrawer();
       loadOrgDetails(orgId);
     }
     else if(d && d.detail){ showToast(d.detail,'error'); }
@@ -782,6 +1060,7 @@ async function removeMember(orgId, userId) {
   if(!token) return;
   showConfirm('Remove member?','This action cannot be undone.', async function(){
     await safeApi('DELETE','/api/orgs/'+orgId+'/members/'+userId);
+    closeMemberDrawer();
     loadOrgDetails(orgId);
     showToast('Member removed','info');
   });
@@ -941,6 +1220,130 @@ function initMemberSwipe(){
   initSwipeList(document.getElementById('teamMembersMobile'), '.member-swipe', '.member-card', '.member-swipe-actions', {requireAction: true});
 }
 
+// ── Member detail drawer ──
+function copyEmail(email){
+  if(!email) return;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(email).then(function(){ showToast('Email copied','success'); }, function(){ showToast(email,'info'); });
+  } else { showToast(email,'info'); }
+}
+function openMemberDrawer(userId){
+  var m = getMemberById(userId);
+  if(!m) return;
+  drawerUserId = userId;
+  var tokens = memberTokens(userId);
+  var total = memberTotalTokens();
+  var share = total ? (tokens/total*100) : 0;
+  var ranked = allMembers.slice().sort(function(a,b){ return memberTokens(b.user_id)-memberTokens(a.user_id); });
+  var rank = 1;
+  for(var i=0;i<ranked.length;i++){ if(String(ranked[i].user_id) === String(userId)){ rank = i+1; break; } }
+  var maxTok = ranked.length ? memberTokens(ranked[0].user_id) : 0;
+  var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
+  document.getElementById('mdAvatar').textContent = initial;
+  document.getElementById('mdName').textContent = m.name || 'User';
+  document.getElementById('mdEmail').textContent = m.email || '—';
+  var meta = '<span class="badge-role-'+(m.role||'member')+'">'+capRole(m.role||'member')+'</span>';
+  if(m.created_at || m.joined_at){
+    var jd = new Date(m.created_at || m.joined_at);
+    if(!isNaN(jd.getTime())) meta += '<span class="md-joined">Joined '+jd.toLocaleDateString()+'</span>';
+  }
+  document.getElementById('mdMeta').innerHTML = meta;
+  document.getElementById('mdStats').innerHTML =
+      '<div class="md-stat"><div class="num gold">'+tokens.toLocaleString()+'</div><div class="lbl">Tokens Used</div></div>'
+    + '<div class="md-stat"><div class="num">'+share.toFixed(1)+'%</div><div class="lbl">Of Org Usage</div></div>'
+    + '<div class="md-stat"><div class="num">#'+rank+'</div><div class="lbl">Usage Rank</div></div>';
+  var fill = document.getElementById('mdUsageFill');
+  if(fill) fill.style.width = (maxTok ? Math.max(2, Math.round(tokens/maxTok*100)) : 0) + '%';
+  // Actions (owner/admin gated; drawer helpers keep onclick free of quote-escaping)
+  var canManage = (currentMyRole === 'owner' || currentMyRole === 'admin');
+  var isOwner = m.role === 'owner';
+  var orgId = currentOrgId;
+  var btns = '';
+  if(canManage && !isOwner){
+    if(currentMyRole === 'owner'){
+      btns += '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+        + '<option value="admin"'+(m.role==='admin'?' selected':'')+'>Admin</option>'
+        + '<option value="member"'+(m.role==='member'?' selected':'')+'>Member</option>'
+        + '</select>';
+      btns += '<button class="btn-secondary btn-copy" onclick="transferFromDrawer()">Transfer Owner</button>';
+    }
+    if(!(currentMyRole === 'admin' && m.role === 'admin')){
+      btns += '<button class="btn-secondary badge-red" onclick="removeFromDrawer()">Remove</button>';
+    }
+  }
+  document.getElementById('mdActions').innerHTML = btns || '<span class="text-sm-muted-3">No management actions available for this member.</span>';
+  document.getElementById('memberDrawerOverlay').classList.add('open');
+  document.getElementById('memberDrawer').classList.add('open');
+  document.body.classList.add('drawer-open');
+}
+function closeMemberDrawer(){
+  drawerUserId = null;
+  var ov = document.getElementById('memberDrawerOverlay');
+  var dr = document.getElementById('memberDrawer');
+  if(ov) ov.classList.remove('open');
+  if(dr) dr.classList.remove('open');
+  document.body.classList.remove('drawer-open');
+}
+function transferFromDrawer(){
+  var m = getMemberById(drawerUserId);
+  if(!m || !currentOrgId) return;
+  transferOwnership(currentOrgId, m.user_id, m.name || 'User');
+}
+function removeFromDrawer(){
+  if(!currentOrgId || drawerUserId === null) return;
+  removeMember(currentOrgId, drawerUserId);
+}
+
+// ── Batch invite ──
+function toggleBatchInvite(force){
+  var panel = document.getElementById('batchInvitePanel');
+  if(!panel) return;
+  var show = (force === undefined) ? (panel.style.display === 'none') : !!force;
+  panel.style.display = show ? '' : 'none';
+  var btn = document.getElementById('batchToggleBtn');
+  if(btn) btn.textContent = show ? 'Close' : 'Batch';
+  if(show) document.getElementById('batchEmails').focus();
+}
+async function sendBatchInvites(){
+  if(!currentOrgId){ showToast('Select an organization first','error'); return; }
+  var raw = document.getElementById('batchEmails').value || '';
+  var parts = raw.split(/[\n,;]+/).map(function(s){ return s.trim(); }).filter(Boolean);
+  var emails = [], invalid = [];
+  parts.forEach(function(p){
+    if(p.indexOf('@') !== -1) emails.push(p); else invalid.push(p);
+  });
+  if(!emails.length){ showToast('Enter at least one valid email','error'); return; }
+  var role = document.getElementById('batchRole').value || 'member';
+  var btn = document.getElementById('batchSendBtn');
+  var resultEl = document.getElementById('batchResult');
+  btn.disabled = true;
+  var sent=0, dup=0, fail=0, fails=[];
+  for(var i=0;i<emails.length;i++){
+    btn.textContent = 'Sending '+(i+1)+'/'+emails.length+'…';
+    var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:emails[i], role:role});
+    if(d && d.invite_token){
+      sent++;
+      addPendingInviteRow(emails[i], role, d.join_link || d.invite_token, d.expires_at, d.created_at, d.id);
+    } else if(d && d.status === 'already_invited'){
+      dup++;
+    } else {
+      fail++;
+      fails.push(emails[i] + (d && d.detail ? ' — ' + d.detail : ''));
+    }
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send Invites';
+  var html = '<span class="ok">✓ '+sent+' sent</span>'
+    + (dup ? ' <span class="warn">'+dup+' already invited</span>' : '')
+    + (fail ? ' <span class="bad">'+fail+' failed</span>' : '')
+    + (invalid.length ? ' <span class="bad">'+invalid.length+' invalid skipped</span>' : '');
+  if(fails.length) html += '<div class="batch-fail-list">'+fails.map(function(f){ return '<div>'+escapeHtml(f)+'</div>'; }).join('')+'</div>';
+  resultEl.innerHTML = html;
+  document.getElementById('batchEmails').value = '';
+  renderInviteStats();
+  if(sent) showToast(sent+' invite'+(sent===1?'':'s')+' sent','success');
+}
+
 // Boot
 (function(){
   var teamDataLoaded = false;
@@ -964,6 +1367,8 @@ function initMemberSwipe(){
     initOrgSwipe();
     initInviteSwipe();
     initMemberSwipe();
+    // Esc closes the member detail drawer
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMemberDrawer(); });
     if(!token){ hookAuthRestore(); return; }
     if(teamDataLoaded) return;
     teamDataLoaded = true;
