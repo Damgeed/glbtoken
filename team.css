@@ -550,6 +550,16 @@
     border-top: 1px dashed var(--border);
     padding-top: 0.3rem;
   }
+  .member-card-hint {
+    margin-top: 0.45rem;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--text-muted);
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    background: rgba(244, 180, 0, 0.08);
+    border: 1px dashed rgba(244, 180, 0, 0.3);
+  }
 }
 .swipe-transfer { background: rgba(0, 214, 143, 0.16); color: #00D68F; }
 .swipe-remove { background: rgba(255, 92, 92, 0.16); color: #FF6B6B; }

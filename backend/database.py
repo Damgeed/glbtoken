@@ -9,6 +9,9 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./glbtoken.db")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
+# Org member capacity — env-overridable, minimum 100 per product requirement
+MAX_ORG_MEMBERS = int(os.getenv("ORG_MAX_MEMBERS", "100"))
+
 # Auto-create database if using PostgreSQL and it doesn't exist
 if DATABASE_URL.startswith("postgresql://"):
     try:
@@ -198,7 +201,7 @@ class Organization(Base):
     name = Column(String, nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    max_members = Column(Integer, default=10)
+    max_members = Column(Integer, default=MAX_ORG_MEMBERS)
 
     owner = relationship("User", foreign_keys=[owner_id])
     members = relationship("OrgMember", back_populates="organization", cascade="all, delete-orphan")

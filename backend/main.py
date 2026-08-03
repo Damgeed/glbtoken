@@ -85,6 +85,19 @@ async def lifespan(app: FastAPI):
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (api keys, non-critical): {e}")
+    # Auto-migrate: org capacity — bump existing orgs to the current default
+    try:
+        from database import engine, MAX_ORG_MEMBERS
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text(
+                f'UPDATE organizations SET max_members = {MAX_ORG_MEMBERS} '
+                f'WHERE max_members < {MAX_ORG_MEMBERS}'
+            ))
+            conn.commit()
+            print(f"✅ Org capacity bumped to {MAX_ORG_MEMBERS}")
+    except Exception as e:
+        print(f"⚠️ Org capacity migration error (non-critical): {e}")
     try:
         auto_pull_models()
     except Exception as e:
