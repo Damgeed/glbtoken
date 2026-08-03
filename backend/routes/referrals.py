@@ -126,7 +126,23 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
                 "referrals": int(ref_by_day.get(d, 0) or 0),
                 "earnings": float(earn_by_day.get(d, 0) or 0),
             })
-    
+
+    # Reward history merged into stats so the frontend needs ONE request
+    # (previously the client serialized stats → rewards = 2 round-trips on
+    # every load, making generate + table populate feel slow).
+    rewards = []
+    if code:
+        redemptions = db.query(ReferralRedemption).filter(
+            ReferralRedemption.referrer_code == code
+        ).order_by(desc(ReferralRedemption.created_at)).all()
+        for r in redemptions:
+            referred_user = db.query(User).filter(User.id == r.referred_user_id).first()
+            rewards.append({
+                "amount": r.amount,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+                "referred_user_name": referred_user.name if referred_user else "Unknown",
+            })
+
     return {
         "referral_code": code,
         "total_referrals": total_referrals,
@@ -134,6 +150,8 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
         "pending_earnings": pending_earnings,
         "recent_referrals": recent,
         "history": history,
+        "rewards": rewards,
+        "rewards_total": float(sum(r["amount"] for r in rewards)),
     }
 
 

@@ -37,11 +37,16 @@ async function loadReferralStats() {
     if(countEl) countEl.textContent=d.total_referrals||0;
     if(earnEl) earnEl.textContent=(d.total_earned||0).toFixed(2);
     if(totalRefsEl) totalRefsEl.textContent=d.total_referrals||0;
-    // Reward history (real, /api/referral/rewards) — lifetime earned + rows
+    // Reward history (merged into /api/referral/stats since v1127 — single
+    // request instead of serializing stats → rewards on every load)
     let lifetime=0, rewards=[];
     try{
-      const rw=await safeApi('GET','/api/referral/rewards');
-      if(rw){ rewards=rw.rewards||[]; lifetime=rw.total||0; }
+      const rw=d.rewards||null;
+      if(rw){ rewards=rw; lifetime=d.rewards_total||0; }
+      else{ // fallback for stale backend: keep old path
+        const r2=await safeApi('GET','/api/referral/rewards');
+        if(r2){ rewards=r2.rewards||[]; lifetime=r2.total||0; }
+      }
     }catch(e){}
     if(totalEarnEl) totalEarnEl.textContent=lifetime.toFixed(0)+' GT';
     const valEl=document.getElementById('refTotalEarnedVal');
