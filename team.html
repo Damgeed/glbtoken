@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1180" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1037" />
+<link rel="stylesheet" href="team.css?v=1038" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -662,16 +662,27 @@ async function sendInvite(){
     showToast(d.detail,'error');
   }
 }
+// Remove any existing invite row (whole swipe wrapper) for the same email —
+// prevents duplicates after resend. Matches on the inner card's data-email.
+function removeInviteByEmail(email){
+  var list = document.getElementById('pendingInvitesList');
+  if(!list) return;
+  list.querySelectorAll('.invite-swipe').forEach(function(wrap){
+    var it = wrap.querySelector('.invite-item');
+    if(it && it.getAttribute('data-email') === email) wrap.remove();
+  });
+  // Bare rows (pre-swipe layout) — remove any matching card directly
+  list.querySelectorAll('.invite-item').forEach(function(el){
+    if(el.getAttribute('data-email') === email) el.remove();
+  });
+}
 function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   var list = document.getElementById('pendingInvitesList');
   if(!list) return;
   // Dedupe: remove any existing row for the same email (prevents duplicates after resend)
-  list.querySelectorAll('.invite-item').forEach(function(el){
-    if(el.getAttribute('data-email') === email) el.remove();
-  });
+  removeInviteByEmail(email);
   var div = document.createElement('div');
-  div.className = 'invite-item';
-  div.setAttribute('data-email', email);
+  div.className = 'invite-swipe';
   var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> '+new Date(expiresAt).toLocaleDateString()+'</span>' : '';
   var sent = createdAt ? '<span class="invite-sent">sent '+timeAgo(createdAt)+'</span>' : '';
   var actions = '';
@@ -686,8 +697,7 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
       + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+currentOrgId+','+(inviteId||0)+',\''+escapeHtml(email)+'\')">✕ Revoke</button>'
       + '</div>';
   }
-  div.innerHTML = '<div class="invite-swipe">'
-    + swipeActions
+  div.innerHTML = swipeActions
     + '<div class="invite-item" data-email="'+escapeHtml(email)+'">'
     + '<div class="invite-main">'
     + '<div class="invite-top">'
@@ -699,7 +709,7 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
     + actions
     + '</div>'
     + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
-    + '</div></div>';
+    + '</div>';
   list.prepend(div);
 }
 // Resend an invite (owner/admin) — same token/link, refreshed expiry
@@ -717,10 +727,7 @@ async function revokeInvite(orgId, inviteId, email){
     var d = await safeApi('DELETE','/api/orgs/'+orgId+'/invites/'+inviteId);
     if(d && d.status === 'revoked'){
       showToast('Invite revoked','success');
-      var list = document.getElementById('pendingInvitesList');
-      if(list) list.querySelectorAll('.invite-item').forEach(function(el){
-        if(el.getAttribute('data-email') === email) el.remove();
-      });
+      removeInviteByEmail(email);
     }
     else if(d && d.detail){ showToast(d.detail,'error'); }
   }, 'Revoke');
