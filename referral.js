@@ -175,10 +175,18 @@ async function claimRefRewards(){
     if(!token) return;
     loadReferralStats();
   }
+  function bootWithRetry(attempt){
+    // Token can be empty on load while shared.js silently restores the session
+    // (refresh_token → new access token). Retry briefly so the referral UI
+    // (Generate button, stats, tables) appears even after an expired access token.
+    if(token){ bootReferral(); return; }
+    if(attempt >= 6) return;  // give up after ~3s — api() will 401→refresh on demand
+    setTimeout(function(){ bootWithRetry(attempt + 1); }, 500);
+  }
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', bootReferral);
+    document.addEventListener('DOMContentLoaded', function(){ bootWithRetry(0); });
   } else {
-    bootReferral();
+    bootWithRetry(0);
   }
 })();
 
