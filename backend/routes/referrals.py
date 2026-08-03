@@ -13,6 +13,26 @@ from common import _400, _500, limiter, REFERRAL_REWARD_GT
 router = APIRouter()
 
 
+def _build_rewards(db: Session, code: str):
+    """Build reward-history rows for a referral code (shared by stats + rewards endpoints).
+    Batch-fetches referred users to avoid N+1 queries."""
+    if not code:
+        return []
+    redemptions = db.query(ReferralRedemption).filter(
+        ReferralRedemption.referrer_code == code
+    ).order_by(desc(ReferralRedemption.created_at)).all()
+    referred_ids = {r.referred_user_id for r in redemptions}
+    referred_names = {}
+    if referred_ids:
+        for u in db.query(User).filter(User.id.in_(referred_ids)).all():
+            referred_names[u.id] = u.name
+    return [{
+        "amount": r.amount,
+        "created_at": r.created_at.isoformat() if r.created_at else None,
+        "referred_user_name": referred_names.get(r.referred_user_id, "Unknown"),
+    } for r in redemptions]
+
+
 def grant_referral_reward(db: Session, user: User):
     """Grant the referrer a reward when `user` (who signed up via a ref) makes
     their FIRST real consumption. Idempotent — one redemption per referred user.
@@ -130,23 +150,7 @@ def get_referral_stats(request: Request, user: User = Depends(get_current_user),
     # Reward history merged into stats so the frontend needs ONE request
     # (previously the client serialized stats → rewards = 2 round-trips on
     # every load, making generate + table populate feel slow).
-    rewards = []
-    if code:
-        redemptions = db.query(ReferralRedemption).filter(
-            ReferralRedemption.referrer_code == code
-        ).order_by(desc(ReferralRedemption.created_at)).all()
-        # Batch-fetch referred users (avoid N+1: one query for all ids)
-        referred_ids = {r.referred_user_id for r in redemptions}
-        referred_names = {}
-        if referred_ids:
-            for u in db.query(User).filter(User.id.in_(referred_ids)).all():
-                referred_names[u.id] = u.name
-        for r in redemptions:
-            rewards.append({
-                "amount": r.amount,
-                "created_at": r.created_at.isoformat() if r.created_at else None,
-                "referred_user_name": referred_names.get(r.referred_user_id, "Unknown"),
-            })
+    rewards = _build_rewards(db, code)
 
     return {
         "referral_code": code,
@@ -167,26 +171,8 @@ def get_referral_rewards(request: Request, user: User = Depends(get_current_user
     if not user.referral_code:
         return {"rewards": [], "total": 0.0}
     
-    redemptions = db.query(ReferralRedemption).filter(
-        ReferralRedemption.referrer_code == user.referral_code
-    ).order_by(desc(ReferralRedemption.created_at)).all()
-    
-    # Batch-fetch referred users (avoid N+1: one query for all ids)
-    referred_ids = {r.referred_user_id for r in redemptions}
-    referred_names = {}
-    if referred_ids:
-        for u in db.query(User).filter(User.id.in_(referred_ids)).all():
-            referred_names[u.id] = u.name
-    
-    rewards = []
-    for r in redemptions:
-        rewards.append({
-            "amount": r.amount,
-            "created_at": r.created_at.isoformat() if r.created_at else None,
-            "referred_user_name": referred_names.get(r.referred_user_id, "Unknown"),
-        })
-    
-    total = sum(r.amount for r in redemptions)
+    rewards = _build_rewards(db, user.referral_code)
+    total = float(sum(r["amount"] for r in rewards))
     return {"rewards": rewards, "total": total}
 
 

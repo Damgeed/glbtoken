@@ -15,6 +15,7 @@ router = APIRouter()
 
 # ── Admin Endpoints ──
 
+@router.get("/api/admin/users")
 def admin_list_users(page: int = 1, per_page: int = 20, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
