@@ -121,22 +121,20 @@
         <div><button class="btn-action" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
       </div>
 
-      <!-- Org Selector -->
+      <!-- Org Selector (real data from /api/orgs) -->
       <div id="orgSelector" class="flex-row-wrap">
-        <button class="sort-btn active" data-org="org1" onclick="switchOrg('org1')">Acme Corp</button>
-        <button class="sort-btn" data-org="org2" onclick="switchOrg('org2')">Startup Inc</button>
-        <button class="sort-btn" data-org="org3" onclick="switchOrg('org3')">Dev Team Alpha</button>
+        <button class="sort-btn active" data-org="" onclick="switchOrg('')">No organization</button>
         <button class="btn-action" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>
       </div>
 
       <!-- Current Org Header -->
       <div class="dash-card flex-row-between-wrap" >
         <div  class="flex-row-lg">
-          <div class="avatar-lg-gold" id="orgAvatar">A</div>
+          <div class="avatar-lg-gold" id="orgAvatar">—</div>
           <div>
-            <h2 id="orgName" class="text-md-title">Acme Corp</h2>
+            <h2 id="orgName" class="text-md-title">No organization</h2>
             <div  class="meta-row">
-              <span id="orgMemberCount">12 members</span>
+              <span id="orgMemberCount">0 members</span>
               <span id="orgPlanBadge"  class="badge-gold">Pro Plan</span>
             </div>
           </div>
@@ -147,7 +145,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline-sm">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            Owner
+            Member
           </span>
         </div>
 
@@ -155,10 +153,10 @@
 
       <!-- Usage Stats -->
       <div class="dash-grid mt-lg" >
-        <div class="dash-stat-card"><div class="num" id="orgTotalSpend">$1,245.80</div><div class="lbl">Total Spend</div><div class="chg up">↑ $320.50 this month</div></div>
-        <div class="dash-stat-card"><div class="num" id="orgTotalCalls">48,392</div><div class="lbl">Total API Calls</div><div class="chg up">↑ 12.4% vs last month</div></div>
-        <div class="dash-stat-card"><div class="num" id="orgActiveMembers">8</div><div class="lbl">Active Members</div><div class="chg text-muted" >This month</div></div>
-        <div class="dash-stat-card"><div class="num" id="orgAvgCost">$0.026</div><div class="lbl">Avg Cost / Call</div><div class="chg down">↓ 3.2% vs last month</div></div>
+        <div class="dash-stat-card"><div class="num" id="orgTotalSpend">$0.00</div><div class="lbl">Total Spend</div><div class="chg up">—</div></div>
+        <div class="dash-stat-card"><div class="num" id="orgTotalCalls">0</div><div class="lbl">Total API Calls</div><div class="chg up">—</div></div>
+        <div class="dash-stat-card"><div class="num" id="orgActiveMembers">0</div><div class="lbl">Active Members</div><div class="chg text-muted" >This month</div></div>
+        <div class="dash-stat-card"><div class="num" id="orgAvgCost">$0.000</div><div class="lbl">Avg Cost / Call</div><div class="chg down">—</div></div>
       </div>
 
       <!-- Members Table -->
@@ -171,64 +169,9 @@
         </div>
         <div  class="scroll-x">
           <table class="tx-table">
-            <thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Tokens Used</th><th>Actions</th></tr></thead>
             <tbody id="teamMembersBody">
-              <tr>
-                <td><div  class="flex-row"><div class="avatar-sm-gold">JD</div><span>John Doe</span></div></td>
-                <td>john@acmecorp.com</td>
-                <td>
-                  <select class="role-select tag-filter" onchange="updateRole(this,'john')" >
-                    <option value="owner">Owner</option>
-                    <option value="admin" selected>Admin</option>
-                    <option value="member">Member</option>
-                    <option value="viewer">Viewer</option>
-                  </select>
-                </td>
-<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary badge-red" onclick="removeMember('john')">Remove</button></td>
-              </tr>
-              <tr>
-                <td><div  class="flex-row"><div class="avatar-sm-green">JS</div><span>Jane Smith</span></div></td>
-                <td>jane@acmecorp.com</td>
-                <td>
-                  <select class="role-select tag-filter" onchange="updateRole(this,'jane')" >
-                    <option value="owner">Owner</option>
-                    <option value="admin">Admin</option>
-                    <option value="member" selected>Member</option>
-                    <option value="viewer">Viewer</option>
-                  </select>
-                </td>
-<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary badge-red" onclick="removeMember('jane')">Remove</button></td>
-              </tr>
-              <tr>
-                <td><div  class="flex-row"><div class="avatar-sm-red">MB</div><span>Mike Brown</span></div></td>
-                <td>mike@acmecorp.com</td>
-                <td>
-                  <select class="role-select tag-filter" onchange="updateRole(this,'mike')" >
-                    <option value="owner">Owner</option>
-                    <option value="admin">Admin</option>
-                    <option value="member" selected>Member</option>
-                    <option value="viewer">Viewer</option>
-                  </select>
-                </td>
-<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary badge-red" onclick="removeMember('mike')">Remove</button></td>
-              </tr>
-              <tr>
-                <td><div  class="flex-row"><div class="avatar-sm-blue">SW</div><span>Sarah Wilson</span></div></td>
-                <td>sarah@acmecorp.com</td>
-                <td>
-                  <select class="role-select tag-filter" onchange="updateRole(this,'sarah')" >
-                    <option value="owner">Owner</option>
-                    <option value="admin">Admin</option>
-                    <option value="member">Member</option>
-                    <option value="viewer" selected>Viewer</option>
-                  </select>
-                </td>
-<td  class="text-sm-muted-3">🇩🇪 <span class="loc-city">Berlin</span><span class="loc-country">, DE</span></td>
-                <td><button class="btn-secondary badge-red" onclick="removeMember('sarah')">Remove</button></td>
-              </tr>
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Select an organization to view members</td></tr>
             </tbody>
           </table>
         </div>
@@ -261,20 +204,7 @@
             Pending Invites
           </div>
           <div id="pendingInvitesList">
-            <div  class="team-row">
-              <div><span  class="text-sm">alex@example.com</span> <span  class="text-xs-muted-2">— Member</span></div>
-              <div  class="flex-row-gap">
-                <span  class="text-xs-gold">Sent Jun 14</span>
-                <button class="btn-secondary badge-red-sm" onclick="cancelInvite(this)">Cancel</button>
-              </div>
-            </div>
-            <div  class="team-row">
-              <div><span  class="text-sm">lisa@example.com</span> <span  class="text-xs-muted-2">— Admin</span></div>
-              <div  class="flex-row-gap">
-                <span  class="text-xs-gold">Sent Jun 13</span>
-                <button class="btn-secondary badge-red-sm" onclick="cancelInvite(this)">Cancel</button>
-              </div>
-            </div>
+            <p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Pending invites appear here after sending.</p>
           </div>
         </div>
       </div>
@@ -318,64 +248,179 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1130"></script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="orgs.js?v=1119"></script>
+<script data-cfasync="false" src="orgs.js?v=1120"></script>
 
 <script>
-// ===== Team Management Functions =====
-var currentOrg = 'org1';
-function switchOrg(orgId){
-  document.querySelectorAll('#orgSelector .sort-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelector('#orgSelector [data-org="'+orgId+'"]').classList.add('active');
-  currentOrg = orgId;
-  var names = { org1: 'Acme Corp', org2: 'Startup Inc', org3: 'Dev Team Alpha' };
-  var initials = { org1: 'A', org2: 'S', org3: 'D' };
-  var counts = { org1: '12 members', org2: '5 members', org3: '3 members' };
-  document.getElementById('orgName').textContent = names[orgId];
-  document.getElementById('orgAvatar').textContent = initials[orgId];
-  document.getElementById('orgMemberCount').textContent = counts[orgId];
+// ===== Team Management — real data from /api/orgs (orgs.js provides API calls) =====
+var currentOrgId = '';
+
+// Load org selector buttons from /api/orgs
+async function loadTeamOrgs(){
+  if(!token) return;
+  var d = await safeApi('GET','/api/orgs');
+  var selector = document.getElementById('orgSelector');
+  if(!selector) return;
+  var orgs = (d && d.orgs) || d || [];
+  var html = '';
+  if(!orgs.length){
+    html += '<button class="sort-btn active" data-org="" onclick="switchOrg(\'\')">No organization</button>';
+  } else {
+    orgs.forEach(function(o){
+      var active = (currentOrgId === String(o.id)) ? ' active' : '';
+      html += '<button class="sort-btn'+active+'" data-org="'+escapeHtml(String(o.id))+'" onclick="switchOrg(\''+escapeHtml(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';
+    });
+  }
+  html += '<button class="btn-action" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>';
+  selector.innerHTML = html;
+  // Auto-select first org if none selected
+  if(!currentOrgId && orgs.length){
+    switchOrg(String(orgs[0].id));
+  } else if(!orgs.length){
+    resetTeamView();
+  }
 }
-function updateRole(select, memberId){
-  var role = select.value;
-  // role update logged server-side
+
+function resetTeamView(){
+  document.getElementById('orgName').textContent = 'No organization';
+  document.getElementById('orgAvatar').textContent = '—';
+  document.getElementById('orgMemberCount').textContent = '0 members';
+  document.getElementById('orgRoleBadge').textContent = '—';
+  document.getElementById('orgTotalSpend').textContent = '$0.00';
+  document.getElementById('orgTotalCalls').textContent = '0';
+  document.getElementById('orgActiveMembers').textContent = '0';
+  document.getElementById('orgAvgCost').textContent = '$0.000';
+  document.getElementById('teamMembersBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Select an organization to view members</td></tr>';
+  document.getElementById('pendingInvitesList').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Pending invites appear here after sending.</p>';
 }
-function removeMember(memberId){
-  showConfirm('Remove Member', 'Remove this member from the organization?', function(){
-    var row = document.querySelector('#teamMembersBody tr[data-member="'+memberId+'"]');
-    if(row) row.style.opacity = '0.3';
-    setTimeout(function(){
-      if(row) row.remove();
-    }, 300);
-  }, 'Remove');
+
+// Switch org → load details + usage
+async function switchOrg(orgId){
+  currentOrgId = orgId || '';
+  // Update selector active state
+  document.querySelectorAll('#orgSelector .sort-btn').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-org') === currentOrgId);
+  });
+  if(!currentOrgId){ resetTeamView(); return; }
+  await Promise.all([loadOrgDetails(orgId), loadOrgUsage(orgId)]);
 }
-function sendInvite(){
-  var email = document.getElementById('inviteEmail').value.trim();
-  if(!email || !email.includes('@')){
-    showAlert('Invalid Email', 'Please enter a valid email address.');
+
+async function loadOrgDetails(orgId){
+  if(!token || !orgId) return;
+  var d = await safeApi('GET','/api/orgs/'+orgId);
+  if(!d) return;
+  if(d.error){ resetTeamView(); showToast(d.error,'error'); return; }
+  document.getElementById('orgName').textContent = d.name || ('Org '+orgId);
+  var avatar = document.getElementById('orgAvatar');
+  avatar.textContent = (d.name && d.name.length) ? d.name[0].toUpperCase() : 'O';
+  document.getElementById('orgMemberCount').textContent = (d.members ? d.members.length : 0)+' members';
+  var roleEl = document.getElementById('orgRoleBadge');
+  roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+(d.my_role ? d.my_role.charAt(0).toUpperCase()+d.my_role.slice(1) : 'Member');
+  // Members table
+  var tbody = document.getElementById('teamMembersBody');
+  if(!tbody) return;
+  var members = d.members || [];
+  if(!members.length){
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No members yet</td></tr>';
     return;
   }
-  var role = document.getElementById('inviteRole').value;
-  var list = document.getElementById('pendingInvitesList');
-  var sentDate = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'});
-  var div = document.createElement('div');
-  div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)';
-  div.innerHTML = '<div><span  class="text-sm">'+email+'</span> <span  class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div><div  class="flex-row-gap"><span  class="text-xs-gold">Sent '+sentDate+'</span><button class="btn-secondary badge-red-sm" onclick="cancelInvite(this)">Cancel</button></div>';
-  list.prepend(div);
-  document.getElementById('inviteEmail').value = '';
+  var rows = members.map(function(m){
+    var isOwner = m.role === 'owner';
+    var isSelf = String(m.user_id) === String((window.__secure ? window.__secure.getItem('gt_user') : '') );
+    var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
+    var roleOptions = ['owner','admin','member','viewer'].map(function(r){
+      return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
+    }).join('');
+    var roleCell = isOwner
+      ? '<span class="badge-role-owner">Owner</span>'
+      : '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'+roleOptions+'</select>';
+    var removeBtn = isOwner
+      ? '<span style="color:var(--text-muted);font-size:0.8rem">—</span>'
+      : '<button class="btn-secondary badge-red" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>';
+    return '<tr data-member="'+m.user_id+'">'+
+      '<td><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div></td>'+
+      '<td>'+escapeHtml(m.email||'—')+'</td>'+
+      '<td>'+roleCell+'</td>'+
+      '<td id="tok-'+m.user_id+'">…</td>'+
+      '<td>'+removeBtn+'</td></tr>';
+  }).join('');
+  tbody.innerHTML = rows;
 }
-function cancelInvite(btn){
-  var item = btn.closest('div[style]');
-  if(item) item.remove();
-}
-function leaveOrg(){
-  showConfirm('Leave Organization', 'Are you sure you want to leave this organization?', function(){
-    showAlert('Left Organization', 'You have left the organization.');
-  }, 'Leave');
-}
-function showCreateOrgModal(){
-  showPrompt('Create Organization', 'Enter organization name', function(name){
-    showAlert('Organization Created', 'Organization "'+name+'" created!');
+
+async function loadOrgUsage(orgId){
+  if(!token || !orgId) return;
+  var d = await safeApi('GET','/api/orgs/'+orgId+'/usage');
+  if(!d) return;
+  document.getElementById('orgTotalSpend').textContent = '$'+(d.total_spent||0).toFixed(2);
+  document.getElementById('orgTotalCalls').textContent = (d.total_transactions||0).toLocaleString();
+  document.getElementById('orgActiveMembers').textContent = d.total_members||0;
+  var perCall = d.total_transactions ? ((d.total_spent||0)/d.total_transactions) : 0;
+  document.getElementById('orgAvgCost').textContent = '$'+perCall.toFixed(4);
+  // Fill per-member tokens
+  (d.member_breakdown||[]).forEach(function(m){
+    var el = document.getElementById('tok-'+m.user_id);
+    if(el) el.textContent = (m.tokens_used||0).toLocaleString();
   });
 }
+
+// Role update (owner only)
+async function updateRole(select, memberId, orgId){
+  var role = select.value;
+  var d = await safeApi('PUT','/api/orgs/'+orgId+'/members/'+memberId+'/role',{role:role});
+  if(d && d.status==='updated'){ showToast('Role updated','success'); }
+  else { showToast('Failed to update role','error'); loadOrgDetails(orgId); }
+}
+
+// Send invite (owner/admin only)
+async function sendInvite(){
+  if(!currentOrgId){ showToast('Select an organization first','error'); return; }
+  var email = document.getElementById('inviteEmail').value.trim();
+  if(!email || !email.includes('@')){ showToast('Please enter a valid email address','error'); return; }
+  var role = document.getElementById('inviteRole').value;
+  var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role});
+  if(d && d.invite_token){
+    showToast('Invite sent to '+email,'success');
+    document.getElementById('inviteEmail').value = '';
+    var list = document.getElementById('pendingInvitesList');
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)';
+    div.innerHTML = '<div><span class="text-sm">'+escapeHtml(email)+'</span> <span class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div><div class="flex-row-gap"><span class="text-xs-gold">Token: '+escapeHtml(d.invite_token.slice(0,12))+'…</span></div>';
+    list.prepend(div);
+  } else if(d && d.detail){
+    showToast(d.detail,'error');
+  }
+}
+
+// Create org
+async function showCreateOrgModal(){
+  showPrompt('Create Organization','Enter organization name', async function(name){
+    if(!name || !name.trim()) return;
+    var d = await safeApi('POST','/api/orgs',{name:name.trim()});
+    if(d && d.id){ showToast('Organization created','success'); await loadTeamOrgs(); }
+    else if(d && d.detail){ showToast(d.detail,'error'); }
+  });
+}
+
+// Leave org
+async function leaveOrg(){
+  if(!currentOrgId){ showToast('Select an organization first','error'); return; }
+  showConfirm('Leave Organization','Are you sure you want to leave this organization?', async function(){
+    var d = await safeApi('DELETE','/api/orgs/'+currentOrgId+'/members/me');
+    if(d){ showToast('Left organization','info'); currentOrgId=''; await loadTeamOrgs(); }
+  }, 'Leave');
+}
+
+// Boot
+(function(){
+  function bootTeam(){
+    if(!token) return;
+    loadTeamOrgs();
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', bootTeam);
+  } else {
+    bootTeam();
+  }
+})();
 </script>
 
 </body>

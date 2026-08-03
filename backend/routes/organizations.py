@@ -146,6 +146,7 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
         "invite_token": invite_token,
         "org_name": org.name,
         "invited_email": req.email,
+        "role": req.role,
         "message": f"Invite sent to {req.email}. Share the token with them to join.",
     }
 
@@ -248,6 +249,30 @@ def remove_member(org_id: int, member_id: int, request: Request,
     db.commit()
     
     return {"status": "removed", "user_id": member_id}
+
+
+@router.delete("/api/orgs/{org_id}/members/me")
+@limiter.limit("10/minute")
+def leave_org(org_id: int, request: Request,
+              user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Current user leaves an organization (removes own membership)."""
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        _404("Organization not found")
+
+    membership = db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id == user.id
+    ).first()
+    if not membership:
+        _404("You are not a member of this organization")
+
+    if membership.role == "owner":
+        # Owner cannot leave — must delete the org or transfer ownership first
+        _400("Owner cannot leave. Delete the organization instead.")
+
+    db.delete(membership)
+    db.commit()
+    return {"status": "left", "org_id": org_id}
 
 
 @router.get("/api/orgs/{org_id}/usage")

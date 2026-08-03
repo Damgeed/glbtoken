@@ -255,6 +255,7 @@ class CreateOrgRequest(BaseModel):
 
 class InviteMemberRequest(BaseModel):
     email: str
+    role: str = "member"  # admin | member | viewer (owner reserved for creator)
 
 
 class JoinOrgRequest(BaseModel):
