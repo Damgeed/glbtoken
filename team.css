@@ -349,6 +349,7 @@
   overflow: hidden;
   border-radius: 10px;
   margin-bottom: 0.6rem;
+  touch-action: pan-y;
 }
 .invite-swipe .invite-item {
   margin-bottom: 0;
@@ -483,6 +484,7 @@
     overflow: hidden;
     border-radius: 10px;
     margin-bottom: 0.6rem;
+    touch-action: pan-y;
   }
   .member-card {
     background: var(--bg-alt);

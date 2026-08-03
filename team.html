@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1180" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1033" />
+<link rel="stylesheet" href="team.css?v=1034" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -965,11 +965,30 @@ function initMemberSwipe(){
 
 // Boot
 (function(){
+  var teamDataLoaded = false;
+  var authHooked = false;
+  // If boot ran before the session was restored (expired access token + silent
+  // refresh), re-run the data load once the token is ready. shared.js calls
+  // window.applyAuth() after a successful async refresh.
+  function hookAuthRestore(){
+    if(authHooked) return;
+    authHooked = true;
+    var orig = window.applyAuth;
+    window.applyAuth = function(){
+      if(typeof orig === 'function') orig.apply(this, arguments);
+      if(token){ bootTeam(); }
+    };
+  }
   function bootTeam(){
-    if(!token) return;
+    // Swipe handlers attach unconditionally — pure DOM delegation on static
+    // containers, no token needed. Guarantees member/invite/org swipe works
+    // even when boot runs before the async session restore completes.
     initOrgSwipe();
     initInviteSwipe();
     initMemberSwipe();
+    if(!token){ hookAuthRestore(); return; }
+    if(teamDataLoaded) return;
+    teamDataLoaded = true;
     loadTeamOrgs();
     var orgSel = document.getElementById('orgSelector');
     if(orgSel){ orgSel.addEventListener('scroll', updateOrgScrollArrows, {passive:true}); }
