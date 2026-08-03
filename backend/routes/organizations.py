@@ -96,7 +96,22 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
             "role": m.role,
             "joined_at": m.joined_at.isoformat() if m.joined_at else None,
         })
-    
+
+    # Pending invites — strictly scoped to THIS org (never mixed across orgs)
+    pending = db.query(OrgInvite).filter(
+        OrgInvite.org_id == org_id,
+        OrgInvite.used == False,  # noqa: E712
+    ).order_by(desc(OrgInvite.created_at)).all()
+    base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
+    pending_invites = [{
+        "email": inv.email,
+        "role": inv.role or "member",
+        "invite_token": inv.token,
+        "join_link": f"{base_url}/join.html?org={org_id}&token={inv.token}",
+        "created_at": inv.created_at.isoformat() if inv.created_at else None,
+        "expires_at": inv.expires_at.isoformat() if inv.expires_at else None,
+    } for inv in pending]
+
     return {
         "id": org.id,
         "name": org.name,
@@ -104,6 +119,7 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
         "max_members": org.max_members,
         "created_at": org.created_at.isoformat() if org.created_at else None,
         "members": member_list,
+        "pending_invites": pending_invites,
         "my_role": membership.role,
     }
 

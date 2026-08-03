@@ -363,28 +363,46 @@ async function loadOrgDetails(orgId){
   var members = d.members || [];
   if(!members.length){
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No members yet</td></tr>';
-    return;
-  }
-  var rows = members.map(function(m){
-    var isOwner = m.role === 'owner';
-    var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
-    var roleOptions = ['owner','admin','member','viewer'].map(function(r){
-      return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
+  } else {
+    var rows = members.map(function(m){
+      var isOwner = m.role === 'owner';
+      var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
+      var roleOptions = ['owner','admin','member','viewer'].map(function(r){
+        return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
+      }).join('');
+      var roleCell = isOwner
+        ? '<span class="badge-role-owner">Owner</span>'
+        : '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'+roleOptions+'</select>';
+      var removeBtn = isOwner
+        ? '<span style="color:var(--text-muted);font-size:0.8rem">—</span>'
+        : '<button class="btn-secondary badge-red" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>';
+      return '<tr data-member="'+m.user_id+'">'+
+        '<td><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div></td>'+
+        '<td>'+escapeHtml(m.email||'—')+'</td>'+
+        '<td>'+roleCell+'</td>'+
+        '<td id="tok-'+m.user_id+'">…</td>'+
+        '<td>'+removeBtn+'</td></tr>';
     }).join('');
-    var roleCell = isOwner
-      ? '<span class="badge-role-owner">Owner</span>'
-      : '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'+roleOptions+'</select>';
-    var removeBtn = isOwner
-      ? '<span style="color:var(--text-muted);font-size:0.8rem">—</span>'
-      : '<button class="btn-secondary badge-red" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>';
-    return '<tr data-member="'+m.user_id+'">'+
-      '<td><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div></td>'+
-      '<td>'+escapeHtml(m.email||'—')+'</td>'+
-      '<td>'+roleCell+'</td>'+
-      '<td id="tok-'+m.user_id+'">…</td>'+
-      '<td>'+removeBtn+'</td></tr>';
-  }).join('');
-  tbody.innerHTML = rows;
+    tbody.innerHTML = rows;
+  }
+  // Pending invites — server truth, strictly scoped to THIS org (never mixed across orgs)
+  var invitesEl = document.getElementById('pendingInvitesList');
+  if(invitesEl){
+    var invites = d.pending_invites || [];
+    if(!invites.length){
+      invitesEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">No pending invites for this organization.</p>';
+    } else {
+      invitesEl.innerHTML = invites.map(function(iv){
+        var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
+        var exp = iv.expires_at ? ' — expires '+new Date(iv.expires_at).toLocaleDateString() : '';
+        var roleLabel = iv.role ? iv.role.charAt(0).toUpperCase()+iv.role.slice(1) : 'Member';
+        return '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border)">'
+          + '<div style="min-width:0"><div class="text-sm">'+escapeHtml(iv.email)+' <span class="text-xs-muted-2">— '+roleLabel+exp+'</span></div>'
+          + '<div class="text-xs-gold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">'+escapeHtml(link)+'</div></div>'
+          + '<button class="btn-secondary" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button></div>';
+      }).join('');
+    }
+  }
 }
 
 async function loadOrgUsage(orgId){
