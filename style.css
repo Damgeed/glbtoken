@@ -7877,3 +7877,12 @@ body {
     opacity: 1;
   }
 }
+
+/* ═══ Org add dropdown (mobile unified + Add menu) ═══ */
+.org-add-menu-wrap { position: relative; margin-left: auto; }
+.hide-desktop { display: none; }
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .hide-desktop { display: block; }
+  .org-add-menu-wrap .dropdown { min-width: 220px; max-width: calc(100vw - 2rem); right: 0; }
+}

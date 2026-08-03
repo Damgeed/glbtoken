@@ -118,12 +118,11 @@
           </h1>
           <p>Manage organizations, members, and roles</p>
         </div>
-        <div><button class="btn-action" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
+        <div><button class="btn-action hide-mobile" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
       </div>
 
-      <!-- Org Selector (real data from /api/orgs) -->
+      <!-- Org Selector (real data from /api/orgs; mobile +Add dropdown built by loadTeamOrgs) -->
       <div id="orgSelector" class="flex-row-wrap">
-        <button class="btn-action" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>
       </div>
 
       <!-- Current Org Header -->
@@ -268,7 +267,16 @@ async function loadTeamOrgs(){
       html += '<button class="sort-btn'+active+'" data-org="'+escapeHtml(String(o.id))+'" onclick="switchOrg(\''+escapeHtml(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';
     });
   }
-  html += '<button class="btn-action" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>';
+  // Mobile unified +Add dropdown
+  html += '<div class="org-add-menu-wrap hide-desktop" id="orgAddWrap">'
+    + '<button class="btn-action" id="orgAddBtn" onclick="toggleOrgAddMenu(event)">+ Add'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s ease" id="orgAddChevron"><path d="m6 9 6 6 6-6"/></svg>'
+    + '</button>'
+    + '<div class="dropdown" id="orgAddMenu"><div class="dd-items">'
+    + '<a onclick="orgAddAction(\'invite\')"><span class="dd-icon">👥</span> Invite Member</a>'
+    + '<a onclick="orgAddAction(\'org\')"><span class="dd-icon">🏢</span> New Organization</a>'
+    + '</div></div></div>';
+  html += '<button class="btn-action hide-mobile" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>';
   selector.innerHTML = html;
   // Auto-select first org if none selected
   if(!currentOrgId && orgs.length){
@@ -402,6 +410,37 @@ async function sendInvite(){
     showToast(d.detail,'error');
   }
 }
+
+// Mobile unified + Add dropdown
+function toggleOrgAddMenu(e){
+  if(e){ e.stopPropagation(); }
+  var menu = document.getElementById('orgAddMenu');
+  var chev = document.getElementById('orgAddChevron');
+  if(!menu) return;
+  var open = menu.classList.toggle('open');
+  if(chev){ chev.style.transform = open ? 'rotate(180deg)' : ''; }
+}
+function orgAddAction(type){
+  var menu = document.getElementById('orgAddMenu');
+  var chev = document.getElementById('orgAddChevron');
+  if(menu) menu.classList.remove('open');
+  if(chev){ chev.style.transform = ''; }
+  if(type === 'invite'){
+    var sec = document.getElementById('inviteSection');
+    if(sec) sec.scrollIntoView({behavior:'smooth'});
+  } else if(type === 'org'){
+    showCreateOrgModal();
+  }
+}
+document.addEventListener('click', function(e){
+  var wrap = document.getElementById('orgAddWrap');
+  var menu = document.getElementById('orgAddMenu');
+  var chev = document.getElementById('orgAddChevron');
+  if(wrap && menu && !wrap.contains(e.target)){
+    menu.classList.remove('open');
+    if(chev){ chev.style.transform = ''; }
+  }
+});
 
 // Create org
 async function showCreateOrgModal(){
