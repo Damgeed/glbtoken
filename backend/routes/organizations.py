@@ -153,6 +153,8 @@ def delete_org(org_id: int, request: Request,
     if membership.role != "owner":
         _403("Only the owner can delete the organization")
 
+    # Clean up pending invites first (no FK cascade on org_invites)
+    db.query(OrgInvite).filter(OrgInvite.org_id == org_id).delete()
     db.delete(org)  # cascade="all, delete-orphan" removes OrgMember rows
     db.commit()
 
@@ -402,21 +404,26 @@ def get_org_usage(org_id: int, request: Request, user: User = Depends(get_curren
         Transaction.type == "deposit",
     ).scalar() or 0.0
     
-    # Per-member breakdown
+    # Per-member breakdown (batch queries — no N+1)
+    users = {u.id: u for u in db.query(User).filter(User.id.in_(member_ids)).all()}
+    memberships = {m.user_id: m for m in db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id.in_(member_ids)
+    ).all()}
+    token_rows = db.query(Transaction.user_id, func.sum(Transaction.tokens)).filter(
+        Transaction.user_id.in_(member_ids),
+        Transaction.type == "consumption",
+    ).group_by(Transaction.user_id).all()
+    tokens_map = {uid: float(t) for uid, t in token_rows}
+
     member_breakdown = []
     for m_id in member_ids:
-        u = db.query(User).filter(User.id == m_id).first()
-        m = db.query(OrgMember).filter(
-            OrgMember.org_id == org_id, OrgMember.user_id == m_id
-        ).first()
-        tokens = db.query(func.sum(Transaction.tokens)).filter(
-            Transaction.user_id == m_id, Transaction.type == "consumption"
-        ).scalar() or 0
+        u = users.get(m_id)
+        m = memberships.get(m_id)
         member_breakdown.append({
             "user_id": m_id,
             "name": u.name if u else "Unknown",
             "role": m.role if m else "member",
-            "tokens_used": float(tokens),
+            "tokens_used": tokens_map.get(m_id, 0.0),
             "token_balance": u.token_balance if u else 0,
         })
     

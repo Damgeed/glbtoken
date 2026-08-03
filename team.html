@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1173" />
+  <link rel="stylesheet" href="style.css?v=1174" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="team.css?v=1025" />
   </head>
@@ -125,8 +125,12 @@
         </div>
       </div>
 
-      <!-- Org Selector (real data from /api/orgs; desktop +New Org button, mobile dropdown in header) -->
-      <div id="orgSelector" class="flex-row-wrap">
+      <!-- Org Selector (real data from /api/orgs; horizontal scroll with ‹ › arrows) -->
+      <div class="org-scroll-wrap">
+        <button class="org-scroll-arrow org-scroll-left" id="orgScrollLeft" onclick="scrollOrgs(-1)" title="Scroll organizations" aria-label="Scroll left">‹</button>
+        <div id="orgSelector" class="flex-row-wrap">
+        </div>
+        <button class="org-scroll-arrow org-scroll-right" id="orgScrollRight" onclick="scrollOrgs(1)" title="Scroll organizations" aria-label="Scroll right">›</button>
       </div>
 
       <!-- Current Org Header (mobile: swipe left reveals Edit/Delete) -->
@@ -254,10 +258,9 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1130"></script>
 <script data-cfasync="false" src="ui.js?v=1223"></script>
-<script data-cfasync="false" src="orgs.js?v=1121"></script>
 
 <script>
-// ===== Team Management — real data from /api/orgs (orgs.js provides API calls) =====
+// ===== Team Management — real data from /api/orgs =====
 var currentOrgId = '';
 
 // Load org selector buttons from /api/orgs
@@ -277,6 +280,7 @@ async function loadTeamOrgs(){
   // Desktop + New Org (right-aligned; mobile uses the top-right button)
   html += '<button class="btn-action hide-mobile" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>';
   selector.innerHTML = html;
+  updateOrgScrollArrows();
   // Auto-select first org if none selected
   if(!currentOrgId && orgs.length){
     switchOrg(String(orgs[0].id));
@@ -363,7 +367,6 @@ async function loadOrgDetails(orgId){
   }
   var rows = members.map(function(m){
     var isOwner = m.role === 'owner';
-    var isSelf = String(m.user_id) === String((window.__secure ? window.__secure.getItem('gt_user') : '') );
     var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
     var roleOptions = ['owner','admin','member','viewer'].map(function(r){
       return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
@@ -454,6 +457,16 @@ async function editOrg(orgId){
   }, currentName);
 }
 
+// Remove member (owner/admin)
+async function removeMember(orgId, userId) {
+  if(!token) return;
+  showConfirm('Remove member?','This action cannot be undone.', async function(){
+    await safeApi('DELETE','/api/orgs/'+orgId+'/members/'+userId);
+    loadOrgDetails(orgId);
+    showToast('Member removed','info');
+  });
+}
+
 // Delete org (owner only)
 async function deleteOrg(orgId){
   showConfirm('Delete Organization','This will permanently delete the organization and all its members. This cannot be undone.', async function(){
@@ -475,6 +488,23 @@ async function leaveOrg(){
     var d = await safeApi('DELETE','/api/orgs/'+currentOrgId+'/members/me');
     if(d){ showToast('Left organization','info'); currentOrgId=''; await loadTeamOrgs(); }
   }, 'Leave');
+}
+
+// Org strip scroll arrows — only visible when there's overflow
+function updateOrgScrollArrows(){
+  var sel = document.getElementById('orgSelector');
+  var left = document.getElementById('orgScrollLeft');
+  var right = document.getElementById('orgScrollRight');
+  if(!sel || !left || !right) return;
+  var canLeft = sel.scrollLeft > 2;
+  var canRight = sel.scrollLeft + sel.clientWidth < sel.scrollWidth - 2;
+  left.classList.toggle('hidden', !canLeft);
+  right.classList.toggle('hidden', !canRight);
+}
+function scrollOrgs(dir){
+  var sel = document.getElementById('orgSelector');
+  if(!sel) return;
+  sel.scrollBy({ left: dir * Math.max(220, sel.clientWidth * 0.7), behavior: 'smooth' });
 }
 
 // Mobile swipe-left on the org card reveals Edit/Delete (mirrors API keys pattern)
@@ -524,6 +554,10 @@ function initOrgSwipe(){
     if(!token) return;
     initOrgSwipe();
     loadTeamOrgs();
+    var orgSel = document.getElementById('orgSelector');
+    if(orgSel){ orgSel.addEventListener('scroll', updateOrgScrollArrows, {passive:true}); }
+    window.addEventListener('resize', updateOrgScrollArrows);
+    setTimeout(updateOrgScrollArrows, 300);
   }
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', bootTeam);

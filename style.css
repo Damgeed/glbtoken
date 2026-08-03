@@ -7878,13 +7878,11 @@ body {
   }
 }
 
-/* ═══ Org add dropdown (mobile unified + Add menu) ═══ */
-.org-add-menu-wrap { position: relative; margin-left: auto; }
+/* ═══ Responsive visibility helpers ═══ */
 .hide-desktop { display: none; }
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
   .hide-desktop { display: block; }
-  .org-add-menu-wrap .dropdown { min-width: 220px; max-width: calc(100vw - 2rem); right: 0; }
 }
 
 /* ═══ Org card swipe-reveal (mobile — mirrors API keys) ═══ */
@@ -7916,3 +7914,36 @@ body {
 #orgSelector .sort-btn,
 #orgSelector .btn-action,
 #orgSelector .btn-secondary { flex-shrink: 0; }
+
+/* ═══ Org selector scroll wrap + ‹ › arrows (visible when overflow) ═══ */
+.org-scroll-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.org-scroll-wrap #orgSelector { flex: 1; min-width: 0; }
+.org-scroll-arrow {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.org-scroll-arrow:hover { opacity: 1; color: var(--primary); border-color: var(--primary); }
+.org-scroll-arrow.hidden { opacity: 0; pointer-events: none; }
+@media (max-width: 480px) {
+  .org-scroll-arrow { width: 26px; height: 26px; font-size: 0.95rem; }
+}
