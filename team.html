@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1178" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1029" />
+<link rel="stylesheet" href="team.css?v=1030" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -443,13 +443,20 @@ async function loadOrgDetails(orgId){
         var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> '+new Date(iv.expires_at).toLocaleDateString()+'</span>' : '';
         var sent = iv.created_at ? '<span class="invite-sent">sent '+timeAgo(iv.created_at)+'</span>' : '';
         var actions = '';
+        var swipeActions = '';
         if(canManage){
           actions = '<div class="invite-actions">'
             + '<button class="btn-secondary btn-copy" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
             + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
             + '</div>';
+          swipeActions = '<div class="invite-swipe-actions">'
+            + '<button class="swipe-action swipe-resend" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
+            + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
+            + '</div>';
         }
-        return '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
+        return '<div class="invite-swipe">'
+          + swipeActions
+          + '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
           + '<div class="invite-main">'
           + '<div class="invite-top">'
           + '<span class="invite-email">'+escapeHtml(iv.email)+'</span>'
@@ -459,7 +466,8 @@ async function loadOrgDetails(orgId){
           + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
           + actions
           + '</div>'
-          + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button></div>';
+          + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
+          + '</div></div>';
       }).join('');
     }
   }
@@ -619,13 +627,21 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> '+new Date(expiresAt).toLocaleDateString()+'</span>' : '';
   var sent = createdAt ? '<span class="invite-sent">sent '+timeAgo(createdAt)+'</span>' : '';
   var actions = '';
+  var swipeActions = '';
   if(currentMyRole === 'owner' || currentMyRole === 'admin'){
     actions = '<div class="invite-actions">'
       + '<button class="btn-secondary btn-copy" onclick="resendInvite('+currentOrgId+',\''+escapeHtml(email)+'\',\''+escapeHtml(role)+'\')">↻ Resend</button>'
       + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+currentOrgId+','+(inviteId||0)+',\''+escapeHtml(email)+'\')">✕ Revoke</button>'
       + '</div>';
+    swipeActions = '<div class="invite-swipe-actions">'
+      + '<button class="swipe-action swipe-resend" onclick="resendInvite('+currentOrgId+',\''+escapeHtml(email)+'\',\''+escapeHtml(role)+'\')">↻ Resend</button>'
+      + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+currentOrgId+','+(inviteId||0)+',\''+escapeHtml(email)+'\')">✕ Revoke</button>'
+      + '</div>';
   }
-  div.innerHTML = '<div class="invite-main">'
+  div.innerHTML = '<div class="invite-swipe">'
+    + swipeActions
+    + '<div class="invite-item" data-email="'+escapeHtml(email)+'">'
+    + '<div class="invite-main">'
     + '<div class="invite-top">'
     + '<span class="invite-email">'+escapeHtml(email)+'</span>'
     + '<span class="invite-role">'+capRole(role)+'</span>'
@@ -634,7 +650,8 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link || 'Token active')+'</div>'
     + actions
     + '</div>'
-    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>';
+    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
+    + '</div></div>';
   list.prepend(div);
 }
 // Resend an invite (owner/admin) — same token/link, refreshed expiry
@@ -796,11 +813,63 @@ function initOrgSwipe(){
   });
 }
 
+// Mobile swipe-left on a pending invite card reveals Resend/Revoke (mirrors API keys pattern)
+function initInviteSwipe(){
+  var list = document.getElementById('pendingInvitesList');
+  if(!list || list.__inviteSwipeInit) return;
+  list.__inviteSwipeInit = true;
+  var openSwipe = null;
+  var MAX_SHIFT = 150; // 2 actions × 75px
+  var trackingWrap = null, startX = 0, startY = 0, dx = 0, dy = 0, tracking = false, decided = false;
+  function closeSwipe(){
+    if(openSwipe){ openSwipe.classList.remove('open'); openSwipe = null; }
+  }
+  list.addEventListener('touchstart', function(e){
+    var wrap = e.target.closest ? e.target.closest('.invite-swipe') : null;
+    if(!wrap) return;
+    if(e.target.closest('.invite-swipe-actions')) return;
+    var t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; dx = 0; dy = 0;
+    trackingWrap = wrap; tracking = true; decided = false;
+  }, {passive:true});
+  list.addEventListener('touchmove', function(e){
+    if(!tracking || !trackingWrap) return;
+    var t = e.touches[0];
+    dx = t.clientX - startX; dy = t.clientY - startY;
+    if(!decided){
+      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      decided = true;
+      if(Math.abs(dx) <= Math.abs(dy)){ tracking = false; return; } // vertical scroll wins
+    }
+    e.preventDefault();
+    var card = trackingWrap.querySelector('.invite-item');
+    if(!card) return;
+    var base = trackingWrap.classList.contains('open') ? -MAX_SHIFT : 0;
+    var shift = Math.max(-MAX_SHIFT, Math.min(0, base + dx));
+    card.style.transform = 'translateX('+shift+'px)';
+    if(openSwipe && openSwipe !== trackingWrap) openSwipe.classList.remove('open');
+  }, {passive:false});
+  list.addEventListener('touchend', function(){
+    if(!tracking || !trackingWrap) return;
+    var wrap = trackingWrap; tracking = false; trackingWrap = null;
+    var card = wrap.querySelector('.invite-item');
+    if(!card) return;
+    card.style.transform = '';
+    if(dx < -45){ closeSwipe(); wrap.classList.add('open'); openSwipe = wrap; }
+    else if(dx > 45){ wrap.classList.remove('open'); if(openSwipe === wrap) openSwipe = null; }
+  }, {passive:true});
+  // Tap outside an open swipe closes it
+  document.addEventListener('click', function(e){
+    if(openSwipe && !openSwipe.contains(e.target)) closeSwipe();
+  });
+}
+
 // Boot
 (function(){
   function bootTeam(){
     if(!token) return;
     initOrgSwipe();
+    initInviteSwipe();
     loadTeamOrgs();
     var orgSel = document.getElementById('orgSelector');
     if(orgSel){ orgSel.addEventListener('scroll', updateOrgScrollArrows, {passive:true}); }

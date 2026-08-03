@@ -341,6 +341,61 @@
   border-color: rgba(255, 107, 107, 0.45);
 }
 
+/* ── Pending invite swipe-reveal (mobile, iOS-mail style; mirrors API keys) ──
+   Desktop: inline Resend/Revoke stay visible.
+   Mobile : hidden until the card is swiped left. */
+.invite-swipe {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+}
+.invite-swipe .invite-item {
+  margin-bottom: 0;
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+.invite-swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.invite-swipe.open .invite-swipe-actions {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.invite-swipe.open .invite-item {
+  transform: translateX(-150px); /* 2 actions × 75px */
+}
+.swipe-action {
+  width: 75px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.swipe-resend { background: rgba(244, 180, 0, 0.16); color: #FFC733; }
+.swipe-revoke { background: rgba(255, 92, 92, 0.16); color: #FF6B6B; }
+@media (min-width: 768px) {
+  .invite-swipe-actions { display: none; }
+  .invite-swipe.open .invite-item { transform: none; }
+}
+@media (max-width: 767px) {
+  .invite-item .invite-actions { display: none; } /* swipe reveals Resend/Revoke instead */
+}
+
 /* ── Mobile: members table becomes stacked cards (≤767px) ── */
 @media (max-width: 767px) {
   .scroll-x table {
