@@ -861,27 +861,37 @@ function initOrgSwipe(){
   });
 }
 
-// Mobile swipe-left on a pending invite card reveals Resend/Revoke (mirrors API keys pattern)
-function initInviteSwipe(){
-  var list = document.getElementById('pendingInvitesList');
-  if(!list || list.__inviteSwipeInit) return;
-  list.__inviteSwipeInit = true;
+// ── Shared mobile swipe-left helper (iOS mail style) ──
+// List-delegation swipe: one container holds many swipe wrappers; touch events
+// bubble up so re-rendered content keeps working. Used by invite cards and
+// member cards. (The org card is a single-element variant — kept separate.)
+function initSwipeList(container, wrapperSel, cardSel, actionsSel, opts){
+  opts = opts || {};
+  if(!container || container.__swipeInit) return;
+  container.__swipeInit = true;
   var openSwipe = null;
-  var MAX_SHIFT = 150; // 2 actions × 75px
   var trackingWrap = null, startX = 0, startY = 0, dx = 0, dy = 0, tracking = false, decided = false;
+  function maxShift(wrap){
+    var w = parseInt(wrap.style.getPropertyValue('--swipe-w'));
+    if(w) return w;
+    if(typeof opts.maxShift === 'function') return opts.maxShift(wrap);
+    return opts.maxShift || 150;
+  }
   function closeSwipe(){
     if(openSwipe){ openSwipe.classList.remove('open'); openSwipe = null; }
   }
-  list.addEventListener('touchstart', function(e){
-    var wrap = e.target.closest ? e.target.closest('.invite-swipe') : null;
+  container.addEventListener('touchstart', function(e){
+    var wrap = e.target.closest ? e.target.closest(wrapperSel) : null;
     if(!wrap) return;
-    if(e.target.closest('.invite-swipe-actions')) return;
+    if(opts.requireAction && !wrap.querySelector(actionsSel+' .swipe-action')) return; // nothing to reveal
+    if(e.target.closest(actionsSel)) return;
     var t = e.touches[0];
     startX = t.clientX; startY = t.clientY; dx = 0; dy = 0;
     trackingWrap = wrap; tracking = true; decided = false;
   }, {passive:true});
-  list.addEventListener('touchmove', function(e){
+  container.addEventListener('touchmove', function(e){
     if(!tracking || !trackingWrap) return;
+    if(opts.requireAction && !trackingWrap.querySelector(actionsSel+' .swipe-action')){ tracking = false; return; }
     var t = e.touches[0];
     dx = t.clientX - startX; dy = t.clientY - startY;
     if(!decided){
@@ -890,17 +900,18 @@ function initInviteSwipe(){
       if(Math.abs(dx) <= Math.abs(dy)){ tracking = false; return; } // vertical scroll wins
     }
     e.preventDefault();
-    var card = trackingWrap.querySelector('.invite-item');
+    var card = trackingWrap.querySelector(cardSel);
     if(!card) return;
-    var base = trackingWrap.classList.contains('open') ? -MAX_SHIFT : 0;
-    var shift = Math.max(-MAX_SHIFT, Math.min(0, base + dx));
+    var MAX = maxShift(trackingWrap);
+    var base = trackingWrap.classList.contains('open') ? -MAX : 0;
+    var shift = Math.max(-MAX, Math.min(0, base + dx));
     card.style.transform = 'translateX('+shift+'px)';
     if(openSwipe && openSwipe !== trackingWrap) openSwipe.classList.remove('open');
   }, {passive:false});
-  list.addEventListener('touchend', function(){
+  container.addEventListener('touchend', function(){
     if(!tracking || !trackingWrap) return;
     var wrap = trackingWrap; tracking = false; trackingWrap = null;
-    var card = wrap.querySelector('.invite-item');
+    var card = wrap.querySelector(cardSel);
     if(!card) return;
     card.style.transform = '';
     if(dx < -45){ closeSwipe(); wrap.classList.add('open'); openSwipe = wrap; }
@@ -912,60 +923,15 @@ function initInviteSwipe(){
   });
 }
 
-// Mobile swipe-left on a member card reveals Transfer/Remove (owner/admin gated; mirrors invite swipe)
+// Pending invite cards: swipe-left reveals Resend/Revoke (mirrors API keys pattern)
+function initInviteSwipe(){
+  initSwipeList(document.getElementById('pendingInvitesList'), '.invite-swipe', '.invite-item', '.invite-swipe-actions', {maxShift: 150});
+}
+
+// Member cards: swipe-left reveals Transfer/Remove (owner/admin gated). Cards
+// without any allowed action render as plain cards and never swipe.
 function initMemberSwipe(){
-  var list = document.getElementById('teamMembersMobile');
-  if(!list || list.__memberSwipeInit) return;
-  list.__memberSwipeInit = true;
-  var openSwipe = null;
-  var trackingWrap = null, startX = 0, startY = 0, dx = 0, dy = 0, tracking = false, decided = false;
-  function closeSwipe(){
-    if(openSwipe){ openSwipe.classList.remove('open'); openSwipe = null; }
-  }
-  function maxShift(wrap){
-    return parseInt(wrap.style.getPropertyValue('--swipe-w')) || 150;
-  }
-  list.addEventListener('touchstart', function(e){
-    var wrap = e.target.closest ? e.target.closest('.member-swipe') : null;
-    if(!wrap) return;
-    if(!wrap.querySelector('.member-swipe-actions .swipe-action')) return; // nothing to reveal
-    if(e.target.closest('.member-swipe-actions')) return;
-    var t = e.touches[0];
-    startX = t.clientX; startY = t.clientY; dx = 0; dy = 0;
-    trackingWrap = wrap; tracking = true; decided = false;
-  }, {passive:true});
-  list.addEventListener('touchmove', function(e){
-    if(!tracking || !trackingWrap) return;
-    if(!trackingWrap.querySelector('.member-swipe-actions .swipe-action')){ tracking = false; return; }
-    var t = e.touches[0];
-    dx = t.clientX - startX; dy = t.clientY - startY;
-    if(!decided){
-      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-      decided = true;
-      if(Math.abs(dx) <= Math.abs(dy)){ tracking = false; return; } // vertical scroll wins
-    }
-    e.preventDefault();
-    var card = trackingWrap.querySelector('.member-card');
-    if(!card) return;
-    var MAX = maxShift(trackingWrap);
-    var base = trackingWrap.classList.contains('open') ? -MAX : 0;
-    var shift = Math.max(-MAX, Math.min(0, base + dx));
-    card.style.transform = 'translateX('+shift+'px)';
-    if(openSwipe && openSwipe !== trackingWrap) openSwipe.classList.remove('open');
-  }, {passive:false});
-  list.addEventListener('touchend', function(){
-    if(!tracking || !trackingWrap) return;
-    var wrap = trackingWrap; tracking = false; trackingWrap = null;
-    var card = wrap.querySelector('.member-card');
-    if(!card) return;
-    card.style.transform = '';
-    if(dx < -45){ closeSwipe(); wrap.classList.add('open'); openSwipe = wrap; }
-    else if(dx > 45){ wrap.classList.remove('open'); if(openSwipe === wrap) openSwipe = null; }
-  }, {passive:true});
-  // Tap outside an open swipe closes it
-  document.addEventListener('click', function(e){
-    if(openSwipe && !openSwipe.contains(e.target)) closeSwipe();
-  });
+  initSwipeList(document.getElementById('teamMembersMobile'), '.member-swipe', '.member-card', '.member-swipe-actions', {requireAction: true});
 }
 
 // Boot
