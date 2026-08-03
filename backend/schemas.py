@@ -271,6 +271,10 @@ class ChangeRoleRequest(BaseModel):
     role: str
 
 
+class TransferOwnerRequest(BaseModel):
+    user_id: int
+
+
 # ── Admin Schemas ──
 
 class AdminBalanceRequest(BaseModel):

@@ -10,7 +10,7 @@ import os
 from database import get_db, User, Organization, OrgMember, OrgInvite, Transaction
 from auth import get_current_user
 from common import _400, _403, _404, _500, limiter
-from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest
+from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest, TransferOwnerRequest
 from routes.auth_routes import send_email
 
 router = APIRouter()
@@ -104,6 +104,7 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
     ).order_by(desc(OrgInvite.created_at)).all()
     base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
     pending_invites = [{
+        "id": inv.id,
         "email": inv.email,
         "role": inv.role or "member",
         "invite_token": inv.token,
@@ -213,8 +214,8 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
         if existing:
             _400("User is already a member of this organization")
 
-    if req.role not in ("admin", "member", "viewer"):
-        _400("Role must be 'admin', 'member' or 'viewer'")
+    if req.role not in ("admin", "member"):
+        _400("Role must be 'admin' or 'member'")
 
     base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
     inviter_name = user.name or user.email or "Someone"
@@ -255,24 +256,30 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
             join_link, email_sent = _send(existing_invite.token)
             return {
                 "status": "resent",
+                "id": existing_invite.id,
                 "invite_token": existing_invite.token,
                 "join_link": join_link,
                 "org_name": org.name,
                 "invited_email": email,
                 "role": existing_invite.role or req.role,
+                "created_at": existing_invite.created_at.isoformat() if existing_invite.created_at else None,
                 "expires_at": existing_invite.expires_at.isoformat() if existing_invite.expires_at else None,
                 "email_sent": email_sent,
+                "invited_user_exists": invited_user is not None,
                 "message": f"Invite resent to {email}." + (" Email delivered." if email_sent else " Share the invite link with them."),
             }
         # No duplicate creation — surface the existing invite so the owner can resend or share
         return {
             "status": "already_invited",
+            "id": existing_invite.id,
             "invite_token": existing_invite.token,
             "join_link": f"{base_url}/join.html?org={org_id}&token={existing_invite.token}",
             "org_name": org.name,
             "invited_email": email,
             "role": existing_invite.role or req.role,
+            "created_at": existing_invite.created_at.isoformat() if existing_invite.created_at else None,
             "expires_at": existing_invite.expires_at.isoformat() if existing_invite.expires_at else None,
+            "invited_user_exists": invited_user is not None,
             "message": f"An active invite already exists for {email}. Resend it instead of creating a duplicate?",
         }
 
@@ -299,13 +306,16 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
 
     return {
         "status": "invited",
+        "id": invite.id,
         "invite_token": invite_token,
         "join_link": join_link,
         "org_name": org.name,
         "invited_email": email,
         "role": req.role,
+        "created_at": invite.created_at.isoformat() if invite.created_at else None,
         "expires_at": invite.expires_at.isoformat() if invite.expires_at else None,
         "email_sent": email_sent,
+        "invited_user_exists": invited_user is not None,
         "message": f"Invite sent to {email}." + (" Email delivered." if email_sent else " Share the invite link with them."),
     }
 
@@ -328,8 +338,13 @@ def join_org(org_id: int, req: JoinOrgRequest, request: Request,
         _400("Invalid invite token")
     if invite.used:
         _400("Invite token has already been used")
-    if invite.expires_at and invite.expires_at < datetime.now(timezone.utc):
-        _400("Invite token has expired")
+    if invite.expires_at:
+        exp = invite.expires_at
+        # SQLite returns naive datetimes — normalize before comparing with aware now
+        if exp.tzinfo is None:
+            exp = exp.replace(tzinfo=timezone.utc)
+        if exp < datetime.now(timezone.utc):
+            _400("Invite token has expired")
 
     # The invite is bound to a specific email — only that user may join
     if invite.email.lower() != (user.email or "").lower():
@@ -353,6 +368,64 @@ def join_org(org_id: int, req: JoinOrgRequest, request: Request,
     db.commit()
     
     return {"status": "joined", "org_id": org_id, "org_name": org.name}
+
+
+@router.delete("/api/orgs/{org_id}/invites/{invite_id}")
+@limiter.limit("10/minute")
+def revoke_invite(org_id: int, invite_id: int, request: Request,
+                  user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Revoke a pending invite (owner or admin only). Deletes the invite row so the token dies."""
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        _404("Organization not found")
+
+    membership = db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id == user.id
+    ).first()
+    if not membership or membership.role not in ("owner", "admin"):
+        _403("Only owner or admin can revoke invites")
+
+    invite = db.query(OrgInvite).filter(
+        OrgInvite.org_id == org_id, OrgInvite.id == invite_id
+    ).first()
+    if not invite:
+        _404("Invite not found")
+    if invite.used:
+        _400("Invite has already been used")
+
+    db.delete(invite)
+    db.commit()
+    return {"status": "revoked", "invite_id": invite_id, "email": invite.email}
+
+
+@router.put("/api/orgs/{org_id}/owner")
+@limiter.limit("10/minute")
+def transfer_ownership(org_id: int, req: TransferOwnerRequest, request: Request,
+                       user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Transfer organization ownership to another member (owner only). The previous owner becomes an admin."""
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        _404("Organization not found")
+
+    membership = db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id == user.id
+    ).first()
+    if not membership or membership.role != "owner":
+        _403("Only the owner can transfer ownership")
+
+    target = db.query(OrgMember).filter(
+        OrgMember.org_id == org_id, OrgMember.user_id == req.user_id
+    ).first()
+    if not target:
+        _404("Target member not found in this organization")
+    if target.role == "owner":
+        _400("Target is already the owner")
+
+    target.role = "owner"
+    membership.role = "admin"
+    org.owner_id = req.user_id
+    db.commit()
+    return {"status": "transferred", "org_id": org_id, "new_owner_id": req.user_id, "new_owner_email": target.user.email if target.user else None}
 
 
 @router.put("/api/orgs/{org_id}/members/{member_id}/role")

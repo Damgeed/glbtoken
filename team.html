@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1178" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1026" />
+<link rel="stylesheet" href="team.css?v=1027" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -133,6 +133,14 @@
         <button class="org-scroll-arrow org-scroll-right" id="orgScrollRight" onclick="scrollOrgs(1)" title="Scroll organizations" aria-label="Scroll right">›</button>
       </div>
 
+      <!-- Empty state: no organizations yet -->
+      <div id="orgEmptyState" class="dash-card" style="display:none;text-align:center;padding:2rem 1rem">
+        <div style="font-size:2.5rem;margin-bottom:0.5rem;opacity:0.7">👥</div>
+        <h3 style="margin:0 0 0.35rem;font-size:1.05rem">No organizations yet</h3>
+        <p class="text-sm-muted-m">Create your first organization to invite team members and manage access together.</p>
+        <button class="btn-action" onclick="showCreateOrgModal()">+ Create Organization</button>
+      </div>
+
       <!-- Current Org Header (mobile: swipe left reveals Edit/Delete) -->
       <div class="org-swipe" id="orgSwipeWrap">
         <div class="key-swipe-actions" id="orgSwipeActions"></div>
@@ -143,7 +151,6 @@
             <h2 id="orgName" class="text-md-title">No organization</h2>
             <div  class="meta-row">
               <span id="orgMemberCount">0 members</span>
-              <span id="orgPlanBadge"  class="badge-gold">Pro Plan</span>
             </div>
           </div>
         </div>
@@ -162,7 +169,7 @@
       </div>
 
       <!-- Usage Stats -->
-      <div class="dash-grid mt-lg" >
+      <div class="dash-grid mt-lg" id="orgStatsGrid" >
         <div class="dash-stat-card"><div class="num" id="orgTotalSpend">$0.00</div><div class="lbl">Total Spend</div><div class="chg up">—</div></div>
         <div class="dash-stat-card"><div class="num" id="orgTotalCalls">0</div><div class="lbl">Total API Calls</div><div class="chg up">—</div></div>
         <div class="dash-stat-card"><div class="num" id="orgActiveMembers">0</div><div class="lbl">Active Members</div><div class="chg text-muted" >This month</div></div>
@@ -170,12 +177,16 @@
       </div>
 
       <!-- Members Table -->
-      <div class="dash-card">
+      <div class="dash-card" id="membersCard">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
           </svg>
           Team Members
+        </div>
+        <div class="member-toolbar">
+          <input type="search" id="memberSearch" class="input-search" placeholder="Search members by name or email..." oninput="onMemberSearch(this.value)" />
+          <span id="memberCount" class="text-sm-muted-3"></span>
         </div>
         <div  class="scroll-x">
           <table class="tx-table">
@@ -185,7 +196,11 @@
             </tbody>
           </table>
         </div>
-        
+        <div id="memberPagination" class="member-pagination" style="display:none">
+          <button class="btn-secondary btn-copy" onclick="memberPagePrev()">‹ Prev</button>
+          <span id="memberPageInfo" class="text-sm-muted-3"></span>
+          <button class="btn-secondary btn-copy" onclick="memberPageNext()">Next ›</button>
+        </div>
       </div>
 
       <!-- Invite Section -->
@@ -196,12 +211,11 @@
           </svg>
           Invite Members
         </div>
-        <div  class="filter-row">
+        <div id="inviteFormRow" class="filter-row">
           <input type="email" id="inviteEmail" placeholder="Enter email address..." class="input-search" />
           <select id="inviteRole" class="input-field">
             <option value="admin">Admin</option>
             <option value="member" selected>Member</option>
-            <option value="viewer">Viewer</option>
           </select>
           <button class="btn-primary btn-nowrap" onclick="sendInvite()" >Send Invite</button>
         </div>
@@ -227,8 +241,8 @@
           </svg>
           Membership
         </div>
-        <p  class="text-sm-muted-m">You are a member of this organization. You can leave at any time.</p>
-        <button class="btn-secondary btn-danger" onclick="leaveOrg()">Leave Organization</button>
+        <p id="membershipText" class="text-sm-muted-m">You are a member of this organization. You can leave at any time.</p>
+        <button class="btn-secondary btn-danger" id="leaveOrgBtn" onclick="leaveOrg()">Leave Organization</button>
       </div>
 
     </div>
@@ -262,6 +276,36 @@
 <script>
 // ===== Team Management — real data from /api/orgs =====
 var currentOrgId = '';
+var currentMyRole = 'member';
+var allMembers = [];          // full member list of the selected org (server truth)
+var memberQuery = '';         // live search filter (name / email)
+var memberPage = 1;
+var memberPageSize = 10;
+var lastUsageBreakdown = [];  // cached per-member tokens from /usage for re-fill after search/pagination
+
+function timeAgo(iso){
+  if(!iso) return '';
+  var then = new Date(iso).getTime();
+  if(isNaN(then)) return '';
+  var secs = Math.floor((Date.now() - then) / 1000);
+  if(secs < 60) return 'just now';
+  if(secs < 3600) return Math.floor(secs/60)+'m ago';
+  if(secs < 86400) return Math.floor(secs/3600)+'h ago';
+  if(secs < 604800) return Math.floor(secs/86400)+'d ago';
+  return new Date(iso).toLocaleDateString();
+}
+function capRole(r){ return r ? r.charAt(0).toUpperCase()+r.slice(1) : 'Member'; }
+
+// Hide/show the org-specific sections (stats, members, invite, membership) + empty state
+function setOrgSectionsVisible(visible){
+  var ids = ['orgSwipeWrap','orgStatsGrid','membersCard','inviteSection','membershipSection'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.style.display = visible ? '' : 'none';
+  });
+  var empty = document.getElementById('orgEmptyState');
+  if(empty) empty.style.display = visible ? 'none' : '';
+}
 
 // Load org selector buttons from /api/orgs
 async function loadTeamOrgs(){
@@ -302,6 +346,15 @@ function resetTeamView(){
   document.getElementById('orgAvgCost').textContent = '$0.000';
   document.getElementById('teamMembersBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Select an organization to view members</td></tr>';
   document.getElementById('pendingInvitesList').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Pending invites appear here after sending.</p>';
+  // Reset member search / pagination state
+  allMembers = []; currentMyRole = 'member'; memberQuery = ''; memberPage = 1; lastUsageBreakdown = [];
+  var searchEl = document.getElementById('memberSearch');
+  if(searchEl) searchEl.value = '';
+  var countEl = document.getElementById('memberCount');
+  if(countEl) countEl.textContent = '';
+  var pagEl = document.getElementById('memberPagination');
+  if(pagEl) pagEl.style.display = 'none';
+  setOrgSectionsVisible(false);
 }
 
 // Switch org → load details + usage
@@ -323,18 +376,34 @@ async function loadOrgDetails(orgId){
   document.getElementById('orgName').textContent = d.name || ('Org '+orgId);
   var avatar = document.getElementById('orgAvatar');
   avatar.textContent = (d.name && d.name.length) ? d.name[0].toUpperCase() : 'O';
-  document.getElementById('orgMemberCount').textContent = (d.members ? d.members.length : 0)+' members';
+  var members = d.members || [];
+  document.getElementById('orgMemberCount').textContent = members.length + ' / ' + (d.max_members || '—') + ' members';
+  var myRole = d.my_role || 'member';
+  var canManage = (myRole === 'owner' || myRole === 'admin');
   var roleEl = document.getElementById('orgRoleBadge');
-  roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+(d.my_role ? d.my_role.charAt(0).toUpperCase()+d.my_role.slice(1) : 'Member');
+  roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+capRole(myRole);
+  setOrgSectionsVisible(true);
+  // Invite form — owner/admin only (backend 403s otherwise; don't show what you can't use)
+  var inviteRow = document.getElementById('inviteFormRow');
+  if(inviteRow) inviteRow.style.display = canManage ? '' : 'none';
+  // Leave org — owner cannot leave (backend blocks it); owner gets transfer/delete guidance instead
+  var leaveBtn = document.getElementById('leaveOrgBtn');
+  var membershipText = document.getElementById('membershipText');
+  if(myRole === 'owner'){
+    if(leaveBtn) leaveBtn.style.display = 'none';
+    if(membershipText) membershipText.textContent = 'You are the owner of this organization. Transfer ownership or delete the organization to leave.';
+  } else {
+    if(leaveBtn) leaveBtn.style.display = '';
+    if(membershipText) membershipText.textContent = 'You are a member of this organization. You can leave at any time.';
+  }
   // Org actions (edit/delete by role)
   var actionsEl = document.getElementById('orgActions');
   if(actionsEl){
-    var role = d.my_role || 'member';
     var btns = '';
-    if(role === 'owner' || role === 'admin'){
+    if(canManage){
       btns += '<button class="btn-secondary" onclick="editOrg('+orgId+')" title="Rename organization">✏️ Edit</button>';
     }
-    if(role === 'owner'){
+    if(myRole === 'owner'){
       btns += '<button class="btn-secondary badge-red" onclick="deleteOrg('+orgId+')" title="Delete organization">🗑️ Delete</button>';
     }
     actionsEl.innerHTML = btns;
@@ -345,11 +414,11 @@ async function loadOrgDetails(orgId){
   if(swipeEl){
     var sbtns = '';
     var btnCount = 0;
-    if(role === 'owner' || role === 'admin'){
+    if(canManage){
       sbtns += '<button class="swipe-action swipe-edit" onclick="editOrg('+orgId+')" title="Rename organization">Edit</button>';
       btnCount++;
     }
-    if(role === 'owner'){
+    if(myRole === 'owner'){
       sbtns += '<button class="swipe-action swipe-delete" onclick="deleteOrg('+orgId+')" title="Delete organization">Delete</button>';
       btnCount++;
     }
@@ -357,34 +426,14 @@ async function loadOrgDetails(orgId){
     if(swWrap) swWrap.style.setProperty('--swipe-w', (btnCount*80)+'px');
   }
   if(swWrap) swWrap.classList.remove('open');
-  // Members table
-  var tbody = document.getElementById('teamMembersBody');
-  if(!tbody) return;
-  var members = d.members || [];
-  if(!members.length){
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No members yet</td></tr>';
-  } else {
-    var rows = members.map(function(m){
-      var isOwner = m.role === 'owner';
-      var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
-      var roleOptions = ['owner','admin','member','viewer'].map(function(r){
-        return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+r.charAt(0).toUpperCase()+r.slice(1)+'</option>';
-      }).join('');
-      var roleCell = isOwner
-        ? '<span class="badge-role-owner">Owner</span>'
-        : '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'+roleOptions+'</select>';
-      var removeBtn = isOwner
-        ? '<span style="color:var(--text-muted);font-size:0.8rem">—</span>'
-        : '<button class="btn-secondary badge-red" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>';
-      return '<tr data-member="'+m.user_id+'">'+
-        '<td><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div></td>'+
-        '<td>'+escapeHtml(m.email||'—')+'</td>'+
-        '<td>'+roleCell+'</td>'+
-        '<td id="tok-'+m.user_id+'">…</td>'+
-        '<td>'+removeBtn+'</td></tr>';
-    }).join('');
-    tbody.innerHTML = rows;
-  }
+  // Members table — full list cached, renderMembers() applies search + pagination
+  allMembers = members;
+  currentMyRole = myRole;
+  memberQuery = '';
+  memberPage = 1;
+  var searchEl = document.getElementById('memberSearch');
+  if(searchEl) searchEl.value = '';
+  renderMembers();
   // Pending invites — server truth, strictly scoped to THIS org (never mixed across orgs)
   var invitesEl = document.getElementById('pendingInvitesList');
   if(invitesEl){
@@ -395,17 +444,112 @@ async function loadOrgDetails(orgId){
       invitesEl.innerHTML = invites.map(function(iv){
         var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
         var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> '+new Date(iv.expires_at).toLocaleDateString()+'</span>' : '';
-        var roleLabel = iv.role ? iv.role.charAt(0).toUpperCase()+iv.role.slice(1) : 'Member';
-        return '<div class="invite-item">'
+        var sent = iv.created_at ? '<span class="invite-sent">sent '+timeAgo(iv.created_at)+'</span>' : '';
+        var actions = '';
+        if(canManage){
+          actions = '<div class="invite-actions">'
+            + '<button class="btn-secondary btn-copy" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
+            + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
+            + '</div>';
+        }
+        return '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
           + '<div class="invite-main">'
-          + '<div class="text-sm">'+escapeHtml(iv.email)+' <span class="text-xs-muted-2">— '+roleLabel+'</span>'+exp+'</div>'
+          + '<div class="text-sm">'+escapeHtml(iv.email)+' <span class="text-xs-muted-2">— '+capRole(iv.role)+'</span>'+exp+' <span class="invite-sent">'+sent+'</span></div>'
           + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
+          + actions
           + '</div>'
           + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button></div>';
       }).join('');
     }
   }
 }
+
+// Render members with live search filter + pagination (client-side; list is fully loaded)
+function renderMembers(myRole, orgId){
+  var tbody = document.getElementById('teamMembersBody');
+  if(!tbody) return;
+  var role = myRole || currentMyRole || 'member';
+  if(!orgId) orgId = currentOrgId;
+  var canManage = (role === 'owner' || role === 'admin');
+  var q = memberQuery.toLowerCase().trim();
+  var filtered = allMembers;
+  if(q){
+    filtered = allMembers.filter(function(m){
+      return (m.name||'').toLowerCase().indexOf(q) !== -1 || (m.email||'').toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  var totalPages = Math.max(1, Math.ceil(filtered.length / memberPageSize));
+  if(memberPage > totalPages) memberPage = totalPages;
+  var pageRows = filtered.slice((memberPage-1)*memberPageSize, memberPage*memberPageSize);
+  var countEl = document.getElementById('memberCount');
+  if(countEl) countEl.textContent = filtered.length ? (filtered.length+' member'+(filtered.length===1?'':'s')+(q?' found':'')) : '';
+  if(!filtered.length){
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">'+(q ? 'No members match "'+escapeHtml(memberQuery)+'"' : 'No members yet')+'</td></tr>';
+  } else {
+    var rows = pageRows.map(function(m){
+      var isOwner = m.role === 'owner';
+      var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
+      var roleCell;
+      if(isOwner){
+        roleCell = '<span class="badge-role-owner">Owner</span>';
+      } else if(role === 'owner'){
+        roleCell = '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+          + ['admin','member'].map(function(r){
+              return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+capRole(r)+'</option>';
+            }).join('')
+          + '</select>';
+      } else {
+        roleCell = '<span class="badge-role-'+m.role+'">'+capRole(m.role)+'</span>';
+      }
+      // Remove: owner/admin only; nobody can remove the owner; admins cannot remove other admins
+      var showRemove = canManage && !isOwner && !(role === 'admin' && m.role === 'admin');
+      var removeBtn = showRemove
+        ? '<button class="btn-secondary badge-red" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>'
+        : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>';
+      // Transfer ownership: owner only, to a non-owner member
+      var transferBtn = (role === 'owner' && !isOwner)
+        ? '<button class="btn-secondary btn-copy" onclick="transferOwnership('+orgId+','+m.user_id+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
+        : '';
+      var actionsCell = (transferBtn || (showRemove ? '1' : ''))
+        ? '<div class="flex-row-gap">'+transferBtn+removeBtn+'</div>'
+        : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>';
+      return '<tr data-member="'+m.user_id+'">'+
+        '<td data-label="Member"><div class="flex-row"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div></td>'+
+        '<td data-label="Email">'+escapeHtml(m.email||'—')+'</td>'+
+        '<td data-label="Role">'+roleCell+'</td>'+
+        '<td data-label="Tokens Used" id="tok-'+m.user_id+'">…</td>'+
+        '<td data-label="Actions">'+actionsCell+'</td></tr>';
+    }).join('');
+    tbody.innerHTML = rows;
+    fillTokens();
+  }
+  // Pagination controls
+  var pagEl = document.getElementById('memberPagination');
+  var infoEl = document.getElementById('memberPageInfo');
+  if(pagEl && infoEl){
+    if(totalPages > 1){
+      pagEl.style.display = 'flex';
+      infoEl.textContent = 'Page '+memberPage+' of '+totalPages;
+    } else {
+      pagEl.style.display = 'none';
+    }
+  }
+}
+
+function fillTokens(){
+  if(!lastUsageBreakdown.length) return;
+  lastUsageBreakdown.forEach(function(m){
+    var el = document.getElementById('tok-'+m.user_id);
+    if(el) el.textContent = (m.tokens_used||0).toLocaleString();
+  });
+}
+function onMemberSearch(val){
+  memberQuery = val || '';
+  memberPage = 1;
+  renderMembers();
+}
+function memberPagePrev(){ if(memberPage > 1){ memberPage--; renderMembers(); } }
+function memberPageNext(){ memberPage++; renderMembers(); }
 
 async function loadOrgUsage(orgId){
   if(!token || !orgId) return;
@@ -416,11 +560,9 @@ async function loadOrgUsage(orgId){
   document.getElementById('orgActiveMembers').textContent = d.total_members||0;
   var perCall = d.total_transactions ? ((d.total_spent||0)/d.total_transactions) : 0;
   document.getElementById('orgAvgCost').textContent = '$'+perCall.toFixed(4);
-  // Fill per-member tokens
-  (d.member_breakdown||[]).forEach(function(m){
-    var el = document.getElementById('tok-'+m.user_id);
-    if(el) el.textContent = (m.tokens_used||0).toLocaleString();
-  });
+  // Cache per-member tokens so search/pagination re-renders keep the numbers
+  lastUsageBreakdown = d.member_breakdown || [];
+  fillTokens();
 }
 
 // Role update (owner only)
@@ -447,32 +589,81 @@ async function sendInvite(){
         var d2 = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role, resend:true});
         if(d2 && (d2.status === 'resent' || d2.invite_token)){
           showToast(d2.email_sent ? 'Invite email resent to '+email : 'Invite link already active — share it','success');
-          addPendingInviteRow(email, role, d2.join_link || d2.invite_token, d2.expires_at);
+          if(d2.invited_user_exists) showToast(email+' already has a GlbTOKEN account — they can accept from the invite link','info');
+          addPendingInviteRow(email, role, d2.join_link || d2.invite_token, d2.expires_at, d2.created_at, d2.id);
         } else if(d2 && d2.detail){ showToast(d2.detail,'error'); }
       }, 'Resend');
     return;
   }
   if(d && d.invite_token){
     showToast(d.email_sent ? 'Invite email sent to '+email : 'Invite link generated — share it','success');
+    if(d.invited_user_exists) showToast(email+' already has a GlbTOKEN account — they can accept from the invite link','info');
     document.getElementById('inviteEmail').value = '';
-    addPendingInviteRow(email, role, d.join_link || d.invite_token, d.expires_at);
+    addPendingInviteRow(email, role, d.join_link || d.invite_token, d.expires_at, d.created_at, d.id);
   } else if(d && d.detail){
     showToast(d.detail,'error');
   }
 }
-function addPendingInviteRow(email, role, link, expiresAt){
+function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   var list = document.getElementById('pendingInvitesList');
   if(!list) return;
+  // Dedupe: remove any existing row for the same email (prevents duplicates after resend)
+  list.querySelectorAll('.invite-item').forEach(function(el){
+    if(el.getAttribute('data-email') === email) el.remove();
+  });
   var div = document.createElement('div');
   div.className = 'invite-item';
-  var roleLabel = role.charAt(0).toUpperCase()+role.slice(1);
+  div.setAttribute('data-email', email);
   var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> '+new Date(expiresAt).toLocaleDateString()+'</span>' : '';
+  var sent = createdAt ? '<span class="invite-sent">sent '+timeAgo(createdAt)+'</span>' : '';
+  var actions = '';
+  if(currentMyRole === 'owner' || currentMyRole === 'admin'){
+    actions = '<div class="invite-actions">'
+      + '<button class="btn-secondary btn-copy" onclick="resendInvite('+currentOrgId+',\''+escapeHtml(email)+'\',\''+escapeHtml(role)+'\')">↻ Resend</button>'
+      + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+currentOrgId+','+(inviteId||0)+',\''+escapeHtml(email)+'\')">✕ Revoke</button>'
+      + '</div>';
+  }
   div.innerHTML = '<div class="invite-main">'
-    + '<div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+roleLabel+'</span>'+exp+'</div>'
+    + '<div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+capRole(role)+'</span>'+exp+' <span class="invite-sent">'+sent+'</span></div>'
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link || 'Token active')+'</div>'
+    + actions
     + '</div>'
     + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>';
   list.prepend(div);
+}
+// Resend an invite (owner/admin) — same token/link, refreshed expiry
+async function resendInvite(orgId, email, role){
+  var d = await safeApi('POST','/api/orgs/'+orgId+'/invite',{email:email, role:role, resend:true});
+  if(d && (d.status === 'resent' || d.invite_token)){
+    showToast(d.email_sent ? 'Invite email resent to '+email : 'Invite link already active — share it','success');
+    addPendingInviteRow(email, d.role || role, d.join_link || d.invite_token, d.expires_at, d.created_at, d.id);
+  } else if(d && d.detail){ showToast(d.detail,'error'); }
+}
+// Revoke an invite (owner/admin) — token dies immediately
+async function revokeInvite(orgId, inviteId, email){
+  if(!inviteId){ showToast('Invite not loaded yet — refresh the page','error'); return; }
+  showConfirm('Revoke invite?','The invite link for '+email+' will stop working immediately.', async function(){
+    var d = await safeApi('DELETE','/api/orgs/'+orgId+'/invites/'+inviteId);
+    if(d && d.status === 'revoked'){
+      showToast('Invite revoked','success');
+      var list = document.getElementById('pendingInvitesList');
+      if(list) list.querySelectorAll('.invite-item').forEach(function(el){
+        if(el.getAttribute('data-email') === email) el.remove();
+      });
+    }
+    else if(d && d.detail){ showToast(d.detail,'error'); }
+  }, 'Revoke');
+}
+// Transfer ownership (owner only) — target member becomes the new owner; current owner becomes admin
+async function transferOwnership(orgId, userId, name){
+  showConfirm('Transfer ownership?', name+' will become the new owner. You will become an admin and can no longer delete or transfer the organization.', async function(){
+    var d = await safeApi('PUT','/api/orgs/'+orgId+'/owner',{user_id:userId});
+    if(d && d.status === 'transferred'){
+      showToast('Ownership transferred to '+name,'success');
+      loadOrgDetails(orgId);
+    }
+    else if(d && d.detail){ showToast(d.detail,'error'); }
+  }, 'Transfer');
 }
 function copyInviteLink(link){
   if(navigator.clipboard && navigator.clipboard.writeText){
