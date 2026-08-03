@@ -543,6 +543,10 @@
     white-space: nowrap;
   }
   .member-card-tokens {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
     text-align: center;
     margin-top: 0.45rem;
     padding-top: 0.35rem;
@@ -559,14 +563,16 @@
     padding: 0.1rem 0.7rem;
     border-radius: 20px;
     line-height: 1.45;
+    white-space: nowrap;
   }
   .member-card-tokens span {
-    display: block;
-    margin-top: 0.25rem;
+    display: inline-block;
+    margin-top: 0;
     font-size: 0.66rem;
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: var(--text-muted);
+    white-space: nowrap;
   }
 }
 .swipe-transfer { background: rgba(0, 214, 143, 0.16); color: #00D68F; }
