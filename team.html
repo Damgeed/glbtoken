@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1171" />
+  <link rel="stylesheet" href="style.css?v=1172" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="team.css?v=1025" />
   </head>
@@ -118,15 +118,26 @@
           </h1>
           <p>Manage organizations, members, and roles</p>
         </div>
-        <div><button class="btn-action hide-mobile" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button></div>
+        <div>
+          <button class="btn-action hide-mobile" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button>
+          <div class="org-add-menu-wrap hide-desktop" id="orgAddWrap">
+            <button class="btn-action" id="orgAddBtn" onclick="toggleOrgAddMenu(event)">+ Add<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s ease" id="orgAddChevron"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="dropdown" id="orgAddMenu"><div class="dd-items">
+              <a onclick="orgAddAction('org')"><span class="dd-icon">🏢</span> New Organization</a>
+              <a onclick="orgAddAction('invite')"><span class="dd-icon">👥</span> Invite Member</a>
+            </div></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Org Selector (real data from /api/orgs; mobile +Add dropdown built by loadTeamOrgs) -->
+      <!-- Org Selector (real data from /api/orgs; desktop +New Org button, mobile dropdown in header) -->
       <div id="orgSelector" class="flex-row-wrap">
       </div>
 
-      <!-- Current Org Header -->
-      <div class="dash-card flex-row-between-wrap" >
+      <!-- Current Org Header (mobile: swipe left reveals Edit/Delete) -->
+      <div class="org-swipe" id="orgSwipeWrap">
+        <div class="key-swipe-actions" id="orgSwipeActions"></div>
+        <div class="dash-card flex-row-between-wrap" >
         <div  class="flex-row-lg">
           <div class="avatar-lg-gold" id="orgAvatar">—</div>
           <div>
@@ -145,9 +156,10 @@
             </svg>
             Member
           </span>
-          <div id="orgActions" class="flex-row-gap" style="margin-left:0.5rem"></div>
+          <div id="orgActions" class="flex-row-gap hide-mobile" style="margin-left:0.5rem"></div>
         </div>
 
+      </div>
       </div>
 
       <!-- Usage Stats -->
@@ -267,15 +279,7 @@ async function loadTeamOrgs(){
       html += '<button class="sort-btn'+active+'" data-org="'+escapeHtml(String(o.id))+'" onclick="switchOrg(\''+escapeHtml(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';
     });
   }
-  // Mobile unified +Add dropdown
-  html += '<div class="org-add-menu-wrap hide-desktop" id="orgAddWrap">'
-    + '<button class="btn-action" id="orgAddBtn" onclick="toggleOrgAddMenu(event)">+ Add'
-    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s ease" id="orgAddChevron"><path d="m6 9 6 6 6-6"/></svg>'
-    + '</button>'
-    + '<div class="dropdown" id="orgAddMenu"><div class="dd-items">'
-    + '<a onclick="orgAddAction(\'invite\')"><span class="dd-icon">👥</span> Invite Member</a>'
-    + '<a onclick="orgAddAction(\'org\')"><span class="dd-icon">🏢</span> New Organization</a>'
-    + '</div></div></div>';
+  // Desktop + New Org button (mobile unified dropdown lives in the header)
   html += '<button class="btn-action hide-mobile" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>';
   selector.innerHTML = html;
   // Auto-select first org if none selected
@@ -336,6 +340,24 @@ async function loadOrgDetails(orgId){
     }
     actionsEl.innerHTML = btns;
   }
+  // Mobile swipe actions (same gating; revealed by swipe-left on the org card)
+  var swipeEl = document.getElementById('orgSwipeActions');
+  var swWrap = document.getElementById('orgSwipeWrap');
+  if(swipeEl){
+    var sbtns = '';
+    var btnCount = 0;
+    if(role === 'owner' || role === 'admin'){
+      sbtns += '<button class="swipe-action swipe-edit" onclick="editOrg('+orgId+')" title="Rename organization">Edit</button>';
+      btnCount++;
+    }
+    if(role === 'owner'){
+      sbtns += '<button class="swipe-action swipe-delete" onclick="deleteOrg('+orgId+')" title="Delete organization">Delete</button>';
+      btnCount++;
+    }
+    swipeEl.innerHTML = sbtns;
+    if(swWrap) swWrap.style.setProperty('--swipe-w', (btnCount*80)+'px');
+  }
+  if(swWrap) swWrap.classList.remove('open');
   // Members table
   var tbody = document.getElementById('teamMembersBody');
   if(!tbody) return;
@@ -489,10 +511,52 @@ async function leaveOrg(){
   }, 'Leave');
 }
 
+// Mobile swipe-left on the org card reveals Edit/Delete (mirrors API keys pattern)
+function initOrgSwipe(){
+  var wrap = document.getElementById('orgSwipeWrap');
+  if(!wrap || wrap.__swipeInit) return;
+  wrap.__swipeInit = true;
+  var startX=0, startY=0, dx=0, dy=0, tracking=false, decided=false;
+  wrap.addEventListener('touchstart', function(e){
+    if(e.target.closest('.key-swipe-actions')) return;
+    var t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; dx = 0; dy = 0; tracking = true; decided = false;
+  }, {passive:true});
+  wrap.addEventListener('touchmove', function(e){
+    if(!tracking) return;
+    var t = e.touches[0];
+    dx = t.clientX - startX; dy = t.clientY - startY;
+    if(!decided){
+      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      decided = true;
+      if(Math.abs(dx) <= Math.abs(dy)){ tracking = false; return; } // vertical scroll wins
+    }
+    e.preventDefault();
+    var card = wrap.querySelector('.dash-card');
+    var maxShift = parseInt(wrap.style.getPropertyValue('--swipe-w')) || 160;
+    var shift = Math.max(-maxShift, Math.min(0, dx));
+    card.style.transform = 'translateX('+shift+'px)';
+  }, {passive:false});
+  wrap.addEventListener('touchend', function(){
+    if(!tracking) return; tracking = false;
+    var card = wrap.querySelector('.dash-card');
+    card.style.transform = '';
+    if(dx < -45){ wrap.classList.add('open'); }
+    else if(dx > 45){ wrap.classList.remove('open'); }
+  }, {passive:true});
+  // Tap outside the open card closes it
+  document.addEventListener('click', function(e){
+    if(wrap.classList.contains('open') && !wrap.contains(e.target)){
+      wrap.classList.remove('open');
+    }
+  });
+}
+
 // Boot
 (function(){
   function bootTeam(){
     if(!token) return;
+    initOrgSwipe();
     loadTeamOrgs();
   }
   if(document.readyState === 'loading'){

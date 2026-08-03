@@ -216,6 +216,20 @@ class OrgMember(Base):
     user = relationship("User", foreign_keys=[user_id])
 
 
+class OrgInvite(Base):
+    __tablename__ = "org_invites"
+    id = Column(Integer, primary_key=True, index=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False, index=True)
+    email = Column(String, nullable=False)
+    token = Column(String, nullable=False, unique=True, index=True)
+    role = Column(String, default="member")  # 'admin', 'member', 'viewer'
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+
+    organization = relationship("Organization")
+
+
 # ── Playground Conversation Model ──
 class Conversation(Base):
     __tablename__ = "conversations"

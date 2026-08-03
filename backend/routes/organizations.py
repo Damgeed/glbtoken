@@ -3,10 +3,10 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import secrets
 
-from database import get_db, User, Organization, OrgMember, Transaction
+from database import get_db, User, Organization, OrgMember, OrgInvite, Transaction
 from auth import get_current_user
 from common import _400, _403, _404, _500, limiter
 from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest
@@ -191,10 +191,29 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     ).first()
     if existing:
         _400("User is already a member of this organization")
-    
-    # Generate invite token (simple random string; stored in a real system would be a separate table)
+
+    if req.role not in ("admin", "member", "viewer"):
+        _400("Role must be 'admin', 'member' or 'viewer'")
+
+    # Invalidate any previous unused invites for this org + email
+    db.query(OrgInvite).filter(
+        OrgInvite.org_id == org_id,
+        OrgInvite.email == req.email,
+        OrgInvite.used == False,  # noqa: E712
+    ).delete(synchronize_session=False)
+
+    # Persist the invite token with a 7-day expiry (join validates against the DB)
     invite_token = secrets.token_urlsafe(32)
-    
+    invite = OrgInvite(
+        org_id=org_id,
+        email=req.email,
+        token=invite_token,
+        role=req.role,
+        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+    )
+    db.add(invite)
+    db.commit()
+
     return {
         "invite_token": invite_token,
         "org_name": org.name,
@@ -213,10 +232,22 @@ def join_org(org_id: int, req: JoinOrgRequest, request: Request,
     if not org:
         _404("Organization not found")
     
-    # Verify token (in production, validate against stored tokens)
-    if not req.token or len(req.token) < 10:
+    # Validate token against persisted invites (org + token must match, not expired, not used)
+    invite = db.query(OrgInvite).filter(
+        OrgInvite.org_id == org_id,
+        OrgInvite.token == req.token,
+    ).first()
+    if not invite:
         _400("Invalid invite token")
-    
+    if invite.used:
+        _400("Invite token has already been used")
+    if invite.expires_at and invite.expires_at < datetime.now(timezone.utc):
+        _400("Invite token has expired")
+
+    # The invite is bound to a specific email — only that user may join
+    if invite.email.lower() != (user.email or "").lower():
+        _403("This invite was issued for a different email address")
+
     # Check if already a member
     existing = db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id == user.id
@@ -229,8 +260,9 @@ def join_org(org_id: int, req: JoinOrgRequest, request: Request,
     if current_count >= org.max_members:
         _400("Organization has reached maximum member capacity")
     
-    member = OrgMember(org_id=org_id, user_id=user.id, role="member")
+    member = OrgMember(org_id=org_id, user_id=user.id, role=invite.role or "member")
     db.add(member)
+    invite.used = True
     db.commit()
     
     return {"status": "joined", "org_id": org_id, "org_name": org.name}

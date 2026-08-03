@@ -7886,3 +7886,19 @@ body {
   .hide-desktop { display: block; }
   .org-add-menu-wrap .dropdown { min-width: 220px; max-width: calc(100vw - 2rem); right: 0; }
 }
+
+/* ═══ Org card swipe-reveal (mobile — mirrors API keys) ═══ */
+.org-swipe { position: relative; overflow: hidden; border-radius: var(--radius-sm); }
+.org-swipe .dash-card {
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s, transform 0.25s ease;
+  will-change: transform;
+}
+.org-swipe.open .key-swipe-actions { transform: translateX(0); opacity: 1; pointer-events: auto; }
+.org-swipe.open .dash-card { transform: translateX(calc(-1 * var(--swipe-w, 160px))); }
+.swipe-edit { background: rgba(0, 214, 143, 0.16); color: #00E39A; }
+@media (min-width: 769px) {
+  .org-swipe .key-swipe-actions { display: none; }
+  .org-swipe.open .dash-card { transform: none; }
+}
