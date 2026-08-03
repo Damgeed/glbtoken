@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1180" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1042" />
+<link rel="stylesheet" href="team.css?v=1043" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -214,6 +214,7 @@
         <div class="member-toolbar">
           <input type="search" id="memberSearch" class="input-search" placeholder="Search members by name or email..." oninput="onMemberSearch(this.value)" />
           <span id="memberCount" class="text-sm-muted-3"></span>
+          <button class="btn-secondary btn-copy" onclick="exportMembersCsv()" title="Export member list as CSV" style="flex-shrink:0">⬇ CSV</button>
         </div>
         <div class="member-filters">
           <div class="filter-chips" id="memberFilterChips">
@@ -264,7 +265,7 @@
         </div>
         <!-- Batch invite panel -->
         <div class="batch-invite" id="batchInvitePanel" style="display:none">
-          <textarea id="batchEmails" class="batch-emails" rows="3" placeholder="Paste multiple emails — separated by commas or new lines:&#10;alice@acme.com, bob@acme.com&#10;carol@acme.com"></textarea>
+          <textarea id="batchEmails" class="batch-emails" rows="3" placeholder="Paste emails or CSV rows — one per line:&#10;alice@acme.com&#10;Alice Smith, alice@acme.com&#10;Bob Jones, bob@acme.com&#10;carol@acme.com, dave@acme.com"></textarea>
           <div class="batch-row">
             <select id="batchRole" class="input-field">
               <option value="member">Member</option>
@@ -362,6 +363,7 @@ var memberRoleFilter = 'all'; // 'all' | 'owner' | 'admin' | 'member'
 var memberSort = 'name';      // 'name' | 'tokens-desc' | 'tokens-asc' | 'role'
 var pendingInvites = [];      // server-truth invite list for stats/countdown
 var currentMaxMembers = 0;    // org member capacity (for insight bar)
+var currentInviteStats = null; // invite funnel stats from get_org (owner/admin)
 var drawerUserId = null;      // member currently shown in the detail drawer
 
 function timeAgo(iso){
@@ -454,16 +456,28 @@ function upsertPendingInvite(iv){
 function renderInviteStats(){
   var el = document.getElementById('inviteStats');
   if(!el) return;
-  if(!pendingInvites.length){ el.innerHTML = ''; return; }
+  var html = '';
+  // Funnel stats from the backend (all-time invites for this org) — owner/admin only
+  if(currentInviteStats){
+    var s = currentInviteStats;
+    html += '<span class="invite-stat"><b>'+s.total_sent+'</b> sent</span>';
+    html += '<span class="invite-stat ok"><b>'+s.accepted+'</b> accepted'
+      + (s.total_sent ? ' <em>('+s.accept_rate+'%)</em>' : '') + '</span>';
+    if(s.pending) html += '<span class="invite-stat warn"><b>'+s.pending+'</b> pending</span>';
+    if(s.expired) html += '<span class="invite-stat expired"><b>'+s.expired+'</b> expired</span>';
+  }
+  if(!pendingInvites.length){
+    el.innerHTML = html;
+    return;
+  }
   var pending=0, soon=0, expired=0;
   pendingInvites.forEach(function(iv){
     var st = inviteStatus(iv);
     if(st === 'expired'){ expired++; }
     else { pending++; if(st === 'soon') soon++; }
   });
-  var html = '<span class="invite-stat"><b>'+pending+'</b> pending</span>';
+  if(!currentInviteStats && expired) html += '<span class="invite-stat expired"><b>'+expired+'</b> expired</span>';
   if(soon) html += '<span class="invite-stat warn"><b>'+soon+'</b> expiring ≤48h</span>';
-  if(expired) html += '<span class="invite-stat expired"><b>'+expired+'</b> expired</span>';
   el.innerHTML = html;
 }
 function startInviteTicker(){
@@ -597,7 +611,7 @@ function resetTeamView(){
   if(insightEl) insightEl.style.display = 'none';
   // Reset member search / pagination / filter / sort state
   allMembers = []; currentMyRole = 'member'; memberQuery = ''; memberPage = 1; lastUsageBreakdown = [];
-  memberRoleFilter = 'all'; memberSort = 'name'; pendingInvites = []; currentMaxMembers = 0;
+  memberRoleFilter = 'all'; memberSort = 'name'; pendingInvites = []; currentMaxMembers = 0; currentInviteStats = null;
   var sortEl = document.getElementById('memberSort');
   if(sortEl) sortEl.value = 'name';
   updateFilterChips();
@@ -633,6 +647,7 @@ async function loadOrgDetails(orgId){
   var members = d.members || [];
   document.getElementById('orgMemberCount').textContent = members.length + ' / ' + (d.max_members || '—') + ' members';
   currentMaxMembers = d.max_members || 0;
+  currentInviteStats = d.invite_stats || null;
   var myRole = d.my_role || 'member';
   var canManage = (myRole === 'owner' || myRole === 'admin');
   var roleEl = document.getElementById('orgRoleBadge');
@@ -921,6 +936,29 @@ function mobileMemberCardHtml(m, role, orgId){
   return hasActions
     ? '<div class="member-swipe" style="--swipe-w:'+swipeW+'px"><div class="member-swipe-actions">'+transferBtn+removeBtn+'</div>'+cardBody+'</div>'
     : cardBody;
+}
+
+// Export the full member list (name, email, role, tokens) as a CSV download
+function exportMembersCsv(){
+  if(!allMembers.length){ showToast('No members to export','error'); return; }
+  var rows = [['Name','Email','Role','Tokens Used']];
+  allMembers.forEach(function(m){
+    rows.push([m.name||'', m.email||'', m.role||'member', String(memberTokens(m.user_id)||0)]);
+  });
+  var csv = rows.map(function(r){
+    return r.map(function(c){
+      var s = String(c == null ? '' : c);
+      return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+    }).join(',');
+  }).join('\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = ((document.getElementById('orgName')||{}).textContent || 'team') + '-members.csv';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 100);
+  showToast('Members exported','success');
 }
 
 function fillTokens(){
@@ -1388,15 +1426,37 @@ async function sendBatchInvites(){
   if(!currentOrgId){ showToast('Select an organization first','error'); return; }
   var raw = document.getElementById('batchEmails').value || '';
   if(raw.length > 15000){ showToast('Too many emails — max 15000 characters per batch','error'); return; }
-  var parts = raw.split(/[\n,;]+/).map(function(s){ return s.trim(); }).filter(Boolean);
+  // Parse CSV-ish input: each line is either "email" or "Name, email".
+  // A line of pure emails ("a@x.com, b@y.com") still splits into emails.
+  var items = [];   // {name, email}
+  raw.split(/[\n;]+/).forEach(function(line){
+    line = line.trim();
+    if(!line) return;
+    if(line.indexOf(',') !== -1){
+      var parts = line.split(',');
+      var emailOnly = parts.every(function(p){ return isValidEmail(p.trim()); });
+      if(emailOnly){
+        parts.forEach(function(p){ items.push({name:'', email:p.trim()}); });
+      } else {
+        items.push({name: parts[0].trim(), email: parts.slice(1).join(',').trim()});
+      }
+    } else {
+      var toks = line.split(/\s+/);
+      if(toks.length > 1 && toks.every(function(t){ return isValidEmail(t); })){
+        toks.forEach(function(t){ items.push({name:'', email:t}); });
+      } else {
+        items.push({name:'', email:line});
+      }
+    }
+  });
   var seen = {};
   var emails = [], invalid = [];
-  parts.forEach(function(p){
-    var key = p.toLowerCase();            // dedupe case-insensitively
+  items.forEach(function(it){
+    var key = it.email.toLowerCase();     // dedupe case-insensitively
     if(seen[key]) return;
     seen[key] = true;
-    if(isValidEmail(p)) emails.push(p);
-    else invalid.push(p);
+    if(isValidEmail(it.email)) emails.push(it);
+    else invalid.push(it.email || it.name || '(empty)');
   });
   if(!emails.length){
     showToast(invalid.length ? 'No valid emails to send' : 'Enter at least one valid email','error');
@@ -1414,15 +1474,17 @@ async function sendBatchInvites(){
   var sent=0, dup=0, fail=0, fails=[];
   for(var i=0;i<emails.length;i++){
     btn.textContent = 'Sending '+(i+1)+'/'+emails.length+'…';
-    var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:emails[i], role:role});
+    var payload = {email:emails[i].email, role:role};
+    if(emails[i].name) payload.name = emails[i].name;
+    var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',payload);
     if(d && d.invite_token){
       sent++;
-      addPendingInviteRow(emails[i], role, d.join_link || d.invite_token, d.expires_at, d.created_at, d.id);
+      addPendingInviteRow(emails[i].email, role, d.join_link || d.invite_token, d.expires_at, d.created_at, d.id);
     } else if(d && d.status === 'already_invited'){
       dup++;
     } else {
       fail++;
-      fails.push(emails[i] + (d && d.detail ? ' — ' + d.detail : ''));
+      fails.push(emails[i].email + (d && d.detail ? ' — ' + d.detail : ''));
     }
   }
   btn.disabled = false;

@@ -260,6 +260,7 @@ class UpdateOrgRequest(BaseModel):
 class InviteMemberRequest(BaseModel):
     email: str = Field(min_length=3, max_length=254)
     role: str = "member"  # admin | member (owner reserved for creator)
+    name: str = ""  # optional recipient name (CSV batch invites) — used in the email greeting
     resend: bool = False  # if an active invite already exists for this email, resend it instead of creating a duplicate
 
 

@@ -118,6 +118,32 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
             "expires_at": inv.expires_at.isoformat() if inv.expires_at else None,
         } for inv in pending]
 
+    # Invite funnel stats — owner/admin only (same scope as pending_invites).
+    # total_sent = every invite ever created for this org; accepted = used invites;
+    # pending/expired = unused invites split by expiry. Accept rate = accepted/total.
+    invite_stats = None
+    if membership.role in ("owner", "admin"):
+        all_invites = db.query(OrgInvite).filter(OrgInvite.org_id == org_id).all()
+        total_sent = len(all_invites)
+        accepted = sum(1 for inv in all_invites if inv.used)
+        _now = datetime.now(timezone.utc)
+        def _is_expired(inv):
+            if not inv.expires_at:
+                return False
+            exp = inv.expires_at
+            if exp.tzinfo is None:
+                exp = exp.replace(tzinfo=timezone.utc)
+            return exp <= _now
+        pending = sum(1 for inv in all_invites if not inv.used and not _is_expired(inv))
+        expired = sum(1 for inv in all_invites if not inv.used and _is_expired(inv))
+        invite_stats = {
+            "total_sent": total_sent,
+            "accepted": accepted,
+            "pending": pending,
+            "expired": expired,
+            "accept_rate": round(accepted / total_sent * 100) if total_sent else 0,
+        }
+
     return {
         "id": org.id,
         "name": org.name,
@@ -126,6 +152,7 @@ def get_org(org_id: int, request: Request, user: User = Depends(get_current_user
         "created_at": org.created_at.isoformat() if org.created_at else None,
         "members": member_list,
         "pending_invites": pending_invites,
+        "invite_stats": invite_stats,
         "my_role": membership.role,
     }
 
@@ -229,8 +256,9 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     def _send(invite_token):
         """Build the join link + email body and attempt delivery (best-effort)."""
         join_link = f"{base_url}/join.html?org={org_id}&token={invite_token}"
+        greeting = f"Hello {req.name.strip()}," if (req.name or "").strip() else "Hello,"
         body = (
-            f"Hello,\n\n"
+            f"{greeting}\n\n"
             f"{inviter_name} invited you to join the organization \"{org.name}\" "
             f"on GlbTOKEN as {req.role}.\n\n"
             f"Accept the invitation:\n{join_link}\n\n"
