@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+  <title>Join Organization — GlbTOKEN</title>
+  <meta name="description" content="Accept your GlbTOKEN organization invitation." />
+  <meta name="theme-color" content="#0A0B14" id="metaTheme" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://glbtoken-backend-production.up.railway.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'" />
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=1177" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  </head>
+<body>
+<div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
+
+<!-- NAV: Injected by nav.js -->
+<div id="nav-container" data-active-page="home"></div>
+
+<div class="auth-page auth-hero-wrapper">
+  <div class="auth-hero-card" style="margin:auto;max-width:480px">
+    <div class="auth-card" style="text-align:center">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.75rem;display:block"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <h2 style="margin:0 0 0.5rem">Organization Invitation</h2>
+      <p class="sub" id="joinStatus" style="min-height:1.5rem;margin-bottom:1.25rem">Loading invitation…</p>
+      <div id="joinActions" class="flex-row-gap" style="justify-content:center;flex-wrap:wrap"></div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-container"></div>
+
+<script src="nav.js?v=14"></script>
+<script src="footer.js?v=14"></script>
+<script src="translations.js?v=1104"></script>
+<script src="shared.js?v=1130"></script>
+<script src="ui.js?v=1223"></script>
+
+<script>
+// ── Join organization via invite link ──
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var orgId = params.get('org');
+  var inviteToken = params.get('token');
+  var statusEl = document.getElementById('joinStatus');
+  var actionsEl = document.getElementById('joinActions');
+
+  // Remember the pending invite so it survives login/registration
+  try{
+    sessionStorage.setItem('gt_pending_org', orgId || '');
+    sessionStorage.setItem('gt_pending_token', inviteToken || '');
+  }catch(e){}
+
+  if(!orgId || !inviteToken){
+    statusEl.textContent = 'This invite link is incomplete or expired.';
+    actionsEl.innerHTML = '<a class="btn-action" href="team.html">Go to Team</a>';
+    return;
+  }
+
+  function render(html, actions){
+    statusEl.innerHTML = html;
+    actionsEl.innerHTML = actions;
+  }
+
+  async function doJoin(){
+    if(!token){
+      render('Sign in to accept this invitation. New here? Create a free account — you\'ll be added right after.',
+        '<a class="btn-action" href="login.html">Sign In</a>'
+        + '<a class="btn-secondary" href="register.html">Create Account</a>');
+      return;
+    }
+    render('Accepting invitation…', '');
+    var d = await safeApi('POST','/api/orgs/'+encodeURIComponent(orgId)+'/join',{token: inviteToken}, 15000, true);
+    if(d && d.status === 'joined'){
+      render('✅ You joined <strong>'+escapeHtml(d.org_name || 'the organization')+'</strong> as a member!',
+        '<a class="btn-action" href="team.html">Go to Team</a>');
+      try{ sessionStorage.removeItem('gt_pending_org'); sessionStorage.removeItem('gt_pending_token'); }catch(e){}
+    } else if(d && d.detail){
+      var msg = d.detail;
+      render('⚠️ '+escapeHtml(msg),
+        '<a class="btn-action" href="team.html">Go to Team</a>');
+    } else {
+      render('Something went wrong. Please try again.',
+        '<button class="btn-action" onclick="location.reload()">Retry</button>');
+    }
+  }
+
+  // If user lands here after login/registration, auto-accept
+  if(sessionStorage.getItem('gt_pending_org') && sessionStorage.getItem('gt_pending_token')){
+    doJoin();
+  } else {
+    doJoin();
+  }
+})();
+</script>
+
+</body>
+</html>

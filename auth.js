@@ -1,6 +1,15 @@
 /* ══════════════════════════════════════════
    AUTH — Email login/register (passwordless via Auth0)
    ══════════════════════════════════════════ */
+    // After login/register: resume a pending org invite if one exists
+    function afterLoginRedirect(){
+      try{
+        if(sessionStorage.getItem('gt_pending_org') && sessionStorage.getItem('gt_pending_token')){
+          window.location.href='/join.html'; return;
+        }
+      }catch(e){}
+      window.location.href='/dashboard.html';
+    }
     async function sendLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
@@ -38,7 +47,7 @@
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
-        window.location.href='/dashboard.html';
+        afterLoginRedirect();
       } catch(e){
         showToast('Login failed','error');
       }
@@ -83,7 +92,7 @@
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Account created! Welcome.','success');
-        window.location.href='/dashboard.html';
+        afterLoginRedirect();
       }finally{
         btn.disabled=false;btn.textContent='Verify & Create Account';
       }
@@ -233,7 +242,7 @@
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
         applyAuth();
         showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
-        window.location.href='/dashboard.html';
+        afterLoginRedirect();
       }finally{
         setBtnLoading(btn, false);
       }

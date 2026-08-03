@@ -5,11 +5,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from datetime import datetime, timezone, timedelta
 import secrets
+import os
 
 from database import get_db, User, Organization, OrgMember, OrgInvite, Transaction
 from auth import get_current_user
 from common import _400, _403, _404, _500, limiter
 from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest
+from auth_routes import send_email
 
 router = APIRouter()
 
@@ -182,17 +184,18 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     if current_count >= org.max_members:
         _400("Organization has reached maximum member capacity")
     
-    # Find invited user
-    invited_user = db.query(User).filter(User.email == req.email).first()
-    if not invited_user:
-        _404("User with this email not found")
-    
-    # Check if already a member
-    existing = db.query(OrgMember).filter(
-        OrgMember.org_id == org_id, OrgMember.user_id == invited_user.id
-    ).first()
-    if existing:
-        _400("User is already a member of this organization")
+    email = (req.email or "").strip().lower()
+    if not email or "@" not in email:
+        _400("Please enter a valid email address")
+
+    # Already a member? (only relevant if the email belongs to a registered user)
+    invited_user = db.query(User).filter(User.email == email).first()
+    if invited_user:
+        existing = db.query(OrgMember).filter(
+            OrgMember.org_id == org_id, OrgMember.user_id == invited_user.id
+        ).first()
+        if existing:
+            _400("User is already a member of this organization")
 
     if req.role not in ("admin", "member", "viewer"):
         _400("Role must be 'admin', 'member' or 'viewer'")
@@ -200,7 +203,7 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     # Invalidate any previous unused invites for this org + email
     db.query(OrgInvite).filter(
         OrgInvite.org_id == org_id,
-        OrgInvite.email == req.email,
+        OrgInvite.email == email,
         OrgInvite.used == False,  # noqa: E712
     ).delete(synchronize_session=False)
 
@@ -208,7 +211,7 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     invite_token = secrets.token_urlsafe(32)
     invite = OrgInvite(
         org_id=org_id,
-        email=req.email,
+        email=email,
         token=invite_token,
         role=req.role,
         expires_at=datetime.now(timezone.utc) + timedelta(days=7),
@@ -216,12 +219,29 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
     db.add(invite)
     db.commit()
 
+    # Best-effort email with a one-click join link (fall back to sharing the link/token)
+    base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
+    join_link = f"{base_url}/join.html?org={org_id}&token={invite_token}"
+    inviter_name = user.name or user.email or "Someone"
+    subject = f"You're invited to join {org.name} on GlbTOKEN"
+    body = (
+        f"Hello,\n\n"
+        f"{inviter_name} invited you to join the organization \"{org.name}\" "
+        f"on GlbTOKEN as {req.role}.\n\n"
+        f"Accept the invitation:\n{join_link}\n\n"
+        f"If the link doesn't work, sign in with {email} and use this invite code: {invite_token}\n\n"
+        f"This invitation expires in 7 days."
+    )
+    email_sent = send_email(email, subject, body)
+
     return {
         "invite_token": invite_token,
+        "join_link": join_link,
         "org_name": org.name,
-        "invited_email": req.email,
+        "invited_email": email,
         "role": req.role,
-        "message": f"Invite sent to {req.email}. Share the token with them to join.",
+        "email_sent": email_sent,
+        "message": f"Invite sent to {email}." + (" Email delivered." if email_sent else " Share the invite link with them."),
     }
 
 

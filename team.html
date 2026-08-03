@@ -411,7 +411,7 @@ async function updateRole(select, memberId, orgId){
   else { showToast('Failed to update role','error'); loadOrgDetails(orgId); }
 }
 
-// Send invite (owner/admin only)
+// Send invite (owner/admin only) — works for any email, registered or not
 async function sendInvite(){
   if(!currentOrgId){ showToast('Select an organization first','error'); return; }
   var email = document.getElementById('inviteEmail').value.trim();
@@ -419,15 +419,24 @@ async function sendInvite(){
   var role = document.getElementById('inviteRole').value;
   var d = await safeApi('POST','/api/orgs/'+currentOrgId+'/invite',{email:email, role:role});
   if(d && d.invite_token){
-    showToast('Invite sent to '+email,'success');
+    showToast(d.email_sent ? 'Invite email sent to '+email : 'Invite link generated — share it','success');
     document.getElementById('inviteEmail').value = '';
     var list = document.getElementById('pendingInvitesList');
     var div = document.createElement('div');
-    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)';
-    div.innerHTML = '<div><span class="text-sm">'+escapeHtml(email)+'</span> <span class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div><div class="flex-row-gap"><span class="text-xs-gold">Token: '+escapeHtml(d.invite_token.slice(0,12))+'…</span></div>';
+    div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border)';
+    div.innerHTML = '<div style="min-width:0"><div class="text-sm">'+escapeHtml(email)+' <span class="text-xs-muted-2">— '+role.charAt(0).toUpperCase()+role.slice(1)+'</span></div>'
+      + '<div class="text-xs-gold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">'+escapeHtml(d.join_link || ('Token: '+d.invite_token.slice(0,12)+'…'))+'</div></div>'
+      + '<button class="btn-secondary" onclick="copyInviteLink(\''+escapeHtml(d.join_link || d.invite_token)+'\')">Copy</button>';
     list.prepend(div);
   } else if(d && d.detail){
     showToast(d.detail,'error');
+  }
+}
+function copyInviteLink(link){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(link).then(function(){ showToast('Invite link copied','success'); }, function(){ showToast(link,'info'); });
+  } else {
+    showToast(link,'info');
   }
 }
 
