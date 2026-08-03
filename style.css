@@ -828,6 +828,14 @@ html.dark .nav-logo-img {
   border-color: var(--primary);
   background: var(--primary-subtle);
 }
+/* Compact copy button — never wraps on narrow/mobile rows ("Copy" stays on one line) */
+.btn-copy {
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
 .hero-stats {
   display: flex;
   gap: 2.5rem;
