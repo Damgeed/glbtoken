@@ -988,7 +988,7 @@ function showSessionExpired(){
     window.location.href='/';
   };
 }
-function showPrompt(title, placeholder, onSubmit){
+function showPrompt(title, placeholder, onSubmit, initialValue){
   var existing=document.getElementById('promptModal');
   if(existing)existing.remove();
   var m=document.createElement('div');
@@ -1010,7 +1010,9 @@ function showPrompt(title, placeholder, onSubmit){
     +'</div></div>';
   document.body.appendChild(m);
   var input = document.getElementById('promptInput');
+  if(initialValue){ input.value = initialValue; }
   input.focus();
+  if(initialValue){ try{ input.setSelectionRange(initialValue.length, initialValue.length); }catch(e){} }
   document.getElementById('promptCancelBtn').onclick=function(){m.remove()};
   document.getElementById('promptOkBtn').onclick=function(){m.remove(); var v=input.value.trim(); if(v)onSubmit(v);};
   m.onclick=function(e){if(e.target===m)m.remove()};

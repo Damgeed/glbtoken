@@ -120,13 +120,8 @@
         </div>
         <div>
           <button class="btn-action hide-mobile" onclick="document.getElementById('inviteSection').scrollIntoView({behavior:'smooth'})">+ Invite Member</button>
-          <!-- Mobile top-right dropdown: + New Org only (Invite Member lives at the end of the org strip) -->
-          <div class="org-add-menu-wrap hide-desktop" id="orgAddWrap">
-            <button class="btn-action" id="orgAddBtn" onclick="toggleOrgAddMenu(event)">+ New Org<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s ease" id="orgAddChevron"><path d="m6 9 6 6 6-6"/></svg></button>
-            <div class="dropdown" id="orgAddMenu"><div class="dd-items">
-              <a onclick="orgAddAction('org')"><span class="dd-icon">🏢</span> New Organization</a>
-            </div></div>
-          </div>
+          <!-- Mobile: + New Org is a direct button (no dropdown needed) -->
+          <button class="btn-action hide-desktop" onclick="showCreateOrgModal()">+ New Org</button>
         </div>
       </div>
 
@@ -258,7 +253,7 @@
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1130"></script>
-<script data-cfasync="false" src="ui.js?v=1221"></script>
+<script data-cfasync="false" src="ui.js?v=1222"></script>
 <script data-cfasync="false" src="orgs.js?v=1121"></script>
 
 <script>
@@ -279,10 +274,8 @@ async function loadTeamOrgs(){
       html += '<button class="sort-btn'+active+'" data-org="'+escapeHtml(String(o.id))+'" onclick="switchOrg(\''+escapeHtml(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';
     });
   }
-  // Desktop + New Org (right-aligned; mobile uses the top-right dropdown)
+  // Desktop + New Org (right-aligned; mobile uses the top-right button)
   html += '<button class="btn-action hide-mobile" style="margin-left:auto" onclick="showCreateOrgModal()">+ New Org</button>';
-  // Mobile: Invite Member at the end of the org strip
-  html += '<button class="btn-secondary org-invite-last hide-desktop" onclick="document.getElementById(\'inviteSection\').scrollIntoView({behavior:\'smooth\'})">👥 Invite</button>';
   selector.innerHTML = html;
   // Auto-select first org if none selected
   if(!currentOrgId && orgs.length){
@@ -435,37 +428,6 @@ async function sendInvite(){
   }
 }
 
-// Mobile top-right dropdown (+ New Org default, expands to New Org / Invite Member)
-function toggleOrgAddMenu(e){
-  if(e){ e.stopPropagation(); }
-  var menu = document.getElementById('orgAddMenu');
-  var chev = document.getElementById('orgAddChevron');
-  if(!menu) return;
-  var open = menu.classList.toggle('open');
-  if(chev){ chev.style.transform = open ? 'rotate(180deg)' : ''; }
-}
-function orgAddAction(type){
-  var menu = document.getElementById('orgAddMenu');
-  var chev = document.getElementById('orgAddChevron');
-  if(menu) menu.classList.remove('open');
-  if(chev){ chev.style.transform = ''; }
-  if(type === 'invite'){
-    var sec = document.getElementById('inviteSection');
-    if(sec) sec.scrollIntoView({behavior:'smooth'});
-  } else if(type === 'org'){
-    showCreateOrgModal();
-  }
-}
-document.addEventListener('click', function(e){
-  var wrap = document.getElementById('orgAddWrap');
-  var menu = document.getElementById('orgAddMenu');
-  var chev = document.getElementById('orgAddChevron');
-  if(wrap && menu && !wrap.contains(e.target)){
-    menu.classList.remove('open');
-    if(chev){ chev.style.transform = ''; }
-  }
-});
-
 // Create org
 async function showCreateOrgModal(){
   showPrompt('Create Organization','Enter organization name', async function(name){
@@ -476,10 +438,12 @@ async function showCreateOrgModal(){
   });
 }
 
-// Rename org (owner/admin)
+// Rename org (owner/admin) — prefilled with the current name
 async function editOrg(orgId){
+  var currentName = document.getElementById('orgName').textContent || '';
   showPrompt('Rename Organization','Enter new organization name', async function(name){
     if(!name || !name.trim()) return;
+    if(name.trim() === currentName){ showToast('No changes made','info'); return; }
     var d = await safeApi('PUT','/api/orgs/'+orgId,{name:name.trim()});
     if(d && d.status==='updated'){
       showToast('Organization renamed','success');
@@ -487,7 +451,7 @@ async function editOrg(orgId){
       if(currentOrgId === String(orgId)){ await loadOrgDetails(orgId); }
     }
     else if(d && d.detail){ showToast(d.detail,'error'); }
-  });
+  }, currentName);
 }
 
 // Delete org (owner only)
