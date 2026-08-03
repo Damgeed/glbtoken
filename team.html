@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1180" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1040" />
+<link rel="stylesheet" href="team.css?v=1041" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -254,7 +254,7 @@
           Invite Members
         </div>
         <div id="inviteFormRow" class="filter-row">
-          <input type="email" id="inviteEmail" placeholder="Enter email address..." class="input-search" />
+          <input type="email" id="inviteEmail" placeholder="Enter email address..." class="input-search" maxlength="254" autocomplete="email" />
           <select id="inviteRole" class="input-field">
             <option value="admin">Admin</option>
             <option value="member" selected>Member</option>
@@ -697,37 +697,15 @@ async function loadOrgDetails(orgId){
     if(!invites.length){
       invitesEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">No pending invites for this organization.</p>';
     } else {
-      invitesEl.innerHTML = invites.map(function(iv){
-        var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
-        var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(iv.expires_at)+'">'+fmtCountdown(iv.expires_at)+'</span></span>' : '';
-        var sent = iv.created_at ? '<span class="invite-sent">sent '+timeAgo(iv.created_at)+'</span>' : '';
-        var actions = '';
-        var swipeActions = '';
-        if(canManage){
-          actions = '<div class="invite-actions">'
-            + '<button class="btn-secondary btn-copy" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
-            + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
-            + '</div>';
-          swipeActions = '<div class="invite-swipe-actions">'
-            + '<button class="swipe-action swipe-resend" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
-            + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
-            + '</div>';
-        }
-        return '<div class="invite-swipe">'
-          + swipeActions
-          + '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
-          + '<div class="invite-main">'
-          + '<div class="invite-top">'
-          + '<span class="invite-email">'+escapeHtml(iv.email)+'</span>'
-          + '<span class="invite-role">'+capRole(iv.role||'member')+'</span>'
-          + '</div>'
-          + '<div class="invite-meta">'+exp+sent+'</div>'
-          + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
-          + actions
-          + '</div>'
-          + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
-          + '</div></div>';
-      }).join('');
+      var invRows = invites.map(function(iv){ return inviteRowHtml(iv, orgId, canManage); });
+      var invFirst = invRows.slice(0,4).join('');
+      var invRest = invRows.slice(4);
+      invitesEl.innerHTML = invFirst
+        + (invRest.length
+            ? '<div id="inviteCollapse" class="invite-collapse" data-count="'+invRest.length+'">'+invRest.join('')+'</div>'
+              + '<button id="inviteMoreBtn" class="list-more-btn" onclick="toggleMobileInvites()">Show More ('+invRest.length+') ▼</button>'
+            : '');
+      refreshInviteMoreBtn();
     }
     renderInviteStats();
     expireInviteStyles();
@@ -735,6 +713,80 @@ async function loadOrgDetails(orgId){
   }
   updateFilterChips();
   renderOrgInsights();
+}
+
+// One pending-invite row (swipe wrapper + card). Used for the full render and
+// the mobile show-more collapse alike, so both stay structurally identical.
+function inviteRowHtml(iv, orgId, canManage){
+  var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
+  var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(iv.expires_at)+'">'+fmtCountdown(iv.expires_at)+'</span></span>' : '';
+  var sent = iv.created_at ? '<span class="invite-sent">sent '+timeAgo(iv.created_at)+'</span>' : '';
+  var actions = '';
+  var swipeActions = '';
+  if(canManage){
+    actions = '<div class="invite-actions">'
+      + '<button class="btn-secondary btn-copy" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
+      + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
+      + '</div>';
+    swipeActions = '<div class="invite-swipe-actions">'
+      + '<button class="swipe-action swipe-resend" onclick="resendInvite('+orgId+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
+      + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+orgId+','+iv.id+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
+      + '</div>';
+  }
+  return '<div class="invite-swipe">'
+    + swipeActions
+    + '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
+    + '<div class="invite-main">'
+    + '<div class="invite-top">'
+    + '<span class="invite-email">'+escapeHtml(iv.email)+'</span>'
+    + '<span class="invite-role">'+capRole(iv.role||'member')+'</span>'
+    + '</div>'
+    + '<div class="invite-meta">'+exp+sent+'</div>'
+    + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
+    + actions
+    + '</div>'
+    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
+    + '</div></div>';
+}
+
+// ── Mobile show-more (4 visible, rest collapsed; mirrors the models list) ──
+function toggleMobileMembers(){
+  var collapse = document.getElementById('memberCollapse');
+  if(!collapse) return;
+  collapse.classList.toggle('open');
+  refreshMemberMoreBtn();
+}
+function refreshMemberMoreBtn(){
+  var collapse = document.getElementById('memberCollapse');
+  var btn = document.getElementById('memberMoreBtn');
+  if(!collapse || !btn) return;
+  // Count direct children only — a .member-swipe wrapper CONTAINS a .member-card,
+  // so a descendant query would double-count cards that have swipe actions.
+  var count = collapse.querySelectorAll(':scope > .member-swipe, :scope > .member-card').length;
+  collapse.setAttribute('data-count', count);
+  if(!count){ btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  btn.innerHTML = collapse.classList.contains('open')
+    ? 'Show Less ▲'
+    : 'Show More ('+count+') ▼';
+}
+function toggleMobileInvites(){
+  var collapse = document.getElementById('inviteCollapse');
+  if(!collapse) return;
+  collapse.classList.toggle('open');
+  refreshInviteMoreBtn();
+}
+function refreshInviteMoreBtn(){
+  var collapse = document.getElementById('inviteCollapse');
+  var btn = document.getElementById('inviteMoreBtn');
+  if(!collapse || !btn) return;
+  var count = collapse.querySelectorAll('.invite-swipe').length;
+  collapse.setAttribute('data-count', count);
+  if(!count){ btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  btn.innerHTML = collapse.classList.contains('open')
+    ? 'Show Less ▲'
+    : 'Show More ('+count+') ▼';
 }
 
 // Render members with live search filter + pagination (client-side; list is fully loaded)
@@ -803,48 +855,20 @@ function renderMembers(myRole, orgId){
     tbody.innerHTML = rows;
     var mobList = document.getElementById('teamMembersMobile');
     if(mobList){
-      mobList.innerHTML = pageRows.map(function(m){
-        var isOwner = m.role === 'owner';
-        var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
-        var roleCell;
-        if(isOwner){
-          roleCell = '<span class="badge-role-owner">Owner</span>';
-        } else if(role === 'owner'){
-          roleCell = '<select class="role-select tag-filter" onclick="event.stopPropagation()" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
-            + ['admin','member'].map(function(r){
-                return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+capRole(r)+'</option>';
-              }).join('')
-            + '</select>';
-        } else {
-          roleCell = '<span class="badge-role-'+m.role+'">'+capRole(m.role)+'</span>';
-        }
-        var showRemove = canManage && !isOwner && !(role === 'admin' && m.role === 'admin');
-        var transferBtn = (role === 'owner' && !isOwner)
-          ? '<button class="swipe-action swipe-transfer" onclick="transferOwnership('+orgId+','+m.user_id+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
-          : '';
-        var removeBtn = showRemove
-          ? '<button class="swipe-action swipe-remove" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>'
-          : '';
-        var hasActions = transferBtn || removeBtn;
-        var swipeW = (transferBtn && removeBtn) ? 150 : 75;
-        var cardBody = '<div class="member-card" data-member="'+m.user_id+'" onclick="openMemberDrawer('+m.user_id+')">'
-          + '<div class="member-card-top">'
-          + '<div class="member-card-name"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
-          + '<div class="member-card-role">'+roleCell+'</div>'
-          + '</div>'
-          + '<div class="member-card-email">'+escapeHtml(m.email||'—')+'</div>'
-          + '<div class="member-card-tokens" id="tokm-'+m.user_id+'">…</div>'
-          + '</div>';
-        // Only wrap in a swipe container when there are actions to reveal —
-        // otherwise a plain card (no pointless empty slide).
-        return hasActions
-          ? '<div class="member-swipe" style="--swipe-w:'+swipeW+'px"><div class="member-swipe-actions">'+transferBtn+removeBtn+'</div>'+cardBody+'</div>'
-          : cardBody;
-      }).join('');
+      // Mobile: all filtered members, first 4 visible + "Show More" collapse
+      var mobileCards = filtered.map(function(m){ return mobileMemberCardHtml(m, role, orgId); });
+      var mobFirst = mobileCards.slice(0,4).join('');
+      var mobRest = mobileCards.slice(4);
+      mobList.innerHTML = mobFirst
+        + (mobRest.length
+            ? '<div id="memberCollapse" class="member-collapse" data-count="'+mobRest.length+'">'+mobRest.join('')+'</div>'
+              + '<button id="memberMoreBtn" class="list-more-btn" onclick="toggleMobileMembers()">Show More ('+mobRest.length+') ▼</button>'
+            : '');
+      refreshMemberMoreBtn();
     }
     fillTokens();
   }
-  // Pagination controls
+  // Pagination controls (desktop table only)
   var pagEl = document.getElementById('memberPagination');
   var infoEl = document.getElementById('memberPageInfo');
   if(pagEl && infoEl){
@@ -855,6 +879,48 @@ function renderMembers(myRole, orgId){
       pagEl.style.display = 'none';
     }
   }
+}
+
+// One mobile member card (avatar + name + role + tokens), wrapped in a swipe
+// container only when the viewer has actions to reveal. Used for both the
+// visible cards and the show-more collapse.
+function mobileMemberCardHtml(m, role, orgId){
+  var isOwner = m.role === 'owner';
+  var initial = (m.name && m.name.length) ? m.name[0].toUpperCase() : '?';
+  var roleCell;
+  if(isOwner){
+    roleCell = '<span class="badge-role-owner">Owner</span>';
+  } else if(role === 'owner'){
+    roleCell = '<select class="role-select tag-filter" onclick="event.stopPropagation()" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+      + ['admin','member'].map(function(r){
+          return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+capRole(r)+'</option>';
+        }).join('')
+      + '</select>';
+  } else {
+    roleCell = '<span class="badge-role-'+m.role+'">'+capRole(m.role)+'</span>';
+  }
+  var showRemove = (role === 'owner' || role === 'admin') && !isOwner && !(role === 'admin' && m.role === 'admin');
+  var transferBtn = (role === 'owner' && !isOwner)
+    ? '<button class="swipe-action swipe-transfer" onclick="transferOwnership('+orgId+','+m.user_id+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
+    : '';
+  var removeBtn = showRemove
+    ? '<button class="swipe-action swipe-remove" onclick="removeMember('+orgId+','+m.user_id+')">Remove</button>'
+    : '';
+  var hasActions = transferBtn || removeBtn;
+  var swipeW = (transferBtn && removeBtn) ? 150 : 75;
+  var cardBody = '<div class="member-card" data-member="'+m.user_id+'" onclick="openMemberDrawer('+m.user_id+')">'
+    + '<div class="member-card-top">'
+    + '<div class="member-card-name"><div class="avatar-sm-gold">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
+    + '<div class="member-card-role">'+roleCell+'</div>'
+    + '</div>'
+    + '<div class="member-card-email">'+escapeHtml(m.email||'—')+'</div>'
+    + '<div class="member-card-tokens" id="tokm-'+m.user_id+'">…</div>'
+    + '</div>';
+  // Only wrap in a swipe container when there are actions to reveal —
+  // otherwise a plain card (no pointless empty slide).
+  return hasActions
+    ? '<div class="member-swipe" style="--swipe-w:'+swipeW+'px"><div class="member-swipe-actions">'+transferBtn+removeBtn+'</div>'+cardBody+'</div>'
+    : cardBody;
 }
 
 function fillTokens(){
@@ -953,6 +1019,11 @@ function removeInviteByEmail(email){
   list.querySelectorAll('.invite-item').forEach(function(el){
     if(el.getAttribute('data-email') === email) el.remove();
   });
+  refreshInviteMoreBtn();
+  // Restore the empty-state placeholder when the last row goes away
+  if(!list.querySelector('.invite-swipe') && !list.querySelector('.invite-item')){
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">No pending invites for this organization.</p>';
+  }
 }
 function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   var list = document.getElementById('pendingInvitesList');
@@ -960,6 +1031,8 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   // Dedupe: remove any existing row for the same email (prevents duplicates after resend)
   removeInviteByEmail(email);
   upsertPendingInvite({email:email, role:role, join_link:link, invite_token:(link||''), expires_at:expiresAt, created_at:createdAt, id:inviteId});
+  // Clear the empty-state placeholder so the new row is the only child context
+  list.querySelectorAll(':scope > p').forEach(function(p){ p.remove(); });
   var div = document.createElement('div');
   div.className = 'invite-swipe';
   var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(expiresAt)+'">'+fmtCountdown(expiresAt)+'</span></span>' : '';
@@ -990,6 +1063,7 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
     + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
     + '</div>';
   list.prepend(div);
+  refreshInviteMoreBtn();
   expireInviteStyles();
   renderInviteStats();
 }
@@ -1313,6 +1387,7 @@ function toggleBatchInvite(force){
 async function sendBatchInvites(){
   if(!currentOrgId){ showToast('Select an organization first','error'); return; }
   var raw = document.getElementById('batchEmails').value || '';
+  if(raw.length > 15000){ showToast('Too many emails — max 15000 characters per batch','error'); return; }
   var parts = raw.split(/[\n,;]+/).map(function(s){ return s.trim(); }).filter(Boolean);
   var seen = {};
   var emails = [], invalid = [];

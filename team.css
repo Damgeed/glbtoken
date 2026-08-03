@@ -804,3 +804,29 @@ body.drawer-open { overflow: hidden; }
 .batch-result .bad { color: #FF6B6B; }
 .batch-fail-list { margin-top: 0.3rem; color: var(--text-muted); font-size: 0.75rem; }
 .batch-invalid-list { margin-top: 0.3rem; color: #FF6B6B; font-size: 0.75rem; }
+
+/* ── Mobile show-more: 4 visible + collapse (mirrors models list) ── */
+.member-collapse { display: none; }
+.member-collapse.open { display: block; }
+#inviteCollapse { display: block; }       /* desktop: show all invites */
+#inviteMoreBtn { display: none; }         /* desktop: no toggle needed */
+.list-more-btn {
+  display: block;
+  width: 100%;
+  margin: 0.6rem auto 0;
+  padding: 0.5rem;
+  background: rgba(244, 180, 0, 0.08);
+  border: 1px dashed rgba(244, 180, 0, 0.35);
+  color: #FFC733;
+  font-size: 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.list-more-btn:active { background: rgba(244, 180, 0, 0.16); }
+@media (max-width: 767px) {
+  #inviteCollapse { display: none; }
+  #inviteCollapse.open { display: block; }
+  #inviteMoreBtn { display: block; }
+}
