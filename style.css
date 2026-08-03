@@ -7902,3 +7902,19 @@ body {
   .org-swipe .key-swipe-actions { display: none; }
   .org-swipe.open .dash-card { transform: none; }
 }
+
+/* ═══ Org selector: horizontal scroll strip on mobile, + New Org first ═══ */
+@media (max-width: 768px) {
+  #orgSelector {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+    margin-bottom: -6px;
+  }
+  #orgSelector::-webkit-scrollbar { display: none; }
+  #orgSelector .sort-btn,
+  #orgSelector .btn-action,
+  #orgSelector .btn-secondary { flex-shrink: 0; }
+}
