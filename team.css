@@ -438,6 +438,7 @@
   .tx-table tbody td[data-label="Role"] {
     grid-area: role;
     align-self: center;
+    text-align: right;
   }
   .tx-table tbody td[data-label="Tokens Used"] {
     grid-area: tokens;

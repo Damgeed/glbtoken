@@ -7645,7 +7645,7 @@ body {
   }
   .dash-card div[style*="overflow-x:auto"]::after,
   .dash-card .scroll-x::after {
-    content: "→";
+    content: none;
     position: absolute;
     right: 4px;
     bottom: 1.4rem;
