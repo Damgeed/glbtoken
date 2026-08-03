@@ -11,7 +11,7 @@ from database import get_db, User, Organization, OrgMember, OrgInvite, Transacti
 from auth import get_current_user
 from common import _400, _403, _404, _500, limiter
 from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest
-from auth_routes import send_email
+from routes.auth_routes import send_email
 
 router = APIRouter()
 
