@@ -1,10 +1,12 @@
 """GlbTOKEN — Payments Routes (topup, Paystack, Stripe, Crypto, transactions, billing)"""
 
 from fastapi import APIRouter, Depends, Body, Request
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from datetime import datetime, timezone, timedelta
 from typing import Optional
+import json
 import secrets
 
 from database import get_db, User, Transaction
@@ -12,7 +14,7 @@ from auth import get_current_user
 from newapi_integration import add_user_quota
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, \
     PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES
-from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest
+from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest
 
 router = APIRouter()
 
@@ -166,27 +168,32 @@ def paystack_verify(reference: str = Body(...), user: User = Depends(get_current
 def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
+    if req.amount < 2 or req.amount > 2000:
+        _400("Amount must be between $2 and $2000")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     tokens = int(req.amount * 1000)
     cus = _stripe_customer_for(user)
-    session = stripe_lib.checkout.Session.create(
-        mode="payment",
-        line_items=[{
-            "price_data": {
-                "currency": req.currency.lower(),
-                "product_data": {"name": f"{tokens:,} GlbTOKEN"},
-                "unit_amount": int(req.amount * 100),
-            },
-            "quantity": 1,
-        }],
-        customer=cus.id,
-        # Shows a "Save my card for future purchases" checkbox on the hosted page.
-        payment_method_options={"card": {"save_payment_method": True}},
-        metadata={"user_id": str(user.id), "tokens": str(tokens)},
-        success_url="https://damgeed.github.io/glbtoken/#dashboard?payment=success",
-        cancel_url="https://damgeed.github.io/glbtoken/#plans",
-    )
+    try:
+        session = stripe_lib.checkout.Session.create(
+            mode="payment",
+            line_items=[{
+                "price_data": {
+                    "currency": req.currency.lower(),
+                    "product_data": {"name": f"{tokens:,} GlbTOKEN"},
+                    "unit_amount": int(req.amount * 100),
+                },
+                "quantity": 1,
+            }],
+            customer=cus.id,
+            # Shows a "Save my card for future purchases" checkbox on the hosted page.
+            payment_method_options={"card": {"save_payment_method": True}},
+            metadata={"user_id": str(user.id), "tokens": str(tokens)},
+            success_url="https://damgeed.github.io/glbtoken/#dashboard?payment=success",
+            cancel_url="https://damgeed.github.io/glbtoken/#plans",
+        )
+    except stripe_lib.error.StripeError as e:
+        _400(f"Checkout failed: {getattr(e, 'user_message', None) or str(e)}")
     tx = Transaction(
         user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
         payment_method="stripe", payment_ref=session.id,
@@ -371,11 +378,147 @@ def get_invoices(
                 "status": t.status,
                 "created_at": t.created_at.isoformat() if t.created_at else None,
                 "receipt_url": None,  # Receipt URLs not stored currently
+                "pdf_url": f"/api/billing/invoices/{t.id}/pdf",
             }
             for t in invoices
         ],
         "total": len(invoices),
     }
+
+
+@router.get("/api/billing/summary")
+def billing_summary(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Current balance, monthly spend/usage, and low-balance flag for the billing page."""
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    spent_month = db.query(func.coalesce(func.sum(Transaction.amount), 0.0)).filter(
+        Transaction.user_id == user.id,
+        Transaction.type == "deposit",
+        Transaction.status == "completed",
+        Transaction.created_at >= month_start,
+    ).scalar() or 0.0
+    tokens_month = db.query(func.coalesce(func.sum(Transaction.tokens), 0.0)).filter(
+        Transaction.user_id == user.id,
+        Transaction.type == "consumption",
+        Transaction.created_at >= month_start,
+    ).scalar() or 0.0
+    try:
+        settings = json.loads(user.settings) if user.settings else {}
+    except (json.JSONDecodeError, TypeError):
+        settings = {}
+    balance = float(user.token_balance or 0)
+    threshold = 1000.0  # tokens (1 USD) — matches the notification page wording
+    return {
+        "balance": round(balance, 2),
+        "balance_usd": round(balance / 1000.0, 2),
+        "spent_this_month": round(float(spent_month), 2),
+        "tokens_this_month": round(float(tokens_month), 2),
+        "low_balance": balance < threshold,
+        "low_balance_threshold": threshold,
+        "low_balance_alert_enabled": settings.get("low_balance_alert", True),
+    }
+
+
+@router.get("/api/billing/invoices/{invoice_id}/pdf")
+def invoice_pdf(invoice_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Download a clean one-page PDF for a deposit invoice (ownership-checked)."""
+    tx = db.query(Transaction).filter(
+        Transaction.id == invoice_id,
+        Transaction.user_id == user.id,
+        Transaction.type == "deposit",
+    ).first()
+    if not tx:
+        _404("Invoice not found")
+    pdf = _make_invoice_pdf(tx, user)
+    filename = f"invoice-{tx.id}.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+def _make_invoice_pdf(tx, user):
+    """Generate a minimal clean invoice PDF using only the Python stdlib."""
+    sym = "NGN " if (tx.currency or "USD") == "NGN" else "$"
+    amount_str = f"{sym}{float(tx.amount or 0):,.2f}"
+    tokens_str = f"{int(tx.tokens or 0):,}"
+    created = tx.created_at or datetime.now(timezone.utc)
+    if created.tzinfo is None:
+        created = created.replace(tzinfo=timezone.utc)
+    date_str = created.strftime("%B %d, %Y")
+    status = (tx.status or "completed").title()
+    method = (tx.payment_method or "-").title()
+    name = (user.name or "").strip() or "GlbTOKEN Customer"
+    email = (user.email or "").strip()
+
+    def esc(s):
+        return str(s).replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+    def width_est(s, size):
+        # Rough Helvetica advance (~0.5em per char) — good enough for alignment
+        return len(s) * size * 0.5
+
+    # content stream: gold accent bar, header, meta rows, table, total, footer
+    ops = []
+    def text(x, y, s, font="F1", size=10, color="0 0 0"):
+        ops.append(f"BT /{font} {size} Tf {color} rg {x:.1f} {y:.1f} Td ({esc(s)}) Tj ET")
+
+    # Gold top rule
+    ops.append("q 0.957 0.706 0 rg 50 742 512 3 re f Q")
+    # Header
+    text(50, 700, "GlbTOKEN", "F2", 22)
+    text(50, 680, "INVOICE", "F2", 12, "0.71 0.47 0.02")
+    ops.append("q 0.85 0.85 0.88 rg 50 668 512 0.8 re f Q")
+    # Meta
+    text(50, 648, f"Invoice #{tx.id}", "F1", 10)
+    text(50, 634, f"Date: {date_str}")
+    text(50, 620, f"Status: {status}")
+    text(50, 600, f"Billed to: {name}" + (f"  ({email})" if email else ""))
+    # Table header
+    text(50, 566, "Description", "F2", 10)
+    amt_x = 512 - width_est(amount_str, 10)
+    text(amt_x, 566, "Amount", "F2", 10)
+    ops.append("q 0.85 0.85 0.88 rg 50 558 512 0.8 re f Q")
+    # Rows
+    text(50, 538, f"GlbTOKEN tokens ({tokens_str} GT)")
+    text(amt_x, 538, amount_str)
+    text(50, 522, f"Payment method: {method}")
+    text(50, 506, f"Tokens credited: {tokens_str}")
+    # Total
+    ops.append("q 0.957 0.706 0 rg 50 492 512 0.8 re f Q")
+    text(50, 474, "TOTAL", "F2", 11)
+    text(amt_x, 474, amount_str, "F2", 11)
+    # Footer
+    ops.append("q 0.85 0.85 0.88 rg 50 90 512 0.8 re f Q")
+    text(50, 70, "Thank you for your business!", "F1", 9, "0.45 0.45 0.5")
+    text(50, 54, "Generated by GlbTOKEN - glbtoken.com", "F1", 8, "0.6 0.6 0.65")
+
+    content = "\n".join(ops).encode("latin-1", "replace")
+
+    objs = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        (b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+         b"/Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>"),
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>",
+        b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n" + content + b"\nendstream",
+    ]
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for i, obj in enumerate(objs, 1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % i
+        out += obj + b"\nendobj\n"
+    xref_pos = len(out)
+    n = len(objs) + 1
+    out += b"xref\n0 %d\n" % n
+    out += b"0000000000 65535 f \n"
+    for off in offsets:
+        out += b"%010d 00000 n \n" % off
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (n, xref_pos)
+    return bytes(out)
 
 
 # ── Saved Payment Methods (cards) ──
@@ -422,6 +565,7 @@ def list_cards(user: User = Depends(get_current_user)):
     stripe_lib.api_key = STRIPE_SECRET_KEY
     cus = _stripe_customer_for(user)
     pms = stripe_lib.PaymentMethod.list(customer=cus.id, type="card")
+    default_id = user.default_payment_method_id
     return {
         "cards": [
             {
@@ -430,10 +574,32 @@ def list_cards(user: User = Depends(get_current_user)):
                 "last4": pm.card.last4,
                 "exp_month": pm.card.exp_month,
                 "exp_year": pm.card.exp_year,
+                "is_default": pm.id == default_id,
             }
             for pm in pms.data
         ]
     }
+
+
+@router.post("/api/payments/cards/default")
+def set_default_card(req: CardDefaultRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Mark a saved card as the default for one-click recharge."""
+    if not STRIPE_SECRET_KEY:
+        _not_configured("Stripe")
+    if not req.payment_method_id:
+        _400("payment_method_id is required")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    cus = _stripe_customer_for(user)
+    try:
+        pm = stripe_lib.PaymentMethod.retrieve(req.payment_method_id)
+    except stripe_lib.error.StripeError as e:
+        _400(f"Invalid payment method: {getattr(e, 'user_message', None) or str(e)}")
+    if pm.customer != cus.id:
+        _400("Payment method does not belong to this account")
+    user.default_payment_method_id = req.payment_method_id
+    db.commit()
+    return {"status": "default_set", "payment_method_id": req.payment_method_id}
 
 
 @router.post("/api/payments/cards/confirm")
@@ -453,11 +619,14 @@ def confirm_card(req: CardConfirmRequest, user: User = Depends(get_current_user)
 
 
 @router.delete("/api/payments/cards")
-def remove_card(req: CardRemoveRequest, user: User = Depends(get_current_user)):
+def remove_card(req: CardRemoveRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Remove a saved card from the user's Stripe customer."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     stripe_lib.PaymentMethod.detach(req.payment_method_id)
+    if user.default_payment_method_id == req.payment_method_id:
+        user.default_payment_method_id = None
+        db.commit()
     return {"status": "removed"}

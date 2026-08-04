@@ -137,6 +137,10 @@ class CardRemoveRequest(BaseModel):
     payment_method_id: str
 
 
+class CardDefaultRequest(BaseModel):
+    payment_method_id: str
+
+
 # ── Proxy / Chat Schemas ──
 
 class ProxyChatRequest(BaseModel):

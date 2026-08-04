@@ -1,4 +1,74 @@
 /* ── Billing page extras ── */
+.low-balance-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(244, 180, 0, 0.4);
+  background: rgba(244, 180, 0, 0.1);
+  border-radius: 10px;
+  color: #F4B400;
+  font-size: 0.85rem;
+}
+.low-balance-banner .low-balance-text {
+  flex: 1;
+  color: var(--text, #E6E8F0);
+  line-height: 1.45;
+}
+.low-balance-banner .low-balance-text strong {
+  color: #F4B400;
+}
+.low-balance-banner .low-balance-cta {
+  flex-shrink: 0;
+}
+@media (max-width: 520px) {
+  .low-balance-banner {
+    flex-wrap: wrap;
+  }
+  .low-balance-banner .low-balance-cta {
+    width: 100%;
+  }
+}
+.billing-stat-card .sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+  font-variant-numeric: tabular-nums;
+}
+.pm-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.pm-default-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #F4B400;
+  background: rgba(244, 180, 0, 0.14);
+  border: 1px solid rgba(244, 180, 0, 0.35);
+  padding: 0.12rem 0.4rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.pm-row-default {
+  border-color: rgba(244, 180, 0, 0.45);
+}
+.pm-star {
+  background: none;
+  border: none;
+  color: var(--text-muted, #8A8FA3);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.1rem 0.25rem;
+  border-radius: 6px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.pm-star:hover { color: #F4B400; background: rgba(244, 180, 0, 0.12); }
+.pm-star.active { color: #F4B400; }
 .billing-grid {
   display: grid;
   gap: 1.25rem;

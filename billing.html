@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1187" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1024" />
+<link rel="stylesheet" href="billing.css?v=1025" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -118,6 +118,13 @@
         </div>
       </div>
 
+      <!-- ── Low Balance Alert ── -->
+      <div class="low-balance-banner d-none" id="lowBalanceBanner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="low-balance-text"><strong>Low balance</strong> — Your balance is below 1,000 tokens. Top up to keep your API calls running.</div>
+        <a class="btn-primary btn-sm low-balance-cta" href="topup.html">Top Up Now</a>
+      </div>
+
       <!-- ── Billing Summary ── -->
       <div class="dash-card" id="billingSummaryCard">
         <div class="dash-section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Billing Summary <span class="label-muted-sm" id="summarySubtitle">Lifetime</span></div>
@@ -128,14 +135,15 @@
             <div class="lbl">Total Spent</div>
           </div>
           <div class="billing-stat-card">
-            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-            <div class="num" id="summaryLastInvoice">—</div>
-            <div class="lbl">Last Invoice Date</div>
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
+            <div class="num" id="summaryBalance">—</div>
+            <div class="lbl">Current Balance</div>
+            <div class="sub" id="summaryBalanceUsd">—</div>
           </div>
           <div class="billing-stat-card">
-            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
-            <div class="num" id="summaryTopMethod">—</div>
-            <div class="lbl">Top Payment Method</div>
+            <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <div class="num" id="summaryTokensMonth">—</div>
+            <div class="lbl">Tokens This Month</div>
           </div>
         </div>
       </div>
@@ -144,7 +152,7 @@
       <div class="billing-grid">
         <!-- Payment Methods -->
         <div class="dash-card" id="paymentMethodsCard">
-          <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Methods</div>
+          <div class="dash-section-title pm-title-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Methods</span><button class="btn-primary btn-sm d-none" id="quickRechargeDefault">⚡ Quick Recharge</button></div>
           <div id="paymentMethodsList">
             <div class="billing-empty-state" id="paymentMethodsEmpty">
               <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
@@ -275,7 +283,9 @@
           if(status === 'success'){ statusClass = 'status-paid'; statusLabel = 'Paid'; }
 
           var receiptHtml = '—';
-          if(invItem.receipt_url || invItem.receipt){
+          if(invItem.pdf_url){
+            receiptHtml = '<a href="javascript:void(0)" onclick="downloadInvoicePdf(' + invItem.id + ')" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> PDF</a>';
+          } else if(invItem.receipt_url || invItem.receipt){
             var rUrl = escapeHtml(invItem.receipt_url || invItem.receipt);
             receiptHtml = '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>';
           }
@@ -302,46 +312,31 @@
 
     function computeSummary(inv){
       var total = 0;
-      var lastDate = '—';
-      var methodCounts = {};
-      var latest = null;
-
       for(var i=0;i<inv.length;i++){
-        var invItem = inv[i];
-        var amt = parseFloat(invItem.amount) || 0;
-        total += amt;
-
-        var d = invItem.date || invItem.created_at;
-        if(d && (!latest || new Date(d) > new Date(latest))){
-          latest = d;
-          lastDate = d;
-        }
-
-        var m = invItem.payment_method || invItem.method || invItem.provider || 'Unknown';
-        methodCounts[m] = (methodCounts[m] || 0) + 1;
+        total += parseFloat(inv[i].amount) || 0;
       }
-
       document.getElementById('summaryTotalSpent').textContent = '$' + total.toFixed(2);
+    }
 
-      if(lastDate !== '—'){
-        try {
-          var dt = new Date(lastDate);
-          if(!isNaN(dt.getTime())){
-            lastDate = dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    function loadBillingSummary(){
+      safeApi('GET','/api/billing/summary').then(function(d){
+        if(!d) return;
+        var bal = Math.floor(d.balance || 0);
+        var balEl = document.getElementById('summaryBalance');
+        if(balEl) balEl.textContent = bal.toLocaleString();
+        var usdEl = document.getElementById('summaryBalanceUsd');
+        if(usdEl) usdEl.textContent = '$' + (d.balance_usd || 0).toFixed(2);
+        var tmEl = document.getElementById('summaryTokensMonth');
+        if(tmEl) tmEl.textContent = Math.floor(d.tokens_this_month || 0).toLocaleString();
+        var banner = document.getElementById('lowBalanceBanner');
+        if(banner){
+          if(d.low_balance && d.low_balance_alert_enabled !== false){
+            banner.classList.remove('d-none');
+          } else {
+            banner.classList.add('d-none');
           }
-        } catch(_){}
-      }
-      document.getElementById('summaryLastInvoice').textContent = lastDate;
-
-      var topMethod = '—';
-      var topCount = 0;
-      for(var k in methodCounts){
-        if(methodCounts[k] > topCount){
-          topCount = methodCounts[k];
-          topMethod = k;
         }
-      }
-      document.getElementById('summaryTopMethod').textContent = topMethod;
+      });
     }
 
     function renderPaymentMethods(){
@@ -362,16 +357,32 @@
         container.innerHTML = cards.map(function(c){
           var brand = (c.brand || 'card').toUpperCase();
           var exp = String(c.exp_month||'').padStart(2,'0') + '/' + String(c.exp_year||'').slice(-2);
-          return '<div class="pm-row">' +
+          var isDefault = !!c.is_default;
+          return '<div class="pm-row' + (isDefault ? ' pm-row-default' : '') + '">' +
+            (isDefault ? '<span class="pm-default-badge">★ Default</span>' : '') +
             '<span class="pm-brand">'+escapeHtml(brand)+'</span>' +
             '<span class="pm-num">•••• '+escapeHtml(c.last4||'')+'</span>' +
             '<span class="pm-exp">'+escapeHtml(exp)+'</span>' +
             '<span class="pm-actions">' +
+            '<button class="pm-star' + (isDefault ? ' active' : '') + '" onclick="setDefaultCard(\''+escapeHtml(c.id)+'\')" title="' + (isDefault ? 'Default card' : 'Set as default') + '">' + (isDefault ? '★' : '☆') + '</button>' +
             '<button class="pm-recharge" onclick="quickRecharge(\''+escapeHtml(c.id)+'\',\''+escapeHtml(c.last4||'')+'\')">⚡ Recharge</button>' +
             '<button class="pm-remove" onclick="removeCard(\''+escapeHtml(c.id)+'\')" title="Remove card">✕</button>' +
             '</span>' +
           '</div>';
         }).join('');
+        // Quick Recharge shortcut in the card header — uses the default card (or first card).
+        var quick = document.getElementById('quickRechargeDefault');
+        if(quick){
+          var def = null;
+          for(var i=0;i<cards.length;i++){ if(cards[i].is_default){ def = cards[i]; break; } }
+          if(!def && cards.length){ def = cards[0]; }
+          if(def){
+            quick.classList.remove('d-none');
+            quick.onclick = function(){ quickRecharge(def.id, def.last4); };
+          } else {
+            quick.classList.add('d-none');
+          }
+        }
       }).catch(function(){
         container.innerHTML = '<div class="billing-empty-state"><p><strong>Could not load payment methods</strong></p></div>';
       });
@@ -384,6 +395,40 @@
         renderPaymentMethods();
       }).catch(function(){
         showToast('Failed to remove card','error');
+      });
+    };
+
+    window.setDefaultCard = function(pmId){
+      if(!pmId) return;
+      safeApi('POST','/api/payments/cards/default',{payment_method_id:pmId}).then(function(d){
+        showToast(d && d.status==='default_set' ? 'Default card updated' : 'Updated','success');
+        renderPaymentMethods();
+      }).catch(function(){
+        showToast('Could not set default card','error');
+      });
+    };
+
+    window.downloadInvoicePdf = function(invId){
+      fetch(API_URL + '/api/billing/invoices/' + invId + '/pdf',{
+        method:'GET',
+        headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/pdf'}
+      })
+      .then(function(r){
+        if(!r.ok) throw new Error('Download failed');
+        return r.blob();
+      })
+      .then(function(blob){
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'invoice-' + invId + '.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      })
+      .catch(function(){
+        showToast('Could not download invoice','error');
       });
     };
 
@@ -405,6 +450,7 @@
 
     renderInvoices();
     renderPaymentMethods();
+    loadBillingSummary();
   };
 
   window.addPaymentMethod = function(){
