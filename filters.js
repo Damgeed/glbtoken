@@ -575,6 +575,13 @@
       document.getElementById('txDeposits').style.display=tab==='deposits'?'block':'none';
       document.getElementById('txConsumption').style.display=tab==='consumption'?'block':'none';
     }
+    function toggleTxSection(btn){
+      var wrap=document.getElementById('txSectionWrap');
+      if(!wrap)return;
+      var hidden=wrap.classList.toggle('d-none');
+      if(btn)btn.classList.toggle('collapsed',hidden);
+      if(btn)btn.setAttribute('aria-expanded',hidden?'false':'true');
+    }
 
     // ── Shared helpers ──
     // Page-specific init for usage/filters page

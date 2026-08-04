@@ -40,6 +40,29 @@
   color: var(--text-muted);
   margin-left: 0.5rem;
 }
+/* Transaction History collapse toggle */
+.tx-collapse-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0.25rem 0.4rem;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease, transform 0.2s ease;
+}
+.tx-collapse-btn:hover {
+  color: var(--text);
+  background: var(--bg-alt);
+}
+.tx-collapse-btn svg {
+  transition: transform 0.2s ease;
+}
+.tx-collapse-btn.collapsed svg {
+  transform: rotate(-90deg);
+}
 /* Tab button row */
 .tx-tab-row {
   display: flex;

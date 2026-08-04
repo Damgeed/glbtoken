@@ -505,7 +505,8 @@ def _make_statement_pdf(txs, user):
         return str(s).replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
 
     def width_est(s, size):
-        return len(s) * size * 0.5
+        # Helvetica: digits are 0.556em wide, most other chars ~0.5em
+        return sum(0.556 if c.isdigit() else 0.5 for c in str(s)) * size
 
     rows_per_page = 25
     total_pages = max(1, (len(txs) + rows_per_page - 1) // rows_per_page)
@@ -522,13 +523,13 @@ def _make_statement_pdf(txs, user):
         ops.append("q 0.85 0.85 0.88 rg 50 668 512 0.8 re f Q")
         text(50, 648, f"Billed to: {name}" + (f"  ({email})" if email else ""))
         text(50, 634, f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y')}  |  {len(txs)} payment(s)")
-        # Table header
+        # Table header (Tokens/Status/Amount right-aligned to match values)
         text(50, 600, "#", "F2", 9)
         text(80, 600, "Date", "F2", 9)
         text(165, 600, "Description", "F2", 9)
-        text(390, 600, "Tokens", "F2", 9)
-        text(470, 600, "Status", "F2", 9)
-        text(512, 600, "Amount", "F2", 9)
+        text(390 - width_est("Tokens", 9), 600, "Tokens", "F2", 9)
+        text(470 - width_est("Status", 9), 600, "Status", "F2", 9)
+        text(512 - width_est("Amount", 9), 600, "Amount", "F2", 9)
         ops.append("q 0.85 0.85 0.88 rg 50 592 512 0.8 re f Q")
         start = p * rows_per_page
         chunk = txs[start:start + rows_per_page]
