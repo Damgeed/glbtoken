@@ -260,7 +260,8 @@ async function loadDashboardStats(){
       }
     }
     var spark = document.getElementById('sparkline');
-    if(spark && typeof Chart !== 'undefined'){
+    var sparkData = vals.filter(function(v){return v > 0;});
+    if(spark && sparkData.length >= 2 && typeof Chart !== 'undefined'){
       try{
         if(window._sparkInst) window._sparkInst.destroy();
         window._sparkInst = new Chart(spark, {
@@ -269,6 +270,9 @@ async function loadDashboardStats(){
           options:{ responsive:true, maintainAspectRatio:false, animation:false, plugins:{ legend:{display:false}, tooltip:{enabled:false} }, scales:{ x:{display:false}, y:{display:false} } }
         });
       }catch(e){}
+    } else if(spark){
+      // No meaningful trend data — hide the sparkline instead of drawing a flat green line
+      spark.style.display = 'none';
     }
     return d;
   }catch(e){ return null; }

@@ -1097,6 +1097,11 @@
   animation: livePulse 2.4s ease-in-out infinite;
   flex-shrink: 0;
 }
+.live-text {
+  font-weight: 700;
+  color: var(--success);
+  font-size: 0.72rem;
+}
 @keyframes livePulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(0, 214, 143, 0.6); }
   50% { opacity: 0.35; box-shadow: 0 0 2px rgba(0, 214, 143, 0.15); }
