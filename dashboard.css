@@ -1099,7 +1099,7 @@
 }
 .live-text {
   font-weight: 700;
-  color: var(--success);
+  color: var(--primary);
   font-size: 0.72rem;
 }
 @keyframes livePulse {
