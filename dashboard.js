@@ -1,6 +1,17 @@
 /* ══════════════════════════════════════════
    DASHBOARD — Transactions, notifications, billing
    ══════════════════════════════════════════ */
+    // ── Single-flight request dedupe ──
+    // Multiple loaders (stats, api-calls chart, donut) need the same endpoints
+    // on boot. Instead of firing /api/dashboard and /api/analytics/cost-by-model
+    // 2-3× in parallel, share one in-flight promise per key.
+    var _flightCache = {};
+    function flight(key, fn){
+      if(!_flightCache[key]){
+        _flightCache[key] = Promise.resolve().then(fn).finally(function(){ delete _flightCache[key]; });
+      }
+      return _flightCache[key];
+    }
     async function loadTransactions(){
       if(!token)return;
       var depBody=document.getElementById('depositBody'), conBody=document.getElementById('consumptionBody');
@@ -221,7 +232,7 @@ function timeAgo(iso){
 async function loadDashboardStats(){
   if(!token) return null;
   try{
-    var d = await safeApi('GET','/api/dashboard',null,null,true);
+    var d = await flight('dash', function(){ return safeApi('GET','/api/dashboard',null,null,true); });
     if(!d) return null;
     userData.token_balance = d.token_balance;
     if(typeof updateBalance === 'function') updateBalance();
@@ -281,10 +292,20 @@ async function loadDashboardStats(){
 // ── API Calls per Model bars + stat tiles (real) ──
 async function renderApiCallsChart(days){
   days = days||7;
-  var costByModel = await safeApi('GET','/api/analytics/cost-by-model?days='+days,null,null,true);
-  var dash = await safeApi('GET','/api/dashboard',null,null,true);
-  var errRate = await safeApi('GET','/api/analytics/error-rate?days='+days,null,null,true);
-  var respTimes = await safeApi('GET','/api/analytics/response-times?days='+days,null,null,true);
+  // Loading placeholder for stat tiles while the (now parallel) fetches run
+  ['statTotalCalls','statAvgDay','statSuccess','statLatency'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el && (el.textContent === '' || el.textContent === '—' || el.textContent === '-')) el.textContent = '…';
+  });
+  // Fire all 4 fetches in parallel (was 4 sequential round-trips before),
+  // and share /api/dashboard + cost-by-model with the other loaders.
+  var results = await Promise.all([
+    flight('cost:'+days, function(){ return safeApi('GET','/api/analytics/cost-by-model?days='+days,null,null,true); }),
+    flight('dash', function(){ return safeApi('GET','/api/dashboard',null,null,true); }),
+    flight('err:'+days, function(){ return safeApi('GET','/api/analytics/error-rate?days='+days,null,null,true); }),
+    flight('rt:'+days, function(){ return safeApi('GET','/api/analytics/response-times?days='+days,null,null,true); })
+  ]);
+  var costByModel = results[0], dash = results[1], errRate = results[2], respTimes = results[3];
   // Bars: top 6 by calls — same structure as original demo
   var wrap = document.getElementById('apiModelBars');
   if(wrap){
@@ -343,7 +364,7 @@ document.addEventListener('click', function(ev){
 // ── Spending by Provider donut (real, grouped by provider) ──
 async function renderSpendingDonut(days){
   days = days||7;
-  var costByModel = await safeApi('GET','/api/analytics/cost-by-model?days='+days,null,null,true);
+  var costByModel = await flight('cost:'+days, function(){ return safeApi('GET','/api/analytics/cost-by-model?days='+days,null,null,true); });
   var cv = document.getElementById('donutCenterVal');
   var sl = document.getElementById('spendingList');
   if(!costByModel || !costByModel.length){
@@ -409,7 +430,7 @@ function fmtActivityTime(iso){
 async function loadActivityFeed(){
   var container = document.getElementById('dashActivity');
   if(!container) return;
-  var d = await safeApi('GET','/api/dashboard',null,null,true);
+  var d = await flight('dash', function(){ return safeApi('GET','/api/dashboard',null,null,true); });
   if(!d) return;
   var items = d.recent_activity||[];
   var countEl = document.getElementById('activityCount');

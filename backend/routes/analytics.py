@@ -6,6 +6,8 @@ from sqlalchemy import desc, func
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import random
+import asyncio
+import time as _time
 
 from database import get_db, User, ApiKey, Transaction, AIModel, LoginEvent
 from auth import get_current_user
@@ -13,6 +15,31 @@ from newapi_integration import get_usage_today, get_user_logs, get_log_content a
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter
 
 router = APIRouter()
+
+# ── Small TTL cache for analytics endpoints ──
+# The dashboard polls every 30s; without a cache every poll re-runs the same
+# aggregations. 30s TTL means the UI always gets fresh-enough data without
+# hammering the DB on each poll.
+_ANALYTICS_CACHE: dict = {}
+_ANALYTICS_TTL = 30
+
+def _cache_get(key: str):
+    hit = _ANALYTICS_CACHE.get(key)
+    if hit and _time.time() - hit[0] < _ANALYTICS_TTL:
+        return hit[1]
+    return None
+
+def _cache_set(key: str, value):
+    _ANALYTICS_CACHE[key] = (_time.time(), value)
+
+async def _fetch_newapi(coro, default=None):
+    """Run a New API call with a hard 4s budget so a slow/down New API
+    never blocks the dashboard for the full 15s client timeout."""
+    try:
+        return await asyncio.wait_for(coro, timeout=4)
+    except Exception as e:
+        print(f"⚠️ New API fetch timed out/failed: {e}")
+        return default
 
 
 # ── Dashboard Routes ──
@@ -41,17 +68,20 @@ async def get_dashboard(
         ApiKey.user_id == user.id, ApiKey.is_active == True
     ).count()
     
-    # ── New API usage data ──
+    # ── New API usage data (concurrent, 4s budget each — never blocks dashboard) ──
     newapi_usage = {}
     newapi_connected = False
     synced_balance = None
     try:
         if user.newapi_user_id:
-            newapi_usage = await get_usage_today(user.newapi_user_id)
+            # Fire both New API calls in parallel with a hard 4s timeout each
+            newapi_usage, quota = await asyncio.gather(
+                _fetch_newapi(get_usage_today(user.newapi_user_id), {}),
+                _fetch_newapi(get_user_quota(user.newapi_user_id), None),
+            )
             if newapi_usage and "error" not in newapi_usage:
                 newapi_connected = True
             # Sync real remaining balance from New API quota → GlbTOKEN tokens
-            quota = await get_user_quota(user.newapi_user_id)
             if quota is not None:
                 synced_balance = newapi_quota_to_tokens(quota)
                 if synced_balance != user.token_balance:
@@ -420,6 +450,10 @@ async def analytics_cost_by_model(
     """Cost breakdown per model for the period."""
     try:
         since = datetime.now(timezone.utc) - timedelta(days=days)
+        cache_key = f"cost_by_model:{user.id}:{days}"
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            return cached
         q = db.query(
             Transaction.model_used,
             func.sum(Transaction.tokens).label("tokens"),
@@ -453,6 +487,7 @@ async def analytics_cost_by_model(
                 "avg_cost_per_token": avg_cost,
             })
         results.sort(key=lambda x: x["cost"], reverse=True)
+        _cache_set(cache_key, results)
         return results
     except Exception as e:
         print(f"⚠️ analytics/cost-by-model error: {e}")
@@ -470,6 +505,10 @@ async def analytics_error_rate(
     """Error rate data (success vs failure counts per day)."""
     try:
         since = datetime.now(timezone.utc) - timedelta(days=days)
+        cache_key = f"error_rate:{user.id}:{days}"
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            return cached
 
         # Success counts per day
         success_q = db.query(
@@ -509,6 +548,7 @@ async def analytics_error_rate(
                 "error_count": e,
                 "error_rate_pct": rate,
             })
+        _cache_set(cache_key, results)
         return results
     except Exception as e:
         print(f"⚠️ analytics/error-rate error: {e}")
@@ -526,43 +566,49 @@ async def analytics_key_usage(
     """Usage per API key for the period."""
     try:
         since = datetime.now(timezone.utc) - timedelta(days=days)
+        cache_key = f"key_usage:{user.id}:{days}"
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            return cached
 
         # Get user's API keys
-        keys = db.query(ApiKey).filter(
+        keys = db.query(ApiKey.id, ApiKey.key).filter(
             ApiKey.user_id == user.id,
         ).all()
+        if not keys:
+            return []
+        key_ids = [k.id for k in keys]
+        key_map = {k.id: k.key for k in keys}
+
+        # Single grouped query instead of N+1 (one query per key before)
+        rows = db.query(
+            Transaction.key_id,
+            Transaction.model_used,
+            func.sum(Transaction.tokens).label("tokens"),
+            func.count(Transaction.id).label("calls"),
+        ).filter(
+            Transaction.user_id == user.id,
+            Transaction.type == "consumption",
+            Transaction.key_id.in_(key_ids),
+            Transaction.created_at >= since,
+        ).group_by(Transaction.key_id, Transaction.model_used).all()
 
         results = []
-        for key in keys:
-            key_prefix = key.key[:8] + "..." if key.key and len(key.key) > 8 else (key.key or "unknown")
-
-            # Real per-key usage — filter transactions by this key's id
-            q = db.query(
-                Transaction.model_used,
-                func.sum(Transaction.tokens).label("tokens"),
-                func.count(Transaction.id).label("calls"),
-            ).filter(
-                Transaction.user_id == user.id,
-                Transaction.type == "consumption",
-                Transaction.key_id == key.id,
-                Transaction.created_at >= since,
-            ).group_by(Transaction.model_used).all()
-
-            if not q:
-                continue
-
-            for row in q:
-                model_name = row.model_used or "unknown"
-                tokens_val = float(row.tokens or 0)
-                calls_val = max(1, round(int(row.calls or 0)))
-                cost = round(tokens_val * 0.000001, 6)
-                results.append({
-                    "key_prefix": key_prefix,
-                    "model": model_name,
-                    "calls": calls_val,
-                    "tokens": tokens_val,
-                    "cost": cost,
-                })
+        for row in rows:
+            key_raw = key_map.get(row.key_id, "")
+            key_prefix = key_raw[:8] + "..." if key_raw and len(key_raw) > 8 else (key_raw or "unknown")
+            model_name = row.model_used or "unknown"
+            tokens_val = float(row.tokens or 0)
+            calls_val = max(1, round(int(row.calls or 0)))
+            cost = round(tokens_val * 0.000001, 6)
+            results.append({
+                "key_prefix": key_prefix,
+                "model": model_name,
+                "calls": calls_val,
+                "tokens": tokens_val,
+                "cost": cost,
+            })
+        _cache_set(cache_key, results)
         return results
     except Exception as e:
         print(f"⚠️ analytics/key-usage error: {e}")
@@ -580,6 +626,10 @@ async def analytics_response_times(
     """Average response time per model per day."""
     try:
         since = datetime.now(timezone.utc) - timedelta(days=days)
+        cache_key = f"response_times:{user.id}:{days}"
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            return cached
 
         q = db.query(
             func.date(Transaction.created_at).label("day"),
@@ -629,6 +679,7 @@ async def analytics_response_times(
                 "estimated": True,
             })
         results.sort(key=lambda x: x["date"])
+        _cache_set(cache_key, results)
         return results
     except Exception as e:
         print(f"⚠️ analytics/response-times error: {e}")
@@ -646,6 +697,10 @@ async def analytics_cost_projection(
     """Projected monthly cost based on the last N days of data."""
     try:
         since = datetime.now(timezone.utc) - timedelta(days=days)
+        cache_key = f"cost_projection:{user.id}:{days}"
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            return cached
 
         # Get model prices
         all_models = db.query(AIModel.model_id, AIModel.prompt_price, AIModel.completion_price).all()
@@ -685,7 +740,7 @@ async def analytics_cost_projection(
         daily_avg = round(total_cost / max(days_with_data, 1), 6)
         projected_monthly = round(daily_avg * 30, 6)
 
-        return {
+        result = {
             "last_30_days_cost": total_cost,
             "period_cost": total_cost,
             "projected_monthly": projected_monthly,
@@ -693,6 +748,8 @@ async def analytics_cost_projection(
             "days_of_data": days_with_data,
             "days_requested": days,
         }
+        _cache_set(cache_key, result)
+        return result
     except Exception as e:
         print(f"⚠️ analytics/cost-projection error: {e}")
         return {"last_30_days_cost": 0, "period_cost": 0, "projected_monthly": 0, "daily_avg": 0, "days_of_data": 0, "days_requested": days}

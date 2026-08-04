@@ -105,6 +105,18 @@ async def lifespan(app: FastAPI):
         auto_pull_models()
     except Exception as e:
         print(f"⚠️ Auto-pull error (non-critical): {e}")
+    # Auto-migrate: performance indexes (idempotent — safe on existing DBs)
+    try:
+        from database import engine
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_id ON transactions (user_id)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_type_created ON transactions (user_id, type, created_at)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_login_events_user_id ON login_events (user_id)"))
+            conn.commit()
+            print("✅ Performance indexes ensured (transactions.user_id, transactions(user_id,type,created_at), login_events.user_id)")
+    except Exception as e:
+        print(f"⚠️ Index migration error (non-critical): {e}")
     yield
     # Shutdown (nothing to clean up yet)
 

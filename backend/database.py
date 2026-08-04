@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, JSON
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, JSON, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime, timezone
@@ -114,8 +114,13 @@ class ApiKey(Base):
 
 class Transaction(Base):
     __tablename__ = "transactions"
+    __table_args__ = (
+        # Composite index for the dominant analytics pattern:
+        # WHERE user_id = ? AND type = 'consumption' AND created_at >= ? GROUP BY ...
+        Index("ix_transactions_user_type_created", "user_id", "type", "created_at"),
+    )
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     type = Column(String, nullable=False)  # "deposit" or "consumption"
     amount = Column(Float, default=0)
     currency = Column(String, default="USD")
@@ -186,7 +191,7 @@ class ReferralRedemption(Base):
 class LoginEvent(Base):
     __tablename__ = "login_events"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     ip_address = Column(String, default="")
     user_agent = Column(String, default="")
     device_type = Column(String, default="")
