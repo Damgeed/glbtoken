@@ -408,8 +408,8 @@
     safeApi('POST','/api/payments/cards/setup',{}).then(function(d){
       if(d && d.url){ window.location.href = d.url; }
       else { showToast('Could not start card setup','error'); }
-    }).catch(function(){
-      showToast('Could not start card setup','error');
+    }).catch(function(e){
+      showToast((e && e.message) || 'Could not start card setup','error');
     });
   };
 
