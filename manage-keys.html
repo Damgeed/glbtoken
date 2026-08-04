@@ -164,7 +164,7 @@
           <div id="newKeyResult" class="hidden mt-sm key-result-box">
             <p class="text-sm text-success m-0 mb-xs"><strong>Key created!</strong> Copy it now — you won't see it again.</p>
             <code id="newKeyValue" class="block text-xs key-value-code"></code>
-            <button class="btn-primary btn-xs" onclick="navigator.clipboard.writeText(document.getElementById('newKeyValue').textContent);showToast('Copied!','success')">Copy Key</button>
+            <button class="btn-primary btn-xs" onclick="copyNewKey(this)">Copy Key</button>
           </div>
         </div>
       </div>
@@ -200,7 +200,7 @@
 <script data-cfasync="false" src="shared.js?v=1132"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1221"></script>
-<script data-cfasync="false" src="keys.js?v=13"></script>
+<script data-cfasync="false" src="keys.js?v=14"></script>
 
 </body>
 </html>

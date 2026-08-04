@@ -206,12 +206,26 @@
       const days=Math.ceil((d.getTime()-now)/86400000);
       return 'Expires '+d.toLocaleDateString()+(days<=7?' <span class="expiry-soon">('+days+'d)</span>':'');
     }
+    function flashCopyTick(btn, ms){
+      if(!btn) return;
+      var orig = btn.innerHTML;
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('copied'); }, ms || 1800);
+    }
+    function copyNewKey(btn){
+      var v=document.getElementById('newKeyValue') ? document.getElementById('newKeyValue').textContent : '';
+      function done(){ showToast('Copied!','success'); flashCopyTick(btn); }
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(v).then(done).catch(done); }
+      else { done(); }
+    }
     function copyKeyPrefix(btn){
       const v=btn.getAttribute('data-copy')||'';
+      function done(){ showToast('Key prefix copied','success'); flashCopyTick(btn); }
       if(navigator.clipboard&&navigator.clipboard.writeText){
-        navigator.clipboard.writeText(v).then(function(){showToast('Key prefix copied','success');}).catch(function(){showToast('Key prefix copied','success');});
+        navigator.clipboard.writeText(v).then(done).catch(done);
       }else{
-        showToast('Key prefix copied','success');
+        done();
       }
     }
     function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value='My API Key';document.getElementById('newKeyExpiry').value='';document.getElementById('newKeyRpm').value='';document.getElementById('newKeyIps').value=''}

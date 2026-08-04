@@ -329,7 +329,7 @@
     <div class="avatar-lg-gold" id="mdAvatar">—</div>
     <div class="member-drawer-id">
       <h3 id="mdName">—</h3>
-      <div class="member-drawer-email"><span id="mdEmail">—</span><button class="btn-copy-mini" onclick="copyEmail(document.getElementById('mdEmail').textContent)" title="Copy email">⧉</button></div>
+      <div class="member-drawer-email"><span id="mdEmail">—</span><button class="btn-copy-mini" onclick="copyEmail(document.getElementById('mdEmail').textContent, this)" title="Copy email">⧉</button></div>
     </div>
     <button class="member-drawer-close" onclick="closeMemberDrawer()" aria-label="Close">✕</button>
   </div>
@@ -764,7 +764,7 @@ function inviteRowHtml(iv, orgId, canManage){
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
     + actions
     + '</div>'
-    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
+    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\', this)">Copy</button>'
     + '</div></div>';
 }
 
@@ -1102,7 +1102,7 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link || 'Token active')+'</div>'
     + actions
     + '</div>'
-    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\')">Copy</button>'
+    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\', this)">Copy</button>'
     + '</div>';
   list.prepend(div);
   refreshInviteMoreBtn();
@@ -1143,9 +1143,10 @@ async function transferOwnership(orgId, userId, name){
     else if(d && d.detail){ showToast(d.detail,'error'); }
   }, 'Transfer');
 }
-function copyInviteLink(link){
+function copyInviteLink(link, btn){
+  function done(){ showToast('Invite link copied','success'); flashCopyTick(btn); }
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(link).then(function(){ showToast('Invite link copied','success'); }, function(){ showToast(link,'info'); });
+    navigator.clipboard.writeText(link).then(done, function(){ showToast(link,'info'); });
   } else {
     showToast(link,'info');
   }
@@ -1343,10 +1344,18 @@ function initMemberSwipe(){
 }
 
 // ── Member detail drawer ──
-function copyEmail(email){
+function flashCopyTick(btn, ms){
+  if(!btn) return;
+  var orig = btn.innerHTML;
+  btn.classList.add('copied');
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  setTimeout(function(){ btn.innerHTML = orig; btn.classList.remove('copied'); }, ms || 1800);
+}
+function copyEmail(email, btn){
   if(!email) return;
+  function done(){ showToast('Email copied','success'); flashCopyTick(btn); }
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(email).then(function(){ showToast('Email copied','success'); }, function(){ showToast(email,'info'); });
+    navigator.clipboard.writeText(email).then(done, function(){ showToast(email,'info'); });
   } else { showToast(email,'info'); }
 }
 function openMemberDrawer(userId){

@@ -143,7 +143,7 @@
       <a href="blog.html" class="back-link" data-i18n="back-to-blog">← Back to Blog</a>
       <div class="share">
         <span data-i18n="share-label">Share:</span>
-        <a href="#" onclick="copyShareLink();return false" title="Copy link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></a>
+        <a href="#" onclick="copyShareLink(this);return false" title="Copy link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></a>
         <a href="https://twitter.com/intent/tweet?text=Introducing%20GlbTOKEN%20%E2%80%94%20One%20Balance%20for%20All%20AI&url=https://glbtoken.com/blog-article-1.html" target="_blank" rel="noopener noreferrer" title="Share on Twitter">𝕏</a>
         <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://glbtoken.com/blog-article-1.html" target="_blank" rel="noopener noreferrer" title="Share on LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></a>
       </div>
@@ -162,7 +162,7 @@
 <script data-cfasync="false" src="ui.js?v=1221"></script>
 
 <script>
-function copyShareLink(){
+function copyShareLink(btn){
   const input = document.createElement('input');
   input.value = window.location.href;
   document.body.appendChild(input);
@@ -170,6 +170,11 @@ function copyShareLink(){
   document.execCommand('copy');
   document.body.removeChild(input);
   if(typeof showToast === 'function') showToast('Link copied to clipboard','success');
+  if(btn){
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(function(){ btn.innerHTML = orig; }, 1800);
+  }
   return false;
 }
 </script>
