@@ -145,12 +145,37 @@ async def get_logs(
     page_size: int = Query(20, ge=1, le=100),
     user: User = Depends(get_current_user),
 ):
-    """Fetch request logs from New API for the current user."""
+    """Fetch request logs from New API for the current user (standardized)."""
     if not user.newapi_user_id:
         return {"total": 0, "items": [], "message": "New API user not linked"}
     try:
         logs = await get_user_logs(user.newapi_user_id, page=page, page_size=page_size)
-        return logs
+        if not isinstance(logs, dict):
+            return {"total": 0, "items": [], "message": "Unexpected logs payload"}
+        # New API wraps lists under `data` — normalize both shapes to {total, items}
+        if isinstance(logs.get("data"), dict):
+            raw_items = logs["data"].get("items") or []
+            total = logs["data"].get("total") or len(raw_items)
+        else:
+            raw_items = logs.get("items") or []
+            total = logs.get("total") or len(raw_items)
+        standardized = []
+        for it in raw_items:
+            if not isinstance(it, dict):
+                continue
+            pt = it.get("prompt_tokens") or 0
+            ct = it.get("completion_tokens") or 0
+            tokens = (pt + ct) or it.get("tokens") or it.get("total_tokens") or 0
+            quota = it.get("quota") or 0
+            # New API quota → USD (default: 1 USD = 500,000 quota units); fall back to amount
+            cost = round(quota / 500000.0, 8) if quota else (it.get("amount") or 0)
+            std = dict(it)
+            std["prompt_tokens"] = pt
+            std["completion_tokens"] = ct
+            std["tokens"] = tokens
+            std["cost"] = cost
+            standardized.append(std)
+        return {"total": total, "items": standardized}
     except Exception as e:
         print(f"⚠️ Failed to fetch request logs: {e}")
         return {"total": 0, "items": [], "message": str(e)}
