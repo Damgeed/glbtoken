@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1184" />
+  <link rel="stylesheet" href="style.css?v=1185" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1023" />
   </head>
@@ -125,6 +125,13 @@
           <button class="sort-btn usage-range active badge" data-days="7" onclick="setLogsRange(7)">7d</button>
           <button class="sort-btn usage-range badge" data-days="30" onclick="setLogsRange(30)">30d</button>
           <button class="sort-btn usage-range badge" data-days="90" onclick="setLogsRange(90)">90d</button>
+          <button class="sort-btn usage-range badge" data-days="custom" onclick="toggleCustomRange()">Custom</button>
+        </div>
+        <div class="logs-custom-range" id="logsCustomRange" style="display:none">
+          <input type="date" id="logsCustomFrom" class="logs-date-input" />
+          <span class="logs-custom-sep">→</span>
+          <input type="date" id="logsCustomTo" class="logs-date-input" />
+          <button class="btn-secondary btn-sm" onclick="applyCustomRange()">Apply</button>
         </div>
       </div>
 
@@ -204,7 +211,7 @@
         <div class="dash-section-title logs-title-row">
           <span class="logs-title-main">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Request Logs <span class="label-muted-sm">Click a row for details</span>
+            Request Logs
           </span>
           <div class="logs-filter-wrap">
             <div class="logs-status-filter" id="logsStatusBtns">
@@ -215,6 +222,7 @@
             <button class="btn-secondary btn-copy" onclick="exportLogsCsv()" title="Export current page as CSV">⬇ CSV</button>
           </div>
         </div>
+        <div class="logs-table-hint">Click a row for details</div>
         <div class="overflow-auto">
           <table class="tx-table" id="requestLogTable">
             <thead><tr><th>Time</th><th>Model</th><th>Tokens</th><th>Cost</th><th>Status</th></tr></thead>
@@ -280,8 +288,49 @@ var logsRange = 7;
 function setLogsRange(days){
   logsRange = days;
   document.querySelectorAll('#logsRangeBtns .usage-range').forEach(function(b){
-    b.classList.toggle('active', parseInt(b.getAttribute('data-days')) === days);
+    b.classList.toggle('active', b.getAttribute('data-days') === String(days));
   });
+  // hide custom picker unless custom is the active choice
+  var cp=document.getElementById('logsCustomRange');
+  if(cp && days!=='custom'){ cp.style.display='none'; }
+  loadCostBreakdown(days);
+  loadErrorRate(days);
+  loadResponseTimes(days);
+  loadCostProjection(days);
+  loadKeyUsage(days);
+}
+
+function toggleCustomRange(){
+  var cp=document.getElementById('logsCustomRange');
+  if(!cp)return;
+  var show=cp.style.display==='none';
+  cp.style.display=show?'flex':'none';
+  document.querySelectorAll('#logsRangeBtns .usage-range').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-days')==='custom' && show);
+  });
+  if(show){
+    // default: last 7 days
+    var to=new Date(); var from=new Date(); from.setDate(to.getDate()-6);
+    document.getElementById('logsCustomTo').value=to.toISOString().slice(0,10);
+    document.getElementById('logsCustomFrom').value=from.toISOString().slice(0,10);
+  }
+}
+
+function applyCustomRange(){
+  var fromEl=document.getElementById('logsCustomFrom');
+  var toEl=document.getElementById('logsCustomTo');
+  if(!fromEl||!toEl)return;
+  var from=fromEl.value, to=toEl.value;
+  if(!from||!to){ showToast('Pick both start and end dates','error'); return; }
+  var d1=new Date(from), d2=new Date(to);
+  if(isNaN(d1.getTime())||isNaN(d2.getTime())||d2<d1){ showToast('Invalid date range','error'); return; }
+  var days=Math.round((d2-d1)/86400000)+1;
+  if(days>90){ showToast('Custom range max 90 days','error'); return; }
+  // mark custom active
+  document.querySelectorAll('#logsRangeBtns .usage-range').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('data-days')==='custom');
+  });
+  logsRange=days;
   loadCostBreakdown(days);
   loadErrorRate(days);
   loadResponseTimes(days);
@@ -406,15 +455,16 @@ async function loadCostProjection(days){
       return;
     }
     var projected=(data.projected_monthly||0);
-    var actual=(data.last_30_days_cost!==undefined?data.last_30_days_cost:(data.period_cost||data.actual_cost||0));
+    var actual=(data.period_cost!==undefined?data.period_cost:(data.last_30_days_cost||0));
     var avgDaily=(data.daily_avg||0);
+    var actualDays=(data.days_requested||data.days_of_data||d);
     document.getElementById('cpProjected').textContent='$'+projected.toFixed(2);
     document.getElementById('cpActual').textContent='$'+actual.toFixed(2);
     document.getElementById('cpAvgDaily').textContent='$'+avgDaily.toFixed(2);
     var lbl=document.getElementById('cpActualLbl');
-    if(lbl)lbl.textContent='Actual ('+d+'d)';
+    if(lbl)lbl.textContent='Actual ('+actualDays+'d)';
     var chg=document.getElementById('cpProjectedChg');
-    if(chg)chg.textContent='Based on last '+d+' days';
+    if(chg)chg.textContent='Based on last '+actualDays+' days';
   }catch(e){
     showToast('Failed to load cost projection','error');
   }

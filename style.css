@@ -8076,3 +8076,20 @@ body {
     justify-content: space-between;
   }
 }
+
+/* ── Logs v2.1: table hint row + custom date range ── */
+.logs-table-hint {
+  font-size: 0.72rem; color: var(--text-muted, #8A8FA3);
+  margin: -0.5rem 0 0.75rem; letter-spacing: 0.02em;
+}
+.logs-custom-range {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-top: 0.6rem; flex-wrap: wrap;
+}
+.logs-date-input {
+  background: var(--card, #141624); border: 1px solid var(--border, #2A2D42);
+  border-radius: 8px; color: var(--text, #E6E8F0);
+  padding: 0.4rem 0.6rem; font-size: 0.8rem; font-family: inherit;
+}
+.logs-date-input::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+.logs-custom-sep { color: var(--text-muted, #8A8FA3); font-size: 0.85rem; }

@@ -602,12 +602,13 @@ async def analytics_response_times(
 @limiter.limit("30/minute")
 async def analytics_cost_projection(
     request: Request,
+    days: int = Query(30, ge=1, le=365, description="Number of days to project over"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Projected monthly cost based on last 30 days of data."""
+    """Projected monthly cost based on the last N days of data."""
     try:
-        since = datetime.now(timezone.utc) - timedelta(days=30)
+        since = datetime.now(timezone.utc) - timedelta(days=days)
 
         # Get model prices
         all_models = db.query(AIModel.model_id, AIModel.prompt_price, AIModel.completion_price).all()
@@ -649,10 +650,12 @@ async def analytics_cost_projection(
 
         return {
             "last_30_days_cost": total_cost,
+            "period_cost": total_cost,
             "projected_monthly": projected_monthly,
             "daily_avg": daily_avg,
             "days_of_data": days_with_data,
+            "days_requested": days,
         }
     except Exception as e:
         print(f"⚠️ analytics/cost-projection error: {e}")
-        return {"last_30_days_cost": 0, "projected_monthly": 0, "daily_avg": 0, "days_of_data": 0}
+        return {"last_30_days_cost": 0, "period_cost": 0, "projected_monthly": 0, "daily_avg": 0, "days_of_data": 0, "days_requested": days}
