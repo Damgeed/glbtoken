@@ -128,6 +128,14 @@ class InitiatePaymentRequest(BaseModel):
     email: str = ""
 
 
+class CardConfirmRequest(BaseModel):
+    session_id: str
+
+
+class CardRemoveRequest(BaseModel):
+    payment_method_id: str
+
+
 # ── Proxy / Chat Schemas ──
 
 class ProxyChatRequest(BaseModel):

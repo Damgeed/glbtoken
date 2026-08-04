@@ -191,3 +191,48 @@
 #section-billing {
   display: block;
 }
+
+/* ── Saved payment methods (cards) ── */
+.pm-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border, #2A2D42);
+  border-radius: 10px;
+  background: var(--bg-alt, #0E101C);
+  margin-bottom: 0.5rem;
+}
+.pm-brand {
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #F4B400;
+  background: rgba(244, 180, 0, 0.12);
+  padding: 0.18rem 0.45rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.pm-num {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text, #E6E8F0);
+  letter-spacing: 0.06em;
+}
+.pm-exp {
+  font-size: 0.75rem;
+  color: var(--text-muted, #8A8FA3);
+  font-variant-numeric: tabular-nums;
+}
+.pm-remove {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted, #8A8FA3);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.pm-remove:hover { color: #FF6B6B; background: rgba(255, 107, 107, 0.12); }

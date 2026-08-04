@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1187" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1022" />
+<link rel="stylesheet" href="billing.css?v=1023" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -347,20 +347,70 @@
     function renderPaymentMethods(){
       var container = document.getElementById('paymentMethodsList');
       if(!container) return;
-      container.innerHTML =
-        '<div class="billing-empty-state">' +
-          '<div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>' +
-          '<p><strong>No payment methods saved</strong></p>' +
-          '<p class="text-xs mt-xs">Add a card or mobile money method to get started.</p>' +
-        '</div>';
+      container.innerHTML = '<div class="billing-empty-state"><div class="spinner-btn"></div>Loading payment methods...</div>';
+      safeApi('GET','/api/payments/cards').then(function(data){
+        var cards = (data && data.cards) || [];
+        if(!cards.length){
+          container.innerHTML =
+            '<div class="billing-empty-state">' +
+              '<div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>' +
+              '<p><strong>No payment methods saved</strong></p>' +
+              '<p class="text-xs mt-xs">Add a card to make future top-ups one-click.</p>' +
+            '</div>';
+          return;
+        }
+        container.innerHTML = cards.map(function(c){
+          var brand = (c.brand || 'card').toUpperCase();
+          var exp = String(c.exp_month||'').padStart(2,'0') + '/' + String(c.exp_year||'').slice(-2);
+          return '<div class="pm-row">' +
+            '<span class="pm-brand">'+escapeHtml(brand)+'</span>' +
+            '<span class="pm-num">•••• '+escapeHtml(c.last4||'')+'</span>' +
+            '<span class="pm-exp">'+escapeHtml(exp)+'</span>' +
+            '<button class="pm-remove" onclick="removeCard(\''+escapeHtml(c.id)+'\')" title="Remove card">✕</button>' +
+          '</div>';
+        }).join('');
+      }).catch(function(){
+        container.innerHTML = '<div class="billing-empty-state"><p><strong>Could not load payment methods</strong></p></div>';
+      });
     }
+
+    window.removeCard = function(pmId){
+      if(!pmId) return;
+      safeApi('DELETE','/api/payments/cards',{payment_method_id:pmId}).then(function(d){
+        showToast(d && d.status==='removed' ? 'Card removed' : 'Removed','success');
+        renderPaymentMethods();
+      }).catch(function(){
+        showToast('Failed to remove card','error');
+      });
+    };
+
+    // If Stripe redirected back after saving a card, confirm and refresh the list.
+    (function handleCardCallback(){
+      try{
+        var params = new URLSearchParams(window.location.search);
+        if(params.get('card') === 'success' && params.get('session_id')){
+          safeApi('POST','/api/payments/cards/confirm',{session_id: params.get('session_id')}).then(function(d){
+            showToast(d && d.status==='card_saved' ? 'Card saved!' : 'Card verified','success');
+            renderPaymentMethods();
+            window.history.replaceState(null,'',window.location.pathname);
+          }).catch(function(){
+            showToast('Could not confirm card','error');
+          });
+        }
+      }catch(e){}
+    })();
 
     renderInvoices();
     renderPaymentMethods();
   };
 
   window.addPaymentMethod = function(){
-    window.location.href = 'topup.html';
+    safeApi('POST','/api/payments/cards/setup',{}).then(function(d){
+      if(d && d.url){ window.location.href = d.url; }
+      else { showToast('Could not start card setup','error'); }
+    }).catch(function(){
+      showToast('Could not start card setup','error');
+    });
   };
 
 })();

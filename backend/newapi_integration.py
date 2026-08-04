@@ -12,10 +12,11 @@ NEW_API_BASE = os.getenv("NEW_API_BASE_URL", "")
 ADMIN_TOKEN = os.getenv("NEW_API_ADMIN_TOKEN", "")
 
 # Exchange rate between GlbTOKEN tokens (1 USD = 1,000 tokens) and New API quota
-# units (default 1 USD = 500,000 quota; override via NEWAPI_QUOTA_PER_USD if the
-# New API instance is configured differently).
+# units. This instance is configured 1 USD = 1,000 quota (verified in New API
+# admin), so 1 GlbTOKEN token == 1 quota unit. Override via NEWAPI_QUOTA_PER_USD
+# only if the New API instance is configured differently.
 GLOBTOKEN_TOKENS_PER_USD = 1000
-NEWAPI_QUOTA_PER_USD = int(os.getenv("NEWAPI_QUOTA_PER_USD", "500000"))
+NEWAPI_QUOTA_PER_USD = int(os.getenv("NEWAPI_QUOTA_PER_USD", "1000"))
 
 def tokens_to_newapi_quota(tokens) -> int:
     """Convert GlbTOKEN tokens → New API quota units using the configured rate."""

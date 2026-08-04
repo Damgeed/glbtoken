@@ -12,7 +12,7 @@ from auth import get_current_user
 from newapi_integration import add_user_quota
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, \
     PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES
-from schemas import TopupRequest, InitiatePaymentRequest
+from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest
 
 router = APIRouter()
 
@@ -301,3 +301,88 @@ def get_invoices(
         ],
         "total": len(invoices),
     }
+
+
+# ── Saved Payment Methods (cards) ──
+
+def _stripe_customer_for(user):
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    email = (user.email or "").strip()
+    if email:
+        existing = stripe_lib.Customer.list(email=email, limit=1)
+        if existing.data:
+            return existing.data[0]
+    return stripe_lib.Customer.create(
+        email=email or None,
+        metadata={"user_id": str(user.id)},
+    )
+
+
+@router.post("/api/payments/cards/setup")
+def cards_setup(user: User = Depends(get_current_user)):
+    """Start a Stripe Setup session so the user can save a card (hosted page)."""
+    if not STRIPE_SECRET_KEY:
+        _not_configured("Stripe")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    cus = _stripe_customer_for(user)
+    session = stripe_lib.checkout.Session.create(
+        mode="setup",
+        customer=cus.id,
+        payment_method_types=["card"],
+        metadata={"user_id": str(user.id)},
+        success_url="https://damgeed.github.io/glbtoken/billing.html?card=success&session_id={CHECKOUT_SESSION_ID}",
+        cancel_url="https://damgeed.github.io/glbtoken/billing.html",
+    )
+    return {"url": session.url, "session_id": session.id}
+
+
+@router.get("/api/payments/cards")
+def list_cards(user: User = Depends(get_current_user)):
+    """List the user's saved cards from Stripe."""
+    if not STRIPE_SECRET_KEY:
+        _not_configured("Stripe")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    cus = _stripe_customer_for(user)
+    pms = stripe_lib.PaymentMethod.list(customer=cus.id, type="card")
+    return {
+        "cards": [
+            {
+                "id": pm.id,
+                "brand": pm.card.brand,
+                "last4": pm.card.last4,
+                "exp_month": pm.card.exp_month,
+                "exp_year": pm.card.exp_year,
+            }
+            for pm in pms.data
+        ]
+    }
+
+
+@router.post("/api/payments/cards/confirm")
+def confirm_card(req: CardConfirmRequest, user: User = Depends(get_current_user)):
+    """Confirm a card saved via the Stripe Setup session."""
+    if not STRIPE_SECRET_KEY:
+        _not_configured("Stripe")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    session = stripe_lib.checkout.Session.retrieve(req.session_id)
+    pm = session.get("payment_method")
+    if not pm:
+        _400("No payment method on session")
+    cus = _stripe_customer_for(user)
+    stripe_lib.PaymentMethod.attach(pm, customer=cus.id)
+    return {"status": "card_saved"}
+
+
+@router.delete("/api/payments/cards")
+def remove_card(req: CardRemoveRequest, user: User = Depends(get_current_user)):
+    """Remove a saved card from the user's Stripe customer."""
+    if not STRIPE_SECRET_KEY:
+        _not_configured("Stripe")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    stripe_lib.PaymentMethod.detach(req.payment_method_id)
+    return {"status": "removed"}
