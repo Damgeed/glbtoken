@@ -3905,7 +3905,7 @@ html.light .star.white {
   border-radius: 4px;
   font-size: 0.85em;
 }
-.dash-card table {
+.dash-card table:not(.tx-table) {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
