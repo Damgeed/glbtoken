@@ -3910,19 +3910,19 @@ html.light .star.white {
   border-collapse: collapse;
   font-size: 0.85rem;
 }
-.dash-card table th {
+.dash-card table:not(.tx-table) th {
   text-align: left;
   padding: 0.625rem 0.75rem;
   border-bottom: 1px solid var(--border);
   color: var(--text-muted);
   font-weight: 500;
 }
-.dash-card table td {
+.dash-card table:not(.tx-table) td {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--border-light);
   color: var(--text-secondary);
 }
-.dash-card table tr:last-child td {
+.dash-card table:not(.tx-table) tr:last-child td {
   border-bottom: none;
 }
 /* ── Language Selector ── */
