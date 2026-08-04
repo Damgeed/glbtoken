@@ -562,25 +562,61 @@
 
 
     // ── Transactions ──
+    function txDepositRow(t){
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>$'+escapeHtml(t.amount.toFixed(2))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
+    }
+    function txConsumptionRow(t){
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
+    }
+    // Render first 5 rows, hide the rest behind a yellow Show More toggle (like Activity)
+    function renderTxRows(firstBodyId, collapseBodyId, btnId, rows, rowFn, emptyHtml){
+      var firstBody=document.getElementById(firstBodyId);
+      var collapseBody=document.getElementById(collapseBodyId);
+      var btn=document.getElementById(btnId);
+      if(!rows.length){
+        if(firstBody)firstBody.innerHTML=emptyHtml;
+        if(collapseBody)collapseBody.innerHTML='';
+        if(btn)btn.style.display='none';
+        return;
+      }
+      var first=rows.slice(0,5);
+      var rest=rows.slice(5);
+      if(firstBody)firstBody.innerHTML=first.map(rowFn).join('');
+      if(collapseBody)collapseBody.innerHTML=rest.map(rowFn).join('');
+      if(btn){
+        if(rest.length){
+          btn.style.display='';
+          btn.textContent='Show More ('+rest.length+') ▼';
+          btn.setAttribute('data-count',rest.length);
+          btn.classList.remove('open');
+        }else{
+          btn.style.display='none';
+        }
+      }
+    }
     async function loadTx(){
       const d=await safeApi('GET','/api/transactions?limit=50',null,null,true); if(!d)return;
         const dep=d.items.filter(t=>t.type==='deposit');
         const con=d.items.filter(t=>t.type==='consumption');
-        document.getElementById('txDepositBody').innerHTML=dep.length?dep.map(t=>'<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>$'+escapeHtml(t.amount.toFixed(2))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No deposits</td></tr>';
-        document.getElementById('txConsumptionBody').innerHTML=con.length?con.map(t=>'<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>').join(''):'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem">No consumption</td></tr>';
+        renderTxRows('txDepositBody','txDepositCollapse','txDepositMoreBtn',dep,txDepositRow,'<tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr>');
+        renderTxRows('txConsumptionBody','txConsumptionCollapse','txConsumptionMoreBtn',con,txConsumptionRow,'<tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr>');
+    }
+    function toggleTxMore(btn, collapseId){
+      var c=document.getElementById(collapseId);
+      if(!c)return;
+      c.classList.toggle('open');
+      var open=c.classList.contains('open');
+      if(btn) btn.textContent = open ? 'Show Less ▲' : 'Show More (' + btn.getAttribute('data-count') + ') ▼';
     }
     function switchTxTab(el,tab){
       document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));
       el.classList.add('active');
       document.getElementById('txDeposits').style.display=tab==='deposits'?'block':'none';
       document.getElementById('txConsumption').style.display=tab==='consumption'?'block':'none';
-    }
-    function toggleTxSection(btn){
-      var wrap=document.getElementById('txSectionWrap');
-      if(!wrap)return;
-      var hidden=wrap.classList.toggle('d-none');
-      if(btn)btn.classList.toggle('collapsed',hidden);
-      if(btn)btn.setAttribute('aria-expanded',hidden?'false':'true');
+      var dBtn=document.getElementById('txDepositMoreBtn');
+      var cBtn=document.getElementById('txConsumptionMoreBtn');
+      if(dBtn)dBtn.style.display=(tab==='deposits' && dBtn.getAttribute('data-count'))?'':'none';
+      if(cBtn)cBtn.style.display=(tab==='consumption' && cBtn.getAttribute('data-count'))?'':'none';
     }
 
     // ── Shared helpers ──

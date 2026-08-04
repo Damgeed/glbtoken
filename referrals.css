@@ -115,7 +115,7 @@
 }
 .refs-copy-btn .copy-label { display: none; }
 .refs-copy-btn:hover { background: #E0A500; }
-.refs-copy-btn.copied { background: #E0A500; color: #00D68F; }
+.refs-copy-btn.copied { background: #E0A500; color: #000000; }
 /* Copy symbol on the Your Code card */
 .code-wrap {
   display: flex;
