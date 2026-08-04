@@ -4,3 +4,4 @@ __pycache__/
 backend/glbtoken.db
 .env
 scripts/.i18n_state.json
+make_guide_pdf.py
