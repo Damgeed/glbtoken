@@ -313,8 +313,9 @@ async function renderApiCallsChart(days){
   set('statSuccess', succPct>=100 ? '100%' : (succPct>0 ? succPct.toFixed(1)+'%' : '—'));
   var lats = (respTimes||[]).map(function(r){ return r.avg_response_time_ms; }).filter(function(v){ return typeof v==='number'; });
   var avgLat = lats.length ? Math.round(lats.reduce(function(a,b){return a+b;},0)/lats.length) : 0;
-  set('statLatency', avgLat ? avgLat+'ms' : '—');
-  set('statTotalCallsChg', days+'d total'); set('statAvgDayChg', days+'d avg'); set('statSuccessChg', days+'d'); set('statLatencyChg', days+'d avg');
+  var latEst = (respTimes||[]).some(function(r){ return r.estimated; });
+  set('statLatency', avgLat ? (latEst ? '~'+avgLat+'ms' : avgLat+'ms') : '—');
+  set('statTotalCallsChg', days+'d total'); set('statAvgDayChg', days+'d avg'); set('statSuccessChg', days+'d'); set('statLatencyChg', (latEst?'est. ':'')+days+'d avg');
 }
 
 // ── API Calls per Model range dropdown (7d / 30d / 90d) ──

@@ -536,6 +536,7 @@ async def analytics_key_usage(
         for key in keys:
             key_prefix = key.key[:8] + "..." if key.key and len(key.key) > 8 else (key.key or "unknown")
 
+            # Real per-key usage — filter transactions by this key's id
             q = db.query(
                 Transaction.model_used,
                 func.sum(Transaction.tokens).label("tokens"),
@@ -543,18 +544,17 @@ async def analytics_key_usage(
             ).filter(
                 Transaction.user_id == user.id,
                 Transaction.type == "consumption",
+                Transaction.key_id == key.id,
                 Transaction.created_at >= since,
             ).group_by(Transaction.model_used).all()
 
             if not q:
                 continue
 
-            # Distribute proportionally among keys
-            num_keys = max(len(keys), 1)
             for row in q:
                 model_name = row.model_used or "unknown"
-                tokens_val = float(row.tokens or 0) / num_keys
-                calls_val = max(1, round(int(row.calls or 0) / num_keys))
+                tokens_val = float(row.tokens or 0)
+                calls_val = max(1, round(int(row.calls or 0)))
                 cost = round(tokens_val * 0.000001, 6)
                 results.append({
                     "key_prefix": key_prefix,
@@ -616,7 +616,9 @@ async def analytics_response_times(
                 speed_factor = 0.9
 
             avg_ms = round(base_ms + avg_tokens_per_call * speed_factor, 1)
-            max_ms = round(avg_ms * (1.5 + random.uniform(0, 0.5)), 1)
+            # No real latency is recorded in the DB — expose a deterministic
+            # estimate and flag it instead of fabricating random-looking values.
+            max_ms = round(avg_ms * 2.0, 1)
 
             results.append({
                 "date": date_str,
@@ -624,6 +626,7 @@ async def analytics_response_times(
                 "avg_response_time_ms": avg_ms,
                 "max_response_time_ms": max_ms,
                 "calls": calls_val,
+                "estimated": True,
             })
         results.sort(key=lambda x: x["date"])
         return results

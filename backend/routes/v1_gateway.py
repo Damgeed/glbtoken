@@ -18,6 +18,7 @@ import httpx
 from fastapi import APIRouter, Depends, Header, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from sqlalchemy import update
 
 from common import (
     _400, _401, _402, _403, _404, _429, _502, limiter,
@@ -152,11 +153,23 @@ def _estimate_tokens(texts: list) -> int:
 
 def _bill(db: Session, user: User, api_key: ApiKey, model: str,
           cost_est: int, result: dict, payment_method: str = "api_key"):
-    """Deduct REAL usage from the response; fall back to estimate. Records tx."""
+    """Deduct REAL usage from the response; fall back to estimate. Records tx.
+
+    Atomic: decrements balance only if sufficient (prevents concurrent overdraft).
+    """
     usage = result.get("usage") or {}
     real = int(usage.get("total_tokens") or 0)
     cost = max(1, real or cost_est)
-    user.token_balance -= cost
+    # Atomic decrement — fails (rowcount 0) when balance < cost, even under concurrency.
+    res = db.execute(
+        update(User)
+        .where(User.id == user.id, User.token_balance >= cost)
+        .values(token_balance=User.token_balance - cost)
+    )
+    if res.rowcount == 0:
+        db.rollback()
+        _402("Insufficient balance")
+    db.refresh(user)
     api_key.request_count = (api_key.request_count or 0) + 1
     api_key.last_used = datetime.now(timezone.utc)
     tx = Transaction(

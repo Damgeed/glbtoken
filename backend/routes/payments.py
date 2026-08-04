@@ -74,6 +74,36 @@ async def topup(req: TopupRequest, user: User = Depends(get_current_user), db: S
         _400("No pending payment found for this reference")
     if abs((tx.amount or 0) - amount) > 0.01:
         _400("Amount does not match the pending payment")
+    # SECURITY: verify with the payment provider that the payment ACTUALLY
+    # succeeded before crediting. A pending tx alone is NOT proof of payment.
+    method = (tx.payment_method or "").lower()
+    if method == "paystack":
+        if not PAYSTACK_SECRET_KEY:
+            _not_configured("Paystack")
+        import httpx as _httpx
+        _r = _httpx.get(
+            f"https://api.paystack.co/transaction/verify/{ref}",
+            headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"},
+            timeout=15,
+        )
+        _d = _r.json()
+        if not _d.get("status") or _d.get("data", {}).get("status") != "success":
+            _400("Payment not confirmed by Paystack")
+    elif method == "stripe":
+        if not STRIPE_SECRET_KEY:
+            _not_configured("Stripe")
+        import stripe as _stripe
+        _stripe.api_key = STRIPE_SECRET_KEY
+        try:
+            _s = _stripe.checkout.Session.retrieve(ref)
+        except Exception:
+            _400("Payment not confirmed by Stripe")
+        if getattr(_s, "payment_status", "") != "paid":
+            _400("Payment not confirmed by Stripe")
+    elif method.startswith("crypto"):
+        _400("Crypto payments require manual on-chain verification — contact support")
+    else:
+        _400("Unsupported payment method")
     tokens = int(amount * 1000)
     tx.status = "completed"
     tx.tokens = tokens
