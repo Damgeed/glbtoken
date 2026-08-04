@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1187" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1023" />
+<link rel="stylesheet" href="billing.css?v=1024" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -366,7 +366,10 @@
             '<span class="pm-brand">'+escapeHtml(brand)+'</span>' +
             '<span class="pm-num">•••• '+escapeHtml(c.last4||'')+'</span>' +
             '<span class="pm-exp">'+escapeHtml(exp)+'</span>' +
+            '<span class="pm-actions">' +
+            '<button class="pm-recharge" onclick="quickRecharge(\''+escapeHtml(c.id)+'\',\''+escapeHtml(c.last4||'')+'\')">⚡ Recharge</button>' +
             '<button class="pm-remove" onclick="removeCard(\''+escapeHtml(c.id)+'\')" title="Remove card">✕</button>' +
+            '</span>' +
           '</div>';
         }).join('');
       }).catch(function(){
@@ -411,6 +414,87 @@
     }).catch(function(e){
       showToast((e && e.message) || 'Could not start card setup','error');
     });
+  };
+
+  window.quickRecharge = function(pmId, last4){
+    var existing = document.getElementById('quickRechargeModal');
+    if(existing) existing.remove();
+    var isDark = document.documentElement.className === 'dark';
+    var bg = isDark ? 'rgba(10,11,20,0.82)' : 'rgba(15,15,25,0.6)';
+    var cardBg = isDark ? '#1A1B26' : '#ffffff';
+    var textClr = isDark ? '#F8F8F2' : '#1a1a2e';
+    var muted = isDark ? '#8b90a8' : '#666';
+    var border = isDark ? '#3a3a4e' : '#ddd';
+    var gold = '#F4B400';
+    var m = document.createElement('div');
+    m.id = 'quickRechargeModal';
+    m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:'+bg+';backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fadeIn 0.15s ease';
+    m.innerHTML =
+      '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:1.75rem;max-width:380px;width:92%;box-shadow:0 16px 48px rgba(0,0,0,0.35);animation:slideUp 0.2s ease">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">' +
+          '<h3 style="color:'+textClr+';font-size:1.05rem;font-weight:700;margin:0">⚡ Quick Recharge</h3>' +
+          '<button id="qrClose" style="background:transparent;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;padding:4px 8px">✕</button>' +
+        '</div>' +
+        '<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1rem;line-height:1.5">Recharge with card <strong style="color:'+textClr+'">•••• '+escapeHtml(last4||'')+'</strong> — instant credit.</p>' +
+        '<div id="qrAmounts" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:0.75rem"></div>' +
+        '<div style="display:flex;gap:8px;margin-bottom:1rem">' +
+          '<span style="color:'+muted+';font-size:1rem;padding-top:8px">$</span>' +
+          '<input id="qrCustom" type="number" min="1" step="1" placeholder="Custom amount" style="flex:1;background:rgba(244,180,0,0.06);border:1px solid '+border+';border-radius:10px;padding:0.6rem 0.75rem;color:'+textClr+';font-size:0.95rem;outline:none" />' +
+        '</div>' +
+        '<button id="qrConfirm" style="width:100%;padding:0.7rem;border-radius:10px;border:none;background:'+gold+';color:#0A0B14;font-size:0.9rem;font-weight:700;cursor:pointer">Recharge Now</button>' +
+      '</div>';
+    document.body.appendChild(m);
+    var amounts = [10, 25, 50, 100];
+    var grid = m.querySelector('#qrAmounts');
+    grid.innerHTML = amounts.map(function(a){
+      var active = a === 25;
+      return '<button data-amt="'+a+'" style="padding:0.55rem 0;border-radius:10px;border:1px solid '+(active?gold:border)+';background:'+(active?'rgba(244,180,0,0.14)':'transparent')+';color:'+(active?gold:textClr)+';font-size:0.85rem;font-weight:600;cursor:pointer">$'+a+'</button>';
+    }).join('');
+    var selected = 25;
+    var customInput = m.querySelector('#qrCustom');
+    function highlight(amt){
+      selected = amt;
+      customInput.value = '';
+      grid.querySelectorAll('button').forEach(function(b){
+        var isSel = parseInt(b.getAttribute('data-amt')) === amt;
+        b.style.borderColor = isSel ? gold : border;
+        b.style.background = isSel ? 'rgba(244,180,0,0.14)' : 'transparent';
+        b.style.color = isSel ? gold : textClr;
+      });
+    }
+    grid.querySelectorAll('button').forEach(function(b){
+      b.onclick = function(){ highlight(parseInt(b.getAttribute('data-amt'))); };
+    });
+    customInput.oninput = function(){
+      selected = 0;
+      grid.querySelectorAll('button').forEach(function(b){
+        b.style.borderColor = border; b.style.background = 'transparent'; b.style.color = textClr;
+      });
+    };
+    m.querySelector('#qrClose').onclick = function(){ m.remove(); };
+    m.querySelector('#qrConfirm').onclick = function(){
+      var amt = selected > 0 ? selected : (parseFloat(customInput.value) || 0);
+      if(amt < 1){ showToast('Minimum recharge is $1','error'); return; }
+      var btn = m.querySelector('#qrConfirm');
+      btn.disabled = true; btn.textContent = 'Processing...';
+      api('POST','/api/payments/stripe/quick-recharge',{amount:amt,currency:'USD',payment_method:'stripe',payment_method_id:pmId}).then(function(d){
+        btn.disabled = false; btn.textContent = 'Recharge Now';
+        if(d && d.status === 'success'){
+          m.remove();
+          showToast('+' + (d.tokens_added||0).toLocaleString() + ' tokens added!','success');
+          loadBillingPage();
+          if(typeof updateBalance === 'function') updateBalance();
+        } else if(d && d.status === 'requires_action'){
+          m.remove();
+          showToast(d.message || 'Card requires 3D Secure — use normal top-up.','error');
+        } else {
+          showToast('Recharge failed','error');
+        }
+      }).catch(function(e){
+        btn.disabled = false; btn.textContent = 'Recharge Now';
+        showToast((e && e.message) || 'Recharge failed','error');
+      });
+    };
   };
 
 })();

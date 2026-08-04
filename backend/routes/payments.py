@@ -169,6 +169,7 @@ def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     tokens = int(req.amount * 1000)
+    cus = _stripe_customer_for(user)
     session = stripe_lib.checkout.Session.create(
         mode="payment",
         line_items=[{
@@ -179,7 +180,9 @@ def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get
             },
             "quantity": 1,
         }],
-        customer_email=req.email or user.email,
+        customer=cus.id,
+        # Shows a "Save my card for future purchases" checkbox on the hosted page.
+        payment_method_options={"card": {"save_payment_method": True}},
         metadata={"user_id": str(user.id), "tokens": str(tokens)},
         success_url="https://damgeed.github.io/glbtoken/#dashboard?payment=success",
         cancel_url="https://damgeed.github.io/glbtoken/#plans",
@@ -191,6 +194,56 @@ def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get
     )
     db.add(tx); db.commit()
     return {"url": session.url, "session_id": session.id}
+
+
+@router.post("/api/payments/stripe/quick-recharge")
+def stripe_quick_recharge(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """One-click recharge with a saved card (PaymentIntent, off_session)."""
+    if not STRIPE_SECRET_KEY:
+        _not_configured("Stripe")
+    if not req.payment_method_id:
+        _400("payment_method_id is required")
+    if req.amount < 1:
+        _400("Minimum recharge is $1")
+    import stripe as stripe_lib
+    stripe_lib.api_key = STRIPE_SECRET_KEY
+    cus = _stripe_customer_for(user)
+    tokens = int(req.amount * 1000)
+    try:
+        pi = stripe_lib.PaymentIntent.create(
+            amount=int(req.amount * 100),
+            currency=req.currency.lower(),
+            customer=cus.id,
+            payment_method=req.payment_method_id,
+            off_session=True,
+            confirm=True,
+            metadata={"user_id": str(user.id), "tokens": str(tokens)},
+        )
+    except stripe_lib.error.CardError as e:
+        _400(f"Card declined: {e.error.message}")
+    except stripe_lib.error.StripeError as e:
+        _400(f"Payment failed: {getattr(e, 'user_message', None) or str(e)}")
+
+    if pi.status == "requires_action":
+        return {"status": "requires_action", "client_secret": pi.client_secret,
+                "message": "Card requires 3D Secure verification — please use the normal top-up flow for this card."}
+    if pi.status != "succeeded":
+        _400(f"Payment not completed (status: {pi.status})")
+
+    # Idempotency: a webhook (payment_intent.succeeded) may also arrive — never credit twice.
+    existing = db.query(Transaction).filter(Transaction.payment_ref == pi.id).first()
+    if existing and existing.status == "completed":
+        return {"status": "success", "tokens_added": existing.tokens, "new_balance": user.token_balance}
+    tx = Transaction(
+        user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
+        payment_method="stripe", payment_ref=pi.id,
+        tokens=tokens, status="completed",
+    )
+    db.add(tx)
+    user.token_balance += tokens
+    user.total_spent += req.amount
+    db.commit()
+    return {"status": "success", "tokens_added": tokens, "new_balance": user.token_balance}
 
 
 @router.post("/api/payments/stripe/webhook")
@@ -208,6 +261,12 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         _400("Invalid signature")
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
+        # Save the card if the user checked "Save my card for future purchases".
+        if session.get("setup_future_usage") == "off_session" and session.get("payment_method"):
+            try:
+                stripe_lib.PaymentMethod.attach(session["payment_method"], customer=session.get("customer"))
+            except Exception as e:
+                print(f"⚠️ Could not attach saved card: {e}")
         # Idempotency: Stripe retries webhooks — never credit twice.
         tx = db.query(Transaction).filter(Transaction.payment_ref == session["id"]).first()
         if not tx or tx.status == "completed":
@@ -224,6 +283,22 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         tx.tokens = tokens
         tx.amount = amount
         db.commit()
+    if event["type"] == "payment_intent.succeeded":
+        # Safety net for one-click recharge — endpoint already credits, so skip if present.
+        pi = event["data"]["object"]
+        tx = db.query(Transaction).filter(Transaction.payment_ref == pi["id"]).first()
+        if tx and tx.status != "completed":
+            user_id = int(pi["metadata"]["user_id"])
+            amount = pi["amount"] / 100
+            tokens = int(amount * 1000)
+            user = db.query(User).filter(User.id == user_id).first()
+            if user:
+                user.token_balance += tokens
+                user.total_spent += amount
+            tx.status = "completed"
+            tx.tokens = tokens
+            tx.amount = amount
+            db.commit()
     return {"status": "ok"}
 
 

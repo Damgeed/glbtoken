@@ -126,6 +126,7 @@ class InitiatePaymentRequest(BaseModel):
     currency: str = "USD"
     payment_method: str = "stripe"
     email: str = ""
+    payment_method_id: str = ""  # saved card PM id for one-click recharge
 
 
 class CardConfirmRequest(BaseModel):

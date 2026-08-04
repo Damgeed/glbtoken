@@ -236,3 +236,24 @@
   flex-shrink: 0;
 }
 .pm-remove:hover { color: #FF6B6B; background: rgba(255, 107, 107, 0.12); }
+.pm-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+.pm-recharge {
+  background: rgba(244, 180, 0, 0.12);
+  border: 1px solid rgba(244, 180, 0, 0.35);
+  color: #F4B400;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.pm-recharge:hover { background: rgba(244, 180, 0, 0.22); }
+.pm-recharge:active { transform: scale(0.96); }
