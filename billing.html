@@ -405,7 +405,7 @@
   };
 
   window.addPaymentMethod = function(){
-    safeApi('POST','/api/payments/cards/setup',{}).then(function(d){
+    api('POST','/api/payments/cards/setup',{}).then(function(d){
       if(d && d.url){ window.location.href = d.url; }
       else { showToast('Could not start card setup','error'); }
     }).catch(function(e){
