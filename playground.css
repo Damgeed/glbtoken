@@ -86,6 +86,7 @@
 }
 .playground-code-copy.copied {
   background: var(--primary);
+  color: #00D68F;
 }
 .playground-code-body {
   flex: 1;
