@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1185" />
+  <link rel="stylesheet" href="style.css?v=1187" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="settings.css?v=1028" />
   </head>
@@ -170,7 +170,7 @@
 <script src="translations.js?v=1104"></script>
 <script data-cfasync="false" src="shared.js?v=1132"></script>
 <script>requireAuth()</script>
-<script data-cfasync="false" src="ui.js?v=1221"></script>
+<script data-cfasync="false" src="ui.js?v=1222"></script>
 <script data-cfasync="false" src="login-history.js?v=1118"></script>
 
 <!-- ── Settings Scripts ── -->
@@ -213,7 +213,7 @@ window.updatePassword = function(){
   var cur = document.getElementById('settingsCurPw').value;
   var neu = document.getElementById('settingsNewPw').value;
   if(!cur || !neu){ showToast('Please fill in both password fields','error'); return; }
-  if(neu.length < 6){ showToast('New password must be at least 6 characters','error'); return; }
+  if(neu.length < 8){ showToast('New password must be at least 8 characters','error'); return; }
   fetch(API_URL + '/api/user/password', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
@@ -221,7 +221,7 @@ window.updatePassword = function(){
   })
   .then(function(r){ return r.json(); })
   .then(function(data){
-    if(data && data.success){
+    if(data && (data.success || data.status === 'password_updated')){
       showToast('Password updated!','success');
       document.getElementById('settingsCurPw').value = '';
       document.getElementById('settingsNewPw').value = '';

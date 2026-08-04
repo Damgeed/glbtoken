@@ -11,6 +11,26 @@ from typing import Optional, Dict, Any
 NEW_API_BASE = os.getenv("NEW_API_BASE_URL", "")
 ADMIN_TOKEN = os.getenv("NEW_API_ADMIN_TOKEN", "")
 
+# Exchange rate between GlbTOKEN tokens (1 USD = 1,000 tokens) and New API quota
+# units (default 1 USD = 500,000 quota; override via NEWAPI_QUOTA_PER_USD if the
+# New API instance is configured differently).
+GLOBTOKEN_TOKENS_PER_USD = 1000
+NEWAPI_QUOTA_PER_USD = int(os.getenv("NEWAPI_QUOTA_PER_USD", "500000"))
+
+def tokens_to_newapi_quota(tokens) -> int:
+    """Convert GlbTOKEN tokens → New API quota units using the configured rate."""
+    try:
+        return int(float(tokens or 0) / GLOBTOKEN_TOKENS_PER_USD * NEWAPI_QUOTA_PER_USD)
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 0
+
+def newapi_quota_to_tokens(quota) -> float:
+    """Convert New API quota units → GlbTOKEN tokens using the configured rate."""
+    try:
+        return round(float(quota or 0) / NEWAPI_QUOTA_PER_USD * GLOBTOKEN_TOKENS_PER_USD, 2)
+    except (TypeError, ValueError, ZeroDivisionError):
+        return 0.0
+
 HEADERS = {"Authorization": f"Bearer {ADMIN_TOKEN}"} if ADMIN_TOKEN else {}
 
 # For admin operations, New API also requires the user ID header
@@ -91,8 +111,18 @@ async def update_user_quota(user_id: int, quota: int) -> dict:
     return await _post(f"/api/user/{user_id}", {"quota": quota}, admin=True)
 
 async def add_user_quota(user_id: int, tokens: int) -> dict:
-    """Add tokens to a user's quota in New API."""
-    return await _post(f"/api/user/{user_id}", {"add_quota": tokens}, admin=True)
+    """Add tokens (GlbTOKEN units) to a user's quota in New API (converted to quota units)."""
+    quota = tokens_to_newapi_quota(tokens)
+    return await _post(f"/api/user/{user_id}", {"add_quota": quota}, admin=True)
+
+async def get_user_quota(user_id: int):
+    """Fetch a user's remaining quota from New API (raw quota units)."""
+    result = await _get(f"/api/user/{user_id}", admin=True)
+    if isinstance(result, dict) and "error" in result:
+        return None
+    if isinstance(result, dict):
+        return result.get("quota")
+    return None
 
 async def get_usage_today(user_id: int) -> dict:
     """Get today's usage for a user from New API."""

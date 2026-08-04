@@ -666,7 +666,7 @@ body.drawer-open { overflow: hidden; }
   min-width: 0;
 }
 .member-drawer-email span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn-copy-mini { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; padding: 0.1rem 0.2rem; flex-shrink: 0; }
+.btn-copy-mini { background: none; border: none; color: #F4B400; cursor: pointer; font-size: 0.9rem; padding: 0.1rem 0.2rem; flex-shrink: 0; }
 .btn-copy-mini:hover { color: #FFC733; }
 .member-drawer-close {
   background: var(--bg-alt);

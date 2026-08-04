@@ -9,7 +9,7 @@ import random
 
 from database import get_db, User, ApiKey, Transaction, AIModel, LoginEvent
 from auth import get_current_user
-from newapi_integration import get_usage_today, get_user_logs, get_log_content as _get_log_content
+from newapi_integration import get_usage_today, get_user_logs, get_log_content as _get_log_content, get_user_quota, newapi_quota_to_tokens
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter
 
 router = APIRouter()
@@ -44,11 +44,19 @@ async def get_dashboard(
     # ── New API usage data ──
     newapi_usage = {}
     newapi_connected = False
+    synced_balance = None
     try:
         if user.newapi_user_id:
             newapi_usage = await get_usage_today(user.newapi_user_id)
             if newapi_usage and "error" not in newapi_usage:
                 newapi_connected = True
+            # Sync real remaining balance from New API quota → GlbTOKEN tokens
+            quota = await get_user_quota(user.newapi_user_id)
+            if quota is not None:
+                synced_balance = newapi_quota_to_tokens(quota)
+                if synced_balance != user.token_balance:
+                    user.token_balance = synced_balance
+                    db.commit()
     except Exception as e:
         print(f"⚠️ New API usage fetch failed: {e}")
     
@@ -110,6 +118,7 @@ async def get_dashboard(
 
     return {
         "token_balance": user.token_balance,
+        "synced_balance": synced_balance,
         "total_spent": user.total_spent,
         "models_used": len(usage),
         "api_keys_active": key_count,

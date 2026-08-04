@@ -75,7 +75,7 @@
     function animateCopyBtn(btn){
     btn.classList.add('copying');
     var orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     setTimeout(function(){
       btn.innerHTML = orig;
       btn.classList.remove('copying');

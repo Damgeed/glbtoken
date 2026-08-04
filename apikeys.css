@@ -19,7 +19,7 @@
 .code-wrapper-mb-lg { margin-bottom: 1rem; }
 .code-wrapper-no-mb { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; position: relative; }
 .code-block { font-family: monospace; font-size: 0.85rem; line-height: 1.7; overflow-x: auto; white-space: pre; color: var(--text); }
-.copy-btn { position: absolute; top: 6px; right: 6px; background: var(--bg); border: 1px solid var(--border-light); border-radius: 4px; cursor: pointer; font-size: 0.7rem; padding: 2px 5px; color: var(--text-secondary); opacity: 0.55; line-height: 1; z-index: 2; }
+.copy-btn { position: absolute; top: 6px; right: 6px; background: var(--bg); border: 1px solid var(--border-light); border-radius: 4px; cursor: pointer; font-size: 0.7rem; padding: 2px 5px; color: #F4B400; opacity: 0.85; line-height: 1; z-index: 2; }
 
 /* Syntax highlighting for code blocks */
 .syn-kw { color: var(--primary); }
