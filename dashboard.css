@@ -118,12 +118,17 @@
   transform: translateX(20px);
 }
 
-/* Activity items inside dash-card — responsive border for light/dark */
+/* Activity items inside dash-card — card style with border (light/dark aware) */
 #dashActivity .activity-item {
-  border-bottom: 1px solid var(--border-light) !important;
+  border: 1px solid var(--border-light);
+  background: var(--bg-alt);
+}
+#dashActivity .activity-item:hover {
+  border-color: rgba(244, 180, 0, 0.45);
+  background: rgba(244, 180, 0, 0.05);
 }
 #dashActivity .activity-item:last-child {
-  border-bottom: none !important;
+  border-bottom: 1px solid var(--border-light);
 }
 /* Spending by Provider list — responsive borders for light/dark */
 .spending-list > div {
@@ -1046,6 +1051,24 @@
   font-size: 0.72rem;
   color: var(--primary);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+/* Live indicator — slow blinking green dot */
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00D68F;
+  box-shadow: 0 0 6px rgba(0, 214, 143, 0.6);
+  animation: livePulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(0, 214, 143, 0.6); }
+  50% { opacity: 0.35; box-shadow: 0 0 2px rgba(0, 214, 143, 0.15); }
 }
 /* Activity scroll list */
 .activity-scroll {

@@ -688,6 +688,7 @@ I18N["Spending by Provider"] = {"zh-CN": "按供应商统计支出","ru": "Ра�
 I18N["This month"] = {"zh-CN": "本月","ru": "В этом месяце","ja": "今月","de": "Diesen Monat",};
 I18N["Total:"] = {"zh-CN": "总计：","ru": "Итого:","ja": "合計：","de": "Gesamt:",};
 I18N["Cost:"] = {"zh-CN": "成本：","ru": "Стоимость:","ja": "コスト：","de": "Kosten:",};
+I18N["Live"] = {"zh-CN": "实时", ru: "В реальном времени", ja: "ライブ", de: "Live"};
 I18N["Live ▸"] = {"zh-CN": "实时 ▸","ru": "В реальном времени ▸","ja": "ライブ ▸","de": "Live ▸",};
 I18N["Just now"] = {"zh-CN": "刚刚","ru": "Только что","ja": "たった今","de": "Gerade eben",};
 I18N["New key:"] = {"zh-CN": "新密钥：","ru": "Новый ключ:","ja": "新しいキー：","de": "Neuer Schlüssel:",};
