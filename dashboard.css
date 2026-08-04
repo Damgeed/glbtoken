@@ -540,12 +540,12 @@
   justify-content: flex-start;
 }
 .pg-copy-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
+  background: rgba(244, 180, 0, 0.12);
+  border: 1px solid rgba(244, 180, 0, 0.3);
+  color: #F4B400;
   cursor: pointer;
-  padding: 0.2rem;
-  border-radius: 4px;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   opacity: 0;

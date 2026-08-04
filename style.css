@@ -1734,17 +1734,19 @@ input[type="range"]::-moz-range-thumb {
   position: absolute;
   top: 6px;
   right: 6px;
-  background: var(--bg);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
+  background: rgba(244, 180, 0, 0.12);
+  border: 1px solid rgba(244, 180, 0, 0.3);
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.7rem;
-  padding: 2px 5px;
+  padding: 4px 6px;
   color: #F4B400;
   opacity: 0.85;
   line-height: 1;
   z-index: 2;
+  transition: background 0.15s ease;
 }
+.copy-btn-abs:hover { background: rgba(244, 180, 0, 0.22); opacity: 1; }
 
 /* ── Empty State ── */
 .empty-state {
@@ -2648,9 +2650,9 @@ input[type="range"]::-moz-range-thumb {
 }
 .key-copy {
   margin-left: 0.4rem;
-  background: rgba(244, 180, 0, 0.1);
+  background: rgba(244, 180, 0, 0.12);
   border: 1px solid rgba(244, 180, 0, 0.3);
-  color: #FFC733;
+  color: #F4B400;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.72rem;
@@ -5612,9 +5614,9 @@ html.light .star.white {
   align-items: center;
   gap: 6px;
   padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(244, 180, 0, 0.12);
+  border: 1px solid rgba(244, 180, 0, 0.3);
   color: #F4B400;
   font-size: 0.75rem;
   cursor: pointer;
@@ -5624,7 +5626,7 @@ html.light .star.white {
 .copy-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
-  background: var(--primary-subtle);
+  background: rgba(244, 180, 0, 0.22);
 }
 .copy-btn.copied {
   background: var(--success-subtle);

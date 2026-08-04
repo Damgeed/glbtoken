@@ -666,8 +666,8 @@ body.drawer-open { overflow: hidden; }
   min-width: 0;
 }
 .member-drawer-email span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn-copy-mini { background: none; border: none; color: #F4B400; cursor: pointer; font-size: 0.9rem; padding: 0.1rem 0.2rem; flex-shrink: 0; }
-.btn-copy-mini:hover { color: #FFC733; }
+.btn-copy-mini { background: rgba(244, 180, 0, 0.12); border: 1px solid rgba(244, 180, 0, 0.3); color: #F4B400; cursor: pointer; font-size: 0.9rem; padding: 0.25rem 0.45rem; border-radius: 6px; flex-shrink: 0; line-height: 1; transition: background 0.15s ease; }
+.btn-copy-mini:hover { color: #FFC733; background: rgba(244, 180, 0, 0.22); }
 .member-drawer-close {
   background: var(--bg-alt);
   border: 1px solid var(--border);
