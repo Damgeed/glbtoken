@@ -45,56 +45,6 @@
 @media (max-width: 767px) {
   #txDepositMoreBtn, #txConsumptionMoreBtn { display: block; }
 }
-/* ── Transaction History cards (same design as Activity) ── */
-.tx-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.tx-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  transition: background 0.2s, border-color 0.2s;
-  font-size: 0.82rem;
-}
-.tx-card:hover {
-  background: rgba(244, 180, 0, 0.05);
-  border-color: rgba(244, 180, 0, 0.45);
-}
-.tx-card-right {
-  margin-left: auto;
-  flex-shrink: 0;
-  text-align: right;
-}
-.tx-card-amt {
-  font-weight: 700;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-.tx-card-amt.gold { color: var(--primary); }
-.tx-card-amt.red { color: var(--destructive); }
-.tx-card-status {
-  font-size: 0.72rem;
-  color: var(--success);
-  text-transform: capitalize;
-}
-.tx-empty {
-  text-align: center;
-  color: var(--text-muted);
-  padding: 1.5rem;
-  font-size: 0.85rem;
-}
-/* Transaction History show-more collapse (list variant) */
-.tx-list-collapse { display: block; }
-@media (max-width: 767px) {
-  .tx-list-collapse { display: none; }
-  .tx-list-collapse.open { display: block; }
-}
 /* Tab button row */
 .tx-tab-row {
   display: flex;

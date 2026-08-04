@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1193" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1029" />
+<link rel="stylesheet" href="usage.css?v=1030" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -145,13 +145,17 @@
           <button class="tx-tab active tx-tab-btn" onclick="switchTxTab(this,'deposits')">Deposits</button>
           <button class="tx-tab tx-tab-btn" onclick="switchTxTab(this,'consumption')">Consumption</button>
         </div>
-        <div id="txDeposits" class="tx-list">
-          <div id="txDepositBody"></div>
-          <div class="tx-list-collapse" id="txDepositCollapse"></div>
-        </div>
-        <div id="txConsumption" class="tx-list d-none">
-          <div id="txConsumptionBody"></div>
-          <div class="tx-list-collapse" id="txConsumptionCollapse"></div>
+        <div class="scroll-x">
+          <table class="tx-table" id="txDeposits">
+            <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Tokens</th><th>Status</th></tr></thead>
+            <tbody id="txDepositBody"><tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr></tbody>
+            <tbody class="tx-collapse" id="txDepositCollapse"></tbody>
+          </table>
+          <table class="tx-table d-none" id="txConsumption">
+            <thead><tr><th>Date</th><th>Model</th><th>Tokens</th><th>Type</th></tr></thead>
+            <tbody id="txConsumptionBody"><tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr></tbody>
+            <tbody class="tx-collapse" id="txConsumptionCollapse"></tbody>
+          </table>
         </div>
         <button class="list-more-btn" id="txDepositMoreBtn" onclick="toggleTxMore(this,'txDepositCollapse')" style="display:none">Show More ▼</button>
         <button class="list-more-btn" id="txConsumptionMoreBtn" onclick="toggleTxMore(this,'txConsumptionCollapse')" style="display:none">Show More ▼</button>
@@ -317,7 +321,7 @@
 <script data-cfasync="false" src="shared.js?v=1132"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
-<script data-cfasync="false" src="filters.js?v=1127"></script>
+<script data-cfasync="false" src="filters.js?v=1128"></script>
 
 <!-- ── Usage Script ── -->
 <script>
