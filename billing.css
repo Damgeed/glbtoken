@@ -69,6 +69,17 @@
 }
 .pm-star:hover { color: #F4B400; background: rgba(244, 180, 0, 0.12); }
 .pm-star.active { color: #F4B400; }
+.qr-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+@media (max-width: 520px) {
+  .qr-amounts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 .billing-grid {
   display: grid;
   gap: 1.25rem;

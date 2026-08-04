@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1187" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1025" />
+<link rel="stylesheet" href="billing.css?v=1026" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -482,12 +482,15 @@
           '<button id="qrClose" style="background:transparent;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;padding:4px 8px">✕</button>' +
         '</div>' +
         '<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1rem;line-height:1.5">Recharge with card <strong style="color:'+textClr+'">•••• '+escapeHtml(last4||'')+'</strong> — instant credit.</p>' +
-        '<div id="qrAmounts" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:0.75rem"></div>' +
+        '<div id="qrAmounts" class="qr-amounts"></div>' +
         '<div style="display:flex;gap:8px;margin-bottom:1rem">' +
           '<span style="color:'+muted+';font-size:1rem;padding-top:8px">$</span>' +
           '<input id="qrCustom" type="number" min="1" step="1" placeholder="Custom amount" style="flex:1;background:rgba(244,180,0,0.06);border:1px solid '+border+';border-radius:10px;padding:0.6rem 0.75rem;color:'+textClr+';font-size:0.95rem;outline:none" />' +
         '</div>' +
-        '<button id="qrConfirm" style="width:100%;padding:0.7rem;border-radius:10px;border:none;background:'+gold+';color:#0A0B14;font-size:0.9rem;font-weight:700;cursor:pointer">Recharge Now</button>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button id="qrCancel" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+muted+';font-size:0.9rem;font-weight:600;cursor:pointer">Cancel</button>' +
+          '<button id="qrConfirm" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:'+gold+';color:#0A0B14;font-size:0.9rem;font-weight:700;cursor:pointer">Recharge</button>' +
+        '</div>' +
       '</div>';
     document.body.appendChild(m);
     var amounts = [10, 25, 50, 100];
@@ -518,13 +521,14 @@
       });
     };
     m.querySelector('#qrClose').onclick = function(){ m.remove(); };
+    m.querySelector('#qrCancel').onclick = function(){ m.remove(); };
     m.querySelector('#qrConfirm').onclick = function(){
       var amt = selected > 0 ? selected : (parseFloat(customInput.value) || 0);
       if(amt < 1){ showToast('Minimum recharge is $1','error'); return; }
       var btn = m.querySelector('#qrConfirm');
       btn.disabled = true; btn.textContent = 'Processing...';
       api('POST','/api/payments/stripe/quick-recharge',{amount:amt,currency:'USD',payment_method:'stripe',payment_method_id:pmId}).then(function(d){
-        btn.disabled = false; btn.textContent = 'Recharge Now';
+        btn.disabled = false; btn.textContent = 'Recharge';
         if(d && d.status === 'success'){
           m.remove();
           showToast('+' + (d.tokens_added||0).toLocaleString() + ' tokens added!','success');
@@ -537,7 +541,7 @@
           showToast('Recharge failed','error');
         }
       }).catch(function(e){
-        btn.disabled = false; btn.textContent = 'Recharge Now';
+        btn.disabled = false; btn.textContent = 'Recharge';
         showToast((e && e.message) || 'Recharge failed','error');
       });
     };
