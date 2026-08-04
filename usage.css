@@ -41,7 +41,7 @@
   margin-left: 0.5rem;
 }
 /* Transaction History show-more buttons (yellow arrow, like Activity) */
-#txDepositMoreBtn, #txConsumptionMoreBtn { display: none !important; }
+#txDepositMoreBtn, #txConsumptionMoreBtn { display: none; }
 @media (max-width: 767px) {
   #txDepositMoreBtn, #txConsumptionMoreBtn { display: block; }
 }
@@ -199,3 +199,22 @@
 .activity-icon-gold { background: rgba(244, 180, 0, 0.15); color: #F4B400; }
 .activity-icon-teal { background: rgba(0, 214, 143, 0.15); color: #00D68F; }
 .activity-icon-red { background: rgba(255, 107, 107, 0.1); color: #FF6B6B; }
+
+/* ── Activity desktop: 2-column grid to fill card width ── */
+@media (min-width: 768px) {
+  .dash-activity.activity-scroll {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.75rem;
+    max-height: 480px;
+  }
+  /* Collapse wrapper joins the grid so its rows flow in 2 columns too */
+  .dash-activity.activity-scroll .activity-collapse {
+    display: contents;
+  }
+  /* Desktop shows everything — hide the mobile Show More toggle */
+  #usageActivityMoreBtn { display: none !important; }
+}
+@media (max-width: 767px) {
+  #usageActivityMoreBtn { display: block; }
+}
