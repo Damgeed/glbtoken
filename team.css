@@ -726,15 +726,7 @@ body.drawer-open { overflow: hidden; }
 @media (max-width: 767px) {
   .insight-grid { grid-template-columns: 1fr; gap: 1rem; }
 }
-.insight-block { min-width: 0; }
-@media (min-width: 768px) {
-  .insight-block {
-    border: 1px solid var(--border, #2A2D42);
-    border-radius: 12px;
-    padding: 1rem 1.1rem;
-    background: var(--card, #141624);
-  }
-}
+.insight-block { min-width: 0; border: 1px solid var(--border, #2A2D42); border-radius: 12px; padding: 1rem 1.1rem; background: var(--card, #141624); }
 .insight-lbl {
   font-size: 0.7rem;
   text-transform: uppercase;
