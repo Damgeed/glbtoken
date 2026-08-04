@@ -1735,7 +1735,7 @@ input[type="range"]::-moz-range-thumb {
   top: 6px;
   right: 6px;
   background: rgba(244, 180, 0, 0.12);
-  border: 1px solid rgba(244, 180, 0, 0.3);
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.7rem;
@@ -2651,7 +2651,7 @@ input[type="range"]::-moz-range-thumb {
 .key-copy {
   margin-left: 0.4rem;
   background: rgba(244, 180, 0, 0.12);
-  border: 1px solid rgba(244, 180, 0, 0.3);
+  border: none;
   color: #F4B400;
   border-radius: 6px;
   cursor: pointer;
@@ -5616,7 +5616,7 @@ html.light .star.white {
   padding: 0.35rem 0.85rem;
   border-radius: 6px;
   background: rgba(244, 180, 0, 0.12);
-  border: 1px solid rgba(244, 180, 0, 0.3);
+  border: none;
   color: #F4B400;
   font-size: 0.75rem;
   cursor: pointer;

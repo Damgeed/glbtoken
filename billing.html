@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1188" />
+  <link rel="stylesheet" href="style.css?v=1189" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="billing.css?v=1026" />
   </head>
@@ -152,7 +152,7 @@
       <div class="billing-grid">
         <!-- Payment Methods -->
         <div class="dash-card" id="paymentMethodsCard">
-          <div class="dash-section-title pm-title-row"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Methods</span><button class="btn-primary btn-sm d-none" id="quickRechargeDefault">⚡ Quick Recharge</button></div>
+          <div class="dash-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payment Methods</div>
           <div id="paymentMethodsList">
             <div class="billing-empty-state" id="paymentMethodsEmpty">
               <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
@@ -370,19 +370,6 @@
             '</span>' +
           '</div>';
         }).join('');
-        // Quick Recharge shortcut in the card header — uses the default card (or first card).
-        var quick = document.getElementById('quickRechargeDefault');
-        if(quick){
-          var def = null;
-          for(var i=0;i<cards.length;i++){ if(cards[i].is_default){ def = cards[i]; break; } }
-          if(!def && cards.length){ def = cards[0]; }
-          if(def){
-            quick.classList.remove('d-none');
-            quick.onclick = function(){ quickRecharge(def.id, def.last4); };
-          } else {
-            quick.classList.add('d-none');
-          }
-        }
       }).catch(function(){
         container.innerHTML = '<div class="billing-empty-state"><p><strong>Could not load payment methods</strong></p></div>';
       });

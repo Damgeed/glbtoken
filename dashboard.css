@@ -541,7 +541,7 @@
 }
 .pg-copy-btn {
   background: rgba(244, 180, 0, 0.12);
-  border: 1px solid rgba(244, 180, 0, 0.3);
+  border: none;
   color: #F4B400;
   cursor: pointer;
   padding: 0.2rem 0.35rem;
