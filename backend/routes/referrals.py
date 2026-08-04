@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
-import random, string
+import secrets, string
 from datetime import datetime, timezone, timedelta
 
 from database import get_db, User, Referral, ReferralRedemption, Transaction
@@ -134,9 +134,9 @@ def generate_referral_code(request: Request, user: User = Depends(get_current_us
         db.commit()
         return {"referral_code": existing.code}
     
-    # Generate a unique code
+    # Generate a unique code (CSPRNG — codes must not be predictable)
     for _ in range(10):
-        code = "GLB" + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        code = "GLB" + ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
         if not db.query(Referral).filter(Referral.code == code).first():
             break
     else:

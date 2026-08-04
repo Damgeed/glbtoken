@@ -2,13 +2,13 @@
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 
 from database import get_db, User, ApiKey, Transaction
 from auth import get_current_user, generate_api_key
-from common import _400, _404
+from common import _400, _404, limiter
 from schemas import ApiKeyCreate, ApiKeyUpdate
 
 router = APIRouter()
@@ -41,7 +41,8 @@ def _total_spent_map(db: Session) -> dict:
 
 
 @router.get("/api/keys")
-def list_keys(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def list_keys(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     keys = db.query(ApiKey).filter(ApiKey.user_id == user.id).order_by(desc(ApiKey.created_at)).all()
     spent = _total_spent_map(db)
     return [
@@ -65,7 +66,8 @@ def list_keys(user: User = Depends(get_current_user), db: Session = Depends(get_
 
 
 @router.post("/api/keys")
-def create_key(req: ApiKeyCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     # Limit to 10 active keys
     active_count = db.query(ApiKey).filter(
         ApiKey.user_id == user.id, ApiKey.is_active == True
@@ -95,7 +97,8 @@ def create_key(req: ApiKeyCreate, user: User = Depends(get_current_user), db: Se
 
 
 @router.put("/api/keys/{key_id}")
-def update_key(key_id: int, req: ApiKeyUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("30/minute")
+def update_key(key_id: int, req: ApiKeyUpdate, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     key = db.query(ApiKey).filter(ApiKey.id == key_id, ApiKey.user_id == user.id).first()
     if not key:
         _404("API key not found")
@@ -110,7 +113,8 @@ def update_key(key_id: int, req: ApiKeyUpdate, user: User = Depends(get_current_
 
 
 @router.delete("/api/keys/{key_id}")
-def delete_key(key_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("30/minute")
+def delete_key(key_id: int, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     key = db.query(ApiKey).filter(ApiKey.id == key_id, ApiKey.user_id == user.id).first()
     if not key:
         _404("API key not found")

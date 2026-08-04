@@ -43,14 +43,25 @@ def _auth_response(user, db):
     }
 
 def _client_ip(request: Request) -> str:
-    """Get real client IP, honoring X-Forwarded-For behind Railway proxy."""
+    """Get the REAL client IP.
+
+    uvicorn runs with proxy_headers=True behind the Railway proxy, so
+    request.client.host is already the validated real client IP. We must NOT
+    trust a client-supplied X-Forwarded-For directly — an attacker can spoof
+    it (the audit found signup_ip / login-history IPs were spoofable this way,
+    which bypassed the same-IP referral-farming gate).
+    """
+    if request.client and request.client.host:
+        return request.client.host
+    # Fallback (shouldn't happen with a real connection): rightmost XFF entry
+    # is the one appended closest to us.
     try:
         fwd = request.headers.get("x-forwarded-for", "")
         if fwd:
-            return fwd.split(",")[0].strip()
+            return fwd.split(",")[-1].strip()
     except Exception:
         pass
-    return request.client.host if request.client else ""
+    return ""
 
 
 def record_login_event(user_id: int, request: Request, success: bool, db: Session):
@@ -108,7 +119,9 @@ def _resolve_ref(db, ref):
 async def register(req: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     try:
         if db.query(User).filter(User.email == req.email).first():
-            _400("Email already registered")
+            # Generic message — do not confirm whether an email is registered
+            # (prevents account enumeration via the register endpoint).
+            _400("Registration failed. Please check your details and try again.")
         if len(req.password) < 8:
             _400("Password must be at least 8 characters")
         user = User(
@@ -120,11 +133,15 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             referred_by=_resolve_ref(db, req.ref),
             signup_ip=_client_ip(request),
             referral_source=_clean_src(req.src),
-            is_admin=(db.query(User).count() == 0),  # First user is admin
+            is_admin=False,  # promoted to admin below if id == 1
         )
         db.add(user)
         db.commit()
         db.refresh(user)
+        # Deterministic first-user-admin: id==1 (no check-then-insert race)
+        if user.id == 1:
+            user.is_admin = True
+            db.commit()
     except HTTPException:
         raise
     except Exception as e:
@@ -267,7 +284,7 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         github_user = await verify_github_code(req.code)
     except Exception as e:
         print(f"❌ GitHub login error: {e}")
-        _400(str(e))
+        _400("GitHub login failed. Please try again.")
     info = {
         "sub": github_user.get("id") or "",
         "email": github_user.get("email") or "",
@@ -336,11 +353,15 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
             referred_by=_resolve_ref(db, body.ref),
             signup_ip=_client_ip(request),
             referral_source=_clean_src(body.src),
-            is_admin=(db.query(User).count() == 0),
+            is_admin=False,
         )
         db.add(user)
         db.commit()
         db.refresh(user)
+        # Deterministic first-user-admin: id==1 (no check-then-insert race)
+        if user.id == 1:
+            user.is_admin = True
+            db.commit()
         
         # Sync to New API (non-blocking)
         try:
@@ -412,11 +433,15 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
             password_hash=None,
             token_balance=0,
             email_verified=True,
-            is_admin=(db.query(User).count() == 0),
+            is_admin=False,
         )
         db.add(user)
         db.commit()
         db.refresh(user)
+        # Deterministic first-user-admin: id==1 (no check-then-insert race)
+        if user.id == 1:
+            user.is_admin = True
+            db.commit()
         try:
             newapi_user = await create_newapi_user(email=email, name=user.name, quota=0)
             if newapi_user and isinstance(newapi_user, dict) and newapi_user.get("id"):
@@ -466,6 +491,11 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
         user = db.query(User).filter(User.email == info["email"]).first()
 
     if user:
+        # SECURITY: only link an existing account when the provider has verified
+        # the email. Otherwise an attacker could register the victim's email in
+        # Auth0 (unverified) and take over the victim's GlbTOKEN account.
+        if not info.get("email_verified"):
+            _401("Email verification required to sign in with this account")
         if not user.google_id:
             user.google_id = info["sub"]
         user.email_verified = user.email_verified or info["email_verified"]
@@ -780,31 +810,45 @@ def get_me(user: User = Depends(get_current_user)):
 
 # ── Email Verification ──
 
+# In-memory OTP guess limiter per account (resets when a new code is sent)
+_email_otp_attempts = {}
+
 @router.post("/api/auth/send-verification")
 @limiter.limit("5/minute")
 def send_verification(req: OptionalEmailRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    email = req.email or user.email
+    # Only ever send to the account's OWN email — a logged-in user must not be
+    # able to spam/verify arbitrary addresses.
+    email = user.email
     if not email:
-        _400("Email required")
+        _400("No email on this account")
     otp = str(random.randint(100000, 999999))
     user.email_otp = otp
     user.email_otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
     db.commit()
+    _email_otp_attempts.pop(f"otp:{user.id}", None)
     sent = send_email(email, "Verify your GlbTOKEN email",
         f"Your verification code is: {otp}\n\nIt expires in 10 minutes.\n\n- GlbTOKEN Team")
     return {"status": "sent" if sent else "email_unavailable", "email": email}
 
 
 @router.post("/api/auth/verify-email")
-def verify_email(req: VerifyEmailRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def verify_email(req: VerifyEmailRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     now = datetime.now(timezone.utc)
+    # Cap OTP guesses per account to prevent brute-force of the 6-digit code
+    key = f"otp:{user.id}"
+    attempts = _email_otp_attempts.get(key, 0)
+    if attempts >= 5:
+        _400("Too many attempts. Request a new code.")
     if user.email_otp != req.otp:
+        _email_otp_attempts[key] = attempts + 1
         _400("Invalid OTP")
     if not user.email_otp_expiry or now > user.email_otp_expiry:
         _400("OTP expired")
     user.email_verified = True
     user.email_otp = None
     user.email_otp_expiry = None
+    _email_otp_attempts.pop(key, None)
     db.commit()
     return {"status": "verified"}
 
@@ -911,7 +955,9 @@ def update_profile(req: ProfileUpdateRequest, user: User = Depends(get_current_u
 
 # ── Refresh Token ──
 @router.post("/auth/refresh")
+@limiter.limit("60/minute")
 async def refresh_access_token(
+    request: Request,
     body: dict = Body(...),
     db: Session = Depends(get_db)
 ):
@@ -928,7 +974,8 @@ async def refresh_access_token(
     return {"token": new_access, "refresh_token": new_refresh}
 
 @router.post("/auth/logout")
-async def logout(body: dict = Body(...), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+async def logout(request: Request, body: dict = Body(...), db: Session = Depends(get_db)):
     """Revoke a refresh token server-side (industry-standard logout)."""
     raw = body.get("refresh_token")
     if raw:

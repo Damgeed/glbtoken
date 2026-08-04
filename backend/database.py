@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, JSON, Index
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, JSON, Index, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime, timezone
@@ -178,6 +178,12 @@ class Referral(Base):
 
 class ReferralRedemption(Base):
     __tablename__ = "referral_redemptions"
+    __table_args__ = (
+        # One reward per referred user — the DB-level guard against the
+        # concurrent double-claim race (two paid calls passing the app-level
+        # idempotency check before either INSERT commits).
+        UniqueConstraint("referred_user_id", name="uq_referral_redemption_referred_user"),
+    )
     id = Column(Integer, primary_key=True, index=True)
     referred_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     referrer_code = Column(String, nullable=False)
@@ -217,6 +223,11 @@ class Organization(Base):
 
 class OrgMember(Base):
     __tablename__ = "org_members"
+    __table_args__ = (
+        # A user can only be a member of an org once — prevents duplicate
+        # membership rows from concurrent join/invite races.
+        UniqueConstraint("org_id", "user_id", name="uq_org_member"),
+    )
     id = Column(Integer, primary_key=True, index=True)
     org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)

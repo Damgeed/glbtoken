@@ -248,6 +248,10 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
 
     if req.role not in ("admin", "member"):
         _400("Role must be 'admin' or 'member'")
+    # SECURITY: only the OWNER may grant the admin role. Otherwise any admin can
+    # pack the org with attacker-controlled admins that other admins can't evict.
+    if req.role == "admin" and membership.role != "owner":
+        _403("Only the organization owner can invite admins")
 
     base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
     inviter_name = user.name or user.email or "Someone"

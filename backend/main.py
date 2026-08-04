@@ -113,8 +113,10 @@ async def lifespan(app: FastAPI):
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_id ON transactions (user_id)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_type_created ON transactions (user_id, type, created_at)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_login_events_user_id ON login_events (user_id)"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_referral_redemption_referred_user ON referral_redemptions (referred_user_id)"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_org_member ON org_members (org_id, user_id)"))
             conn.commit()
-            print("✅ Performance indexes ensured (transactions.user_id, transactions(user_id,type,created_at), login_events.user_id)")
+            print("✅ Performance + integrity indexes ensured")
     except Exception as e:
         print(f"⚠️ Index migration error (non-critical): {e}")
     yield
@@ -246,4 +248,7 @@ if __name__ == "__main__":
     import sys
     port = int(os.getenv("PORT", "8000"))
     sys.stdout.flush()
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    # proxy_headers=True: trust X-Forwarded-For from the Railway ingress proxy so
+    # request.client.host (and the slowapi rate limiter) see the REAL client IP.
+    # forwarded_allow_ips="*" is safe here because Railway is the only ingress.
+    uvicorn.run(app, host="0.0.0.0", port=port, proxy_headers=True, forwarded_allow_ips="*")

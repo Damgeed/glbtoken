@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import Optional
+import secrets
 
 from database import get_db, User, Transaction, AIModel
 from auth import get_current_user, get_optional_user
@@ -12,13 +13,17 @@ from schemas import AdminBalanceRequest, SyncUsersRequest
 
 router = APIRouter()
 
+MAX_ADMIN_PAGE_SIZE = 100
+
 
 # ── Admin Endpoints ──
 
 @router.get("/api/admin/users")
-def admin_list_users(page: int = 1, per_page: int = 20, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("30/minute")
+def admin_list_users(request: Request, page: int = 1, per_page: int = 20, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
+    per_page = max(1, min(per_page, MAX_ADMIN_PAGE_SIZE))
     total = db.query(User).count()
     users = db.query(User).order_by(desc(User.created_at)).offset((page-1)*per_page).limit(per_page).all()
     return {
@@ -34,7 +39,8 @@ def admin_list_users(page: int = 1, per_page: int = 20, user: User = Depends(get
 
 
 @router.post("/api/admin/adjust-balance")
-def admin_adjust_balance(req: AdminBalanceRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def admin_adjust_balance(req: AdminBalanceRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
     target = db.query(User).filter(User.id == req.user_id).first()
@@ -52,10 +58,12 @@ def admin_adjust_balance(req: AdminBalanceRequest, user: User = Depends(get_curr
 
 
 @router.get("/api/admin/transactions")
-def admin_transactions(page: int = 1, per_page: int = 20, status_filter: Optional[str] = None,
+@limiter.limit("30/minute")
+def admin_transactions(request: Request, page: int = 1, per_page: int = 20, status_filter: Optional[str] = None,
                        user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
+    per_page = max(1, min(per_page, MAX_ADMIN_PAGE_SIZE))
     q = db.query(Transaction)
     if status_filter: q = q.filter(Transaction.status == status_filter)
     total = q.count()
@@ -123,7 +131,7 @@ async def admin_sync_users(
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
     glbtoken_secret = GLBTOKEN_SECRET
-    if not glbtoken_secret or api_key != glbtoken_secret:
+    if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
         if not user or not user.is_admin:
             _403("Admin access required")
 
@@ -197,7 +205,7 @@ def admin_delete_user(
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
     glbtoken_secret = GLBTOKEN_SECRET
-    if not glbtoken_secret or api_key != glbtoken_secret:
+    if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
         if not user or not user.is_admin:
             _403("Admin access required")
 

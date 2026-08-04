@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import Optional
-import os, json
+import os, json, secrets
 
 from database import get_db, User, AIModel, SessionLocal
 from auth import get_current_user
@@ -179,7 +179,7 @@ def trigger_model_pull(authorization: str = Header(None)):
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
     glbtoken_secret = GLBTOKEN_SECRET
-    if not glbtoken_secret or api_key != glbtoken_secret:
+    if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
         _403("Invalid API key")
     auto_pull_models()
     return {"status": "ok", "message": "Models refreshed from Fallback"}

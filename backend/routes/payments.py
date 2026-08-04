@@ -54,7 +54,8 @@ def list_transactions(
 
 
 @router.post("/api/topup")
-async def topup(req: TopupRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+async def topup(req: TopupRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     # SECURITY: never mint tokens from a bare client amount. A credit is only
     # allowed against a PENDING deposit transaction created by a real payment
     # provider (Stripe/Paystack/crypto). This closes the free-token-mint hole.
@@ -129,7 +130,8 @@ async def topup(req: TopupRequest, user: User = Depends(get_current_user), db: S
 # ── Paystack Payment ──
 
 @router.post("/api/payments/paystack/initialize")
-def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def paystack_initialize(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not PAYSTACK_SECRET_KEY:
         _not_configured("Paystack")
     import httpx
@@ -159,7 +161,8 @@ def paystack_initialize(req: InitiatePaymentRequest, user: User = Depends(get_cu
 
 
 @router.post("/api/payments/paystack/verify")
-def paystack_verify(reference: str = Body(...), user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def paystack_verify(reference: str = Body(...), request: Request = None, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not PAYSTACK_SECRET_KEY:
         _not_configured("Paystack")
     import re
@@ -195,7 +198,8 @@ def paystack_verify(reference: str = Body(...), user: User = Depends(get_current
 # ── Stripe Payment ──
 
 @router.post("/api/payments/stripe/create-checkout")
-def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def stripe_create_checkout(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
     if req.amount < 2 or req.amount > 2000:
@@ -234,7 +238,8 @@ def stripe_create_checkout(req: InitiatePaymentRequest, user: User = Depends(get
 
 
 @router.post("/api/payments/stripe/quick-recharge")
-def stripe_quick_recharge(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """One-click recharge with a saved card (PaymentIntent, off_session)."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
@@ -354,7 +359,8 @@ def get_crypto_addresses(user: User = Depends(get_current_user)):
 
 
 @router.post("/api/payments/crypto/create")
-def create_crypto_payment(req: InitiatePaymentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def create_crypto_payment(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     asset = req.payment_method.upper()  # USDT_TRC20, BTC, ETH
     address = CRYPTO_WALLET_ADDRESSES.get(asset)
     if not address:

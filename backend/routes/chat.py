@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, update
 import json
 
 from database import get_db, User, AIModel, Conversation, Transaction
@@ -14,15 +14,36 @@ from schemas import ProxyChatRequest, PlaygroundChatRequest, SaveConversationReq
 
 router = APIRouter()
 
+# Hard cap on output tokens forwarded to the provider. The pre-flight estimate
+# is based on this cap, so unbounded max_tokens would let a caller burn far more
+# than the estimate while the (atomic) deduction only covers what was billed.
+MAX_OUTPUT_TOKENS = 4096
+
+
+def _atomic_deduct(db: Session, user: User, cost: int):
+    """Atomically deduct `cost` tokens — fails (rowcount 0) when balance < cost,
+    even under concurrent requests. Prevents negative balance / free usage."""
+    res = db.execute(
+        update(User)
+        .where(User.id == user.id, User.token_balance >= cost)
+        .values(token_balance=User.token_balance - cost)
+    )
+    if res.rowcount == 0:
+        db.rollback()
+        _402("Insufficient balance")
+    db.refresh(user)
+
 
 # ── API Proxy (via New API) ──
 
 @router.post("/api/proxy/chat")
+@limiter.limit("30/minute")
 async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Estimate cost
+    # Estimate cost (capped output — matches what we forward)
     input_chars = sum(len(m.get("content", "")) for m in req.messages)
     input_tokens = max(1, input_chars // 4)
-    output_tokens = min(req.max_tokens, 4096)
+    max_out = min(req.max_tokens or MAX_OUTPUT_TOKENS, MAX_OUTPUT_TOKENS)
+    output_tokens = max_out
     cost_tokens = int((input_tokens + output_tokens) * 0.002)  # ~$0.002/1K tokens
     if user.token_balance < cost_tokens:
         _402(f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
@@ -61,7 +82,7 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
             json={
                 "model": req.model,
                 "messages": req.messages,
-                "max_tokens": req.max_tokens,
+                "max_tokens": max_out,
                 "temperature": req.temperature,
             },
         )
@@ -74,7 +95,8 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
     usage = result.get("usage") or {}
     real_tokens = int(usage.get("total_tokens") or 0)
     actual_tokens_cost = max(1, real_tokens or cost_tokens)
-    user.token_balance -= actual_tokens_cost
+    # Atomic decrement — cannot go negative even under concurrency
+    _atomic_deduct(db, user, actual_tokens_cost)
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
         payment_method="api_proxy", model_used=req.model,
@@ -132,10 +154,11 @@ def get_playground_models(request: Request, user: User = Depends(get_current_use
 async def playground_chat(req: PlaygroundChatRequest, request: Request,
                           user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Similar to proxy/chat but with additional parameters."""
-    # Estimate cost
+    # Estimate cost (capped output — matches what we forward)
     input_chars = sum(len(m.get("content", "")) for m in req.messages)
     input_tokens = max(1, input_chars // 4)
-    output_tokens = min(req.max_tokens, 4096)
+    max_out = min(req.max_tokens or MAX_OUTPUT_TOKENS, MAX_OUTPUT_TOKENS)
+    output_tokens = max_out
     cost_tokens = int((input_tokens + output_tokens) * 0.002)
     
     if user.token_balance < cost_tokens:
@@ -168,7 +191,7 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     payload = {
         "model": req.model,
         "messages": req.messages,
-        "max_tokens": req.max_tokens,
+        "max_tokens": max_out,
         "temperature": req.temperature,
         "top_p": req.top_p,
         "frequency_penalty": req.frequency_penalty,
@@ -187,7 +210,8 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     usage = result.get("usage") or {}
     real_tokens = int(usage.get("total_tokens") or 0)
     actual_tokens_cost = max(1, real_tokens or cost_tokens)
-    user.token_balance -= actual_tokens_cost
+    # Atomic decrement — cannot go negative even under concurrency
+    _atomic_deduct(db, user, actual_tokens_cost)
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
         payment_method="playground", model_used=req.model,
