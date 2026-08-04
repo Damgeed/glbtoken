@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1183" />
+  <link rel="stylesheet" href="style.css?v=1184" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1023" />
   </head>
@@ -118,6 +118,16 @@
         </div>
       </div>
 
+      <!-- ── Time range switcher (affects all analytics cards below) ── -->
+      <div class="logs-toolbar">
+        <span class="logs-toolbar-label">Range</span>
+        <div class="logs-range-wrap" id="logsRangeBtns">
+          <button class="sort-btn usage-range active badge" data-days="7" onclick="setLogsRange(7)">7d</button>
+          <button class="sort-btn usage-range badge" data-days="30" onclick="setLogsRange(30)">30d</button>
+          <button class="sort-btn usage-range badge" data-days="90" onclick="setLogsRange(90)">90d</button>
+        </div>
+      </div>
+
       <!-- ── ADMIN LOGS: Cost, Errors, Response Time, Speed (2x2 grid) ── -->
       <div class="logs-grid">
 
@@ -166,11 +176,11 @@
       <div class="dash-card" id="dashCostProjection">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          Cost Projection <span class="label-muted-sm">30-day forecast</span>
+          Cost Projection <span class="label-muted-sm">Period forecast</span>
         </div>
         <div class="stat-cards">
-          <div class="dash-stat-card"><div class="num" id="cpProjected">$0.00</div><div class="lbl">Projected This Month</div><div class="chg text-muted">Based on last 30 days</div></div>
-          <div class="dash-stat-card"><div class="num" id="cpActual">$0.00</div><div class="lbl">Actual (30d)</div><div class="chg text-muted">Real spend</div></div>
+          <div class="dash-stat-card"><div class="num" id="cpProjected">$0.00</div><div class="lbl">Projected This Month</div><div class="chg text-muted" id="cpProjectedChg">Based on last 7 days</div></div>
+          <div class="dash-stat-card"><div class="num" id="cpActual">$0.00</div><div class="lbl" id="cpActualLbl">Actual (7d)</div><div class="chg text-muted">Real spend</div></div>
           <div class="dash-stat-card"><div class="num" id="cpAvgDaily">$0.00</div><div class="lbl">Avg / Day</div><div class="chg text-muted">Daily pace</div></div>
         </div>
       </div>
@@ -191,9 +201,19 @@
       </div>
 
       <div class="dash-card" id="dashRequestLogs">
-        <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Request Logs <span class="label-muted-sm">Click a row for details</span>
+        <div class="dash-section-title logs-title-row">
+          <span class="logs-title-main">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Request Logs <span class="label-muted-sm">Click a row for details</span>
+          </span>
+          <div class="logs-filter-wrap">
+            <div class="logs-status-filter" id="logsStatusBtns">
+              <button class="sort-btn badge active" data-status="all" onclick="setLogsStatus('all')">All</button>
+              <button class="sort-btn badge" data-status="success" onclick="setLogsStatus('success')">Success</button>
+              <button class="sort-btn badge" data-status="errors" onclick="setLogsStatus('errors')">Errors</button>
+            </div>
+            <button class="btn-secondary btn-copy" onclick="exportLogsCsv()" title="Export current page as CSV">⬇ CSV</button>
+          </div>
         </div>
         <div class="overflow-auto">
           <table class="tx-table" id="requestLogTable">
@@ -253,6 +273,21 @@
 <!-- ── Logs Script ── -->
 <script>
 /* ── Logs Page Script ── */
+
+// Active time range (days) for all analytics cards below.
+var logsRange = 7;
+
+function setLogsRange(days){
+  logsRange = days;
+  document.querySelectorAll('#logsRangeBtns .usage-range').forEach(function(b){
+    b.classList.toggle('active', parseInt(b.getAttribute('data-days')) === days);
+  });
+  loadCostBreakdown(days);
+  loadErrorRate(days);
+  loadResponseTimes(days);
+  loadCostProjection(days);
+  loadKeyUsage(days);
+}
 
 async function loadCostBreakdown(days){
   try{
@@ -357,18 +392,13 @@ async function loadResponseTimes(days){
   }
 }
 
-async function loadSpeedComparison(){
-  // Removed — Model Speed Comparison was a price-proxy for speed, not real log
-  // data. Replaced by Request Logs (real per-call records), Cost Projection and
-  // API Key Usage below.
-}
-
-// ── Cost Projection (30-day forecast) ──
-async function loadCostProjection(){
+// ── Cost Projection (forecast over the active range) ──
+async function loadCostProjection(days){
   try{
     var el=document.getElementById('cpProjected');
     if(!el)return;
-    var data=await safeApi('GET','/api/analytics/cost-projection?days=30');
+    var d=days||30;
+    var data=await safeApi('GET','/api/analytics/cost-projection?days='+d);
     if(!data){
       document.getElementById('cpProjected').textContent='—';
       document.getElementById('cpActual').textContent='—';
@@ -376,24 +406,28 @@ async function loadCostProjection(){
       return;
     }
     var projected=(data.projected_monthly||0);
-    var actual=(data.last_30_days_cost||0);
+    var actual=(data.last_30_days_cost!==undefined?data.last_30_days_cost:(data.period_cost||data.actual_cost||0));
     var avgDaily=(data.daily_avg||0);
     document.getElementById('cpProjected').textContent='$'+projected.toFixed(2);
     document.getElementById('cpActual').textContent='$'+actual.toFixed(2);
     document.getElementById('cpAvgDaily').textContent='$'+avgDaily.toFixed(2);
+    var lbl=document.getElementById('cpActualLbl');
+    if(lbl)lbl.textContent='Actual ('+d+'d)';
+    var chg=document.getElementById('cpProjectedChg');
+    if(chg)chg.textContent='Based on last '+d+' days';
   }catch(e){
     showToast('Failed to load cost projection','error');
   }
 }
 
 // ── API Key Usage ──
-async function loadKeyUsage(){
+async function loadKeyUsage(days){
   try{
     var body=document.getElementById('keyUsageBody');
     if(!body)return;
     clearTableCollapse('keyUsageCollapse','keyUsageMoreBtn');
     body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
-    var data=await safeApi('GET','/api/analytics/key-usage?days=30');
+    var data=await safeApi('GET','/api/analytics/key-usage?days='+(days||30));
     var items=Array.isArray(data)?data:((data&&data.keys)||(data&&data.items)||[]);
     if(!items.length){
       body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No key usage data available.</td></tr>';
@@ -412,6 +446,61 @@ async function loadKeyUsage(){
 var logsCurrentPage=1;
 var logsTotal=0;
 var logsPageSize=20;
+var logsCurrentItems=[];
+var logsStatusFilter='all';
+
+function logsStatusOf(l){
+  return Number(l.status_code||l.status||200);
+}
+
+function logsStatusMatch(l){
+  var s=logsStatusOf(l);
+  if(logsStatusFilter==='success')return s<400;
+  if(logsStatusFilter==='errors')return s>=400;
+  return true;
+}
+
+function setLogsStatus(f){
+  logsStatusFilter=f;
+  document.querySelectorAll('#logsStatusBtns .sort-btn').forEach(function(b){
+    b.classList.toggle('active',b.getAttribute('data-status')===f);
+  });
+  renderRequestLogRows();
+}
+
+function renderRequestLogRows(){
+  var body=document.getElementById('requestLogBody');
+  if(!body)return;
+  var items=logsCurrentItems.filter(logsStatusMatch);
+  if(!items.length){
+    body.innerHTML='<tr><td colspan="5" class="empty-state-sm">'
+      +(logsStatusFilter==='all'
+        ?'No request logs yet. Make an API call to see it here.'
+        :'No '+(logsStatusFilter==='success'?'successful':'error')+' requests on this page.')
+      +'</td></tr>';
+    return;
+  }
+  body.innerHTML=items.map(function(l){
+    var model=l.model||l.model_name||l.model_id||'Unknown';
+    var tokens=(l.tokens||l.total_tokens||0);
+    var cost=(l.cost||l.amount||0);
+    var status=logsStatusOf(l);
+    var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
+    var time=l.created_at||l.time||'';
+    var logId=l.id||'';
+    return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'" title="Status '+status+' — click for details">'
+      + '<td class="td-date">'+escapeHtml(time)+'</td>'
+      + '<td>'+escapeHtml(model)+'</td>'
+      + '<td>'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens))+ '</td>'
+      + '<td class="gold">$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
+      + '<td><span class="status-badge '+statusCls+'">'+escapeHtml(String(status))+'</span></td>'
+      + '</tr>';
+  }).join('');
+  // attach click → detail drawer
+  body.querySelectorAll('.log-row').forEach(function(tr){
+    tr.addEventListener('click', function(){ openLogDetail(tr.getAttribute('data-logid')); });
+  });
+}
 
 async function loadRequestLogs(page){
   try{
@@ -420,38 +509,19 @@ async function loadRequestLogs(page){
     logsCurrentPage=page||1;
     body.innerHTML='<tr><td colspan="5" class="empty-state-sm">Loading...</td></tr>';
     var data=await safeApi('GET','/api/logs?page='+logsCurrentPage+'&page_size='+logsPageSize);
-    var items=(data&&data.items)||[];
+    logsCurrentItems=(data&&data.items)||[];
     logsTotal=(data&&data.total)||0;
-    if(!items.length){
+    if(!logsCurrentItems.length){
       body.innerHTML='<tr><td colspan="5" class="empty-state-sm">No request logs yet. Make an API call to see it here.</td></tr>';
       var pg=document.getElementById('logsPager');
       if(pg)pg.style.display='none';
       return;
     }
-    body.innerHTML=items.map(function(l){
-      var model=l.model||l.model_name||l.model_id||'Unknown';
-      var tokens=(l.tokens||l.total_tokens||0);
-      var cost=(l.cost||l.amount||0);
-      var status=l.status_code||l.status||200;
-      var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
-      var time=l.created_at||l.time||'';
-      var logId=l.id||'';
-      return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'">'
-        + '<td class="td-date">'+escapeHtml(time)+'</td>'
-        + '<td>'+escapeHtml(model)+'</td>'
-        + '<td>'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens))+ '</td>'
-        + '<td class="gold">$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
-        + '<td><span class="status-badge '+statusCls+'">'+escapeHtml(String(status))+'</span></td>'
-        + '</tr>';
-    }).join('');
-    // attach click → detail drawer
-    body.querySelectorAll('.log-row').forEach(function(tr){
-      tr.addEventListener('click', function(){ openLogDetail(tr.getAttribute('data-logid')); });
-    });
-    var pg=document.getElementById('logsPager');
-    if(pg){
+    renderRequestLogRows();
+    var pg2=document.getElementById('logsPager');
+    if(pg2){
       var totalPages=Math.max(1,Math.ceil(logsTotal/logsPageSize));
-      pg.style.display='flex';
+      pg2.style.display='flex';
       document.getElementById('logsPagerInfo').textContent='Page '+logsCurrentPage+' of '+totalPages;
       document.getElementById('logsPrevBtn').disabled=(logsCurrentPage<=1);
       document.getElementById('logsNextBtn').disabled=(logsCurrentPage>=totalPages);
@@ -466,6 +536,34 @@ function logsPage(dir){
   var next=logsCurrentPage+dir;
   if(next<1)return;
   loadRequestLogs(next);
+}
+
+// ── Export the currently loaded (filtered) log rows as CSV ──
+function exportLogsCsv(){
+  var items=logsCurrentItems.filter(logsStatusMatch);
+  if(!items.length){ showToast('No logs to export','error'); return; }
+  var rows=[['Time','Model','Tokens','Cost','Status']];
+  items.forEach(function(l){
+    var model=l.model||l.model_name||l.model_id||'Unknown';
+    var tokens=(l.tokens||l.total_tokens||0);
+    var cost=(l.cost||l.amount||0);
+    var status=logsStatusOf(l);
+    rows.push([l.created_at||l.time||'',model,tokens,cost,status]);
+  });
+  var csv=rows.map(function(r){
+    return r.map(function(c){
+      var s=String(c==null?'':c);
+      return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+    }).join(',');
+  }).join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='request-logs.csv';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },100);
+  showToast('Logs exported','success');
 }
 
 // ── Log Detail Drawer (prompt + completion via /api/logs/content) ──
@@ -503,11 +601,11 @@ function closeLogDetail(){
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-  loadCostBreakdown();
-  loadErrorRate();
-  loadResponseTimes();
-  loadCostProjection();
-  loadKeyUsage();
+  loadCostBreakdown(logsRange);
+  loadErrorRate(logsRange);
+  loadResponseTimes(logsRange);
+  loadCostProjection(logsRange);
+  loadKeyUsage(logsRange);
   loadRequestLogs(1);
 });
 </script>
