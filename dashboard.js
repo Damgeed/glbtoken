@@ -368,6 +368,17 @@ async function renderSpendingDonut(days){
 }
 
 // ── Activity feed (real — /api/dashboard recent_activity, keeps demo structure) ──
+function fmtActivityTime(iso){
+  if(!iso) return '<strong>—</strong>';
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+  var h = d.getHours()%12||12;
+  var m = ('0'+d.getMinutes()).slice(-2);
+  var ap = d.getHours()>=12?'PM':'AM';
+  return '<strong>'+dateStr+'</strong> '+h+':'+m+' '+ap;
+}
 async function loadActivityFeed(){
   var container = document.getElementById('dashActivity');
   if(!container) return;
@@ -381,13 +392,13 @@ async function loadActivityFeed(){
     key:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>',
     alert:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
   };
-  function itemHtml(type, desc, time){
+  function itemHtml(type, desc, time, amtHtml){
     var icon, iconCls;
     if(type==='topup' || type==='deposit'){ icon=SVGS.money; iconCls='activity-icon activity-icon-teal'; }
     else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=SVGS.key; iconCls='activity-icon activity-icon-gold'; }
     else if(type==='consumption'){ icon=SVGS.alert; iconCls='activity-icon activity-icon-red'; }
     else { icon=SVGS.code; iconCls='color-dot-blue'; }
-    return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div></div>';
+    return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div>'+(amtHtml?'<div class="activity-amt">'+amtHtml+'</div>':'')+'</div>';
   }
   if(!items.length){
     if(countEl) countEl.textContent = '0 events';
@@ -397,12 +408,15 @@ async function loadActivityFeed(){
   if(countEl) countEl.textContent = items.length + ' events';
   var activityCards = items.slice(0,8).map(function(a){
     var type = a.type||'';
-    var time = timeAgo(a.created_at);
+    var time = fmtActivityTime(a.created_at);
     var desc;
     if(type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+escapeHtml(a.payment_method||'payment'); }
     else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call — '+(a.tokens||0).toLocaleString()+' tokens'; }
     else { desc = escapeHtml(a.model||a.payment_method||a.type||'Activity'); }
-    return itemHtml(type, desc, time);
+    var amtHtml = '';
+    if(type==='deposit'){ amtHtml = '<span class="amt-pos">+$'+(Number(a.amount)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'; }
+    else if(type==='consumption'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
+    return itemHtml(type, desc, time, amtHtml);
   });
   // Mobile: first 3 visible, rest behind a Show-More toggle (desktop shows all 8)
   var actFirst = activityCards.slice(0,3).join('');

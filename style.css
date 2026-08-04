@@ -6002,6 +6002,21 @@ body {
   margin-left: auto;
   white-space: nowrap;
 }
+/* Activity card right-side amount */
+.activity-amt {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.activity-amt .amt-pos { color: var(--success); }
+.activity-amt .amt-neg { color: var(--destructive); }
+/* Activity card date bold + time normal */
+.dash-activity .activity-item .text-micro-top strong {
+  font-weight: 700;
+  color: var(--text);
+}
 
 /* 📱 dashboard sidebar + section-title/sub/label mobile overrides */
 /* Mobile responsive */

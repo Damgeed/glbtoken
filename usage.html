@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1192" />
+  <link rel="stylesheet" href="style.css?v=1193" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1028" />
+<link rel="stylesheet" href="usage.css?v=1029" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -145,17 +145,13 @@
           <button class="tx-tab active tx-tab-btn" onclick="switchTxTab(this,'deposits')">Deposits</button>
           <button class="tx-tab tx-tab-btn" onclick="switchTxTab(this,'consumption')">Consumption</button>
         </div>
-        <div class="scroll-x">
-          <table class="tx-table" id="txDeposits">
-            <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Tokens</th><th>Status</th></tr></thead>
-            <tbody id="txDepositBody"><tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr></tbody>
-            <tbody class="tx-collapse" id="txDepositCollapse"></tbody>
-          </table>
-          <table class="tx-table d-none" id="txConsumption">
-            <thead><tr><th>Date</th><th>Model</th><th>Tokens</th><th>Type</th></tr></thead>
-            <tbody id="txConsumptionBody"><tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr></tbody>
-            <tbody class="tx-collapse" id="txConsumptionCollapse"></tbody>
-          </table>
+        <div id="txDeposits" class="tx-list">
+          <div id="txDepositBody"></div>
+          <div class="tx-list-collapse" id="txDepositCollapse"></div>
+        </div>
+        <div id="txConsumption" class="tx-list d-none">
+          <div id="txConsumptionBody"></div>
+          <div class="tx-list-collapse" id="txConsumptionCollapse"></div>
         </div>
         <button class="list-more-btn" id="txDepositMoreBtn" onclick="toggleTxMore(this,'txDepositCollapse')" style="display:none">Show More ▼</button>
         <button class="list-more-btn" id="txConsumptionMoreBtn" onclick="toggleTxMore(this,'txConsumptionCollapse')" style="display:none">Show More ▼</button>
@@ -321,7 +317,7 @@
 <script data-cfasync="false" src="shared.js?v=1132"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
-<script data-cfasync="false" src="filters.js?v=1126"></script>
+<script data-cfasync="false" src="filters.js?v=1127"></script>
 
 <!-- ── Usage Script ── -->
 <script>
@@ -332,6 +328,17 @@ var loadedCount = 0;
 var backupMoreData = []; // saved before load for Show Less
 
 // ── Activity feed (real — /api/activity) ──
+function fmtActivityTime(iso){
+  if(!iso) return '<strong>—</strong>';
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+  var h = d.getHours()%12||12;
+  var m = ('0'+d.getMinutes()).slice(-2);
+  var ap = d.getHours()>=12?'PM':'AM';
+  return '<strong>'+dateStr+'</strong> '+h+':'+m+' '+ap;
+}
 function loadUsageActivity(){
   var container = document.getElementById('usageActivityList');
   var countEl = document.getElementById('usageActivityCount');
@@ -342,13 +349,13 @@ function loadUsageActivity(){
     key:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>',
     alert:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
   };
-  function itemHtml(type, desc, time){
+  function itemHtml(type, desc, time, amtHtml){
     var icon, iconCls;
     if(type==='topup' || type==='deposit'){ icon=SVGS.money; iconCls='activity-icon activity-icon-teal'; }
     else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=SVGS.key; iconCls='activity-icon activity-icon-gold'; }
     else if(type==='consumption'){ icon=SVGS.alert; iconCls='activity-icon activity-icon-red'; }
     else { icon=SVGS.code; iconCls='color-dot-blue'; }
-    return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div></div>';
+    return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div>'+(amtHtml?'<div class="activity-amt">'+amtHtml+'</div>':'')+'</div>';
   }
   safeApi('GET','/api/activity',null,null,true).then(function(d){
     var items = (d && d.items) || [];
@@ -359,13 +366,16 @@ function loadUsageActivity(){
     }
     var cards = items.map(function(a){
       var type = a.type || '';
-      var time = (typeof timeAgo === 'function') ? timeAgo(a.created_at) : escapeHtml((a.created_at || '').substring(0,16));
+      var time = fmtActivityTime(a.created_at);
       var desc;
       if(type==='topup' || type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+escapeHtml(a.payment_method||'payment'); }
       else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call — '+(a.tokens||0).toLocaleString()+' tokens'; }
       else if(type==='api_call'){ desc = 'API call to '+escapeHtml(a.model||'unknown'); }
       else { desc = escapeHtml(a.model||a.payment_method||a.type||'Activity'); }
-      return itemHtml(type, desc, time);
+      var amtHtml = '';
+      if(type==='topup' || type==='deposit'){ amtHtml = '<span class="amt-pos">+$'+(Number(a.amount)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'; }
+      else if(type==='consumption' || type==='api_call'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
+      return itemHtml(type, desc, time, amtHtml);
     });
     var first = cards.slice(0,3).join('');
     var rest = cards.slice(3);

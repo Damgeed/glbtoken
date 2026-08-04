@@ -562,13 +562,43 @@
 
 
     // ── Transactions ──
-    function txDepositRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>$'+escapeHtml(t.amount.toFixed(2))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
+    var TX_SVGS = {
+      money:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
+      bolt:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'
+    };
+    function fmtActivityTime(iso){
+      if(!iso) return '<strong>—</strong>';
+      var d = new Date(iso);
+      if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
+      var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+      var h = d.getHours()%12||12;
+      var m = ('0'+d.getMinutes()).slice(-2);
+      var ap = d.getHours()>=12?'PM':'AM';
+      return '<strong>'+dateStr+'</strong> '+h+':'+m+' '+ap;
     }
-    function txConsumptionRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
+    function txDepositCard(t){
+      var sym = (t.currency||'USD')==='NGN' ? 'NGN ' : '$';
+      var amt = sym+(Number(t.amount)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      var timeHtml = fmtActivityTime(t.created_at);
+      var status = String(t.status||'completed').toLowerCase();
+      var statusColor = (status==='failed'||status==='cancelled') ? 'var(--destructive)' : 'var(--success)';
+      return '<div class="tx-card">'
+        +'<div class="activity-icon activity-icon-teal">'+TX_SVGS.money+'</div>'
+        +'<div class="flex-grow"><div class="text-desc">'+escapeHtml(String(t.payment_method||'Payment').replace(/_/g,' '))+'</div><div class="text-micro-top">'+timeHtml+'</div></div>'
+        +'<div class="tx-card-right"><div class="tx-card-amt gold">+'+amt+'</div><div class="tx-card-status" style="color:'+statusColor+'">'+escapeHtml(status)+'</div></div>'
+        +'</div>';
     }
-    // Render first 5 rows, hide the rest behind a yellow Show More toggle (like Activity)
+    function txConsumptionCard(t){
+      var toks = '-'+(Number(t.tokens)||0).toLocaleString();
+      var timeHtml = fmtActivityTime(t.created_at);
+      return '<div class="tx-card">'
+        +'<div class="activity-icon activity-icon-red">'+TX_SVGS.bolt+'</div>'
+        +'<div class="flex-grow"><div class="text-desc">'+escapeHtml(t.model_used||'AI model')+'</div><div class="text-micro-top">'+timeHtml+'</div></div>'
+        +'<div class="tx-card-right"><div class="tx-card-amt red">'+toks+' tokens</div></div>'
+        +'</div>';
+    }
+    // Render first 5 cards, hide the rest behind a yellow Show More toggle (like Activity)
     function renderTxRows(firstBodyId, collapseBodyId, btnId, rows, rowFn, emptyHtml){
       var firstBody=document.getElementById(firstBodyId);
       var collapseBody=document.getElementById(collapseBodyId);
@@ -598,8 +628,8 @@
       const d=await safeApi('GET','/api/transactions?limit=50',null,null,true); if(!d)return;
         const dep=d.items.filter(t=>t.type==='deposit');
         const con=d.items.filter(t=>t.type==='consumption');
-        renderTxRows('txDepositBody','txDepositCollapse','txDepositMoreBtn',dep,txDepositRow,'<tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr>');
-        renderTxRows('txConsumptionBody','txConsumptionCollapse','txConsumptionMoreBtn',con,txConsumptionRow,'<tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr>');
+        renderTxRows('txDepositBody','txDepositCollapse','txDepositMoreBtn',dep,txDepositCard,'<div class="tx-empty">No deposits</div>');
+        renderTxRows('txConsumptionBody','txConsumptionCollapse','txConsumptionMoreBtn',con,txConsumptionCard,'<div class="tx-empty">No consumption</div>');
     }
     function toggleTxMore(btn, collapseId){
       var c=document.getElementById(collapseId);
