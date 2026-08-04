@@ -191,6 +191,7 @@
         
           <div class="flex gap-sm mt-sm flex-wrap">
             <button class="btn-primary btn-sm" onclick="window.location.href='topup.html'">+ Top Up Now</button>
+            <button class="btn-secondary btn-sm" onclick="downloadStatementPdf()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> All PDF</button>
             <button class="btn-secondary btn-sm" onclick="loadBillingPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Refresh</button>
           </div>
         </div>
@@ -419,6 +420,31 @@
       });
     };
 
+    window.downloadStatementPdf = function(){
+      fetch(API_URL + '/api/billing/statement',{
+        method:'GET',
+        headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/pdf'}
+      })
+      .then(function(r){
+        if(!r.ok) throw new Error('Download failed');
+        return r.blob();
+      })
+      .then(function(blob){
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'glbtoken-statement.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('Statement downloaded','success');
+      })
+      .catch(function(){
+        showToast('Could not download statement','error');
+      });
+    };
+
     // If Stripe redirected back after saving a card, confirm and refresh the list.
     (function handleCardCallback(){
       try{
@@ -470,9 +496,9 @@
         '</div>' +
         '<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1rem;line-height:1.5">Recharge with card <strong style="color:'+textClr+'">•••• '+escapeHtml(last4||'')+'</strong> — instant credit.</p>' +
         '<div id="qrAmounts" class="qr-amounts"></div>' +
-        '<div style="display:flex;gap:8px;margin-bottom:1rem">' +
-          '<span style="color:'+muted+';font-size:1rem;padding-top:8px">$</span>' +
-          '<input id="qrCustom" type="number" min="1" step="1" placeholder="Custom amount" style="flex:1;background:rgba(244,180,0,0.06);border:1px solid '+border+';border-radius:10px;padding:0.6rem 0.75rem;color:'+textClr+';font-size:0.95rem;outline:none" />' +
+        '<div style="position:relative;margin-bottom:1rem">' +
+          '<span style="position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);color:'+muted+';font-size:1rem;pointer-events:none;z-index:1">$</span>' +
+          '<input id="qrCustom" type="number" min="1" step="1" placeholder="Custom amount" style="width:100%;box-sizing:border-box;background:rgba(244,180,0,0.06);border:1px solid '+border+';border-radius:10px;padding:0.75rem 0.85rem 0.75rem 1.9rem;color:'+textClr+';font-size:1rem;outline:none" />' +
         '</div>' +
         '<div style="display:flex;gap:8px">' +
           '<button id="qrCancel" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+muted+';font-size:0.9rem;font-weight:600;cursor:pointer">Cancel</button>' +

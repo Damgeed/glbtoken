@@ -438,6 +438,134 @@ def invoice_pdf(invoice_id: int, user: User = Depends(get_current_user), db: Ses
     )
 
 
+@router.get("/api/billing/statement")
+def billing_statement(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Download a combined PDF statement of ALL the user's deposit invoices."""
+    txs = db.query(Transaction).filter(
+        Transaction.user_id == user.id,
+        Transaction.type == "deposit",
+    ).order_by(desc(Transaction.created_at)).all()
+    if not txs:
+        _404("No invoices to export")
+    pdf = _make_statement_pdf(txs, user)
+    filename = "glbtoken-statement.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+def _build_pdf(pages):
+    """Build a PDF from a list of content-stream strings (one per page)."""
+    n = len(pages)
+    f1_num = 3 + 2 * n
+    f2_num = f1_num + 1
+    kids = b" ".join(b"%d 0 R" % (3 + 2 * i) for i in range(n))
+    objs = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [" + kids + b"] /Count %d >>" % n,
+    ]
+    for i, content in enumerate(pages):
+        page_num = 3 + 2 * i
+        content_num = page_num + 1
+        data = content.encode("latin-1", "replace")
+        objs.append(
+            b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+            b"/Resources << /Font << /F1 %d 0 R /F2 %d 0 R >> >> /Contents %d 0 R >>"
+            % (f1_num, f2_num, content_num)
+        )
+        objs.append(b"<< /Length %d >>\nstream\n" % len(data) + data + b"\nendstream")
+    objs.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>")
+    objs.append(b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>")
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for i, obj in enumerate(objs, 1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % i
+        out += obj + b"\nendobj\n"
+    xref_pos = len(out)
+    m = len(objs) + 1
+    out += b"xref\n0 %d\n" % m
+    out += b"0000000000 65535 f \n"
+    for off in offsets:
+        out += b"%010d 00000 n \n" % off
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (m, xref_pos)
+    return bytes(out)
+
+
+def _make_statement_pdf(txs, user):
+    """Generate a combined multi-page statement PDF (stdlib only)."""
+    name = (user.name or "").strip() or "GlbTOKEN Customer"
+    email = (user.email or "").strip()
+    total_amount = sum(float(t.amount or 0) for t in txs)
+    total_tokens = sum(int(t.tokens or 0) for t in txs)
+
+    def esc(s):
+        return str(s).replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+    def width_est(s, size):
+        return len(s) * size * 0.5
+
+    rows_per_page = 25
+    total_pages = max(1, (len(txs) + rows_per_page - 1) // rows_per_page)
+    pages = []
+    for p in range(total_pages):
+        ops = []
+
+        def text(x, y, s, font="F1", size=10, color="0 0 0"):
+            ops.append(f"BT /{font} {size} Tf {color} rg {x:.1f} {y:.1f} Td ({esc(s)}) Tj ET")
+
+        ops.append("q 0.957 0.706 0 rg 50 742 512 3 re f Q")
+        text(50, 700, "GlbTOKEN", "F2", 22)
+        text(50, 680, "PAYMENT STATEMENT", "F2", 12, "0.71 0.47 0.02")
+        ops.append("q 0.85 0.85 0.88 rg 50 668 512 0.8 re f Q")
+        text(50, 648, f"Billed to: {name}" + (f"  ({email})" if email else ""))
+        text(50, 634, f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y')}  |  {len(txs)} payment(s)")
+        # Table header
+        text(50, 600, "#", "F2", 9)
+        text(80, 600, "Date", "F2", 9)
+        text(165, 600, "Description", "F2", 9)
+        text(390, 600, "Tokens", "F2", 9)
+        text(470, 600, "Status", "F2", 9)
+        text(512, 600, "Amount", "F2", 9)
+        ops.append("q 0.85 0.85 0.88 rg 50 592 512 0.8 re f Q")
+        start = p * rows_per_page
+        chunk = txs[start:start + rows_per_page]
+        y = 574
+        for i, t in enumerate(chunk):
+            sym = "NGN " if (t.currency or "USD") == "NGN" else "$"
+            created = t.created_at or datetime.now(timezone.utc)
+            if created.tzinfo is None:
+                created = created.replace(tzinfo=timezone.utc)
+            date_str = created.strftime("%Y-%m-%d")
+            method = (t.payment_method or "-").title()
+            status = (t.status or "completed").title()
+            amt = f"{sym}{float(t.amount or 0):,.2f}"
+            toks = f"{int(t.tokens or 0):,}"
+            text(50, y, str(start + i + 1), "F1", 9)
+            text(80, y, date_str, "F1", 9)
+            text(165, y, f"{method} #{t.id}", "F1", 9)
+            text(390 - width_est(toks, 9), y, toks, "F1", 9)
+            text(470 - width_est(status, 9), y, status, "F1", 9)
+            text(512 - width_est(amt, 9), y, amt, "F1", 9)
+            y -= 18
+        # TOTAL row on last page
+        if p == total_pages - 1:
+            amt_total = f"${total_amount:,.2f}"
+            toks_total = f"{int(total_tokens):,}"
+            ops.append("q 0.957 0.706 0 rg 50 126 512 0.8 re f Q")
+            text(50, 108, "TOTAL", "F2", 11)
+            text(390 - width_est(toks_total, 11), 108, toks_total, "F2", 11)
+            text(512 - width_est(amt_total, 11), 108, amt_total, "F2", 11)
+        # Footer
+        ops.append("q 0.85 0.85 0.88 rg 50 90 512 0.8 re f Q")
+        text(50, 70, f"Page {p + 1} of {total_pages}", "F1", 9, "0.45 0.45 0.5")
+        text(50, 54, "Generated by GlbTOKEN - glbtoken.com", "F1", 8, "0.6 0.6 0.65")
+        pages.append("\n".join(ops))
+    return _build_pdf(pages)
+
+
 def _make_invoice_pdf(tx, user):
     """Generate a minimal clean invoice PDF using only the Python stdlib."""
     sym = "NGN " if (tx.currency or "USD") == "NGN" else "$"
@@ -494,31 +622,8 @@ def _make_invoice_pdf(tx, user):
     text(50, 70, "Thank you for your business!", "F1", 9, "0.45 0.45 0.5")
     text(50, 54, "Generated by GlbTOKEN - glbtoken.com", "F1", 8, "0.6 0.6 0.65")
 
-    content = "\n".join(ops).encode("latin-1", "replace")
-
-    objs = [
-        b"<< /Type /Catalog /Pages 2 0 R >>",
-        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-        (b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
-         b"/Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>"),
-        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>",
-        b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n" + content + b"\nendstream",
-    ]
-    out = bytearray(b"%PDF-1.4\n")
-    offsets = []
-    for i, obj in enumerate(objs, 1):
-        offsets.append(len(out))
-        out += b"%d 0 obj\n" % i
-        out += obj + b"\nendobj\n"
-    xref_pos = len(out)
-    n = len(objs) + 1
-    out += b"xref\n0 %d\n" % n
-    out += b"0000000000 65535 f \n"
-    for off in offsets:
-        out += b"%010d 00000 n \n" % off
-    out += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (n, xref_pos)
-    return bytes(out)
+    content = "\n".join(ops)
+    return _build_pdf([content])
 
 
 # ── Saved Payment Methods (cards) ──
