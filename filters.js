@@ -359,6 +359,7 @@
       if(pageId==='dashboard'){loadDashboard();refreshMe()}
       if(pageId==='apikeys'&&token){if(typeof loadKeys==='function')loadKeys();}
       if(pageId==='history'&&token)loadTx();
+      if(pageId==='usage'&&token)loadTx();
       if(pageId==='models'){if(typeof loadModels==='function')loadModels();}
       if(pageId==='referral'&&token){if(typeof loadReferralStats==='function')loadReferralStats();}
       if(pageId==='team'&&token){if(typeof loadOrgs==='function')loadOrgs();}

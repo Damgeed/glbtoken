@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1189" />
+  <link rel="stylesheet" href="style.css?v=1190" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1023" />
+<link rel="stylesheet" href="usage.css?v=1024" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -120,6 +120,20 @@
         </div>
       </div>
 
+      <!-- Activity Feed -->
+      <div class="dash-card">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Activity
+          <span class="label-muted-sm" id="usageActivityCount">0 events</span>
+        </div>
+        <div class="dash-activity activity-scroll" id="usageActivityList">
+          <div class="activity-item activity-row" style="opacity:0.6">
+            <div class="flex-grow"><div class="text-desc">Loading activity…</div></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Transaction History -->
       <div class="dash-card">
         <div class="dash-section-title">
@@ -132,7 +146,7 @@
           <button class="tx-tab tx-tab-btn" onclick="switchTxTab(this,'consumption')">Consumption</button>
         </div>
         <div class="scroll-x">
-          <table class="tx-table">
+          <table class="tx-table" id="txDeposits">
             <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Tokens</th><th>Status</th></tr></thead>
             <tbody id="txDepositBody"><tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr></tbody>
           </table>
@@ -303,39 +317,105 @@
 <script data-cfasync="false" src="shared.js?v=1132"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
-<script data-cfasync="false" src="filters.js?v=1123"></script>
+<script data-cfasync="false" src="filters.js?v=1124"></script>
 
 <!-- ── Usage Script ── -->
 <script>
-// ===== Login History data & functions (for Usage & History section) =====
-var historyData = [
-  { ts: '2026-06-14 09:32:18', ip: '203.0.113.42', device: 'Chrome 126 on Windows 11', location: 'New York, US', status: 'success' },
-  { ts: '2026-06-14 08:15:42', ip: '198.51.100.77', device: 'Safari 17.5 on macOS 14', location: 'London, UK', status: 'success' },
-  { ts: '2026-06-13 22:04:11', ip: '192.0.2.15', device: 'Firefox 127 on Linux', location: 'Berlin, DE', status: 'failed' },
-  { ts: '2026-06-13 18:30:55', ip: '203.0.113.42', device: 'Chrome 126 on Windows 11', location: 'New York, US', status: 'success' },
-  { ts: '2026-06-13 14:12:09', ip: '198.51.100.77', device: 'Edge 126 on Windows 11', location: 'London, UK', status: 'failed' },
-  { ts: '2026-06-13 11:45:33', ip: '192.0.2.88', device: 'Safari 17.5 on iOS 18', location: 'Tokyo, JP', status: 'success' },
-  { ts: '2026-06-12 21:08:22', ip: '203.0.113.42', device: 'Chrome 126 on Windows 11', location: 'New York, US', status: 'success' },
-  { ts: '2026-06-12 19:30:05', ip: '198.51.100.15', device: 'Android Chrome 126 on Samsung', location: 'Seoul, KR', status: 'failed' }
-];
-
-var moreData = [
-  { ts: '2026-06-12 15:22:44', ip: '203.0.113.42', device: 'Chrome 126 on Windows 11', location: 'New York, US', status: 'success' },
-  { ts: '2026-06-12 12:10:30', ip: '192.0.2.50', device: 'Firefox 127 on Windows 10', location: 'Toronto, CA', status: 'success' },
-  { ts: '2026-06-11 23:55:18', ip: '198.51.100.33', device: 'Safari 17.4 on iOS 17', location: 'Sydney, AU', status: 'failed' },
-  { ts: '2026-06-11 20:18:02', ip: '203.0.113.42', device: 'Chrome 126 on Windows 11', location: 'New York, US', status: 'success' },
-  { ts: '2026-06-11 17:05:37', ip: '192.0.2.91', device: 'Edge 125 on Windows 11', location: 'Paris, FR', status: 'success' },
-  { ts: '2026-06-11 14:30:11', ip: '198.51.100.77', device: 'Safari 17.5 on macOS 14', location: 'London, UK', status: 'failed' },
-  { ts: '2026-06-11 10:45:55', ip: '203.0.113.88', device: 'Chrome 126 on Android', location: 'Mumbai, IN', status: 'success' },
-  { ts: '2026-06-10 22:12:28', ip: '192.0.2.15', device: 'Firefox 127 on Linux', location: 'Berlin, DE', status: 'success' },
-  { ts: '2026-06-10 19:30:44', ip: '198.51.100.15', device: 'Android Chrome 126 on Samsung', location: 'Seoul, KR', status: 'failed' },
-  { ts: '2026-06-10 16:08:15', ip: '203.0.113.42', device: 'Chrome 126 on Windows 11', location: 'New York, US', status: 'success' },
-  { ts: '2026-06-10 13:45:50', ip: '192.0.2.88', device: 'Safari 17.5 on iOS 18', location: 'Tokyo, JP', status: 'success' },
-  { ts: '2026-06-10 09:22:33', ip: '198.51.100.77', device: 'Edge 126 on Windows 11', location: 'London, UK', status: 'success' }
-];
-
-var loadedCount = 8;
+// ===== Usage & History — real data (activity feed, transactions, login history) =====
+var historyData = [];
+var moreData = [];
+var loadedCount = 0;
 var backupMoreData = []; // saved before load for Show Less
+
+// ── Activity feed (real — /api/activity) ──
+function loadUsageActivity(){
+  var container = document.getElementById('usageActivityList');
+  var countEl = document.getElementById('usageActivityCount');
+  if(!container) return;
+  var SVGS = {
+    code:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+    money:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
+    key:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>',
+    alert:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+  };
+  function itemHtml(type, desc, time){
+    var icon, iconCls;
+    if(type==='topup' || type==='deposit'){ icon=SVGS.money; iconCls='activity-icon activity-icon-teal'; }
+    else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=SVGS.key; iconCls='activity-icon activity-icon-gold'; }
+    else if(type==='consumption'){ icon=SVGS.alert; iconCls='activity-icon activity-icon-red'; }
+    else { icon=SVGS.code; iconCls='color-dot-blue'; }
+    return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div></div>';
+  }
+  safeApi('GET','/api/activity',null,null,true).then(function(d){
+    var items = (d && d.items) || [];
+    if(countEl) countEl.textContent = items.length + ' events';
+    if(!items.length){
+      container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Buy tokens or use AI models to see activity here</div></div></div>';
+      return;
+    }
+    var cards = items.map(function(a){
+      var type = a.type || '';
+      var time = (typeof timeAgo === 'function') ? timeAgo(a.created_at) : escapeHtml((a.created_at || '').substring(0,16));
+      var desc;
+      if(type==='topup' || type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+escapeHtml(a.payment_method||'payment'); }
+      else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call — '+(a.tokens||0).toLocaleString()+' tokens'; }
+      else if(type==='api_call'){ desc = 'API call to '+escapeHtml(a.model||'unknown'); }
+      else { desc = escapeHtml(a.model||a.payment_method||a.type||'Activity'); }
+      return itemHtml(type, desc, time);
+    });
+    var first = cards.slice(0,3).join('');
+    var rest = cards.slice(3);
+    container.innerHTML = first
+      + (rest.length
+          ? '<div id="usageActivityCollapse" class="activity-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
+            + '<button id="usageActivityMoreBtn" class="list-more-btn" onclick="toggleUsageActivityMore()">Show More ('+rest.length+') ▼</button>'
+          : '');
+  }).catch(function(){
+    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">Could not load activity</div></div></div>';
+  });
+}
+function toggleUsageActivityMore(){
+  var c = document.getElementById('usageActivityCollapse');
+  if(!c) return;
+  c.classList.toggle('open');
+  var btn = document.getElementById('usageActivityMoreBtn');
+  if(btn) btn.textContent = c.classList.contains('open') ? 'Show Less ▲' : 'Show More (' + c.getAttribute('data-count') + ') ▼';
+}
+
+// ── Login history (real — /api/auth/login-history) ──
+function loadLoginHistory(){
+  safeApi('GET','/api/auth/login-history?limit=50',null,null,true).then(function(d){
+    var events = (d && d.events) || [];
+    historyData = events.map(function(e){
+      var ts = e.created_at || '';
+      ts = String(ts).replace('T',' ').replace('Z','').substring(0,19);
+      var ua = e.user_agent || e.device_type || '';
+      var loc = e.location || 'Unknown';
+      return { ts: ts, ip: e.ip_address || '—', device: ua, location: loc, status: e.success ? 'success' : 'failed' };
+    });
+    moreData = historyData.slice(0);
+    var first = historyData.slice(0,8);
+    moreData = historyData.slice(8);
+    loadedCount = first.length;
+    var tbody = document.getElementById('historyBody');
+    if(!tbody) return;
+    if(!first.length){
+      tbody.innerHTML = '';
+      document.getElementById('historyEmptyState').style.display = 'block';
+      document.getElementById('loadMoreBtn').style.display = 'none';
+      document.getElementById('historyCount').textContent = 'Showing 0 entries';
+      return;
+    }
+    document.getElementById('historyEmptyState').style.display = 'none';
+    document.getElementById('loadMoreBtn').style.display = '';
+    tbody.innerHTML = first.map(renderHistoryRow).join('');
+    refreshTableMoreBtn('loginCollapse','loginMoreBtn');
+    document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+historyData.length+' entries';
+  }).catch(function(){
+    var tbody = document.getElementById('historyBody');
+    if(tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Could not load login history</td></tr>';
+  });
+}
 
 function getFlag(location){
   var map={'US':'🇺🇸','UK':'🇬🇧','DE':'🇩🇪','JP':'🇯🇵','KR':'🇰🇷','CA':'🇨🇦','AU':'🇦🇺','FR':'🇫🇷','IN':'🇮🇳','SG':'🇸🇬'};
@@ -450,11 +530,13 @@ function applyFilters(){
   }
 }
 
-// Split the initial static login rows into 3 visible + collapse (mobile show-more)
-(function initLoginCollapse(){
-  var rows = Array.prototype.map.call(document.querySelectorAll('#historyBody > tr'), function(tr){ return tr.outerHTML; });
-  if(rows.length > 3) renderTableWithCollapse('historyBody', rows, 'loginCollapse', 'loginMoreBtn');
-})();
+// ── Init — load real data ──
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){
+    if(typeof loadUsageActivity === 'function') loadUsageActivity();
+    if(typeof loadLoginHistory === 'function') loadLoginHistory();
+  }, 50);
+});
 </script>
 
 </body>

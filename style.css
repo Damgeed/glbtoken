@@ -3363,7 +3363,7 @@ footer {
   position: fixed;
   bottom: 5.5rem;
   right: 1.5rem;
-  z-index: 300;
+  z-index: 10001;
   padding: 1rem 1.5rem;
   border-radius: var(--radius-sm);
   background: var(--card);
