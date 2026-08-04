@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css?v=1182" />
+  <link rel="stylesheet" href="style.css?v=1183" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1023" />
   </head>
@@ -163,20 +163,51 @@
         
       </div>
 
-      <div class="dash-card" id="dashSpeedComparison">
+      <div class="dash-card" id="dashCostProjection">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Model Speed Comparison <span class="label-muted-sm">Performance tiers</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Cost Projection <span class="label-muted-sm">30-day forecast</span>
+        </div>
+        <div class="stat-cards">
+          <div class="dash-stat-card"><div class="num" id="cpProjected">$0.00</div><div class="lbl">Projected This Month</div><div class="chg text-muted">Based on last 30 days</div></div>
+          <div class="dash-stat-card"><div class="num" id="cpActual">$0.00</div><div class="lbl">Actual (30d)</div><div class="chg text-muted">Real spend</div></div>
+          <div class="dash-stat-card"><div class="num" id="cpAvgDaily">$0.00</div><div class="lbl">Avg / Day</div><div class="chg text-muted">Daily pace</div></div>
+        </div>
+      </div>
+
+      <div class="dash-card" id="dashKeyUsage">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          API Key Usage <span class="label-muted-sm">Per-key consumption</span>
         </div>
         <div class="overflow-auto">
-          <table class="tx-table" id="speedComparisonTable">
-            <thead><tr><th>Model</th><th>Provider</th><th>Speed Tier</th><th>Price</th></tr></thead>
-            <tbody id="speedComparisonBody">
-              <tr><td colspan="4" class="empty-state-alt">Loading speed data...</td></tr>
+          <table class="tx-table" id="keyUsageTable">
+            <thead><tr><th>Key</th><th>Model</th><th>Calls</th><th>Tokens</th></tr></thead>
+            <tbody id="keyUsageBody">
+              <tr><td colspan="4" class="empty-state-alt">Loading key usage...</td></tr>
             </tbody>
           </table>
         </div>
-        
+      </div>
+
+      <div class="dash-card" id="dashRequestLogs">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Request Logs <span class="label-muted-sm">Click a row for details</span>
+        </div>
+        <div class="overflow-auto">
+          <table class="tx-table" id="requestLogTable">
+            <thead><tr><th>Time</th><th>Model</th><th>Tokens</th><th>Cost</th><th>Status</th></tr></thead>
+            <tbody id="requestLogBody">
+              <tr><td colspan="5" class="empty-state-alt">Loading request logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="logs-pager" id="logsPager" style="display:none">
+          <button class="btn-secondary btn-sm" id="logsPrevBtn" onclick="logsPage(-1)">‹ Prev</button>
+          <span class="logs-pager-info" id="logsPagerInfo">Page 1</span>
+          <button class="btn-secondary btn-sm" id="logsNextBtn" onclick="logsPage(1)">Next ›</button>
+        </div>
       </div>
 
       </div>
@@ -189,6 +220,16 @@
 
 <!-- FOOTER: Injected by footer.js -->
 <div id="footer-container"></div>
+
+<!-- Log Detail Drawer -->
+<div class="log-detail-drawer" id="logDetailDrawer">
+  <div class="log-detail-header">
+    <span>Request Details</span>
+    <button class="log-detail-close" id="logDetailClose" onclick="closeLogDetail()">✕</button>
+  </div>
+  <div class="log-detail-body" id="logDetailBody"></div>
+</div>
+<div class="log-detail-overlay" id="logDetailOverlay" onclick="closeLogDetail()"></div>
 
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
@@ -317,37 +358,157 @@ async function loadResponseTimes(days){
 }
 
 async function loadSpeedComparison(){
+  // Removed — Model Speed Comparison was a price-proxy for speed, not real log
+  // data. Replaced by Request Logs (real per-call records), Cost Projection and
+  // API Key Usage below.
+}
+
+// ── Cost Projection (30-day forecast) ──
+async function loadCostProjection(){
   try{
-    var body=document.getElementById('speedComparisonBody');
-    if(!body)return;
-    clearTableCollapse('speedComparisonCollapse','speedComparisonMoreBtn');
-    body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
-    var result=await safeApi('GET','/api/available-models',null,8000);
-    var models=(result&&result.models)||[];
-    if(!models.length){
-      body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No speed comparison data available.</td></tr>';
+    var el=document.getElementById('cpProjected');
+    if(!el)return;
+    var data=await safeApi('GET','/api/analytics/cost-projection?days=30');
+    if(!data){
+      document.getElementById('cpProjected').textContent='—';
+      document.getElementById('cpActual').textContent='—';
+      document.getElementById('cpAvgDaily').textContent='—';
       return;
     }
-    var sorted=models.filter(function(m){return m.prompt_price>0;}).sort(function(a,b){return (a.prompt_price||0)-(b.prompt_price||0);}).slice(0,20);
-    renderTableWithCollapse('speedComparisonBody', sorted.map(function(m){
-      var name=m.name||m.model||m.model_id||'Unknown';
-      var provider=m.provider||'-';
-      var price=m.prompt_price||0;
-      var speedCls=price<0.0000005?'speed-fast':price<0.000002?'speed-medium':'speed-slow';
-      var speedLabel=price<0.0000005?'Fast':price<0.000002?'Medium':'Slower';
-      return '<tr><td>'+escapeHtml(name)+'</td><td>'+escapeHtml(provider)+'</td><td class="'+speedCls+'">'+speedLabel+'</td><td>$'+(price*1000).toFixed(4)+'/1K</td></tr>';
-    }), 'speedComparisonCollapse', 'speedComparisonMoreBtn');
+    var projected=(data.projected_monthly||0);
+    var actual=(data.last_30_days_cost||0);
+    var avgDaily=(data.daily_avg||0);
+    document.getElementById('cpProjected').textContent='$'+projected.toFixed(2);
+    document.getElementById('cpActual').textContent='$'+actual.toFixed(2);
+    document.getElementById('cpAvgDaily').textContent='$'+avgDaily.toFixed(2);
   }catch(e){
-    var b2=document.getElementById('speedComparisonBody');
-    if(b2)b2.innerHTML='<tr><td colspan="4" class="empty-state-sm">Failed to load speed comparison.</td></tr>';
+    showToast('Failed to load cost projection','error');
   }
+}
+
+// ── API Key Usage ──
+async function loadKeyUsage(){
+  try{
+    var body=document.getElementById('keyUsageBody');
+    if(!body)return;
+    clearTableCollapse('keyUsageCollapse','keyUsageMoreBtn');
+    body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
+    var data=await safeApi('GET','/api/analytics/key-usage?days=30');
+    var items=Array.isArray(data)?data:((data&&data.keys)||(data&&data.items)||[]);
+    if(!items.length){
+      body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No key usage data available.</td></tr>';
+      return;
+    }
+    renderTableWithCollapse('keyUsageBody', items.map(function(k){
+      return '<tr><td>'+escapeHtml(k.key||k.key_prefix||'-')+'</td><td>'+escapeHtml(k.model||'All')+'</td><td>'+(k.calls||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td></tr>';
+    }), 'keyUsageCollapse', 'keyUsageMoreBtn');
+  }catch(e){
+    var b2=document.getElementById('keyUsageBody');
+    if(b2)b2.innerHTML='<tr><td colspan="4" class="empty-state-sm">Failed to load key usage.</td></tr>';
+  }
+}
+
+// ── Request Logs (real per-call records from New API) ──
+var logsCurrentPage=1;
+var logsTotal=0;
+var logsPageSize=20;
+
+async function loadRequestLogs(page){
+  try{
+    var body=document.getElementById('requestLogBody');
+    if(!body)return;
+    logsCurrentPage=page||1;
+    body.innerHTML='<tr><td colspan="5" class="empty-state-sm">Loading...</td></tr>';
+    var data=await safeApi('GET','/api/logs?page='+logsCurrentPage+'&page_size='+logsPageSize);
+    var items=(data&&data.items)||[];
+    logsTotal=(data&&data.total)||0;
+    if(!items.length){
+      body.innerHTML='<tr><td colspan="5" class="empty-state-sm">No request logs yet. Make an API call to see it here.</td></tr>';
+      var pg=document.getElementById('logsPager');
+      if(pg)pg.style.display='none';
+      return;
+    }
+    body.innerHTML=items.map(function(l){
+      var model=l.model||l.model_name||l.model_id||'Unknown';
+      var tokens=(l.tokens||l.total_tokens||0);
+      var cost=(l.cost||l.amount||0);
+      var status=l.status_code||l.status||200;
+      var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
+      var time=l.created_at||l.time||'';
+      var logId=l.id||'';
+      return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'">'
+        + '<td class="td-date">'+escapeHtml(time)+'</td>'
+        + '<td>'+escapeHtml(model)+'</td>'
+        + '<td>'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens))+ '</td>'
+        + '<td class="gold">$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
+        + '<td><span class="status-badge '+statusCls+'">'+escapeHtml(String(status))+'</span></td>'
+        + '</tr>';
+    }).join('');
+    // attach click → detail drawer
+    body.querySelectorAll('.log-row').forEach(function(tr){
+      tr.addEventListener('click', function(){ openLogDetail(tr.getAttribute('data-logid')); });
+    });
+    var pg=document.getElementById('logsPager');
+    if(pg){
+      var totalPages=Math.max(1,Math.ceil(logsTotal/logsPageSize));
+      pg.style.display='flex';
+      document.getElementById('logsPagerInfo').textContent='Page '+logsCurrentPage+' of '+totalPages;
+      document.getElementById('logsPrevBtn').disabled=(logsCurrentPage<=1);
+      document.getElementById('logsNextBtn').disabled=(logsCurrentPage>=totalPages);
+    }
+  }catch(e){
+    var b2=document.getElementById('requestLogBody');
+    if(b2)b2.innerHTML='<tr><td colspan="5" class="empty-state-sm">Failed to load request logs.</td></tr>';
+  }
+}
+
+function logsPage(dir){
+  var next=logsCurrentPage+dir;
+  if(next<1)return;
+  loadRequestLogs(next);
+}
+
+// ── Log Detail Drawer (prompt + completion via /api/logs/content) ──
+function openLogDetail(logId){
+  if(!logId)return;
+  var drawer=document.getElementById('logDetailDrawer');
+  if(!drawer)return;
+  drawer.classList.add('open');
+  var ov=document.getElementById('logDetailOverlay');
+  if(ov)ov.classList.add('show');
+  document.getElementById('logDetailBody').innerHTML='<div class="text-muted" style="padding:1rem">Loading content...</div>';
+  document.getElementById('logDetailClose').onclick=function(){ closeLogDetail(); };
+  safeApi('GET','/api/logs/content?log_id='+encodeURIComponent(logId),null,15000,true).then(function(d){
+    var bodyEl=document.getElementById('logDetailBody');
+    if(!bodyEl)return;
+    if(!d||d.error){
+      bodyEl.innerHTML='<div class="text-muted" style="padding:1rem">Content not available for this request.</div>';
+      return;
+    }
+    var prompt=d.prompt||d.request||'';
+    var completion=d.completion||d.response||'';
+    if(typeof prompt==='object'){ try{prompt=JSON.stringify(prompt,null,2);}catch(e){} }
+    if(typeof completion==='object'){ try{completion=JSON.stringify(completion,null,2);}catch(e){} }
+    var html='';
+    html+='<div class="log-detail-section"><div class="log-detail-label">Prompt</div><pre class="log-detail-pre">'+escapeHtml(prompt)+'</pre></div>';
+    html+='<div class="log-detail-section"><div class="log-detail-label">Completion</div><pre class="log-detail-pre">'+escapeHtml(completion)+'</pre></div>';
+    bodyEl.innerHTML=html;
+  });
+}
+function closeLogDetail(){
+  var drawer=document.getElementById('logDetailDrawer');
+  if(drawer)drawer.classList.remove('open');
+  var ov=document.getElementById('logDetailOverlay');
+  if(ov)ov.classList.remove('show');
 }
 
 document.addEventListener('DOMContentLoaded', function(){
   loadCostBreakdown();
   loadErrorRate();
   loadResponseTimes();
-  loadSpeedComparison();
+  loadCostProjection();
+  loadKeyUsage();
+  loadRequestLogs(1);
 });
 </script>
 
