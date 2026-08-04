@@ -5940,7 +5940,8 @@ body {
 }
 .tx-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 0.4rem;
   font-size: 0.85rem;
 }
 .tx-table th {
@@ -5955,14 +5956,25 @@ body {
 }
 .tx-table td {
   padding: 0.6rem 0.5rem;
+  border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   color: var(--text);
-}
-.tx-table tr:last-child td {
-  border-bottom: none;
-}
-.tx-table tr:hover td {
   background: var(--bg-alt);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.tx-table tbody tr td:first-child {
+  border-left: 1px solid var(--border);
+  border-radius: 10px 0 0 10px;
+  padding-left: 0.75rem;
+}
+.tx-table tbody tr td:last-child {
+  border-right: 1px solid var(--border);
+  border-radius: 0 10px 10px 0;
+  padding-right: 0.75rem;
+}
+.tx-table tbody tr:hover td {
+  background: rgba(244, 180, 0, 0.05);
+  border-color: rgba(244, 180, 0, 0.45);
 }
 .dash-activity {
   display: flex;

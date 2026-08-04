@@ -200,7 +200,7 @@
 .activity-icon-teal { background: rgba(0, 214, 143, 0.15); color: #00D68F; }
 .activity-icon-red { background: rgba(255, 107, 107, 0.1); color: #FF6B6B; }
 
-/* ── Activity desktop: 2-column grid to fill card width ── */
+/* ── Activity desktop: grid to fill card width ── */
 @media (min-width: 768px) {
   .dash-activity.activity-scroll {
     display: grid;
@@ -214,6 +214,11 @@
   }
   /* Desktop shows everything — hide the mobile Show More toggle */
   #usageActivityMoreBtn { display: none !important; }
+}
+@media (min-width: 1100px) {
+  .dash-activity.activity-scroll {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 @media (max-width: 767px) {
   #usageActivityMoreBtn { display: block; }
