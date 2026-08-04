@@ -82,7 +82,7 @@
           }
         });
         var totalCostEl=document.getElementById('costBreakdownTotal');
-        if(totalCostEl)totalCostEl.textContent='$'+(data.total_cost||0).toFixed(2);
+        if(totalCostEl)totalCostEl.textContent='$'+(data.total_cost||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
         var modelCountEl=document.getElementById('costBreakdownModels');
         if(modelCountEl)modelCountEl.textContent=data.models.length+' models';
       }finally{
@@ -175,9 +175,9 @@
         if(dailyEl)dailyEl.textContent='$0.00';
         return;
       }
-      if(last30El)last30El.textContent='$'+(data.last_30_days||0).toFixed(2);
-      if(monthlyEl)monthlyEl.textContent='$'+(data.projected_monthly||0).toFixed(2);
-      if(dailyEl)dailyEl.textContent='$'+(data.daily_average||0).toFixed(2);
+      if(last30El)last30El.textContent='$'+(data.last_30_days||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      if(monthlyEl)monthlyEl.textContent='$'+(data.projected_monthly||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      if(dailyEl)dailyEl.textContent='$'+(data.daily_average||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
     }
 
     async function loadSpeedComparison(){
@@ -237,7 +237,7 @@ async function loadDashboardStats(){
     userData.token_balance = d.token_balance;
     if(typeof updateBalance === 'function') updateBalance();
     function set(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; }
-    set('dashTotalSpent', '$' + (d.total_spent||0).toFixed(2));
+    set('dashTotalSpent', '$' + (d.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     set('dashModelsUsed', d.models_used||0);
     set('dashTotalRequests', (d.total_requests||0).toLocaleString());
     set('dashKeyCount', d.api_keys_active||0);
@@ -388,10 +388,10 @@ async function renderSpendingDonut(days){
     sl.innerHTML = entries.slice(0,5).map(function(e,i){
       var pct = totalCost>0 ? Math.round(e.cost/totalCost*100) : 0;
       var dotCls = ['legend-dot-gold','legend-dot-teal','legend-dot-purple','legend-dot-blue','legend-dot-red'][i%5];
-      return '<div class="provider-row"><div class="flex-row-sm"><span class="legend-dot '+dotCls+'"></span><span class="text-sm-secondary">'+escapeHtml(e.provider)+'</span><span class="text-xs-muted">'+pct+'%</span></div><span class="text-sm-medium">$'+e.cost.toFixed(2)+'</span></div>';
+      return '<div class="provider-row"><div class="flex-row-sm"><span class="legend-dot '+dotCls+'"></span><span class="text-sm-secondary">'+escapeHtml(e.provider)+'</span><span class="text-xs-muted">'+pct+'%</span></div><span class="text-sm-medium">$'+(e.cost||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>';
     }).join('') + (entries.length>5 ? '<div class="provider-row"><div class="flex-row-sm"><span class="text-xs-muted">+ '+(entries.length-5)+' more</span></div></div>' : '');
   }
-  if(cv) cv.textContent = '$'+totalCost.toFixed(2);
+  if(cv) cv.textContent = '$'+totalCost.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   var canvas = document.getElementById('spendingDonut');
   if(canvas && typeof Chart !== 'undefined'){
     if(window._spendingDonutChart) window._spendingDonutChart.destroy();

@@ -798,7 +798,7 @@ window.updateBalance = function updateBalance(){
   const db=document.getElementById('dashBalance');
   if(db)db.textContent=b.toLocaleString();
   const du=document.getElementById('dashUsd');
-  if(du)du.textContent='$'+(b/1000).toFixed(2)+' USD';
+  if(du)du.textContent='$'+(b/1000).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' USD';
   const hb=document.getElementById('heroBalance');
   if(hb)hb.textContent=b.toLocaleString();
 };

@@ -375,7 +375,7 @@
         if(!d) return;
         userData.token_balance=d.token_balance;
         updateBalance();
-        document.getElementById('dashTotalSpent').textContent='$'+d.total_spent.toFixed(2);
+        document.getElementById('dashTotalSpent').textContent='$'+(d.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
         document.getElementById('dashModelsUsed').textContent=d.models_used;
         // Total API requests
         var reqEl = document.getElementById('dashTotalRequests');
@@ -408,7 +408,7 @@
         if(consumedEl) consumedEl.textContent = totalConsumed.toLocaleString();
         // Lifetime spend
         var spendEl = document.getElementById('dashTotalSpentLifetime');
-        if(spendEl) spendEl.textContent = '$' + (d.total_spent || 0).toFixed(2);
+        if(spendEl) spendEl.textContent = '$' + (d.total_spent || 0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
         // Show New API today's usage as stat prompt
         var newapiTotal = d.usage_from_newapi && d.usage_from_newapi.total;
         if(newapiTotal && d.newapi_connected){
