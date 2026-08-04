@@ -881,6 +881,37 @@
   color: var(--text-muted);
   cursor: pointer;
 }
+/* Range dropdown (API Calls per Model) */
+.range-dd-wrap { position: relative; display: inline-block; }
+.range-dd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  min-width: 76px;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index: 60;
+  overflow: hidden;
+  padding: 0.25rem;
+}
+.range-dd-wrap.open .range-dd-menu { display: block; }
+.range-dd-opt {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.85rem;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+.range-dd-opt:hover { background: var(--primary-subtle); }
+.range-dd-opt.active { color: var(--primary); font-weight: 600; }
 /* Bar chart wrapper */
 .bar-chart-wrap {
   display: flex;
@@ -1195,7 +1226,8 @@
 /* Full width table */
 .tx-table-full {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 0.35rem;
   font-size: 0.82rem;
 }
 /* Table header cell */

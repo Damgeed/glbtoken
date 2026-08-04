@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css?v=1194" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1034" />
+<link rel="stylesheet" href="dashboard.css?v=1035" />
   </head>
 <body>
 <script>
@@ -202,7 +202,14 @@ function showDashSection(section) {
         <div class="dash-card stat-card" >
           <div class="dash-section-title section-header" >
             <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-gold"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg> API Calls per Model</span>
-            <span class="legend-label">7d ▼</span>
+            <span class="range-dd-wrap" id="apiModelRange">
+              <span class="legend-label" id="apiModelRangeLabel" onclick="toggleApiModelRange(event)">7d ▼</span>
+              <span class="range-dd-menu" id="apiModelRangeMenu">
+                <button type="button" class="range-dd-opt active" data-days="7" onclick="setApiModelRange(7)">7d</button>
+                <button type="button" class="range-dd-opt" data-days="30" onclick="setApiModelRange(30)">30d</button>
+                <button type="button" class="range-dd-opt" data-days="90" onclick="setApiModelRange(90)">90d</button>
+              </span>
+            </span>
           </div>
           <div class="bar-chart-wrap" id="apiModelBars">
             <div class="flex-col-center" style="width:100%"><span class="label-tiny" style="color:var(--text-muted)">Loading…</span></div>
@@ -364,7 +371,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1132"></script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
 <script data-cfasync="false" src="usage-charts.js?v=2"></script>
-<script data-cfasync="false" src="dashboard.js?v=1123"></script>
+<script data-cfasync="false" src="dashboard.js?v=1124"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====

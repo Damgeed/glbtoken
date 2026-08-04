@@ -310,8 +310,30 @@ async function renderApiCallsChart(days){
   var lats = (respTimes||[]).map(function(r){ return r.avg_response_time_ms; }).filter(function(v){ return typeof v==='number'; });
   var avgLat = lats.length ? Math.round(lats.reduce(function(a,b){return a+b;},0)/lats.length) : 0;
   set('statLatency', avgLat ? avgLat+'ms' : '—');
-  set('statTotalCallsChg','7d total'); set('statAvgDayChg','7d avg'); set('statSuccessChg','7d'); set('statLatencyChg','7d avg');
+  set('statTotalCallsChg', days+'d total'); set('statAvgDayChg', days+'d avg'); set('statSuccessChg', days+'d'); set('statLatencyChg', days+'d avg');
 }
+
+// ── API Calls per Model range dropdown (7d / 30d / 90d) ──
+window._apiModelDays = 7;
+function toggleApiModelRange(ev){
+  if(ev && ev.stopPropagation) ev.stopPropagation();
+  var dd = document.getElementById('apiModelRange');
+  if(dd) dd.classList.toggle('open');
+}
+function setApiModelRange(days){
+  window._apiModelDays = days;
+  var label = document.getElementById('apiModelRangeLabel');
+  if(label) label.textContent = days + 'd ▼';
+  var dd = document.getElementById('apiModelRange');
+  if(dd) dd.classList.remove('open');
+  var opts = document.querySelectorAll('#apiModelRangeMenu .range-dd-opt');
+  opts.forEach(function(b){ b.classList.toggle('active', parseInt(b.getAttribute('data-days')) === days); });
+  renderApiCallsChart(days);
+}
+document.addEventListener('click', function(ev){
+  var dd = document.getElementById('apiModelRange');
+  if(dd && !dd.contains(ev.target)) dd.classList.remove('open');
+});
 
 // ── Spending by Provider donut (real, grouped by provider) ──
 async function renderSpendingDonut(days){
@@ -473,7 +495,7 @@ async function loadRecentTx(){
     loadDashboardStats();
     loadActivityFeed();
     loadRecentTx();
-    renderApiCallsChart(7);
+    renderApiCallsChart(window._apiModelDays || 7);
     renderSpendingDonut(30);
     if(typeof loadAvailableModels === 'function') loadAvailableModels();
   }
@@ -488,7 +510,7 @@ async function loadRecentTx(){
       loadDashboardStats();
       loadActivityFeed();
       loadRecentTx();
-      renderApiCallsChart(7);
+      renderApiCallsChart(window._apiModelDays || 7);
       renderSpendingDonut(30);
     }, 30000);
   }
