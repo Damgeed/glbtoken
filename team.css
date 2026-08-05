@@ -685,11 +685,13 @@
   .member-filters .filter-chips { gap: 0.15rem; }
   .member-filters .chip { padding: 0.45rem 0.26rem; font-size: 0.68rem; }
   #memberSort {
-    width: auto;
+    width: fit-content;
+    max-width: 100%;
     flex: 0 1 auto;
     min-width: 0;
     font-size: 0.7rem;
-    padding: 0.45rem 1.25rem 0.45rem 0.36rem;
+    padding: 0.45rem 0.45rem 0.45rem 0.36rem;
+    background-position: calc(100% - 0.14rem) center;
   }
   .member-filters-right {
     width: auto;
