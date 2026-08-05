@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1196" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="manage-keys.css?v=1026" />
+<link rel="stylesheet" href="manage-keys.css?v=1027" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -142,11 +142,21 @@
         </div>
         <div class="flex gap-sm flex-wrap keys-bulk-row" id="bulkBar" style="display:none">
           <span id="bulkCount">0 selected</span>
-          <button class="sort-btn" onclick="bulkToggleAll()">Select All</button>
-          <button class="btn-secondary btn-sm" onclick="exportKeysCsv()" title="Export selected keys as CSV" aria-label="Export selected keys">⬇ Export</button>
-          <button class="sort-btn btn-activate" onclick="bulkSetActive(true)">Activate</button>
-          <button class="sort-btn btn-pause" onclick="bulkSetActive(false)">Pause</button>
-          <button class="sort-btn btn-delete" onclick="bulkDelete()">Delete</button>
+          <button class="keys-icon-btn" onclick="exportKeysCsv()" title="Export selected keys as CSV" aria-label="Export selected keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="keys-icon-btn" onclick="bulkToggleAll()" title="Select all keys" aria-label="Select all keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg>
+          </button>
+          <button class="keys-icon-btn" onclick="bulkSetActive(true)" title="Activate selected keys" aria-label="Activate selected keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+          </button>
+          <button class="keys-icon-btn" onclick="bulkSetActive(false)" title="Pause selected keys" aria-label="Pause selected keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg>
+          </button>
+          <button class="keys-icon-btn keys-icon-danger" onclick="bulkDelete()" title="Delete selected keys" aria-label="Delete selected keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
         </div>
         <div id="keyList"><p class="text-muted text-sm text-center pad-sm-1">Loading keys...</p></div>
       </div>

@@ -76,6 +76,7 @@
    a container — the row just swaps content. */
 .keys-bulk-row {
   align-items: center;
+  gap: 0.4rem;
 }
 .keys-bulk-row #bulkCount {
   font-size: 0.8rem;
@@ -86,7 +87,22 @@
 .keys-controls-row {
   align-items: center;
 }
+.keys-bulk-row .keys-icon-btn,
 .keys-controls-row .keys-icon-btn {
   width: 32px;
   height: 32px;
+}
+@media (max-width: 420px) {
+  .keys-bulk-row .keys-icon-btn {
+    width: 29px;
+    height: 29px;
+  }
+  .keys-bulk-row #bulkCount {
+    font-size: 0.75rem;
+  }
+}
+.keys-icon-btn.keys-icon-danger:hover {
+  border-color: #e5484d;
+  color: #e5484d;
+  background: rgba(229, 72, 77, 0.08);
 }
