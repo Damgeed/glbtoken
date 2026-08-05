@@ -262,6 +262,8 @@ function shareRef(platform){
     case 'whatsapp': href='https://wa.me/?text='+text+'%20'+url; break;
     case 'telegram': href='https://t.me/share/url?url='+url+'&text='+text; break;
     case 'email': href='mailto:?subject=Join%20GlbTOKEN&body='+text+'%20'+url; break;
+    case 'facebook': href='https://www.facebook.com/sharer/sharer.php?u='+url; break;
+    case 'linkedin': href='https://www.linkedin.com/sharing/share-offsite/?url='+url; break;
   }
   if(href) window.open(href,'_blank','noopener');
 }

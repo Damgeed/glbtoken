@@ -1,178 +1,6 @@
 /* ══════════════════════════════════════════
    FILTERS — Saved filters, spending alerts, heatmap
    ══════════════════════════════════════════ */
-    function renderHeatmap(){
-      try{
-        var container=document.getElementById('usageHeatmap');
-        if(!container)return;
-        // Generate a 7x24 grid (days x hours) with mock intensity or use real data
-        var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-        var html='<div class="heatmap-grid">';
-        // Header row for hours
-        html+='<div class="heatmap-label" style="grid-column:1"></div>';
-        for(var h=0;h<24;h++){
-          html+='<div class="heatmap-label" style="grid-column:'+(h+2)+';text-align:center">'+h+'</div>';
-        }
-        for(var d=0;d<7;d++){
-          html+='<div class="heatmap-label" style="grid-row:'+(d+2)+'">'+days[d]+'</div>';
-          for(var h=0;h<24;h++){
-            // Use random-ish intensity based on hour and day
-            var intensity=Math.random();
-            var colorVal=Math.floor(intensity*200+55);
-            var bg='rgba(244,180,0,'+(intensity*0.8+0.1).toFixed(2)+')';
-            html+='<div class="heatmap-cell" style="background:'+bg+';grid-row:'+(d+2)+';grid-column:'+(h+2)+'" title="'+days[d]+' '+(h<10?'0':'')+h+':00 - '+(intensity*100).toFixed(0)+'%"></div>';
-          }
-        }
-        html+='</div>';
-        container.innerHTML=html;
-      }catch(e){
-        // Silently fail for heatmap
-      }
-    }
-
-    function saveSpendingAlerts(){
-      try{
-        var enabledEl=document.getElementById('alertEnabled');
-        var thresholdEl=document.getElementById('alertThreshold');
-        var emailEl=document.getElementById('alertEmail');
-        var alerts={
-          enabled:enabledEl?enabledEl.checked:false,
-          threshold:thresholdEl?parseFloat(thresholdEl.value)||50:50,
-          email:emailEl?emailEl.value.trim():''
-        };
-        localStorage.setItem('gt_spending_alerts',JSON.stringify(alerts));
-        showToast('Spending alerts saved','success');
-        // Restore UI state
-        if(enabledEl){
-          var toggleRow=enabledEl.closest('.alert-row');
-          if(toggleRow&&thresholdEl){
-            thresholdEl.disabled=!enabledEl.checked;
-            if(emailEl)emailEl.disabled=!enabledEl.checked;
-          }
-        }
-      }catch(e){
-        showToast('Failed to save spending alerts','error');
-      }
-    }
-
-    function loadSavedFilters(){
-      try{
-        var container=document.getElementById('savedFiltersList');
-        if(!container)return;
-        var filters=JSON.parse(localStorage.getItem('gt_saved_filters')||'[]');
-        if(!filters||!filters.length){
-          container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">No saved filters yet.</p>';
-          return;
-        }
-        container.innerHTML=filters.map(function(f,i){
-          return '<span class="saved-filter-chip" onclick="applySavedFilter('+i+')" title="'+escapeHtml(JSON.stringify(f.settings||{}))+'">'+escapeHtml(f.name)+' <span class="filter-chip-remove" onclick="event.stopPropagation();deleteSavedFilter('+i+')" style="cursor:pointer;opacity:0.5;margin-left:4px">&times;</span></span>';
-        }).join('');
-      }catch(e){}
-    }
-
-    function saveCurrentFilter(){
-      try{
-        var name=prompt('Name this filter preset:');
-        if(!name||!name.trim())return;
-        name=name.trim();
-        var filters=JSON.parse(localStorage.getItem('gt_saved_filters')||'[]');
-        var settings={
-          days:usageDays||7,
-          model:usageModel||'',
-          mode:usageMode||'tokens'
-        };
-        filters.push({name:name,settings:settings});
-        localStorage.setItem('gt_saved_filters',JSON.stringify(filters));
-        loadSavedFilters();
-        showToast('Filter "'+name+'" saved','success');
-      }catch(e){
-        showToast('Failed to save filter','error');
-      }
-    }
-
-    function applySavedFilter(index){
-      try{
-        var filters=JSON.parse(localStorage.getItem('gt_saved_filters')||'[]');
-        if(!filters[index]){showToast('Filter not found','error');return;}
-        var f=filters[index];
-        var settings=f.settings||{};
-        if(settings.days)setUsageRange(settings.days);
-        if(settings.model){
-          usageModel=settings.model;
-          var sel=document.getElementById('usageModelFilter');
-          if(sel)sel.value=settings.model;
-        }
-        if(settings.mode)setUsageMode(settings.mode);
-        refreshUsageChart();
-        showToast('Applied filter: '+escapeHtml(f.name),'info');
-      }catch(e){
-        showToast('Failed to apply filter','error');
-      }
-    }
-
-    function deleteSavedFilter(index){
-      try{
-        var filters=JSON.parse(localStorage.getItem('gt_saved_filters')||'[]');
-        if(!filters[index])return;
-        filters.splice(index,1);
-        localStorage.setItem('gt_saved_filters',JSON.stringify(filters));
-        loadSavedFilters();
-        showToast('Filter deleted','info');
-      }catch(e){
-        showToast('Failed to delete filter','error');
-      }
-    }
-
-    function exportData(type){
-      try{
-        var data, filename, headers;
-        if(type==='usage'){
-          data=JSON.parse(localStorage.getItem('gt_usage_data')||'[]');
-          headers='Date,Model,Tokens,Cost\n';
-          filename='usage-export.csv';
-        }else if(type==='logs'){
-          data=JSON.parse(localStorage.getItem('gt_logs_data')||'[]');
-          headers='Timestamp,Model,Tokens,Cost,Status\n';
-          filename='logs-export.csv';
-        }else if(type==='billing'){
-          data=JSON.parse(localStorage.getItem('gt_billing_data')||'[]');
-          headers='Date,Description,Amount,Status\n';
-          filename='billing-export.csv';
-        }else{
-          showToast('Unknown export type','error');
-          return;
-        }
-        if(!data||!data.length){
-          // Try fetching live data instead
-          if(type==='usage'){
-            api('GET','/api/usage-analytics?days=30').then(function(d){
-              if(d&&d.labels&&d.tokens){
-                var csv='Date,Tokens,Cost\n';
-                for(var i=0;i<d.labels.length;i++){
-                  csv+=escapeHtml(d.labels[i])+','+(d.tokens[i]||0)+','+(d.costs?d.costs[i]:0)+'\n';
-                }
-                triggerDownload(csv,'usage-export.csv');
-              }else{
-                showToast('No data to export','info');
-              }
-            }).catch(function(){showToast('Failed to fetch export data','error');});
-            return;
-          }
-          showToast('No data available to export','info');
-          return;
-        }
-        var csv=headers;
-        data.forEach(function(row){
-          var vals=Object.values(row).map(function(v){return typeof v==='string'?'"'+v.replace(/"/g,'""')+'"':v;});
-          csv+=vals.join(',')+'\n';
-        });
-        triggerDownload(csv,filename);
-        showToast('Data exported','success');
-      }catch(e){
-        showToast('Failed to export data: '+e.message,'error');
-      }
-    }
-
     function triggerDownload(content,filename){
       var blob=new Blob([content],{type:'text/csv;charset=utf-8;'});
       var link=document.createElement('a');
@@ -184,78 +12,49 @@
       URL.revokeObjectURL(link.href);
     }
 
-    async function loadMonthlySummary(){
-      var container=document.getElementById('monthlySummary');
-      if(!container)return;
-      container.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:1rem">Loading monthly comparison...</p>';
-      var data=await safeApi('GET','/api/activity?months=2',null,null,true); if(!data){ container.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:1rem">Failed to load monthly summary.</p>';return}
-        var items=(data&&data.items)||[];
-        if(!items.length){
-          container.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:1rem">Not enough data for monthly comparison.</p>';
-          return;
-        }
-        var now=new Date();
-        var thisMonth=now.getMonth();
-        var thisYear=now.getFullYear();
-        var lastMonth=thisMonth===0?11:thisMonth-1;
-        var lastMonthYear=thisMonth===0?thisYear-1:thisYear;
-        var thisMonthItems=[], lastMonthItems=[];
-        items.forEach(function(item){
-          if(!item.created_at)return;
-          var d=new Date(item.created_at);
-          if(d.getMonth()===thisMonth&&d.getFullYear()===thisYear)thisMonthItems.push(item);
-          else if(d.getMonth()===lastMonth&&d.getFullYear()===lastMonthYear)lastMonthItems.push(item);
-        });
-        function summarize(arr){
-          var spend=0,calls=0,tokens=0,modelCounts={};
-          arr.forEach(function(item){
-            if(item.type==='api_call'||item.type==='consumption'){
-              calls++;
-              tokens+=item.tokens||0;
-              if(item.cost)spend+=item.cost;
-              var mdl=item.model||'unknown';
-              modelCounts[mdl]=(modelCounts[mdl]||0)+1;
-            }
+    // Live CSV export — fetches REAL data, never localStorage stubs.
+    async function exportData(type){
+      try{
+        if(type==='billing'){
+          var data=await safeApi('GET','/api/billing/invoices',null,null,true);
+          var inv=(data&&data.invoices)||[];
+          if(!inv.length){showToast('No invoices to export','info');return;}
+          var csv='Date,Amount,Currency,Method,Tokens,Status\n';
+          inv.forEach(function(t){
+            var d=String(t.date||t.created_at||'').replace('T',' ').replace('Z','').substring(0,19);
+            var amt=t.amount!=null?t.amount:'';
+            var cur=t.currency||'USD';
+            var method=t.payment_method||t.method||t.provider||'';
+            var tokens=t.tokens||t.tokens_added||0;
+            var status=(t.status||'completed');
+            [d,amt,cur,method,tokens,status].forEach(function(v){
+              v=String(v);
+              if(v.indexOf(',')>=0||v.indexOf('"')>=0||v.indexOf('\n')>=0){v='"'+v.replace(/"/g,'""')+'"';}
+              csv+=v+',';
+            });
+            csv=csv.slice(0,-1)+'\n';
           });
-          var topModel=Object.keys(modelCounts).sort(function(a,b){return modelCounts[b]-modelCounts[a];})[0]||'N/A';
-          return {spend:spend,calls:calls,tokens:tokens,avgCost:calls>0?spend/calls:0,topModel:topModel};
-        }
-        var thisSumm=summarize(thisMonthItems);
-        var lastSumm=summarize(lastMonthItems);
-        var monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        var thisLabel=monthNames[thisMonth]+' '+thisYear;
-        var lastLabel=monthNames[lastMonth]+' '+lastMonthYear;
-        var html='<div class="monthly-compare">';
-        html+='<div class="monthly-card"><div class="mc-label">'+escapeHtml(lastLabel)+'</div><div class="mc-val">$'+lastSumm.spend.toFixed(2)+'</div><div class="mc-sub">'+lastSumm.calls+' calls · '+lastSumm.tokens.toLocaleString()+' tok</div></div>';
-        html+='<div class="monthly-card current"><div class="mc-label">'+escapeHtml(thisLabel)+'</div><div class="mc-val">$'+thisSumm.spend.toFixed(2)+'</div><div class="mc-sub">'+thisSumm.calls+' calls · '+thisSumm.tokens.toLocaleString()+' tok</div></div>';
-        html+='</div>';
-        html+='<div style="margin-top:0.75rem;font-size:0.8rem;color:var(--text-muted)">Most used model: <strong>'+escapeHtml(thisSumm.topModel)+'</strong> · Avg cost/call: $'+thisSumm.avgCost.toFixed(6)+'</div>';
-        container.innerHTML=html;
-
-    }
-
-    async function loadRecentActivity(){
-      var container=document.getElementById('recentActivity');
-      if(!container)return;
-      container.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:0.5rem;font-size:0.85rem">Loading...</p>';
-      var act=await safeApi('GET','/api/activity',null,null,true); if(!act){ container.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:0.5rem;font-size:0.85rem">Failed to load activity.</p>';return}
-        var items=(act&&act.items)||[];
-        if(!items.length){
-          container.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:0.5rem;font-size:0.85rem">No recent activity.</p>';
+          triggerDownload(csv,'billing-export.csv');
+          showToast('Billing exported','success');
           return;
         }
-        var recent=items.slice(0,5);
-        container.innerHTML=recent.map(function(a){
-          var icon,colorCls,desc;
-          switch(a.type){
-            case 'api_call': icon='🤖'; colorCls='var(--primary-subtle)'; desc=escapeHtml(a.model||'API call')+' · '+parseInt(a.tokens||0).toLocaleString()+' tok'; break;
-            case 'topup': icon='💰'; colorCls='var(--success-subtle)'; desc='Top-up '+(a.amount?'$'+a.amount.toFixed(2):'')+' · +'+parseInt(a.tokens||0).toLocaleString()+' tokens'; break;
-            default: icon='📋'; colorCls='var(--border)'; desc=escapeHtml(a.description||a.type||''); break;
+        if(type==='usage'){
+          var d=await safeApi('GET','/api/usage-analytics?days=30',null,null,true);
+          if(!d||!d.labels||!d.labels.length){showToast('No data to export','info');return;}
+          var csv2='Date,Tokens,Cost\n';
+          for(var i=0;i<d.labels.length;i++){
+            csv2+=d.labels[i]+','+(d.tokens[i]||0)+','+((d.costs&&d.costs[i])||0)+'\n';
           }
-          var dt=a.created_at?new Date(a.created_at).toLocaleString():'';
-          return '<div class="dash-activity-item" style="padding:0.5rem 0.75rem"><div class="icon" style="width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:'+colorCls+'">'+icon+'</div><div class="info" style="flex:1;min-width:0"><div class="title" style="font-size:0.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+desc+'</div><div class="time" style="font-size:0.7rem;color:var(--text-muted)">'+escapeHtml(dt)+'</div></div></div>';
-        }).join('');
+          triggerDownload(csv2,'usage-export.csv');
+          showToast('Usage exported','success');
+          return;
+        }
+        showToast('Unknown export type','error');
+      }catch(e){
+        showToast('Failed to export data: '+(e.message||e),'error');
+      }
     }
+
 
 
     function startUsageTicker(){
@@ -361,7 +160,6 @@
       if(pageId==='history'&&token)loadTx();
       if(pageId==='usage'&&token)loadTx();
       if(pageId==='models'){if(typeof loadModels==='function')loadModels();}
-      if(pageId==='referral'&&token){if(typeof loadReferralStats==='function')loadReferralStats();}
       if(pageId==='team'&&token){if(typeof loadOrgs==='function')loadOrgs();}
       if(pageId==='history'&&token){if(typeof loadLoginHistory==='function')loadLoginHistory();}
     })();
@@ -627,7 +425,6 @@
       if(pageId==='apikeys'&&token){if(typeof loadKeys==='function')loadKeys();}
       if(pageId==='history'&&token)loadTx();
       if(pageId==='models'){if(typeof loadModels==='function')loadModels();}
-      if(pageId==='referral'&&token){if(typeof loadReferralStats==='function')loadReferralStats();}
       if(pageId==='team'&&token){if(typeof loadOrgs==='function')loadOrgs();}
     });
     // Parse URL error param (from Auth0 callback failure redirect)

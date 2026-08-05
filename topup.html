@@ -38,7 +38,7 @@
             <button class="btn-primary btn-block" onclick="showPaymentModal('custom')" id="customBuyBtn">Buy $50</button></div>
         </div>
       </div>
-      <div id="topupSuccess" class="d-none"><div class="success-page topup-success-card"><div class="success-icon topup-success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="topup-success-title">Payment Successful!</h2><p id="topupSuccessMsg" class="topup-success-text"></p><div class="topup-balance-pill" id="topupBalancePill"><span class="topup-balance-label">New balance</span><span class="topup-balance-value" id="topupBalanceValue">0</span></div><div class="topup-success-actions"><button class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard</button><button class="btn-secondary topup-btn-secondary" onclick="window.location.href='apikeys.html'">API Keys</button></div></div></div>
+      <div id="topupSuccess" class="d-none"><div class="success-page topup-success-card"><div class="success-icon topup-success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="topup-success-title">Payment Successful!</h2><p id="topupSuccessMsg" class="topup-success-text"></p><div class="topup-balance-pill" id="topupBalancePill"><span class="topup-balance-label">New balance</span><span class="topup-balance-value" id="topupBalanceValue">0</span></div><div class="topup-success-actions"><button class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard</button><button class="btn-secondary topup-btn-secondary" onclick="window.location.href='manage-keys.html'">API Keys</button></div></div></div>
     </div></div>
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal" onclick="closePaymentModal(event)">
@@ -97,9 +97,9 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=14"></script>
 <script src="translations.js?v=1105"></script>
-<script data-cfasync="false" src="shared.js?v=1133"></script>
-<script data-cfasync="false" src="ui.js?v=1222"></script>
-<script data-cfasync="false" src="checkout.js?v=7"></script>
+<script data-cfasync="false" src="shared.js?v=1134"></script>
+<script data-cfasync="false" src="ui.js?v=1224"></script>
+<script data-cfasync="false" src="checkout.js?v=8"></script>
 
 <script>
 // ── Payment redirect verification (Stripe / Paystack return to topup.html) ──
