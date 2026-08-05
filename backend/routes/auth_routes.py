@@ -278,8 +278,11 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
         "email_verified": True,
     }
     user, _ = _resolve_social_user(db, info)
-    token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
+    if _totp_enabled(user):
+        pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
+        return {"requires_2fa": True, "pre_token": pre_token}
+    token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
@@ -312,8 +315,11 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         "email_verified": True,
     }
     user, _ = _resolve_social_user(db, info, id_field="github_id")
-    token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
+    if _totp_enabled(user):
+        pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
+        return {"requires_2fa": True, "pre_token": pre_token}
+    token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
@@ -662,6 +668,10 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
         await create_newapi_user(email=user.email, name=user.name, quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 callback: {e}")
+    twofa_redirect = _social_2fa_redirect(user)
+    if twofa_redirect:
+        db.close()
+        return twofa_redirect
     jwt_token = create_access_token({"sub": str(user.id)})
     refresh_token = generate_refresh_token(user.id, db)
     user_json = _url_quote(json.dumps({
@@ -706,6 +716,10 @@ async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query
         await create_newapi_user(email=user.email, name=user.name, quota=0)
     except Exception as e:
         print(f"⚠️ New API sync failed for Auth0 PKCE: {e}")
+    twofa_redirect = _social_2fa_redirect(user)
+    if twofa_redirect:
+        db.close()
+        return twofa_redirect
     jwt_token = create_access_token({"sub": str(user.id)})
     refresh_token = generate_refresh_token(user.id, db)
     user_json = _url_quote(json.dumps({
@@ -753,6 +767,9 @@ async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLog
         except Exception as e:
             print(f"⚠️ New API sync failed for Auth0 password user: {e}")
 
+    if _totp_enabled(user):
+        pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
+        return {"requires_2fa": True, "pre_token": pre_token}
     jwt_token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
     return {
@@ -1058,6 +1075,23 @@ def _totp_enabled(user) -> bool:
 
 def _totp_secret(user) -> str:
     return _totp_settings(user).get("totp_secret", "")
+
+
+def _social_2fa_redirect(user):
+    """If 2FA is enabled, redirect to the challenge page with a short-lived pre_token.
+
+    Used by redirect-based social logins (Auth0 callback / PKCE) where the
+    browser flow can't show an inline prompt. Returns None when 2FA is off.
+    """
+    if not _totp_enabled(user):
+        return None
+    from starlette.responses import RedirectResponse
+    from urllib.parse import urlencode
+    pre_token = create_access_token(
+        {"sub": str(user.id), "scope": "2fa"}, expires_minutes=5
+    )
+    qs = urlencode({"pre": pre_token, "next": "/dashboard.html"})
+    return RedirectResponse(url=f"https://glbtoken.com/2fa-challenge.html?{qs}")
 
 
 @router.get("/api/auth/2fa/status")

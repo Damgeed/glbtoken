@@ -6,7 +6,7 @@ from sqlalchemy import desc, func
 from typing import Optional
 import secrets
 
-from database import get_db, User, Transaction, AIModel
+from database import get_db, User, Transaction, AIModel, AdminLog
 from auth import get_current_user, get_optional_user
 from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET
 from schemas import AdminBalanceRequest, SyncUsersRequest
@@ -14,6 +14,37 @@ from schemas import AdminBalanceRequest, SyncUsersRequest
 router = APIRouter()
 
 MAX_ADMIN_PAGE_SIZE = 100
+
+
+def _client_ip(request) -> str:
+    """Real client IP — trust the validated proxy header, not client-supplied XFF."""
+    try:
+        if request.client and request.client.host:
+            return request.client.host
+        fwd = request.headers.get("x-forwarded-for", "")
+        if fwd:
+            return fwd.split(",")[-1].strip()
+    except Exception:
+        pass
+    return ""
+
+
+def _audit(db: Session, admin, action: str, target=None, detail: str = "", ip: str = ""):
+    """Append an immutable admin audit log row."""
+    try:
+        db.add(AdminLog(
+            admin_id=admin.id if admin else 0,
+            admin_email=admin.email if admin else "system",
+            action=action,
+            target_user_id=target.id if target else None,
+            target_email=target.email if target else None,
+            detail=detail,
+            ip_address=ip or "",
+        ))
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"⚠️ Audit log failed: {e}")
 
 
 # ── Admin Endpoints ──
@@ -54,6 +85,12 @@ def admin_adjust_balance(req: AdminBalanceRequest, request: Request, user: User 
     )
     db.add(tx)
     db.commit()
+    _audit(
+        db, user, "adjust_balance", target=target,
+        detail=f'{{"tokens": {req.tokens}, "reason": "{req.reason}", '
+               f'"new_balance": {target.token_balance}}}',
+        ip=_client_ip(request),
+    )
     return {"status": "adjusted", "new_balance": target.token_balance}
 
 
@@ -175,6 +212,11 @@ async def admin_sync_users(
         _500("Sync failed. Please try again.")
 
     res = result_container.get("result")
+    _audit(
+        db, user if (user and user.is_admin) else None, "sync_users",
+        detail=f'{{"synced": {res.created if res else 0}, "failed": {res.failed if res else 0}}}',
+        ip=_client_ip(request),
+    )
     return {
         "status": "ok",
         "total_users": total,
@@ -183,6 +225,31 @@ async def admin_sync_users(
         "skipped": total - unsynced,
         "errors": (res.errors[:20] if res and res.errors else []),
         "message": f"Synced {res.created} user(s), {res.failed} failed." if res else "Sync completed",
+    }
+
+
+@router.get("/api/admin/audit")
+@limiter.limit("30/minute")
+def admin_audit_log(request: Request, page: int = 1, per_page: int = 50, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Admin audit trail (adjust-balance, delete-user, sync-users)."""
+    if not user.is_admin:
+        _403("Admin access required")
+    per_page = max(1, min(per_page, MAX_ADMIN_PAGE_SIZE))
+    total = db.query(func.count(AdminLog.id)).scalar()
+    logs = db.query(AdminLog).order_by(desc(AdminLog.created_at)).offset((page-1)*per_page).limit(per_page).all()
+    return {
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "logs": [{
+            "id": l.id,
+            "admin_email": l.admin_email,
+            "action": l.action,
+            "target_email": l.target_email,
+            "detail": l.detail,
+            "ip_address": l.ip_address,
+            "created_at": l.created_at.isoformat() if l.created_at else None,
+        } for l in logs]
     }
 
 
@@ -236,5 +303,10 @@ def admin_delete_user(
     email = target.email
     db.delete(target)
     db.commit()
+    _audit(
+        db, user if (user and user.is_admin) else None, "delete_user",
+        detail=f'{{"deleted_user_id": {uid}, "deleted_email": "{email}"}}',
+        ip=_client_ip(request),
+    )
     return {"status": "deleted", "user_id": uid, "email": email}
 

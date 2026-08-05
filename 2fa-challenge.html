@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Two-Factor Verification — GlbTOKEN</title>
+<meta name="robots" content="noindex,nofollow" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://glbtoken-backend-production.up.railway.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0B14;--card:#161822;--border:#2A2B3D;--text:#E6E9F2;--muted:#7F8490;--primary:#F4B400;--danger:#FF6B6B;--ok:#00D68F}
+body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 1.75rem;max-width:400px;width:100%;text-align:center}
+.logo{font-size:1.6rem;font-weight:700;letter-spacing:-0.02em}
+.logo .g{color:var(--primary)}
+.logo .t{color:var(--text)}
+h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
+.sub{font-size:0.85rem;color:var(--muted);line-height:1.5;margin-bottom:1.5rem}
+.code-input{width:100%;padding:0.85rem;font-size:1.25rem;letter-spacing:0.35em;text-align:center;background:#0E101C;border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:ui-monospace,Menlo,monospace;outline:none;transition:border-color 0.2s}
+.code-input:focus{border-color:var(--primary)}
+.btn{width:100%;padding:0.85rem;margin-top:1rem;border:none;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;background:var(--primary);color:#141414;transition:opacity 0.2s}
+.btn:hover{opacity:0.9}
+.btn:disabled{opacity:0.5;cursor:default}
+.error{display:none;margin-top:0.9rem;font-size:0.82rem;color:var(--danger);background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:8px;padding:0.6rem 0.75rem;text-align:left}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(20,20,20,0.3);border-top-color:#141414;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn.loading .spinner{display:inline-block;vertical-align:middle;margin-right:0.5rem}
+.btn.loading span{vertical-align:middle}
+.back{margin-top:1.25rem;font-size:0.8rem}
+.back a{color:var(--muted);text-decoration:none}
+.back a:hover{color:var(--primary)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><span class="g">Glb</span><span class="t">TOKEN</span></div>
+  <h1>Two-Factor Verification</h1>
+  <p class="sub">Enter the 6-digit code from your authenticator app to finish signing in.</p>
+  <input type="text" id="code" class="code-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="••••••" aria-label="Authenticator code" />
+  <button class="btn" id="verifyBtn" onclick="verifyCode()"><span>Verify &amp; Continue</span><span class="spinner"></span></button>
+  <div class="error" id="errorBox"></div>
+  <div class="back"><a href="login.html">← Back to sign in</a></div>
+</div>
+<script>
+(function(){
+  var API_URL = 'https://glbtoken-backend-production.up.railway.app';
+  var params = new URLSearchParams(window.location.search);
+  var preToken = params.get('pre') || '';
+  var next = params.get('next') || '/dashboard.html';
+
+  if(!preToken){
+    window.location.replace('/login.html?error=missing_2fa_session');
+    return;
+  }
+
+  var input = document.getElementById('code');
+  var btn = document.getElementById('verifyBtn');
+  var errBox = document.getElementById('errorBox');
+
+  input.addEventListener('input', function(){
+    errBox.style.display = 'none';
+    if(input.value.length === 6) verifyCode();
+  });
+
+  window.verifyCode = function(){
+    var code = input.value.trim();
+    if(code.length < 6){ showErr('Enter the 6-digit code from your authenticator app.'); return; }
+    btn.disabled = true; btn.classList.add('loading');
+    errBox.style.display = 'none';
+    fetch(API_URL + '/api/auth/2fa/confirm', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({pre_token: preToken, code: code})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.token){
+        try{
+          sessionStorage.setItem('gt_token', d.token);
+          var secure = window.__secure || {setItem:function(k,v){localStorage.setItem(k,v)}};
+          if(d.refresh_token) secure.setItem('gt_refresh_token', d.refresh_token);
+          secure.setItem('gt_user', JSON.stringify(d.user || {}));
+        }catch(e){}
+        // Same token-in-URL format the Auth0 callback uses for dashboard.html
+        var q = 'token=' + encodeURIComponent(d.token);
+        if(d.refresh_token) q += '&refresh=' + encodeURIComponent(d.refresh_token);
+        if(d.user) q += '&user=' + encodeURIComponent(JSON.stringify(d.user));
+        q += '&_ts=' + Date.now();
+        window.location.replace(next + (next.indexOf('?') > -1 ? '&' : '?') + q);
+      } else {
+        btn.disabled = false; btn.classList.remove('loading');
+        showErr((d && d.detail) || 'Invalid code — please try again.');
+        input.value = ''; input.focus();
+      }
+    })
+    .catch(function(){
+      btn.disabled = false; btn.classList.remove('loading');
+      showErr('Network error — please try again.');
+    });
+  };
+
+  function showErr(msg){
+    errBox.textContent = msg;
+    errBox.style.display = 'block';
+  }
+
+  input.focus();
+})();
+</script>
+</body>
+</html>

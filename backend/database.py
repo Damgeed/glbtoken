@@ -266,6 +266,20 @@ class Conversation(Base):
     user = relationship("User", backref="conversations")
 
 
+class AdminLog(Base):
+    """Immutable audit trail for privileged admin actions."""
+    __tablename__ = "admin_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    admin_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    admin_email = Column(String, nullable=False)
+    action = Column(String, nullable=False)          # e.g. adjust_balance, delete_user, sync_users
+    target_user_id = Column(Integer, nullable=True)
+    target_email = Column(String, nullable=True)
+    detail = Column(Text, default="")                # JSON: tokens, reason, before/after
+    ip_address = Column(String, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)
