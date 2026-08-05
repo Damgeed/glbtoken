@@ -684,6 +684,10 @@
   .member-filters { align-items: center; gap: 0.1rem; }
   .member-filters .filter-chips { gap: 0.1rem; }
   .member-filters .chip { padding: 0.45rem 0.24rem; font-size: 0.64rem; }
+  /* Per-chip counts (All 3 / Owner 1) add too much width on small screens —
+     hide them on mobile so chips + sort + export stay on ONE line. The title
+     pill already shows the total member count. */
+  .member-filters .chip-count { display: none; }
   .member-filters-right {
     width: auto;
     margin-left: auto;
