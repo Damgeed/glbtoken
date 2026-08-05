@@ -31,7 +31,9 @@
         btn.disabled=false;btn.textContent='Continue';
       }
     }
+    var _login2faPreToken = null;
     async function verifyLoginCode(){
+      if(_login2faPreToken) return verifyTwoFA();
       const email=document.getElementById('loginEmail').value.trim();
       const code=document.getElementById('loginCode').value.trim();
       if(!code||code.length<4){
@@ -43,6 +45,16 @@
       try{
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
         if(!data) return;
+        if(data.requires_2fa){
+          _login2faPreToken = data.pre_token;
+          var lbl=document.querySelector('#loginCodeGroup label');
+          if(lbl) lbl.textContent='Authenticator Code';
+          var inp=document.getElementById('loginCode');
+          if(inp){ inp.value=''; inp.placeholder='Enter 6-digit code from your app'; inp.focus(); }
+          setBtnLoading(btn, false, 'Verify 2FA');
+          showToast('Enter your authenticator code','info');
+          return;
+        }
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
@@ -50,6 +62,27 @@
         afterLoginRedirect();
       } catch(e){
         showToast('Login failed','error');
+      }
+    }
+    async function verifyTwoFA(){
+      const code=document.getElementById('loginCode').value.trim();
+      if(!code||code.length<6){
+        showToast('Enter the 6-digit code from your authenticator app','error');
+        return
+      }
+      const btn=document.getElementById('loginVerifyBtn');
+      setBtnLoading(btn, true, 'Verifying');
+      try{
+        var data=await safeApi('POST','/api/auth/2fa/confirm',{pre_token:_login2faPreToken,code:code});
+        if(!data) return;
+        _login2faPreToken=null;
+        token=data.token;userData=data.user;
+        try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
+        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        applyAuth();showToast('Welcome back!','success');
+        afterLoginRedirect();
+      } catch(e){
+        showToast('2FA verification failed','error');
       }
     }
     async function sendRegisterCode(){

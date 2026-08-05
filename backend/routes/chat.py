@@ -8,7 +8,7 @@ import json
 from database import get_db, User, AIModel, Conversation, Transaction
 from auth import get_current_user
 from newapi_integration import get_user_models
-from common import _400, _402, _404, _502, limiter, NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL
+from common import _400, _402, _404, _502, limiter, NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL, _user_setting, send_alert_email
 from routes.referrals import grant_referral_reward
 from schemas import ProxyChatRequest, PlaygroundChatRequest, SaveConversationRequest
 
@@ -32,6 +32,48 @@ def _atomic_deduct(db: Session, user: User, cost: int):
         db.rollback()
         _402("Insufficient balance")
     db.refresh(user)
+    _maybe_low_balance_alert(user, db)
+
+
+LOW_BALANCE_THRESHOLD = 1000  # 1000 tokens = $1 (GLOBTOKEN_TOKENS_PER_USD)
+LOW_BALANCE_REARM = 2000      # re-arm alert only after balance recovers above this
+
+
+def _maybe_low_balance_alert(user: User, db: Session):
+    """Email once when balance drops below $1; re-arm after user tops up.
+
+    Dedup flag lives in user.settings (`low_balance_sent`) so a burst of
+    messages can't spam the inbox — one alert per low-balance episode.
+    """
+    try:
+        if not _user_setting(user, "low_balance_alert", True):
+            return
+        balance = user.token_balance or 0
+        import json
+        try:
+            s = json.loads(user.settings) if user.settings else {}
+        except (json.JSONDecodeError, TypeError):
+            s = {}
+        sent = s.get("low_balance_sent", False)
+        if balance < LOW_BALANCE_THRESHOLD and not sent:
+            s["low_balance_sent"] = True
+            user.settings = json.dumps(s)
+            db.commit()
+            usd = balance / 1000.0
+            send_alert_email(
+                user,
+                "GlbTOKEN — low balance",
+                f"Your GlbTOKEN balance is {balance} tokens (${usd:.2f}).\n\n"
+                f"Top up soon to avoid interrupted API calls.\n"
+                f"https://glbtoken.com/topup.html",
+            )
+        elif balance >= LOW_BALANCE_REARM and sent:
+            s["low_balance_sent"] = False
+            user.settings = json.dumps(s)
+            db.commit()
+    except Exception as e:
+        print(f"⚠️ Low-balance alert failed: {e}")
+        db.rollback()
 
 
 # ── API Proxy (via New API) ──

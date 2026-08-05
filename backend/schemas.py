@@ -47,6 +47,15 @@ class VerifyCodeRequest(BaseModel):
     src: str = ""  # optional channel attribution (twitter/whatsapp/telegram/email/facebook/linkedin)
 
 
+class TwoFactorCodeRequest(BaseModel):
+    code: str
+
+
+class TwoFactorConfirmRequest(BaseModel):
+    pre_token: str
+    code: str
+
+
 class SendSmsCodeRequest(BaseModel):
     phone: str
 

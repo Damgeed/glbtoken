@@ -144,3 +144,36 @@ def _safe_error(msg: str) -> str:
     if len(first_line) > 200:
         first_line = first_line[:197] + '...'
     return _url_quote(first_line)
+
+
+# ── Alert Helpers (login alerts, low-balance alerts) ──
+
+def _user_setting(user, key: str, default=True):
+    """Read a user's settings JSON flag safely (never raises)."""
+    import json
+    try:
+        s = json.loads(user.settings) if user.settings else {}
+    except (json.JSONDecodeError, TypeError):
+        s = {}
+    return s.get(key, default)
+
+
+def send_alert_email(user, subject: str, body: str):
+    """Fire-and-forget alert email that respects the user's email_notifications pref.
+
+    SMTP is sync and can block up to 15s — run in a daemon thread so API
+    latency is never affected by a slow/stuck mail server.
+    """
+    import threading
+    if not _user_setting(user, "email_notifications", True):
+        return
+    if not getattr(user, "email", None):
+        return
+    try:
+        from routes.auth_routes import send_email
+        threading.Thread(
+            target=send_email, args=(user.email, subject, body), daemon=True
+        ).start()
+    except Exception as e:
+        print(f"⚠️ Failed to queue alert email: {e}")
+

@@ -135,8 +135,19 @@
             <div><label class="settings-field-label">New Password</label><input type="password" id="settingsNewPw" placeholder="Enter new password" class="settings-input" autocomplete="new-password"></div>
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-              <div><div class="settings-item-name-sm">Two-Factor Auth</div><div class="settings-item-desc-sm">Add an extra layer of security</div></div>
-              <button class="btn-secondary settings-btn-right" onclick="showToast('2FA coming soon','info')">Enable</button>
+              <div style="flex:1"><div class="settings-item-name-sm">Two-Factor Auth</div><div class="settings-item-desc-sm" id="twofaStatusDesc">Add an extra layer of security</div></div>
+              <button class="btn-secondary settings-btn-right" id="twofaToggleBtn" onclick="toggleTwoFA()">Enable</button>
+            </div>
+            <div id="twofaSetupArea" class="d-none" style="margin-top:0.75rem;padding:0.75rem;border:1px solid var(--border);border-radius:10px;background:var(--card-bg)">
+              <div class="settings-item-desc-sm" id="twofaSetupDesc" style="margin-bottom:0.5rem"></div>
+              <div id="twofaSecretRow" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+                <code id="twofaSecret" style="flex:1;background:var(--bg);padding:0.4rem 0.6rem;border-radius:6px;font-size:0.78rem;word-break:break-all;color:var(--text)"></code>
+                <button class="btn-secondary btn-copy" onclick="copyTwoFASecret()">Copy</button>
+              </div>
+              <div style="display:flex;gap:0.5rem">
+                <input type="text" id="twofaCode" placeholder="6-digit code" maxlength="6" inputmode="numeric" class="settings-input" style="flex:1" autocomplete="one-time-code">
+                <button class="btn-primary" id="twofaConfirmBtn" onclick="confirmTwoFA()">Confirm</button>
+              </div>
             </div>
             <div class="settings-btn-mt"><button class="settings-btn-full" onclick="updatePassword()">Update Password</button></div>
           </div>
@@ -234,6 +245,104 @@ window.updatePassword = function(){
     console.error(e);
   });
 };
+
+// ── Two-Factor Auth (TOTP) ──
+var _twofaMode = 'setup'; // 'setup' | 'disable'
+
+window.checkTwoFAStatus = function(){
+  fetch(API_URL + '/api/auth/2fa/status', {headers:{'Authorization':'Bearer '+(token||'')}})
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    var btn = document.getElementById('twofaToggleBtn');
+    var desc = document.getElementById('twofaStatusDesc');
+    if(d && d.enabled){
+      btn.textContent = 'Disable';
+      desc.textContent = 'Two-factor auth is ON — an authenticator code is required to sign in';
+    } else {
+      btn.textContent = 'Enable';
+      desc.textContent = 'Add an extra layer of security';
+    }
+  })
+  .catch(function(){});
+};
+
+window.toggleTwoFA = function(){
+  var btn = document.getElementById('twofaToggleBtn');
+  var area = document.getElementById('twofaSetupArea');
+  var desc = document.getElementById('twofaSetupDesc');
+  var secretRow = document.getElementById('twofaSecretRow');
+  var codeInput = document.getElementById('twofaCode');
+  var confirmBtn = document.getElementById('twofaConfirmBtn');
+  if(btn.textContent === 'Disable'){
+    _twofaMode = 'disable';
+    desc.textContent = 'Enter a current authenticator code to turn off two-factor auth:';
+    secretRow.style.display = 'none';
+    confirmBtn.textContent = 'Disable 2FA';
+    area.classList.remove('d-none');
+    codeInput.value = '';
+    codeInput.focus();
+  } else {
+    // Start setup: fetch a fresh secret
+    fetch(API_URL + '/api/auth/2fa/setup', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+(token||'')}})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.secret){
+        _twofaMode = 'setup';
+        document.getElementById('twofaSecret').textContent = d.secret;
+        desc.textContent = 'Add this secret to your authenticator app (Google Authenticator, Authy, 1Password), then enter the 6-digit code:';
+        secretRow.style.display = 'flex';
+        confirmBtn.textContent = 'Confirm Enable';
+        area.classList.remove('d-none');
+        codeInput.value = '';
+        codeInput.focus();
+      } else {
+        showToast((d && d.detail) || 'Failed to start 2FA setup','error');
+      }
+    })
+    .catch(function(){ showToast('Failed to start 2FA setup','error'); });
+  }
+};
+
+window.copyTwoFASecret = function(){
+  var s = document.getElementById('twofaSecret').textContent;
+  if(!s) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject())
+    .then(function(){ showToast('Secret copied','success'); })
+    .catch(function(){
+      var ta = document.createElement('textarea');
+      ta.value = s; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); showToast('Secret copied','success'); }catch(e){ showToast('Copy failed — select the secret manually','error'); }
+      document.body.removeChild(ta);
+    });
+};
+
+window.confirmTwoFA = function(){
+  var code = document.getElementById('twofaCode').value.trim();
+  if(!code || code.length < 6){ showToast('Enter the 6-digit code from your authenticator app','error'); return; }
+  var btn = document.getElementById('twofaConfirmBtn');
+  var endpoint = _twofaMode === 'disable' ? '/api/auth/2fa/disable' : '/api/auth/2fa/enable';
+  btn.disabled = true;
+  fetch(API_URL + endpoint, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({code: code})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    btn.disabled = false;
+    if(d && (d.status === 'enabled' || d.status === 'disabled')){
+      showToast(d.status === 'enabled' ? 'Two-factor auth enabled!' : 'Two-factor auth disabled','success');
+      document.getElementById('twofaSetupArea').classList.add('d-none');
+      document.getElementById('twofaCode').value = '';
+      checkTwoFAStatus();
+    } else {
+      showToast((d && d.detail) || 'Invalid code — try again','error');
+    }
+  })
+  .catch(function(){ btn.disabled = false; showToast('Failed — try again','error'); });
+};
+
+checkTwoFAStatus();
 
 window.saveNotificationSettings = function(){
   var settings = {

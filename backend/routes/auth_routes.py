@@ -22,11 +22,12 @@ from auth0 import (
     get_social_login_url, send_passwordless_code, verify_passwordless_code,
     send_sms_code, verify_sms_code
 )
-from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL
+from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email
 from schemas import (
     RegisterRequest, LoginRequest, GoogleAuthRequest, GithubAuthRequest,
     Auth0LoginRequest, SendCodeRequest, VerifyCodeRequest,
     SendSmsCodeRequest, VerifySmsCodeRequest, Auth0PasswordLoginRequest,
+    TwoFactorCodeRequest, TwoFactorConfirmRequest,
     Auth0SignupRequest, OptionalEmailRequest, VerifyEmailRequest,
     ForgotPasswordRequest, ChangePasswordRequest, ResetPasswordRequest,
     ProfileUpdateRequest,
@@ -206,6 +207,25 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
         record_login_event(0, request, False, db)
         _401("Invalid credentials")
     record_login_event(user.id, request, True, db)
+    # ── 2FA gate: if TOTP is enabled, don't hand out the real token yet ──
+    if _totp_enabled(user):
+        pre_token = create_access_token(
+            {"sub": str(user.id), "scope": "2fa"}, expires_minutes=5
+        )
+        return {"requires_2fa": True, "pre_token": pre_token}
+    # Login alert email (fire-and-forget, respects user prefs)
+    if _user_setting(user, "login_alerts", True):
+        try:
+            from routes.auth_routes import _client_ip
+            ip = _client_ip(request)
+            send_alert_email(
+                user,
+                "GlbTOKEN — new sign-in",
+                f"Your GlbTOKEN account was just signed in from {ip}.\n\n"
+                f"If this was you, no action needed. If not, reset your password immediately.",
+            )
+        except Exception as e:
+            print(f"⚠️ Login alert failed: {e}")
     token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "country": user.country}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
@@ -377,6 +397,12 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
     
     jwt_token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
+    # ── 2FA gate: if TOTP is enabled, don't hand out the real token yet ──
+    if _totp_enabled(user):
+        pre_token = create_access_token(
+            {"sub": str(user.id), "scope": "2fa"}, expires_minutes=5
+        )
+        return {"requires_2fa": True, "pre_token": pre_token}
     return {
         "token": jwt_token,
         "user": {
@@ -455,6 +481,12 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
     
     jwt_token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
+    # ── 2FA gate: if TOTP is enabled, don't hand out the real token yet ──
+    if _totp_enabled(user):
+        pre_token = create_access_token(
+            {"sub": str(user.id), "scope": "2fa"}, expires_minutes=5
+        )
+        return {"requires_2fa": True, "pre_token": pre_token}
     return {
         "token": jwt_token,
         "user": {
@@ -1006,3 +1038,112 @@ def send_email(to: str, subject: str, body: str) -> bool:
     except Exception as e:
         print(f"📧 SMTP FAILED to {to}: {e}")
         return False
+
+
+# ── Two-Factor Auth (TOTP) ──
+
+def _totp_settings(user):
+    """Return the settings dict + totp fields safely."""
+    import json
+    try:
+        s = json.loads(user.settings) if user.settings else {}
+    except (json.JSONDecodeError, TypeError):
+        s = {}
+    return s
+
+
+def _totp_enabled(user) -> bool:
+    return bool(_totp_settings(user).get("totp_enabled"))
+
+
+def _totp_secret(user) -> str:
+    return _totp_settings(user).get("totp_secret", "")
+
+
+@router.get("/api/auth/2fa/status")
+def twofa_status(user: User = Depends(get_current_user)):
+    """Whether TOTP 2FA is enabled for the current user."""
+    return {"enabled": _totp_enabled(user)}
+
+
+@router.post("/api/auth/2fa/setup")
+def twofa_setup(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Generate a TOTP secret (staged, not enabled until verified)."""
+    if _totp_enabled(user):
+        _400("Two-factor auth is already enabled")
+    from totp import generate_secret, otpauth_url
+    secret = generate_secret()
+    s = _totp_settings(user)
+    s["totp_pending_secret"] = secret
+    user.settings = json.dumps(s)
+    db.commit()
+    return {
+        "secret": secret,
+        "otpauth_url": otpauth_url(secret, user.email),
+    }
+
+
+@router.post("/api/auth/2fa/enable")
+def twofa_enable(req: TwoFactorCodeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Verify a code from the staged secret, then enable 2FA."""
+    from totp import verify
+    s = _totp_settings(user)
+    pending = s.get("totp_pending_secret", "")
+    if not pending:
+        _400("No pending 2FA setup — call setup first")
+    if not verify(pending, req.code):
+        _400("Invalid authenticator code")
+    s["totp_secret"] = pending
+    s["totp_enabled"] = True
+    s.pop("totp_pending_secret", None)
+    user.settings = json.dumps(s)
+    db.commit()
+    return {"status": "enabled"}
+
+
+@router.post("/api/auth/2fa/disable")
+def twofa_disable(req: TwoFactorCodeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Verify a current code, then disable 2FA."""
+    from totp import verify
+    secret = _totp_secret(user)
+    if not secret:
+        _400("Two-factor auth is not enabled")
+    if not verify(secret, req.code):
+        _400("Invalid authenticator code")
+    s = _totp_settings(user)
+    s.pop("totp_secret", None)
+    s.pop("totp_enabled", None)
+    s.pop("totp_pending_secret", None)
+    user.settings = json.dumps(s)
+    db.commit()
+    return {"status": "disabled"}
+
+
+@router.post("/api/auth/2fa/confirm")
+@limiter.limit("10/minute")
+def twofa_confirm(req: TwoFactorConfirmRequest, request: Request, db: Session = Depends(get_db)):
+    """Exchange a short-lived pre_token + TOTP code for a full auth response."""
+    from totp import verify
+    from auth import decode_token
+    payload = decode_token(req.pre_token)
+    if not payload or payload.get("scope") != "2fa":
+        _401("Invalid or expired 2FA session")
+    user = db.query(User).filter(User.id == int(payload["sub"])).first()
+    if not user:
+        _401("User not found")
+    if not verify(_totp_secret(user), req.code):
+        _401("Invalid authenticator code")
+    token = create_access_token({"sub": str(user.id)})
+    record_login_event(user.id, request, True, db)
+    auth = _auth_response(user, db)
+    return {
+        "token": token,
+        "refresh_token": auth["refresh_token"],
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "token_balance": user.token_balance,
+            "country": user.country,
+        },
+    }
