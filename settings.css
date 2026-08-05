@@ -375,6 +375,16 @@ button.settings-save-btn:hover {
   background: var(--primary);
   flex-shrink: 0;
 }
+/* Compact cards mode (Settings Appearance toggle) */
+body.compact-cards .dash-card {
+  padding: 0.9rem 1.1rem;
+}
+body.compact-cards .dash-card .settings-field-group {
+  gap: 0.5rem;
+}
+body.compact-cards .toggle-row {
+  padding: 0.45rem 0;
+}
 /* Avatar wrapper */
 .settings-avatar-wrap {
   display: flex;

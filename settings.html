@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1204" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1028" />
+<link rel="stylesheet" href="settings.css?v=1029" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -70,10 +70,6 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Settings
       </a>
-      <a class="dash-sidebar-item" href="settings.html">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        Notifications
-      </a>
       <a class="dash-sidebar-item" href="usage.html">
         <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         Usage &amp; History
@@ -122,8 +118,7 @@
           <div class="settings-field-group">
             <div><label class="settings-field-label">Full Name</label><input type="text" id="settingsName" value="User" class="settings-input"></div>
             <div><label class="settings-field-label">Email</label><input type="email" id="settingsEmail" value="admin@glbtoken.com" disabled class="settings-input"></div>
-            <div><label class="settings-field-label">Timezone</label>
-              <select id="settingsTz" class="settings-input"><option value="UTC+0">UTC+0 (GMT)</option><option value="UTC+1">UTC+1 (CET)</option><option value="UTC+8">UTC+8 (SGT)</option><option value="UTC-5">UTC-5 (EST)</option></select></div>
+            <div><label class="settings-field-label">Country</label><input type="text" id="settingsCountry" placeholder="e.g. Ghana, Kenya, Singapore" class="settings-input" autocomplete="country-name"></div>
             <button class="settings-save-btn" onclick="saveProfile()">Save Changes</button>
           </div>
         </div>
@@ -166,7 +161,52 @@
               <div><div class="toggle-label">Login Alerts</div><div class="toggle-desc">Email when a new device signs in</div></div>
               <label class="toggle-switch"><input type="checkbox" id="notifLogin" /><span class="toggle-slider"></span></label>
             </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Product Updates</div><div class="toggle-desc">New models, features &amp; platform news</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="notifProduct" /><span class="toggle-slider"></span></label>
+            </div>
             <button class="settings-save-btn" onclick="saveNotificationSettings()">Save Notification Preferences</button>
+          </div>
+        </div>
+        <div class="dash-card">
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9 2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9 2.83-2.83"/></svg> Appearance</h3>
+          <div class="settings-field-group">
+            <div class="toggle-row">
+              <div><div class="toggle-label">Dark Mode</div><div class="toggle-desc">GlbTOKEN looks best in the dark</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="setDarkMode" onchange="saveAppearance()" /><span class="toggle-slider"></span></label>
+            </div>
+            <div><label class="settings-field-label">Interface Language</label>
+              <select id="setLang" class="settings-input" onchange="switchLanguage(this.value)">
+                <option value="en">🇬🇧 English</option>
+                <option value="zh-CN">🇨🇳 中文</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="de">🇩🇪 Deutsch</option>
+              </select>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Compact Cards</div><div class="toggle-desc">Tighter spacing on dashboard cards</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="setCompact" onchange="saveAppearance()" /><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> API Defaults</h3>
+          <div class="settings-field-group">
+            <div><label class="settings-field-label">Default Model</label>
+              <select id="setDefaultModel" class="settings-input"><option value="">— Platform default —</option></select>
+            </div>
+            <div><label class="settings-field-label">Temperature</label>
+              <input type="number" id="setDefaultTemp" min="0" max="2" step="0.1" value="0.7" class="settings-input">
+            </div>
+            <div><label class="settings-field-label">Max Tokens</label>
+              <input type="number" id="setDefaultMaxTokens" min="1" max="128000" step="1" value="4096" class="settings-input">
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Stream Responses</div><div class="toggle-desc">Token-by-token streaming by default</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="setDefaultStream" checked /><span class="toggle-slider"></span></label>
+            </div>
+            <button class="settings-save-btn" onclick="saveApiDefaults()">Save API Defaults</button>
           </div>
         </div>
       </div>
@@ -203,6 +243,72 @@
         <div id="notifEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No notifications yet</div></div>
         <div class="settings-center-mt"><button class="btn-secondary settings-center-text" onclick="markAllRead()">Mark All as Read</button></div>
       </div>
+
+      <!-- Login History -->
+      <div class="settings-card" style="margin-top:1rem">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Login History
+        </div>
+        <div class="settings-item-desc-sm" style="margin-bottom:0.75rem">Recent sign-in activity across all devices. If you see something unfamiliar, change your password and enable two-factor auth.</div>
+        <div class="settings-flex" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem">
+          <input type="text" id="loginDateFilter" placeholder="Filter by date" class="settings-input" style="max-width:160px;padding:0.45rem 0.6rem;font-size:0.78rem" oninput="filterLoginHistory()">
+          <select id="loginDeviceFilter" class="settings-input" style="max-width:130px;padding:0.45rem 0.6rem;font-size:0.78rem" onchange="filterLoginHistory()">
+            <option value="all">All devices</option>
+            <option value="mobile">📱 Mobile</option>
+            <option value="desktop">💻 Desktop</option>
+          </select>
+          <select id="loginStatusFilter" class="settings-input" style="max-width:130px;padding:0.45rem 0.6rem;font-size:0.78rem" onchange="filterLoginHistory()">
+            <option value="all">All status</option>
+            <option value="success">Success</option>
+            <option value="failed">Failed</option>
+          </select>
+        </div>
+        <div class="tx-table-wrap">
+          <table class="tx-table">
+            <thead><tr><th>Device</th><th>Location</th><th>IP</th><th>Status</th><th>Time</th></tr></thead>
+            <tbody id="loginHistoryBody"></tbody>
+          </table>
+        </div>
+        <div class="settings-center-mt" id="loginLoadMoreWrap">
+          <button class="btn-secondary settings-center-text" id="loginLoadMore" onclick="loadLoginHistory()" style="display:none">Load More</button>
+        </div>
+      </div>
+
+      <!-- Data & Privacy -->
+      <div class="settings-card" style="margin-top:1rem">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          Data &amp; Privacy
+        </div>
+        <div class="settings-field-group">
+          <div class="settings-badge-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <div style="flex:1"><div class="settings-item-name-sm">Export My Data</div><div class="settings-item-desc-sm">Download your profile, transactions, keys and usage as JSON</div></div>
+            <button class="btn-secondary settings-btn-right" onclick="exportUserData()">Export</button>
+          </div>
+          <div class="settings-badge-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            <div style="flex:1"><div class="settings-item-name-sm">Clear Local Cache</div><div class="settings-item-desc-sm">Remove locally cached data (theme, language, dismissed notifications)</div></div>
+            <button class="btn-secondary settings-btn-right" onclick="clearLocalCache()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="settings-card" style="margin-top:1rem;border-color:rgba(255,77,79,0.35)">
+        <div class="dash-section-title" style="color:var(--destructive,#ff4d4f)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Danger Zone
+        </div>
+        <div class="settings-field-group">
+          <div class="settings-badge-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div style="flex:1"><div class="settings-item-name-sm">Delete Account</div><div class="settings-item-desc-sm">Permanently delete your account and all associated data. This action cannot be undone.</div></div>
+            <button class="btn-secondary settings-btn-right" style="border-color:rgba(255,77,79,0.5);color:var(--destructive,#ff4d4f)" onclick="deleteAccount()">Delete</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -238,12 +344,12 @@
 /* ── Settings Functions ── */
 window.saveProfile = function(){
   var name = document.getElementById('settingsName').value.trim();
-  var tz = document.getElementById('settingsTz').value;
+  var country = document.getElementById('settingsCountry').value.trim();
   if(!name){ showToast('Please enter your name','error'); return; }
   fetch(API_URL + '/api/user/profile', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
-    body: JSON.stringify({name: name, timezone: tz})
+    body: JSON.stringify({name: name, country: country})
   })
   .then(function(r){ return r.json().then(function(d){ return {ok: r.ok, d: d}; }); })
   .then(function(res){
@@ -460,7 +566,8 @@ window.saveNotificationSettings = function(){
   var settings = {
     email_notifications: document.getElementById('notifEmail').checked,
     low_balance_alert: document.getElementById('notifLowBalance').checked,
-    login_alerts: document.getElementById('notifLogin').checked
+    login_alerts: document.getElementById('notifLogin').checked,
+    product_updates: document.getElementById('notifProduct') ? document.getElementById('notifProduct').checked : undefined
   };
   fetch(API_URL + '/api/user/settings', {
     method: 'PUT',
@@ -491,6 +598,125 @@ window.markAllRead = function(){
   dots.forEach(function(d){ d.style.display = 'none'; });
   showToast('All notifications marked as read','success');
 };
+
+// ── Appearance ──
+window.saveAppearance = function(){
+  var dark = document.getElementById('setDarkMode').checked;
+  var h = document.documentElement;
+  h.classList.remove('dark','light');
+  h.classList.add(dark ? 'dark' : 'light');
+  localStorage.setItem('gt_theme', dark ? 'dark' : 'light');
+  var compact = document.getElementById('setCompact').checked;
+  localStorage.setItem('gt_compact', compact ? '1' : '0');
+  document.body.classList.toggle('compact-cards', compact);
+  // persist theme to backend (supported field)
+  safeApi('PUT','/api/user/settings', {theme: dark ? 'dark' : 'light'}, null, true);
+  showToast('Appearance saved!','success');
+};
+
+// ── API Defaults (localStorage — used by Playground/API clients) ──
+window.saveApiDefaults = function(){
+  var model = document.getElementById('setDefaultModel').value;
+  var temp = parseFloat(document.getElementById('setDefaultTemp').value);
+  var maxTok = parseInt(document.getElementById('setDefaultMaxTokens').value, 10);
+  var stream = document.getElementById('setDefaultStream').checked;
+  if(isNaN(temp) || temp < 0 || temp > 2){ showToast('Temperature must be between 0 and 2','error'); return; }
+  if(isNaN(maxTok) || maxTok < 1){ showToast('Max tokens must be at least 1','error'); return; }
+  localStorage.setItem('gt_def_model', model);
+  localStorage.setItem('gt_def_temp', String(temp));
+  localStorage.setItem('gt_def_max_tokens', String(maxTok));
+  localStorage.setItem('gt_def_stream', stream ? '1' : '0');
+  showToast('API defaults saved!','success');
+};
+
+// ── Data & Privacy ──
+window.exportUserData = function(){
+  showToast('Preparing your data…','');
+  Promise.all([
+    safeApi('GET','/api/user/profile',null,null,true).catch(function(){ return null; }),
+    safeApi('GET','/api/dashboard',null,null,true).catch(function(){ return null; }),
+    safeApi('GET','/api/transactions?limit=100',null,null,true).catch(function(){ return null; }),
+    safeApi('GET','/api/keys',null,null,true).catch(function(){ return null; })
+  ]).then(function(res){
+    var payload = {
+      exported_at: new Date().toISOString(),
+      profile: res[0] || null,
+      dashboard: res[1] || null,
+      transactions: (res[2] && res[2].items) || [],
+      api_keys: (res[3] && res[3].map ? res[3] : []) || []
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'glbtoken-data-export.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
+    showToast('Data exported!','success');
+  }).catch(function(){
+    showToast('Failed to export data','error');
+  });
+};
+
+window.clearLocalCache = function(){
+  showConfirm('Clear local cache?', 'This removes locally stored preferences (theme, language, compact mode, dismissed notifications). Your account data on our servers is not affected.', function(){
+    ['gt_theme','gt_compact','gt_lang','gt_def_model','gt_def_temp','gt_def_max_tokens','gt_def_stream','gt_dismissed_notifs','gt_read_notifs'].forEach(function(k){ localStorage.removeItem(k); });
+    showToast('Local cache cleared','success');
+    setTimeout(function(){ location.reload(); }, 600);
+  }, 'Clear');
+};
+
+// ── Danger Zone ──
+window.deleteAccount = function(){
+  showConfirm('Delete your account?', 'This permanently deletes your account, API keys, tokens and all associated data. This action cannot be undone. Please contact support@glbtoken.com if you need help.', function(){
+    showAlert('Account deletion requested', 'Please email support@glbtoken.com from your registered email address to confirm deletion. Our team will process it within 24 hours.');
+  }, 'I Understand');
+};
+
+// ── Load extended settings (appearance, api defaults, product notif) ──
+function loadSettingsExtras(){
+  // Appearance
+  var theme = (function(){ try{ return localStorage.getItem('gt_theme') || document.documentElement.className || 'dark'; }catch(e){ return 'dark'; } })();
+  var darkEl = document.getElementById('setDarkMode');
+  if(darkEl) darkEl.checked = theme !== 'light';
+  var compactEl = document.getElementById('setCompact');
+  if(compactEl) compactEl.checked = localStorage.getItem('gt_compact') === '1';
+  // Language
+  var langEl = document.getElementById('setLang');
+  if(langEl){
+    var lang = (function(){ try{ return localStorage.getItem('gt_lang') || 'en'; }catch(e){ return 'en'; } })();
+    langEl.value = lang;
+  }
+  // API defaults
+  var defModel = document.getElementById('setDefaultModel');
+  if(defModel){
+    safeApi('GET','/api/models',null,null,true).then(function(models){
+      if(Array.isArray(models)){
+        models.forEach(function(m){
+          var opt = document.createElement('option');
+          opt.value = m.model_id || m.id || '';
+          opt.textContent = (m.name || m.model_id || m.id) + (m.provider ? ' · ' + m.provider : '');
+          defModel.appendChild(opt);
+        });
+      }
+      var saved = localStorage.getItem('gt_def_model') || '';
+      if(saved) defModel.value = saved;
+    }).catch(function(){});
+    var tempEl = document.getElementById('setDefaultTemp');
+    if(tempEl && localStorage.getItem('gt_def_temp')) tempEl.value = localStorage.getItem('gt_def_temp');
+    var maxEl = document.getElementById('setDefaultMaxTokens');
+    if(maxEl && localStorage.getItem('gt_def_max_tokens')) maxEl.value = localStorage.getItem('gt_def_max_tokens');
+    var streamEl = document.getElementById('setDefaultStream');
+    if(streamEl) streamEl.checked = localStorage.getItem('gt_def_stream') !== '0';
+  }
+  // Product updates toggle from backend settings
+  safeApi('GET','/api/user/settings',null,null,true).then(function(d){
+    if(!d) return;
+    var pEl = document.getElementById('notifProduct');
+    if(pEl && typeof d.product_updates !== 'undefined') pEl.checked = !!d.product_updates;
+  });
+}
 
 // ── Notifications — real data (transactions / balance / API keys) ──
 var NOTIF_DISMISS_KEY = 'gt_dismissed_notifs';
@@ -604,8 +830,14 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('settingsName').value = storedUser;
     }
   }
+  // Load country from profile API (real field)
+  safeApi('GET','/api/user/profile',null,null,true).then(function(p){
+    if(p && p.country && document.getElementById('settingsCountry')) document.getElementById('settingsCountry').value = p.country;
+  });
   loadNotifications();
   loadNotifSettings();
+  loadSettingsExtras();
+  if(typeof loadLoginHistory === 'function') loadLoginHistory(0);
 });
 </script>
 
