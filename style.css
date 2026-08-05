@@ -5979,6 +5979,29 @@ body {
   width: 16px;
   height: 16px;
 }
+/* Labeled variant (desktop only): icon + text, e.g. [⬇ Export]
+   Mobile keeps icon-only 34px square — see media query below. */
+.keys-icon-btn .icon-btn-label {
+  display: none;
+  margin-left: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1;
+}
+@media (min-width: 768px) {
+  .keys-icon-btn.has-label,
+  .keys-controls-row .keys-icon-btn.has-label,
+  .keys-bulk-row .keys-icon-btn.has-label,
+  .member-bulk-bar .keys-icon-btn.has-label {
+    width: auto;
+    height: 34px;
+    padding: 0 0.7rem;
+  }
+  .keys-icon-btn.has-label .icon-btn-label {
+    display: inline-block;
+  }
+}
 .keys-icon-btn:hover {
   border-color: var(--primary);
   color: var(--primary);

@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1202" />
+  <link rel="stylesheet" href="style.css?v=1203" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1071" />
+<link rel="stylesheet" href="team.css?v=1072" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -228,15 +228,15 @@
             <option value="role">Role</option>
           </select>
           <div class="member-filters-right">
-            <button class="keys-icon-btn" id="memberBulkBtn" onclick="enterMemberBulkMode()" title="Select multiple members" aria-label="Select members" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></button>
-            <button class="keys-icon-btn" onclick="exportMembersCsv()" title="Export member list as CSV" aria-label="Export member list as CSV" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+            <button class="keys-icon-btn has-label" id="memberBulkBtn" onclick="enterMemberBulkMode()" title="Select multiple members" aria-label="Select members" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="icon-btn-label">Select</span></button>
+            <button class="keys-icon-btn has-label" onclick="exportMembersCsv()" title="Export member list as CSV" aria-label="Export member list as CSV" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="icon-btn-label">Export</span></button>
           </div>
         </div>
         <!-- Bulk action bar (replaces the search toolbar in bulk-select mode) -->
         <div class="member-bulk-bar" id="memberBulkBar" style="display:none">
           <span id="memberBulkCount" class="member-bulk-count">0 selected</span>
-          <button class="keys-icon-btn" onclick="memberBulkToggleAll()" title="Select all visible members" aria-label="Select all visible members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg></button>
-          <button class="keys-icon-btn keys-icon-danger" onclick="memberBulkRemove()" title="Remove selected members" aria-label="Remove selected members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          <button class="keys-icon-btn has-label" onclick="memberBulkToggleAll()" title="Select all visible members" aria-label="Select all visible members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg><span class="icon-btn-label">Select all</span></button>
+          <button class="keys-icon-btn has-label keys-icon-danger" onclick="memberBulkRemove()" title="Remove selected members" aria-label="Remove selected members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span class="icon-btn-label">Delete</span></button>
           <select id="memberBulkRole" class="tag-filter" onchange="memberBulkChangeRole(this.value)" title="Change role of selected members">
             <option value="">Set role…</option>
             <option value="admin">Admin</option>
