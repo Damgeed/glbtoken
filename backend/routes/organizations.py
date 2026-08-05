@@ -589,23 +589,26 @@ def get_org_usage(org_id: int, request: Request, user: User = Depends(get_curren
             "member_breakdown": [],
         }
     
+    # Per-member breakdown (batch queries — no N+1)
+    users = {u.id: u for u in db.query(User).filter(User.id.in_(member_ids)).all()}
+
     # Aggregate stats
     total_tokens_used = db.query(func.sum(Transaction.tokens)).filter(
         Transaction.user_id.in_(member_ids),
         Transaction.type == "consumption",
     ).scalar() or 0
     
-    total_transactions = db.query(Transaction).filter(
-        Transaction.user_id.in_(member_ids)
-    ).count()
-    
-    total_spent = db.query(func.sum(Transaction.amount)).filter(
+    total_transactions = db.query(func.count(Transaction.id)).filter(
         Transaction.user_id.in_(member_ids),
-        Transaction.type == "deposit",
-    ).scalar() or 0.0
+        Transaction.type == "consumption",  # API calls only — deposits are NOT calls
+    ).scalar() or 0
+    
+    # Total spend = the members' cumulative spend (user.total_spent is the
+    # canonical figure everywhere else — dashboard/analytics/auth). Summing
+    # deposit rows would double-count refunds and miss admin adjustments.
+    total_spent = sum(float(u.total_spent or 0) for u in users.values())
     
     # Per-member breakdown (batch queries — no N+1)
-    users = {u.id: u for u in db.query(User).filter(User.id.in_(member_ids)).all()}
     memberships = {m.user_id: m for m in db.query(OrgMember).filter(
         OrgMember.org_id == org_id, OrgMember.user_id.in_(member_ids)
     ).all()}
