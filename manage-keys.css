@@ -40,26 +40,6 @@
 .keys-title-actions .btn-action {
   white-space: nowrap;
 }
-.keys-icon-btn {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 9px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text-secondary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
-  flex-shrink: 0;
-}
-.keys-icon-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: rgba(244, 180, 0, 0.06);
-}
 @media (max-width: 480px) {
   .keys-title-actions .btn-action {
     padding: 0.5rem 0.7rem;
@@ -121,6 +101,54 @@
   border-color: #e5484d;
   color: #e5484d;
   background: rgba(229, 72, 77, 0.08);
+}
+
+/* ── Mobile: sort buttons + select/export symbols on ONE line ──
+   [↓Newest] [↑Oldest] [A-Z] [Usage] ......... [✓] [⬇]
+   Compact padding/font keeps all 6 items on a single row down to 320px. */
+@media (max-width: 480px) {
+  .keys-controls-row {
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+  }
+  .keys-controls-row .sort-btn {
+    padding: 0.32rem 0.5rem;
+    font-size: 0.72rem;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .keys-controls-row .keys-icon-btn {
+    width: 30px;
+    height: 30px;
+  }
+  .keys-controls-row .keys-icon-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+  .keys-io-group {
+    gap: 0.3rem;
+  }
+}
+@media (max-width: 340px) {
+  .keys-controls-row {
+    gap: 0.3rem;
+  }
+  .keys-controls-row .sort-btn {
+    padding: 0.28rem 0.38rem;
+    font-size: 0.66rem;
+    gap: 3px;
+  }
+  .keys-controls-row .keys-icon-btn {
+    width: 27px;
+    height: 27px;
+  }
+  .keys-controls-row .keys-icon-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .keys-io-group {
+    gap: 0.25rem;
+  }
 }
 
 /* ── Mobile: bigger edit (✎) tap target next to key names ── */

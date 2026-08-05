@@ -5932,6 +5932,39 @@ body {
   border-color: var(--primary);
   color: var(--primary);
 }
+
+/* ── Uniform icon button (export / select / bulk actions) ──
+   Shared across ALL pages so every Export CSV button looks identical.
+   Icon-only: 34px square, bordered, download/action SVG. */
+.keys-icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.keys-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.keys-icon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(244, 180, 0, 0.06);
+}
+.keys-icon-btn.keys-icon-danger:hover {
+  border-color: #e5484d;
+  color: #e5484d;
+  background: rgba(229, 72, 77, 0.08);
+}
 .sort-btn.active {
   background: var(--primary);
   color: #0a0b14;

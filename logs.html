@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1196" />
+  <link rel="stylesheet" href="style.css?v=1198" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1023" />
   </head>
@@ -213,7 +213,7 @@
               <button class="sort-btn badge" data-status="success" onclick="setLogsStatus('success')">Success</button>
               <button class="sort-btn badge" data-status="errors" onclick="setLogsStatus('errors')">Errors</button>
             </div>
-            <button class="btn-secondary btn-copy" onclick="exportLogsCsv()" title="Export current page as CSV">⬇ CSV</button>
+            <button class="keys-icon-btn" onclick="exportLogsCsv()" title="Export current page as CSV" aria-label="Export current page as CSV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
           </div>
         </div>
         <div class="logs-table-hint">Click a row for details</div>
