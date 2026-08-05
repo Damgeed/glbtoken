@@ -341,6 +341,10 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         _400("Invalid signature")
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
+        # stripe-python v15+ returns StripeObject (not dict) — it has no .get()
+        # and raises AttributeError on missing attrs. Normalize to a plain dict
+        # so optional-field reads (setup_future_usage / payment_method) are safe.
+        session = session.to_dict() if hasattr(session, "to_dict") else session
         # Save the card if the user checked "Save my card for future purchases".
         if session.get("setup_future_usage") == "off_session" and session.get("payment_method"):
             try:
