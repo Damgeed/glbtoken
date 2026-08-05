@@ -677,23 +677,24 @@
   .member-bulk-count { font-size: 0.75rem; }
 }
 @media (max-width: 767px) {
-  /* Chips + sort + export flow on ONE wrapping line so Name A–Z sits
-     inline with All/Owner/Admin/Member and the export button. Chips get
-     slightly compact so the whole row fits from 360px+. */
-  .member-filters { align-items: center; gap: 0.2rem; }
-  .member-filters .filter-chips { gap: 0.2rem; }
-  .member-filters .chip { padding: 0.45rem 0.4rem; font-size: 0.68rem; }
+  /* Chips + Name A–Z + bulk-select + export flow on ONE line so the whole
+     filter row stays inline with the buttons on mobile. The bulk toggle
+     (34px icon) joined this row in Stage 4, so chips/sort compact a little
+     more than before to fit from 375px+ (graceful wrap below 375px). */
+  .member-filters { align-items: center; gap: 0.1rem; }
+  .member-filters .filter-chips { gap: 0.1rem; }
+  .member-filters .chip { padding: 0.45rem 0.24rem; font-size: 0.64rem; }
   .member-filters-right {
     width: auto;
     margin-left: auto;
-    gap: 0.25rem;
+    gap: 0.1rem;
   }
   .member-filters-right #memberSort {
     width: auto;
     flex: 0 1 auto;
     min-width: 0;
-    font-size: 0.7rem;
-    padding: 0.45rem 1.55rem 0.45rem 0.5rem;
+    font-size: 0.64rem;
+    padding: 0.45rem 1.15rem 0.45rem 0.35rem;
   }
 }
 
