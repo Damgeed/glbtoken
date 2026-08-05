@@ -8,6 +8,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional
 import json
 import secrets
+import time as _time
 
 from database import get_db, User, Transaction
 from auth import get_current_user
@@ -17,6 +18,9 @@ from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configur
 from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest
 
 router = APIRouter()
+
+# 10s TTL cache for the transactions list (overview + billing poll it every 30s)
+_TXN_CACHE: dict = {}
 
 
 # ── Transaction Routes ──
@@ -29,12 +33,21 @@ def list_transactions(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    # 10s TTL cache (keyed by user+type+limit+offset) — overview polls this every
+    # 30s; caching keeps the transaction tables fast without going stale.
+    try:
+        cache_key = f"txns:{user.id}:{type or ''}:{limit}:{offset}"
+        hit = _TXN_CACHE.get(cache_key)
+        if hit and _time.time() - hit[0] < 10:
+            return hit[1]
+    except Exception:
+        pass
     q = db.query(Transaction).filter(Transaction.user_id == user.id)
     if type:
         q = q.filter(Transaction.type == type)
     total = q.count()
     items = q.order_by(desc(Transaction.created_at)).offset(offset).limit(limit).all()
-    return {
+    result = {
         "total": total,
         "items": [
             {
@@ -51,6 +64,11 @@ def list_transactions(
             for t in items
         ],
     }
+    try:
+        _TXN_CACHE[cache_key] = (_time.time(), result)
+    except Exception:
+        pass
+    return result
 
 
 @router.post("/api/topup")
