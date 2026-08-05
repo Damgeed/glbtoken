@@ -316,7 +316,7 @@
   flex-shrink: 0;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary, #E5E7EB);
+  color: var(--text, #E5E7EB);
 }
 .refs-source-bar {
   flex: 1;
@@ -355,7 +355,7 @@
   flex-shrink: 0;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary, #E5E7EB);
+  color: var(--text, #E5E7EB);
 }
 .refs-funnel-sub {
   display: block;
@@ -385,7 +385,7 @@
   text-align: right;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-primary, #E5E7EB);
+  color: var(--text, #E5E7EB);
 }
 .refs-funnel-count em {
   font-style: normal;

@@ -24,8 +24,8 @@ def _client_ip(request) -> str:
         fwd = request.headers.get("x-forwarded-for", "")
         if fwd:
             return fwd.split(",")[-1].strip()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ client ip parse failed: {e}")
     return ""
 
 

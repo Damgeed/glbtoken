@@ -60,8 +60,8 @@ def _client_ip(request: Request) -> str:
         fwd = request.headers.get("x-forwarded-for", "")
         if fwd:
             return fwd.split(",")[-1].strip()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ x-forwarded-for parse failed: {e}")
     return ""
 
 
@@ -190,8 +190,8 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
     # Record login event
     try:
         record_login_event(user.id, request, True, db)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ login event record failed: {e}")
     
     return result
 

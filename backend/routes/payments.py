@@ -54,8 +54,8 @@ def list_transactions(
         hit = _TXN_CACHE.get(cache_key)
         if hit and _time.time() - hit[0] < 10:
             return hit[1]
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ TXN cache read failed: {e}")
     q = db.query(Transaction).filter(Transaction.user_id == user.id)
     if type:
         q = q.filter(Transaction.type == type)
@@ -80,8 +80,8 @@ def list_transactions(
     }
     try:
         _TXN_CACHE[cache_key] = (_time.time(), result)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ TXN cache write failed: {e}")
     return result
 
 

@@ -7175,7 +7175,7 @@ body {
   .auth-hero-testimonial {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color, hsla(0 0% 100% / 0.08));
+    border-top: 1px solid var(--border-light, hsla(0 0% 100% / 0.08));
   }
   .auth-hero-testimonial blockquote {
     font-size: 0.9rem;
@@ -8270,7 +8270,7 @@ body {
 
 /* ═══════════ ANNOUNCEMENTS ═══════════ */
 .announcement-stack{display:block;margin:0 0 1rem}
-.announcement-banner{display:flex;align-items:flex-start;gap:0.6rem;padding:0.75rem 1rem;border-radius:12px;margin-bottom:0.5rem;font-size:0.875rem;line-height:1.45;background:var(--card-bg,#1a2234);border:1px solid var(--border,#2a3550);color:var(--text-primary,#e6edf7)}
+.announcement-banner{display:flex;align-items:flex-start;gap:0.6rem;padding:0.75rem 1rem;border-radius:12px;margin-bottom:0.5rem;font-size:0.875rem;line-height:1.45;background:var(--card,#1a2234);border:1px solid var(--border,#2a3550);color:var(--text,#e6edf7)}
 .announcement-info{border-left:3px solid #3b82f6}
 .announcement-warning{border-left:3px solid #F4B400;background:rgba(244,180,0,0.06)}
 .announcement-success{border-left:3px solid #00D68F;background:rgba(0,214,143,0.06)}
@@ -8278,18 +8278,18 @@ body {
 .ann-text{flex:1 1 auto;min-width:0;word-break:break-word}
 .ann-text strong{margin-right:0.25rem}
 .ann-close{flex:0 0 auto;background:none;border:none;color:var(--text-muted,#8892a6);font-size:0.875rem;cursor:pointer;padding:0 0 0 0.5rem;line-height:1.4}
-.ann-close:hover{color:var(--text-primary,#e6edf7)}
+.ann-close:hover{color:var(--text,#e6edf7)}
 .announce-form{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem}
 .announce-form-row{display:flex;gap:0.5rem;flex-wrap:wrap}
 .announce-form-actions{margin-top:0.25rem}
-.ann-input,.ann-select,.ann-textarea{background:var(--input-bg,#0f1626);border:1px solid var(--border,#2a3550);border-radius:8px;color:var(--text-primary,#e6edf7);font-size:0.875rem;padding:0.5rem 0.75rem;font-family:inherit}
+.ann-input,.ann-select,.ann-textarea{background:var(--bg-alt,#0f1626);border:1px solid var(--border,#2a3550);border-radius:8px;color:var(--text,#e6edf7);font-size:0.875rem;padding:0.5rem 0.75rem;font-family:inherit}
 .ann-input{flex:1 1 200px;min-width:0}
 .ann-select{flex:0 0 auto}
 .ann-textarea{width:100%;resize:vertical}
 .ann-list{display:flex;flex-direction:column;gap:0.5rem}
 .ann-admin-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;border:1px solid var(--border,#2a3550);border-radius:10px;background:rgba(255,255,255,0.02)}
 .ann-admin-main{flex:1 1 auto;min-width:0}
-.ann-admin-title{font-weight:600;font-size:0.875rem;color:var(--text-primary,#e6edf7)}
+.ann-admin-title{font-weight:600;font-size:0.875rem;color:var(--text,#e6edf7)}
 .ann-admin-msg{font-size:0.8125rem;color:var(--text-secondary,#aab4c8);margin-top:0.15rem;word-break:break-word}
 .ann-admin-meta{font-size:0.75rem;color:var(--text-muted,#8892a6);margin-top:0.25rem;text-transform:capitalize}
 .ann-admin-actions{flex:0 0 auto;display:flex;align-items:center;gap:0.5rem}

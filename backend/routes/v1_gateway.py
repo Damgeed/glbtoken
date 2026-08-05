@@ -91,7 +91,8 @@ def _ip_allowed(client_ip: str, allowlist: str) -> bool:
             try:
                 if ipaddress.ip_address(client_ip) in ipaddress.ip_network(entry, strict=False):
                     return True
-            except Exception:
+            except Exception as e:
+                print(f"⚠️ IP allowlist entry skipped (invalid): {entry} — {e}")
                 continue
         elif entry == client_ip:
             return True
@@ -150,8 +151,9 @@ def _estimate_tokens(texts: list) -> int:
         elif isinstance(t, (list, dict)):
             try:
                 total += len(json.dumps(t))
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"⚠️ token estimate failed for item: {e}")
+                total += 0
     return max(1, total // 4)
 
 
