@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1200" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1062" />
+<link rel="stylesheet" href="team.css?v=1063" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -213,6 +213,7 @@
         </div>
         <div class="member-toolbar">
           <input type="search" id="memberSearch" class="input-search" placeholder="Search members by name or email..." oninput="onMemberSearch(this.value)" />
+          <button class="keys-icon-btn" id="memberBulkBtn" onclick="enterMemberBulkMode()" title="Select multiple members" aria-label="Select members" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></button>
         </div>
         <div class="member-filters">
           <div class="filter-chips" id="memberFilterChips">
@@ -228,7 +229,6 @@
               <option value="tokens-asc">Least tokens</option>
               <option value="role">Role</option>
             </select>
-            <button class="keys-icon-btn" id="memberBulkBtn" onclick="enterMemberBulkMode()" title="Select multiple members" aria-label="Select members" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></button>
             <button class="keys-icon-btn" onclick="exportMembersCsv()" title="Export member list as CSV" aria-label="Export member list as CSV" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
           </div>
         </div>
