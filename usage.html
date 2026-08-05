@@ -20,7 +20,7 @@
        styles so the Usage chart card matches the Overview design exactly -->
 <link rel="stylesheet" href="dashboard.css?v=1037" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1030" />
+<link rel="stylesheet" href="usage.css?v=1031" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -201,80 +201,35 @@
         
       </div>
 
-      <!-- Login History Filters -->
-      <div class="dash-card">
-        <div class="filter-row-wide">
-          <div>
-            <label class="filter-label">Date Range</label>
-            <div class="date-range-row">
-              <input type="date" id="filterDateFrom" class="filter-input" />
-              <span class="separator-dash">—</span>
-              <input type="date" id="filterDateTo" class="filter-input" />
-            </div>
-          </div>
-          <div>
-            <label class="filter-label">Device</label>
-            <select id="filterDevice" onchange="applyFilters()" class="filter-input">
-              <option value="">All Devices</option>
-              <option value="Windows">Windows</option>
-              <option value="Mac">Mac</option>
-              <option value="Linux">Linux</option>
-              <option value="iOS">iOS</option>
-              <option value="Android">Android</option>
-              <option value="Chrome">Chrome</option>
-              <option value="Firefox">Firefox</option>
-              <option value="Safari">Safari</option>
-              <option value="Edge">Edge</option>
-            </select>
-          </div>
-          <div>
-            <label class="filter-label">Status</label>
-            <select id="filterStatus" onchange="applyFilters()" class="filter-input">
-              <option value="">All Status</option>
-              <option value="success">✅ Success</option>
-              <option value="failed">❌ Failed</option>
-            </select>
-          </div>
-          <button class="btn-primary apply-btn" onclick="applyFilters()">Apply Filters</button>
-        </div>
-      </div>
-
-      <!-- Login History Table -->
+      <!-- Login History (real — /api/auth/login-history) -->
       <div class="dash-card">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
           </svg>
-          Login Attempts
+          Login History
+        </div>
+        <div class="settings-item-desc-sm" style="margin-bottom:0.75rem">Recent sign-in activity across all devices. If you see something unfamiliar, change your password and enable two-factor auth.</div>
+        <div class="login-filters">
+          <input type="text" id="loginDateFilter" placeholder="Filter by date" class="filter-input" oninput="filterLoginHistory()">
+          <select id="loginDeviceFilter" class="filter-input" onchange="filterLoginHistory()">
+            <option value="all">All devices</option>
+            <option value="mobile">📱 Mobile</option>
+            <option value="desktop">💻 Desktop</option>
+          </select>
+          <select id="loginStatusFilter" class="filter-input" onchange="filterLoginHistory()">
+            <option value="all">All status</option>
+            <option value="success">Success</option>
+            <option value="failed">Failed</option>
+          </select>
         </div>
         <div class="scroll-x" id="loginScrollX">
           <table class="tx-table" id="loginTable">
-            <thead><tr><th>Timestamp</th><th class="ip-col">IP Address</th><th>Device / Browser</th><th>Location</th><th>Status</th></tr></thead>
-            <tbody id="historyBody">
+            <thead><tr><th>Device</th><th>Location</th><th>IP</th><th>Status</th><th>Time</th></tr></thead>
+            <tbody id="loginHistoryBody">
               <tr><td colspan="5" class="tx-empty-cell">Loading login history…</td></tr>
             </tbody>
           </table>
-        </div>
-        
-
-        <!-- Empty State -->
-        <div id="historyEmptyState" class="usage-empty-state">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="usage-empty-icon">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          <h3 class="usage-empty-title">No login history yet</h3>
-          <p class="usage-empty-desc">Logins will appear here once you sign in from different devices or locations.</p>
-        </div>
-
-        <!-- Load More -->
-        <div class="load-more-wrap">
-          <button class="btn-secondary load-more-btn" onclick="loadMoreHistory()" id="loadMoreBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
-              <polyline points="7 13 12 18 17 13"/><polyline points="12 18 12 6"/>
-            </svg>
-            Load More
-          </button>
-          <p class="history-count-note" id="historyCount">Showing 8 of 8 entries</p>
         </div>
       </div>
 
@@ -307,14 +262,11 @@
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 <script data-cfasync="false" src="filters.js?v=1131"></script>
 <script data-cfasync="false" src="usage-charts.js?v=4"></script>
+<script data-cfasync="false" src="login-history.js?v=1120"></script>
 
 <!-- ── Usage Script ── -->
 <script>
 // ===== Usage & History — real data (activity feed, transactions, login history) =====
-var historyData = [];
-var moreData = [];
-var loadedCount = 0;
-var backupMoreData = []; // saved before load for Show Less
 
 // ── Activity feed (real — /api/activity) ──
 function fmtActivityTime(iso){
@@ -385,159 +337,14 @@ function toggleUsageActivityMore(){
   if(btn) btn.textContent = c.classList.contains('open') ? 'Show Less ▲' : 'Show More (' + c.getAttribute('data-count') + ') ▼';
 }
 
-// ── Login history (real — /api/auth/login-history) ──
-function loadLoginHistory(){
-  safeApi('GET','/api/auth/login-history?limit=50',null,null,true).then(function(d){
-    var events = (d && d.events) || [];
-    historyData = events.map(function(e){
-      var ts = e.created_at || '';
-      ts = String(ts).replace('T',' ').replace('Z','').substring(0,19);
-      var ua = e.user_agent || e.device_type || '';
-      var loc = e.location || 'Unknown';
-      return { ts: ts, ip: e.ip_address || '—', device: ua, location: loc, status: e.success ? 'success' : 'failed' };
-    });
-    moreData = historyData.slice(0);
-    var first = historyData.slice(0,8);
-    moreData = historyData.slice(8);
-    loadedCount = first.length;
-    var tbody = document.getElementById('historyBody');
-    if(!tbody) return;
-    if(!first.length){
-      tbody.innerHTML = '';
-      document.getElementById('historyEmptyState').style.display = 'block';
-      document.getElementById('loadMoreBtn').style.display = 'none';
-      document.getElementById('historyCount').textContent = 'Showing 0 entries';
-      return;
-    }
-    document.getElementById('historyEmptyState').style.display = 'none';
-    document.getElementById('loadMoreBtn').style.display = '';
-    tbody.innerHTML = first.map(renderHistoryRow).join('');
-    refreshTableMoreBtn('loginCollapse','loginMoreBtn');
-    document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+historyData.length+' entries';
-  }).catch(function(){
-    var tbody = document.getElementById('historyBody');
-    if(tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Could not load login history</td></tr>';
-  });
-}
-
-function getFlag(location){
-  var map={'US':'🇺🇸','UK':'🇬🇧','DE':'🇩🇪','JP':'🇯🇵','KR':'🇰🇷','CA':'🇨🇦','AU':'🇦🇺','FR':'🇫🇷','IN':'🇮🇳','SG':'🇸🇬'};
-  var parts=location.split(', ');
-  var code=parts[parts.length-1];
-  return map[code]||'🌍';
-}
-function renderHistoryRow(item){
-  var parts=item.ts.split(' ');
-  var date=parts[0], time=parts[1]||'';
-  var statusIcon = item.status === 'success'
-    ? '<strong class="status-badge-success">✅<span class="status-text"> Success</span></strong>'
-    : '<strong class="status-badge-failed">❌<span class="status-text"> Failed</span></strong>';
-  var locParts=item.location.split(', ');
-  var city=locParts[0]||item.location;
-  var country=locParts[1]||'';
-  return '<tr>'
-    + '<td class="td-date"><div class="td-date-strong">'+escapeHtml(date)+'</div><div class="td-time">'+escapeHtml(time)+'</div></td>'
-    + '<td class="ip-col td-ip">'+escapeHtml(item.ip)+'</td>'
-    + '<td class="td-device">'+escapeHtml(item.device)+'</td>'
-    + '<td class="td-location">'+getFlag(item.location)+' <span class="loc-city">'+escapeHtml(city)+'</span><span class="loc-country">'+(country?', '+escapeHtml(country):'')+'</span></td>'
-    + '<td>'+statusIcon+'</td>'
-    + '</tr>';
-}
-
-function loadMoreHistory(){
-  var btn = document.getElementById('loadMoreBtn');
-  var tbody = document.getElementById('historyBody');
-  var remaining = moreData.length;
-  var toLoad = Math.min(8, remaining);
-  var html = '';
-
-  // Save backup on first load
-  if(backupMoreData.length === 0){
-    backupMoreData = moreData.slice();
-  }
-
-  for(var i = 0; i < toLoad; i++){
-    html += renderHistoryRow(moreData[i]);
-    loadedCount++;
-  }
-  var collapse = document.getElementById('loginCollapse');
-  (collapse || tbody).insertAdjacentHTML('beforeend', html);
-  moreData.splice(0, toLoad);
-  refreshTableMoreBtn('loginCollapse','loginMoreBtn');
-  document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
-
-  if(moreData.length === 0){
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="18 15 12 9 6 15"/></svg> Show Less';
-    btn.onclick = showLessHistory;
-    btn.disabled = false;
-    btn.style.opacity = '';
-  }
-}
-
-function showLessHistory(){
-  var btn = document.getElementById('loadMoreBtn');
-
-  // Restore tbody to initial 8 rows (re-split into 3 visible + collapse)
-  renderTableWithCollapse('historyBody', historyData.map(function(item){
-    return renderHistoryRow(item);
-  }), 'loginCollapse', 'loginMoreBtn');
-
-  // Restore moreData from backup
-  moreData = backupMoreData.slice();
-  backupMoreData = [];
-  loadedCount = 8;
-
-  document.getElementById('historyCount').textContent = 'Showing '+loadedCount+' of '+(loadedCount+moreData.length)+' entries';
-
-  // Reset button back to Load More
-  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="7 13 12 18 17 13"/><polyline points="12 18 12 6"/></svg> Load More';
-  btn.onclick = loadMoreHistory;
-  btn.disabled = false;
-  btn.style.opacity = '';
-}
-
-function applyFilters(){
-  var device = document.getElementById('filterDevice').value;
-  var status = document.getElementById('filterStatus').value;
-  var from = document.getElementById('filterDateFrom').value;
-  var to = document.getElementById('filterDateTo').value;
-
-  var filtered = historyData.filter(function(item){
-    if(device && !item.device.toLowerCase().includes(device.toLowerCase())) return false;
-    if(status && item.status !== status) return false;
-    if(from){
-      var itemDate = item.ts.split(' ')[0];
-      if(itemDate < from) return false;
-    }
-    if(to){
-      var itemDate2 = item.ts.split(' ')[0];
-      if(itemDate2 > to) return false;
-    }
-    return true;
-  });
-
-  var emptyState = document.getElementById('historyEmptyState');
-
-  if(filtered.length === 0){
-    emptyState.style.display = 'block';
-    clearTableCollapse('loginCollapse','loginMoreBtn');
-    document.getElementById('loadMoreBtn').style.display = 'none';
-    document.getElementById('historyCount').textContent = 'Showing 0 entries';
-  } else {
-    emptyState.style.display = 'none';
-    document.getElementById('loadMoreBtn').style.display = '';
-    renderTableWithCollapse('historyBody', filtered.map(function(item){
-      return renderHistoryRow(item);
-    }), 'loginCollapse', 'loginMoreBtn');
-    document.getElementById('historyCount').textContent = 'Showing '+filtered.length+' entries';
-  }
-}
+// ── Login history lives in login-history.js (shared with settings) ──
+// loadLoginHistory / renderLoginRow / filterLoginHistory come from there.
 
 // ── Init — load real data ──
 document.addEventListener('DOMContentLoaded', function(){
   setTimeout(function(){
     if(typeof loadUsageActivity === 'function') loadUsageActivity();
-    if(typeof loadLoginHistory === 'function') loadLoginHistory();
+    if(typeof loadLoginHistory === 'function') loadLoginHistory(0);
     if(typeof populateModelFilter === 'function') populateModelFilter();
     if(typeof refreshUsageChart === 'function') refreshUsageChart();
   }, 50);

@@ -309,6 +309,17 @@ button.settings-save-btn:hover {
   gap: 1rem;
   padding: 1rem 1.25rem;
 }
+/* Read notifications: keep the dark card bg, only fade the text/icon
+   (the global .faded opacity makes the whole card translucent, which
+   looks lighter than sibling cards on dark theme) */
+.notif-item.faded {
+  opacity: 1;
+}
+.notif-item.faded .settings-item-name,
+.notif-item.faded .settings-item-desc,
+.notif-item.faded .settings-icon {
+  opacity: 0.55;
+}
 /* Settings row (disabled) */
 .settings-row-disabled {
   display: flex;

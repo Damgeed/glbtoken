@@ -223,3 +223,43 @@
 @media (max-width: 767px) {
   #usageActivityMoreBtn { display: block; }
 }
+
+/* ── Login History (shared login-history.js — same styling as settings) ── */
+.login-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: nowrap;
+}
+.login-filters .filter-input {
+  max-width: 170px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.78rem;
+  width: auto;
+}
+.login-filters select.filter-input {
+  max-width: 140px;
+  flex: 1;
+}
+.login-filters input.filter-input {
+  flex: 1.4;
+}
+@media (max-width: 640px) {
+  .login-filters {
+    flex-wrap: wrap;
+  }
+  .login-filters .filter-input {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+}
+.loc-city {
+  color: var(--text, #e8eaf0);
+}
+.loc-country {
+  color: var(--text-muted);
+}
+.history-row {
+  transition: background 0.15s;
+}
