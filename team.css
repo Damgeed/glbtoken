@@ -634,6 +634,18 @@
 
 /* ── Member rows are clickable (open detail drawer) ── */
 #teamMembersBody tr[data-member] { cursor: pointer; }
+
+/* ── Team org stats: 4 cards in a balanced 2x2 grid ──
+   .dash-grid's default 1fr/1.5fr is for the dashboard balance row and makes
+   the stat cards asymmetric; use equal columns here. */
+#orgStatsGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 600px) {
+  #orgStatsGrid {
+    grid-template-columns: 1fr;
+  }
+}
 #teamMembersBody tr[data-member]:hover { background: rgba(79,195,247,0.05); }
 .member-row-chevron { color: var(--text-muted); opacity: 0.45; font-size: 0.95rem; margin-left: 0.35rem; }
 .member-card { cursor: pointer; }
