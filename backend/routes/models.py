@@ -26,12 +26,17 @@ def auto_pull_models():
         fallback_url = FALLBACK_API_URL
         models_url = ""
         headers = {"Content-Type": "application/json"}
+        # Unit scale: DB stores USD per TOKEN (e.g. gpt-4o prompt = 2.5e-6).
+        # New API /api/model returns per-token (scale 1.0); the OpenAI-style
+        # /v1/models fallback returns per-1K-tokens (scale 0.001).
+        unit_scale = 1.0
         
         if newapi_url:
             # Use New API's model endpoint (no auth needed for public models)
             models_url = f"{newapi_url.rstrip('/')}/api/model"
         elif fallback_url:
             models_url = f"{fallback_url.rstrip('/')}/v1/models"
+            unit_scale = 0.001
             admin_key = FALLBACK_API_KEY
             if admin_key:
                 headers["Authorization"] = f"Bearer {admin_key}"
@@ -54,8 +59,8 @@ def auto_pull_models():
             if not model_id:
                 continue
             pricing = m.get("pricing", {}) or {}
-            prompt_price = float(pricing.get("prompt", 0)) if pricing.get("prompt") else 0.0
-            completion_price = float(pricing.get("completion", 0)) if pricing.get("completion") else 0.0
+            prompt_price = float(pricing.get("prompt", 0)) * unit_scale if pricing.get("prompt") else 0.0
+            completion_price = float(pricing.get("completion", 0)) * unit_scale if pricing.get("completion") else 0.0
             context_length = int(m.get("context_length", 4096) or 4096)
             name = m.get("name", model_id.split("/")[-1] if "/" in model_id else model_id)
             provider = "Other"

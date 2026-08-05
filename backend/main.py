@@ -10,6 +10,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from contextlib import asynccontextmanager
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+import asyncio
 import os
 
 from database import init_db
@@ -119,8 +120,23 @@ async def lifespan(app: FastAPI):
             print("✅ Performance + integrity indexes ensured")
     except Exception as e:
         print(f"⚠️ Index migration error (non-critical): {e}")
+
+    # Periodic model/pricing sync — New API prices change without redeploys, so
+    # re-pull every 6h to keep AIModel.prompt_price/completion_price in sync.
+    async def _periodic_model_sync():
+        while True:
+            await asyncio.sleep(6 * 3600)
+            try:
+                await asyncio.to_thread(auto_pull_models)
+                print("🔄 Periodic model/pricing sync completed")
+            except Exception as e:
+                print(f"⚠️ Periodic model sync failed: {e}")
+
+    sync_task = asyncio.create_task(_periodic_model_sync())
+
     yield
-    # Shutdown (nothing to clean up yet)
+    # Shutdown
+    sync_task.cancel()
 
 
 # ── App Creation ──

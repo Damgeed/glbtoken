@@ -35,8 +35,8 @@
             responsive:true,maintainAspectRatio:false,
             plugins:{legend:{display:false}},
             scales:{
-              y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'var(--text-muted)',font:{size:10}}},
-              x:{grid:{display:false},ticks:{color:'var(--text-muted)',font:{size:10}}}
+              y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94A3B8',font:{size:10}}},
+              x:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:10}}}
             }
           }
         });
@@ -142,8 +142,8 @@
           responsive:true,maintainAspectRatio:false,
           plugins:{legend:{display:false}},
           scales:{
-            y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'var(--text-muted)',font:{size:10}}},
-            x:{grid:{display:false},ticks:{color:'var(--text-muted)',font:{size:10}}}
+            y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94A3B8',font:{size:10}}},
+            x:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:10}}}
           }
         }
       });
