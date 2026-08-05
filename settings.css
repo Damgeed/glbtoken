@@ -179,14 +179,27 @@
 
 /* ── Settings card wrap container (Webhooks / Recent Notifications / etc.) ── */
 .settings-card {
-  background: var(--bg-alt);
-  border: 1px solid var(--border-light);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   transition: all 0.2s;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+/* Activity-style template: keep header fixed, let the cards scroll (slide up/down).
+   Same pattern as usage page .activity-scroll. */
+.settings-card .notif-grid {
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+}
+@media (min-width: 768px) {
+  .settings-card .notif-grid {
+    max-height: 380px;
+  }
 }
 .settings-card + .settings-card {
   margin-top: 1rem;
