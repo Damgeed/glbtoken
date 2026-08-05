@@ -679,27 +679,30 @@
 @media (max-width: 767px) {
   /* Chips + Name A–Z + bulk-select + export flow on ONE line so the whole
      filter row stays inline with the buttons on mobile. The bulk toggle
-     (34px icon) joined this row in Stage 4, so chips/sort compact a little
-     more than before to fit from 375px+ (graceful wrap below 375px). */
-  .member-filters { align-items: center; gap: 0.1rem; }
-  .member-filters .filter-chips { gap: 0.1rem; }
-  .member-filters .chip { padding: 0.45rem 0.24rem; font-size: 0.64rem; }
-  /* Per-chip counts (All 3 / Owner 1) add too much width on small screens —
-     hide them on mobile so chips + sort + export stay on ONE line. The title
-     pill already shows the total member count. */
-  .member-filters .chip-count { display: none; }
+     (34px icon) joined this row in Stage 4, so chips/sort/counts compact a
+     little more than before. Counts stay VISIBLE on mobile — they render
+     async via updateFilterChips(); if the row only fit without them the
+     buttons would appear inline on load then jump to line 2 once counts
+     populated (Bud: "the inline buttons appear and disappear"). Fits
+     375px+ with single-digit counts; graceful wrap below. */
+  .member-filters { align-items: center; gap: 0.08rem; }
+  .member-filters .filter-chips { gap: 0.06rem; }
+  .member-filters .chip { padding: 0.45rem 0.16rem; font-size: 0.64rem; }
+  .member-filters .chip .chip-count,
+  .member-filters .chip-count { font-size: 0.58rem; margin-left: 0.06rem; }
   .member-filters-right {
     width: auto;
     margin-left: auto;
-    gap: 0.1rem;
+    gap: 0.08rem;
   }
   .member-filters-right #memberSort {
     width: auto;
     flex: 0 1 auto;
     min-width: 0;
-    font-size: 0.64rem;
-    padding: 0.45rem 1.15rem 0.45rem 0.35rem;
+    font-size: 0.62rem;
+    padding: 0.45rem 0.95rem 0.45rem 0.3rem;
   }
+  .member-filters-right .keys-icon-btn { width: 30px; height: 30px; }
 }
 
 /* ── Member rows are clickable (open detail drawer) ── */
