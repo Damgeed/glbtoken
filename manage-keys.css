@@ -57,6 +57,8 @@
 .keys-bulk-row {
   align-items: center;
   gap: 0.4rem;
+  /* breathing room between the sort/select row above and the bulk actions */
+  margin-top: 0.75rem;
 }
 .keys-bulk-row #bulkCount {
   font-size: 0.8rem;
@@ -105,7 +107,9 @@
 
 /* ── Mobile: sort buttons + select/export symbols on ONE line ──
    [↓Newest] [↑Oldest] [A-Z] [Usage] ......... [✓] [⬇]
-   Compact padding/font keeps all 6 items on a single row down to 320px. */
+   Compact padding/font keeps all 6 items on a single row down to 320px.
+   No divider — the io-group keeps a plain gap (the bulk row below gets the
+   breathing room instead, see .keys-bulk-row margin-top). */
 @media (max-width: 480px) {
   .keys-controls-row {
     gap: 0.35rem;
@@ -127,10 +131,6 @@
   }
   .keys-io-group {
     gap: 0.3rem;
-    /* visual separator: keeps select/export symbols clearly apart from the
-       sort buttons even when the row is tight */
-    padding-left: 0.5rem;
-    border-left: 1px solid var(--border);
   }
 }
 @media (max-width: 340px) {
@@ -152,7 +152,6 @@
   }
   .keys-io-group {
     gap: 0.25rem;
-    padding-left: 0.4rem;
   }
 }
 

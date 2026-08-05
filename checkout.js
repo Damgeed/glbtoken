@@ -13,10 +13,10 @@
       var el2=document.getElementById('customTokensLabel')||document.getElementById('customTokensDisplay');
       var el3=document.getElementById('customBuyBtn');
       var el4=document.getElementById('topupTotal');
-      if(el1)el1.textContent='$'+val;
+      if(el1)el1.textContent=fmtUSD(val);
       if(el2)el2.textContent=(val*1000).toLocaleString()+' Tokens';
-      if(el3)el3.textContent='Buy $'+val;
-      if(el4)el4.textContent='$'+val+'.00';
+      if(el3)el3.textContent='Buy '+fmtUSD(val);
+      if(el4)el4.textContent=fmtUSD(val);
       selectedAmount=val;
     }
     function customCheckout(){
@@ -115,7 +115,7 @@
     function showPaymentModal(amount){
       if(!token){showToast('Please login first','error');showPage('register');return}
       selectedAmount=amount==='custom'?parseInt(document.getElementById('customSlider').value||50):amount;
-      document.getElementById('modalAmount').textContent='$'+selectedAmount.toFixed(2);
+      document.getElementById('modalAmount').textContent=fmtUSD(selectedAmount);
       document.getElementById('paymentModal').classList.add('open');
     }
     function closePaymentModal(e){
