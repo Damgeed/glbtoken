@@ -41,6 +41,11 @@
 .doc-table th.t-right { text-align: right; }
 .doc-table td { padding: 0.5rem 0.75rem; }
 .doc-table td.t-right { text-align: right; }
+/* Mobile: allow horizontal scroll instead of breaking layout */
+@media (max-width: 768px) {
+  .doc-table { display: block; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .doc-table tbody { display: table; width: 100%; }
+}
 
 .cell-first { color: var(--text); }
 .cell-num { text-align: right; color: var(--text-secondary); }
