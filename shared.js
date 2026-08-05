@@ -537,7 +537,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       if (token && (page === 'login' || page === 'register')) { window.location='dashboard.html'; return; }
       if (!token && (page === 'dashboard' || page === 'history' || page === 'apikeys' || page === 'topup' || page === 'referral' || page === 'team' || page === 'playground')) { window.location='register.html'; return; }
       if (page === 'home') { window.location='/'; return; }
-      const pageMap = {pricing:'pricing.html',how:'how.html',models:'models.html',apikeys:'manage-keys.html',dashboard:'dashboard.html',history:'usage.html',topup:'topup.html',faq:'faq.html',about:'about.html',blog:'blog.html',terms:'terms.html',privacy:'privacy.html',refund:'refund.html',login:'login.html',register:'register.html',settings:'settings.html',notifications:'notifications.html',billing:'billing.html',referral:'referrals.html',team:'team.html',playground:'playground.html'};
+      const pageMap = {pricing:'pricing.html',how:'how.html',models:'models.html',apikeys:'manage-keys.html',dashboard:'dashboard.html',history:'usage.html',topup:'topup.html',faq:'faq.html',about:'about.html',blog:'blog.html',terms:'terms.html',privacy:'privacy.html',refund:'refund.html',login:'login.html',register:'register.html',settings:'settings.html',notifications:'settings.html',billing:'billing.html',referral:'referrals.html',team:'team.html',playground:'playground.html'};
       if (pageMap[page]) { window.location=pageMap[page]; }
     }
 

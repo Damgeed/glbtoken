@@ -30,7 +30,7 @@ async function loadReferralStats() {
     const monthEl=document.getElementById('refMonthChg');
     if(monthEl){
       var monthCount=(d.history||[]).reduce(function(s,h){return s+(h.referrals||0);},0);
-      monthEl.textContent=monthCount>0?('↑ '+monthCount+' this month'):'No referrals yet';
+      monthEl.textContent=monthCount>0?(monthCount+' this month'):'No referrals yet';
     }
     const hintEl=document.getElementById('refShareHint');
     if(hintEl) hintEl.textContent=hasCode?'Share this code':'Generate to start earning';
@@ -50,7 +50,7 @@ async function loadReferralStats() {
     }catch(e){}
     if(totalEarnEl) totalEarnEl.textContent=lifetime.toFixed(0)+' GT';
     const valEl=document.getElementById('refTotalEarnedVal');
-    if(valEl) valEl.textContent='↑ Value: '+fmtUSD(lifetime*0.001);
+    if(valEl) valEl.textContent='Value: '+fmtUSD(lifetime*0.001);
     const pendingAmt=(d.pending_earnings!=null?d.pending_earnings:(d.total_earned||0));
     if(pendingEl) pendingEl.textContent=pendingAmt.toFixed(0)+' GT';
     const claimBtn=document.getElementById('refClaimBtn');

@@ -70,7 +70,7 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Settings
       </a>
-      <a class="dash-sidebar-item" href="notifications.html">
+      <a class="dash-sidebar-item" href="settings.html">
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         Notifications
       </a>
@@ -151,6 +151,24 @@
             <div class="settings-btn-mt"><button class="settings-btn-full" onclick="updatePassword()">Update Password</button></div>
           </div>
         </div>
+        <div class="dash-card">
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</h3>
+          <div class="settings-field-group">
+            <div class="toggle-row">
+              <div><div class="toggle-label">Email Notifications</div><div class="toggle-desc">Receive account &amp; marketing emails</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="notifEmail" /><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Low Balance Alerts</div><div class="toggle-desc">Get notified when your balance runs low</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="notifLowBalance" /><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Login Alerts</div><div class="toggle-desc">Email when a new device signs in</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="notifLogin" /><span class="toggle-slider"></span></label>
+            </div>
+            <button class="settings-save-btn" onclick="saveNotificationSettings()">Save Notification Preferences</button>
+          </div>
+        </div>
       </div>
       <!-- Notifications are now managed from the Notifications page -->
       <div class="settings-card" style="margin-top:1rem">
@@ -172,6 +190,18 @@
           </div>
           <div class="settings-item-desc-sm" style="margin-top:0.6rem">Payloads are POSTed as JSON with <code style="font-size:0.72rem">X-GlbTOKEN-Signature</code> (HMAC-SHA256 hex of the body) and <code style="font-size:0.72rem">X-GlbTOKEN-Event</code> headers.</div>
         </div>
+      </div>
+      <!-- Recent Notifications -->
+      <div class="settings-card" style="margin-top:1rem">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Recent Notifications
+        </div>
+        <div class="notif-grid" id="notifList">
+          <!-- Rendered from real data (transactions / balance / API keys) -->
+        </div>
+        <div id="notifEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No notifications yet</div></div>
+        <div class="settings-center-mt"><button class="btn-secondary settings-center-text" onclick="markAllRead()">Mark All as Read</button></div>
       </div>
     </div>
   </div>
@@ -195,10 +225,10 @@
 
   
 
-<script src="nav.js?v=14"></script>
+<script src="nav.js?v=15"></script>
 <script src="footer.js?v=15"></script>
 <script src="translations.js?v=1105"></script>
-<script data-cfasync="false" src="shared.js?v=1135"></script>
+<script data-cfasync="false" src="shared.js?v=1136"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 <script data-cfasync="false" src="login-history.js?v=1118"></script>
@@ -462,6 +492,105 @@ window.markAllRead = function(){
   showToast('All notifications marked as read','success');
 };
 
+// ── Notifications — real data (transactions / balance / API keys) ──
+var NOTIF_DISMISS_KEY = 'gt_dismissed_notifs';
+var NOTIF_READ_KEY = 'gt_read_notifs';
+
+function getNotifArr(key){
+  try{ return JSON.parse(localStorage.getItem(key))||[]; }catch(e){ return []; }
+}
+function notifTime(iso){
+  if(!iso) return '';
+  var diff = (Date.now() - new Date(iso).getTime())/1000;
+  if(diff < 60) return 'Just now';
+  if(diff < 3600) return Math.floor(diff/60)+' min ago';
+  if(diff < 86400) return Math.floor(diff/3600)+' hour'+(diff>=7200?'s':'')+' ago';
+  if(diff < 604800) return Math.floor(diff/86400)+' day'+(diff>=172800?'s':'')+' ago';
+  return new Date(iso).toLocaleDateString();
+}
+function loadNotifications(){
+  var list = document.getElementById('notifList');
+  if(!list) return;
+  var read = getNotifArr(NOTIF_READ_KEY);
+  var dismissed = getNotifArr(NOTIF_DISMISS_KEY);
+  var ICONS = {
+    primary: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
+    destructive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+  };
+  function fmtAmount(t){
+    if(t.currency && t.currency !== 'USD') return t.currency+' '+Number(t.amount||0).toLocaleString();
+    return '$'+Number(t.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function render(items){
+    var visible = items.filter(function(n){ return dismissed.indexOf(n.id) === -1; }).slice(0, 6);
+    var empty = document.getElementById('notifEmpty');
+    if(!visible.length){
+      list.innerHTML = '';
+      if(empty) empty.style.display = 'block';
+      return;
+    }
+    if(empty) empty.style.display = 'none';
+    list.innerHTML = visible.map(function(n){
+      var unread = n.fresh && read.indexOf(n.id) === -1;
+      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+n.id+'">'
+        + '<div class="settings-icon settings-icon-'+n.kind+'">'+ICONS[n.kind]+'</div>'
+        + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
+        + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
+        + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'
+        + '</div>';
+    }).join('');
+  }
+  Promise.all([
+    safeApi('GET','/api/transactions?type=deposit&limit=10',null,null,true),
+    safeApi('GET','/api/keys',null,null,true),
+    safeApi('GET','/api/dashboard',null,null,true)
+  ]).then(function(res){
+    var items = [];
+    var txns = (res[0] && res[0].items) || [];
+    var keys = res[1] || [];
+    var dash = res[2] || {};
+    var balance = dash.token_balance || 0;
+    txns.forEach(function(t){
+      if(t.status !== 'completed') return;
+      items.push({
+        id: 'topup-'+t.id, kind: 'primary', fresh: true,
+        title: 'Top-up Confirmed',
+        desc: notifTime(t.created_at)+' · '+fmtAmount(t)+' added'+(t.tokens ? ' · '+Number(t.tokens).toLocaleString()+' tokens credited' : '')
+      });
+    });
+    if(balance < 1000){
+      items.push({
+        id: 'lowbal-'+Math.max(1, Math.floor(balance/100)), kind: 'destructive', fresh: true,
+        title: 'Low Balance Warning',
+        desc: 'Current balance: '+Number(balance).toLocaleString()+' tokens'
+      });
+    }
+    keys.forEach(function(k){
+      if(!k.created_at) return;
+      items.push({
+        id: 'key-'+k.id, kind: 'success', fresh: false,
+        title: 'API Key Created',
+        desc: notifTime(k.created_at)+' · "'+(k.name||'Untitled')+'" key was generated'
+      });
+    });
+    render(items);
+  }).catch(function(){ render([]); });
+}
+
+// Prefill notification preference toggles from real settings
+function loadNotifSettings(){
+  safeApi('GET','/api/user/settings',null,null,true).then(function(d){
+    if(!d) return;
+    var emailEl=document.getElementById('notifEmail');
+    var balEl=document.getElementById('notifLowBalance');
+    var loginEl=document.getElementById('notifLogin');
+    if(emailEl && typeof d.email_notifications !== 'undefined') emailEl.checked = !!d.email_notifications;
+    if(balEl && typeof d.low_balance_alert !== 'undefined') balEl.checked = !!d.low_balance_alert;
+    if(loginEl && typeof d.login_alerts !== 'undefined') loginEl.checked = !!d.login_alerts;
+  });
+}
+
 /* ── DOMContentLoaded: Load user profile data ── */
 document.addEventListener('DOMContentLoaded', function(){
   // Populate user info if available (use __secure so encrypted gt_user is decrypted)
@@ -475,6 +604,8 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('settingsName').value = storedUser;
     }
   }
+  loadNotifications();
+  loadNotifSettings();
 });
 </script>
 
