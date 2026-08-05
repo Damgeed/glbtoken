@@ -87,6 +87,18 @@
 .keys-controls-row {
   align-items: center;
 }
+/* Select + Export as a tight pair, right-aligned. margin-left:auto keeps the
+   pair on the right edge even when it wraps onto its own line on mobile. */
+.keys-io-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.keys-io-group .btn-secondary {
+  white-space: nowrap;
+}
 .keys-bulk-row .keys-icon-btn,
 .keys-controls-row .keys-icon-btn {
   width: 32px;
