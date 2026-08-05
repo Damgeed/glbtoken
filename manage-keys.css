@@ -3,18 +3,22 @@
   display: block !important;
 }
 
-/* ── Mobile: API Keys toolbar — title on its own row, actions spread evenly ──
+/* ── Mobile: API Keys toolbar — title and + New Key inline ──
    Desktop keeps the single-row layout (title left, buttons right).
-   On narrow screens the 3 action buttons (+ New Key / Select / Export) were
-   crushing the title into a ~77px column. Fix: wrap so the title takes the
-   full first row and the actions get a clean second row with equal widths. */
+   On mobile the title text block stays flexible (no forced full-width row) so
+   + New Key sits inline right after "Your API Keys / Manage your API access"
+   and wraps naturally only when the row is truly out of room. */
 @media (max-width: 768px) {
   #section-apikeys .dash-section-title {
     flex-wrap: wrap;
     row-gap: 0.6rem;
   }
   #section-apikeys .dash-section-title > div:first-child {
-    flex: 1 1 100%;
+    flex: 1 1 150px;
+    min-width: 0;
+  }
+  #section-apikeys .keys-title-actions {
+    margin-left: 0;
   }
   #section-apikeys .dash-section-title > .btn-action {
     flex: 1 1 0%;
@@ -22,9 +26,10 @@
 }
 
 /* ── API Keys title row: compact actions that never crowd the title ──
-   New Key stays a labelled primary button; Select and Export collapse to
-   icon-only buttons (title tooltips). The group hugs the right edge and
-   shrinks as a unit so the title keeps room even at 320px. */
+   New Key stays a labelled primary button; Select collapses to an icon-only
+   button (title tooltip); Export is a labelled secondary button matching the
+   rest of the app (billing / logs). The group hugs the right edge on desktop
+   and flows inline after the title on mobile. */
 .keys-title-actions {
   display: flex;
   align-items: center;
