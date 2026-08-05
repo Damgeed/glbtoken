@@ -96,18 +96,22 @@
   margin-left: auto;
   flex-shrink: 0;
 }
-.keys-io-group .btn-secondary {
-  white-space: nowrap;
-}
-.keys-bulk-row .keys-icon-btn,
 .keys-controls-row .keys-icon-btn {
   width: 32px;
   height: 32px;
 }
+.keys-bulk-row .keys-icon-btn {
+  width: 34px;
+  height: 34px;
+}
+.keys-bulk-row .keys-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
 @media (max-width: 420px) {
   .keys-bulk-row .keys-icon-btn {
-    width: 29px;
-    height: 29px;
+    width: 32px;
+    height: 32px;
   }
   .keys-bulk-row #bulkCount {
     font-size: 0.75rem;
