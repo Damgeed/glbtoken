@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1200" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1061" />
+<link rel="stylesheet" href="team.css?v=1062" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -615,7 +615,7 @@ function resetTeamView(){
   document.getElementById('orgTotalCalls').textContent = '0';
   document.getElementById('orgActiveMembers').textContent = '0';
   document.getElementById('orgAvgCost').textContent = '$0.000';
-  document.getElementById('teamMembersBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Select an organization to view members</td></tr>';
+  document.getElementById('teamMembersBody').innerHTML = memberEmptyRowHtml('Select an organization to view members', 'Choose an organization from the list above');
   var mobReset = document.getElementById('teamMembersMobile');
   if(mobReset) mobReset.innerHTML = '';
   document.getElementById('pendingInvitesList').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Pending invites appear here after sending.</p>';
@@ -818,6 +818,16 @@ function refreshInviteMoreBtn(){
     : 'Show More ('+count+') ▼';
 }
 
+// Shared empty-state for the member table + mobile card list (icon + title + hint)
+function memberEmptyHtml(msg, sub){
+  return '<div class="member-empty"><div class="member-empty-icon">👥</div>'
+    + '<div class="member-empty-title">'+escapeHtml(msg||'No members yet')+'</div>'
+    + '<div class="member-empty-sub">'+escapeHtml(sub||'Invite teammates or adjust your search')+'</div></div>';
+}
+function memberEmptyRowHtml(msg, sub){
+  return '<tr><td colspan="5" style="padding:0;border:none">'+memberEmptyHtml(msg, sub)+'</td></tr>';
+}
+
 // Render members with live search filter + pagination (client-side; list is fully loaded)
 function renderMembers(myRole, orgId){
   var tbody = document.getElementById('teamMembersBody');
@@ -842,9 +852,11 @@ function renderMembers(myRole, orgId){
   var countEl = document.getElementById('memberCount');
   if(countEl) countEl.innerHTML = '<strong>'+filtered.length+'</strong> member'+(filtered.length===1?'':'s');
   if(!filtered.length){
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">'+(q ? 'No members match "'+escapeHtml(memberQuery)+'"' : 'No members yet')+'</td></tr>';
+    var emptyMsg = q ? 'No members match "'+memberQuery+'"' : 'No members yet';
+    var emptySub = q ? 'Try a different name or email' : 'Invite teammates to start collaborating';
+    tbody.innerHTML = memberEmptyRowHtml(emptyMsg, emptySub);
     var mobEmpty = document.getElementById('teamMembersMobile');
-    if(mobEmpty) mobEmpty.innerHTML = '<div class="empty-state-sm">'+(q ? 'No members match "'+escapeHtml(memberQuery)+'"' : 'No members yet')+'</div>';
+    if(mobEmpty) mobEmpty.innerHTML = memberEmptyHtml(emptyMsg, emptySub);
   } else {
     var rows = pageRows.map(function(m){
       var isOwner = m.role === 'owner';

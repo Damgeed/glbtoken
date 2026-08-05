@@ -676,6 +676,44 @@
 /* ── Member rows are clickable (open detail drawer) ── */
 #teamMembersBody tr[data-member] { cursor: pointer; }
 
+/* ── Members table: contained vertical scroll + sticky header (desktop) ──
+   The table wrapper gets its own scroll area so the header can pin to the
+   top while long member lists scroll beneath it. Mobile hides .scroll-x
+   entirely (member cards take over), so this is desktop-only by design. */
+#membersCard .scroll-x {
+  max-height: min(62vh, 560px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#membersCard .scroll-x table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--card);
+}
+
+/* ── Member empty state (table + mobile cards) ── */
+.member-empty {
+  text-align: center;
+  padding: 2.2rem 1rem;
+  color: var(--text-muted);
+}
+.member-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+  opacity: 0.55;
+}
+.member-empty-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+.member-empty-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 /* ── Team org stats: 4 cards in a balanced 2x2 grid ──
    .dash-grid's default 1fr/1.5fr is for the dashboard balance row and makes
    the stat cards asymmetric; use equal columns here. */
