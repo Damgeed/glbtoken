@@ -172,8 +172,10 @@
             <button class="act-filter" data-type="api_call" onclick="setUsageActFilter(this)">API Calls</button>
           </div>
         </div>
-        <div class="act-list" id="usageActivityList">
-          <div class="act-card" style="opacity:0.6"><div class="act-card-desc">Loading activity…</div></div>
+        <div class="dash-activity activity-scroll" id="usageActivityList">
+          <div class="activity-item activity-row" style="opacity:0.6">
+            <div class="flex-grow"><div class="text-desc">Loading activity…</div></div>
+          </div>
         </div>
         <div id="usageActEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No activity yet — buy tokens or use AI models to see activity here</div></div>
       </div>
@@ -280,32 +282,29 @@
 var _usageActData = [];
 var _usageActFilter = 'all';
 var USAGE_SVGS = {
-  money: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
-  key: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
-  alert: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-  code: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'
+  code:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  money:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
+  key:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>',
+  alert:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
 };
 function fmtUsageActTime(iso){
-  if(!iso) return '';
-  var diff = (Date.now() - new Date(iso).getTime())/1000;
-  if(diff < 60) return 'Just now';
-  if(diff < 3600) return Math.floor(diff/60)+' min ago';
-  if(diff < 86400) return Math.floor(diff/3600)+' hour'+(diff>=7200?'s':'')+' ago';
-  if(diff < 604800) return Math.floor(diff/86400)+' day'+(diff>=172800?'s':'')+' ago';
+  if(!iso) return '<strong>—</strong>';
   var d = new Date(iso);
-  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+  var h = d.getHours()%12||12;
+  var m = ('0'+d.getMinutes()).slice(-2);
+  var ap = d.getHours()>=12?'PM':'AM';
+  return '<strong>'+dateStr+'</strong> '+h+':'+m+' '+ap;
 }
 function usageActItemHtml(type, desc, time, amtHtml){
   var icon, iconCls;
-  if(type==='topup' || type==='deposit'){ icon=USAGE_SVGS.money; iconCls='act-card-icon-teal'; }
-  else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=USAGE_SVGS.key; iconCls='act-card-icon-gold'; }
-  else if(type==='consumption'){ icon=USAGE_SVGS.alert; iconCls='act-card-icon-red'; }
-  else { icon=USAGE_SVGS.code; iconCls='act-card-icon-blue'; }
-  return '<div class="act-card">'
-    + '<div class="act-card-top"><div class="act-card-icon '+iconCls+'">'+icon+'</div><div class="act-card-time">'+time+'</div></div>'
-    + '<div class="act-card-desc">'+desc+'</div>'
-    + (amtHtml ? '<div class="act-card-amt">'+amtHtml+'</div>' : '')
-    + '</div>';
+  if(type==='topup' || type==='deposit'){ icon=USAGE_SVGS.money; iconCls='activity-icon activity-icon-teal'; }
+  else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=USAGE_SVGS.key; iconCls='activity-icon activity-icon-gold'; }
+  else if(type==='consumption'){ icon=USAGE_SVGS.alert; iconCls='activity-icon activity-icon-red'; }
+  else { icon=USAGE_SVGS.code; iconCls='color-dot-blue'; }
+  return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div>'+(amtHtml?'<div class="activity-amt">'+amtHtml+'</div>':'')+'</div>';
 }
 function renderUsageActivity(){
   var list = document.getElementById('usageActivityList');
@@ -315,25 +314,31 @@ function renderUsageActivity(){
   if(count) count.textContent = filtered.length + (filtered.length === 1 ? ' event' : ' events');
   var empty = document.getElementById('usageActEmpty');
   if(!filtered.length){
-    list.innerHTML = '';
-    if(empty) empty.style.display = 'block';
+    list.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Buy tokens or use AI models to see activity here</div></div></div>';
+    if(empty) empty.style.display = 'none';
     return;
   }
   if(empty) empty.style.display = 'none';
-  list.innerHTML = filtered.map(function(a){
+  var cards = filtered.map(function(a){
     var type = a.type || '';
     var time = fmtUsageActTime(a.created_at);
     var desc;
-    if(type==='topup' || type==='deposit'){ desc = (Number(a.tokens)||0).toLocaleString()+' tokens added · '+(a.description ? escapeHtml(a.description) : 'Top-up'); }
-    else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call · '+(Number(a.tokens)||0).toLocaleString()+' tokens'; }
-    else if(type==='api_call'){ desc = 'API call to '+escapeHtml(a.model||'unknown')+(a.tokens ? ' · '+(Number(a.tokens)||0).toLocaleString()+' tokens' : ''); }
-    else if(type==='key_created'){ desc = escapeHtml(a.description || 'API key created'); }
-    else { desc = escapeHtml(a.description || a.type || 'Activity'); }
+    if(type==='topup' || type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+escapeHtml(a.payment_method||'payment'); }
+    else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call — '+(a.tokens||0).toLocaleString()+' tokens'; }
+    else if(type==='api_call'){ desc = 'API call to '+escapeHtml(a.model||'unknown'); }
+    else { desc = escapeHtml(a.model||a.payment_method||a.type||'Activity'); }
     var amtHtml = '';
     if(type==='topup' || type==='deposit'){ amtHtml = '<span class="amt-pos">+$'+(Number(a.amount)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'; }
     else if(type==='consumption' || type==='api_call'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
     return usageActItemHtml(type, desc, time, amtHtml);
-  }).join('');
+  });
+  var first = cards.slice(0,3).join('');
+  var rest = cards.slice(3);
+  list.innerHTML = first
+    + (rest.length
+        ? '<div id="usageActivityCollapse" class="activity-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
+          + '<button id="usageActivityMoreBtn" class="list-more-btn" onclick="toggleUsageActivityMore()">Show More ('+rest.length+') ▼</button>'
+        : '');
 }
 window.setUsageActFilter = function(btn){
   _usageActFilter = btn.getAttribute('data-type') || 'all';
@@ -341,6 +346,13 @@ window.setUsageActFilter = function(btn){
   for(var i=0;i<btns.length;i++){ btns[i].classList.toggle('active', btns[i] === btn); }
   renderUsageActivity();
 };
+function toggleUsageActivityMore(){
+  var c = document.getElementById('usageActivityCollapse');
+  if(!c) return;
+  c.classList.toggle('open');
+  var btn = document.getElementById('usageActivityMoreBtn');
+  if(btn) btn.textContent = c.classList.contains('open') ? 'Show Less ▲' : 'Show More (' + c.getAttribute('data-count') + ') ▼';
+}
 function loadUsageActivity(){
   var container = document.getElementById('usageActivityList');
   if(!container) return;
@@ -348,7 +360,7 @@ function loadUsageActivity(){
     _usageActData = (d && d.items) || [];
     renderUsageActivity();
   }).catch(function(){
-    container.innerHTML = '<div class="act-card" style="opacity:0.6"><div class="act-card-desc">Could not load activity</div></div>';
+    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">Could not load activity</div></div></div>';
   });
 }
 
