@@ -508,12 +508,17 @@ function lockBodyScroll(hide){
 // ── Mobile AI Chat popup ──
 function openMobileChat(){
   if(window.innerWidth>768)return;
+  const section=document.querySelector('.ai-chat-section');
+  if(!section) return;
+  // ⚠️ Idempotency guard — CRITICAL for keyboard retention on iOS.
+  // focus() on the textarea fires this handler again (sendAIChatMsg refocuses
+  // after send). Re-adding .chat-focused / lockBodyScroll / forcing reflow
+  // dismisses the soft keyboard. If we're already in popup mode, do nothing.
+  if(section.classList.contains('chat-focused')) return;
   // Close support chat first if open
   if(document.getElementById('chatWindow').classList.contains('chat-focused')){
     closeMobileSupportChat();
   }
-  const section=document.querySelector('.ai-chat-section');
-  if(!section) return;
   section.classList.add('chat-focused');
   // Hide back-to-top while AI chat is open
   var btt = document.querySelector('.back-to-top');
