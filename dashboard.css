@@ -1,6 +1,6 @@
 /* ── Professional Dashboard Styling ── */
 /* ── Utility classes (converted from inline styles) ── */
-.stat-card { padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg); }
+.stat-card { padding:1.25rem;background:var(--bg-alt);border:1px solid var(--border-light);border-radius:var(--radius-lg); }
 .flex-col-center { flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end; }
 .label-tiny { font-size:0.6rem;color:var(--text-muted);margin-bottom:0.15rem; }
 .label-micro { font-size:0.55rem;color:var(--text-muted);margin-top:0.3rem; }

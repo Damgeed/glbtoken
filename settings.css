@@ -179,8 +179,8 @@
 
 /* ── Settings card wrap container (Webhooks / Recent Notifications / etc.) ── */
 .settings-card {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   transition: all 0.2s;
@@ -330,10 +330,14 @@ button.settings-save-btn:hover {
   background: var(--bg-alt);
   border-color: rgba(244, 180, 0, 0.45);
 }
-/* Mobile: keep full-height notification cards (no padding squeeze) */
+/* Notification cards: slightly reduced height on desktop + mobile */
+.notif-item.dash-card.settings-row {
+  padding: 0.72rem 1.25rem;
+  min-height: 0;
+}
 @media (max-width: 768px) {
   .notif-item.dash-card.settings-row {
-    padding: 1rem 1.1rem;
+    padding: 0.65rem 1.1rem;
     min-height: 0;
   }
 }
