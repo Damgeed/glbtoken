@@ -98,10 +98,10 @@ def _ip_allowed(client_ip: str, allowlist: str) -> bool:
     return False
 
 
-def _auth_user(db: Session, authorization: str, request: Request = None):
+def _auth_user(db: Session, authorization: str, request: Request = None, require_write: bool = False):
     """Resolve a GlbTOKEN API key (Bearer gtk_... / sk-...) to (user, api_key).
 
-    Enforces per-key expiry, IP allowlist, and rate limit.
+    Enforces per-key expiry, IP allowlist, rate limit, and read-only permission.
     """
     raw = (authorization or "").strip()
     if raw.lower().startswith("bearer "):
@@ -113,6 +113,10 @@ def _auth_user(db: Session, authorization: str, request: Request = None):
     ).first()
     if not api_key:
         _401("Invalid API key")
+
+    # Read-only keys may only call read endpoints (e.g. GET /v1/models)
+    if require_write and api_key.permissions == "read_only":
+        _403("This API key is read-only")
 
     # Expiry
     if api_key.expires_at is not None:
@@ -222,7 +226,7 @@ async def chat_completions(
     authorization: str = Header("", alias="Authorization"),
     db: Session = Depends(get_db),
 ):
-    user, api_key = _auth_user(db, authorization, request)
+    user, api_key = _auth_user(db, authorization, request, require_write=True)
 
     # Pre-flight balance check (estimate)
     texts = []
@@ -286,7 +290,7 @@ async def responses_api(
     db: Session = Depends(get_db),
 ):
     """OpenAI Responses API passthrough (billed on real usage)."""
-    user, api_key = _auth_user(db, authorization, request)
+    user, api_key = _auth_user(db, authorization, request, require_write=True)
     inp = req.input if isinstance(req.input, list) else [req.input] if req.input else []
     cost_est = max(1, int(_estimate_tokens([inp]) + min(req.max_output_tokens, 4096)) * 2 // 1000)
     if user.token_balance < cost_est:
@@ -313,7 +317,7 @@ async def messages_api(
     db: Session = Depends(get_db),
 ):
     """Anthropic Messages API passthrough (billed on real usage)."""
-    user, api_key = _auth_user(db, authorization, request)
+    user, api_key = _auth_user(db, authorization, request, require_write=True)
     texts = [m.get("content", "") for m in req.messages if isinstance(m, dict)]
     cost_est = max(1, int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000)
     if user.token_balance < cost_est:

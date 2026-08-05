@@ -8161,3 +8161,36 @@ body {
 .cal-foot { display: flex; align-items: center; gap: 0.4rem; border-top: 1px solid var(--border, #2A2D42); padding-top: 0.7rem; }
 .cal-spacer { flex: 1; }
 .td-tokens-sub { display: block; font-size: 0.68rem; color: var(--text-muted, #8A8FA3); font-variant-numeric: tabular-nums; margin-top: 0.1rem; }
+
+/* ── API key page: edit button, usage link, IP allowlist tag ── */
+.api-key-card .key-info .key-name .key-edit {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  vertical-align: middle;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.api-key-card .key-info .key-name .key-edit:hover {
+  opacity: 1;
+  color: var(--primary);
+}
+.api-key-card .key-info .meta .ip-allow {
+  color: var(--primary);
+  font-family: monospace;
+  font-size: 0.7rem;
+}
+.sort-btn.btn-usage,
+.sort-btn.btn-edit {
+  text-decoration: none;
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+}
+.sort-btn.btn-usage:hover,
+.sort-btn.btn-edit:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}

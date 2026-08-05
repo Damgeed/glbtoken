@@ -56,22 +56,31 @@
 
     function renderKeys(k){
       const list=document.getElementById('keyList');
-      if(!k||!k.length){list.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem;font-size:0.85rem">No API keys yet. Create one to get started.</p>';return}
+      if(!k||!k.length){
+        list.innerHTML='<div style="text-align:center;padding:2.5rem 1rem">'
+          + '<div style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem">No API keys yet. Create one to start building.</div>'
+          + '<button class="btn-primary" onclick="showCreateKeyModal()">+ Create your first key</button>'
+          + '</div>';
+        return;
+      }
       const ordered=orderKeys(k);
       const cards=ordered.map(key=>`
         <div class="key-swipe" data-swipe-id="${escapeHtml(String(key.id))}">
           <div class="key-swipe-actions">
+            <button class="swipe-action swipe-edit" data-key-id="${escapeHtml(String(key.id))}" onclick="openEditKeyModal(${key.id})">Edit</button>
             <button class="swipe-action ${key.is_active?'swipe-pause':'swipe-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
             <button class="swipe-action swipe-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
           </div>
           <div class="api-key-card">
             <div class="key-info">
-              <div class="key-name">${escapeHtml(key.name)}</div>
+              <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${key.id})" title="Edit key" aria-label="Edit key">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
-              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?fmtDT(key.created_at):'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+fmtDT(key.last_used):'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?fmtDT(key.created_at):'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+fmtDT(key.last_used):'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''}${key.ip_allowlist?' · <span class="ip-allow" title="Allowed IPs">IPs: '+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">
+                <a class="sort-btn btn-usage" href="logs.html">Usage</a>
+                <button class="sort-btn btn-edit" onclick="openEditKeyModal(${key.id})">Edit</button>
                 <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
                 <button class="sort-btn btn-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
               </div>
@@ -289,6 +298,55 @@
         showToast('Key deleted','info');
       });
     }
+
+    // ── Edit key (rename, permissions, expiry, rate limit, IP allowlist) ──
+    let _editingKey=null;
+    function openEditKeyModal(id){
+      const key=keys.find(function(k){return k.id===id;}); if(!key) return;
+      _editingKey=key;
+      document.getElementById('editKeyTitle').textContent='Edit API Key';
+      document.getElementById('editKeyName').value=key.name||'';
+      document.getElementById('editKeyPerms').value=key.permissions||'read_write';
+      var expSel=document.getElementById('editKeyExpiry');
+      if(key.expires_at){
+        var days=Math.ceil((new Date(key.expires_at)-Date.now())/86400000);
+        expSel.value = days<=31?'30d':(days<=92?'90d':'1y');
+      } else { expSel.value=''; }
+      document.getElementById('editKeyRpm').value=key.rate_limit_rpm||'';
+      document.getElementById('editKeyIps').value=key.ip_allowlist||'';
+      document.getElementById('editKeyModal').classList.add('open');
+    }
+    function closeEditKeyModal(){document.getElementById('editKeyModal').classList.remove('open');_editingKey=null;}
+    async function saveEditKey(){
+      if(!_editingKey) return;
+      const name=document.getElementById('editKeyName').value;
+      const perms=document.getElementById('editKeyPerms').value;
+      const expirySel=document.getElementById('editKeyExpiry').value;
+      let expires_at='';
+      if(expirySel==='30d')expires_at=new Date(Date.now()+30*86400000).toISOString();
+      else if(expirySel==='90d')expires_at=new Date(Date.now()+90*86400000).toISOString();
+      else if(expirySel==='1y')expires_at=new Date(Date.now()+365*86400000).toISOString();
+      const rpm=parseInt(document.getElementById('editKeyRpm').value,10);
+      const ips=document.getElementById('editKeyIps').value.trim();
+      try{
+        const d=await safeApi('PUT','/api/keys/'+_editingKey.id,{name:name,permissions:perms,expires_at:expires_at,rate_limit_rpm:rpm>0?rpm:null,ip_allowlist:ips});
+        if(!d) return;
+        closeEditKeyModal();
+        loadKeys();
+        showToast('Key updated','success');
+      }catch(e){}
+    }
+
+    // ── Search / filter keys by name or prefix ──
+    function filterKeys(q){
+      q=(q||'').toLowerCase().trim();
+      if(!q){ renderKeys(keys); return; }
+      var filtered=keys.filter(function(k){
+        return (k.name||'').toLowerCase().indexOf(q)>-1
+          || (k.key_prefix||'').toLowerCase().indexOf(q)>-1;
+      });
+      renderKeys(filtered);
+    }
     function sortKeys(mode){
       const s=[...keys];
       if(mode==='newest')s.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
@@ -308,6 +366,11 @@
     // Auto-init on manage-keys.html
     document.addEventListener('DOMContentLoaded', function(){
       if(typeof loadKeys==='function')loadKeys();
+      // Live search/filter by name or prefix
+      var searchEl=document.getElementById('keySearch');
+      if(searchEl){
+        searchEl.addEventListener('input',function(){ filterKeys(this.value); });
+      }
       // Tap outside an open swipe row closes it
       document.addEventListener('click',function(e){
         if(openSwipe&&!openSwipe.contains(e.target))closeSwipe();

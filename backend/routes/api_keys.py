@@ -30,6 +30,14 @@ def _parse_expiry(s):
         _400("Invalid expires_at — use ISO datetime")
 
 
+ALLOWED_PERMISSIONS = {"read_write", "read_only"}
+
+
+def _validate_permissions(perms):
+    if perms is not None and perms not in ALLOWED_PERMISSIONS:
+        _400("permissions must be 'read_write' or 'read_only'")
+
+
 def _total_spent_map(db: Session) -> dict:
     rows = (
         db.query(Transaction.key_id, func.coalesce(func.sum(Transaction.tokens), 0))
@@ -75,6 +83,8 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
     if active_count >= 10:
         _400("Maximum 10 active API keys")
 
+    _validate_permissions(req.permissions)
+
     key = ApiKey(
         user_id=user.id,
         key=generate_api_key(),
@@ -102,6 +112,7 @@ def update_key(key_id: int, req: ApiKeyUpdate, request: Request, user: User = De
     key = db.query(ApiKey).filter(ApiKey.id == key_id, ApiKey.user_id == user.id).first()
     if not key:
         _404("API key not found")
+    _validate_permissions(req.permissions)
     if req.name is not None: key.name = req.name
     if req.permissions is not None: key.permissions = req.permissions
     if req.is_active is not None: key.is_active = req.is_active

@@ -125,6 +125,7 @@
           <button class="btn-action" style="flex-shrink:0" onclick="showCreateKeyModal()">+ New Key</button>
         </div>
         <div class="flex gap-sm flex-wrap">
+          <input type="search" id="keySearch" placeholder="Search keys…" class="form-input-full" style="max-width:220px;flex:1 1 140px;padding:0.45rem 0.6rem;font-size:0.8rem" aria-label="Search API keys" />
           <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
           <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
           <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
@@ -169,6 +170,37 @@
         </div>
       </div>
 
+      <!-- Edit Key Modal -->
+      <div class="modal-overlay" id="editKeyModal" onclick="if(event.target===this)closeEditKeyModal()">
+        <div class="modal-content modal-dialog" onclick="event.stopPropagation()">
+          <button onclick="closeEditKeyModal()" class="modal-close">✕</button>
+          <h3 class="api-key-title notranslate" id="editKeyTitle">Edit API Key</h3>
+          <p class="text-sm text-muted mb-lg">Update name, permissions, expiry, rate limit, or IP allowlist</p>
+          <label class="field-label">Key Name</label>
+          <input type="text" id="editKeyName" class="form-input-full mb-md" />
+          <label class="field-label">Permissions</label>
+          <select id="editKeyPerms" class="form-input-full mb-md">
+            <option value="read_write">Read & Write</option>
+            <option value="read_only">Read Only</option>
+          </select>
+          <label class="field-label">Expires</label>
+          <select id="editKeyExpiry" class="form-input-full mb-md">
+            <option value="">Never</option>
+            <option value="30d">30 days</option>
+            <option value="90d">90 days</option>
+            <option value="1y">1 year</option>
+          </select>
+          <label class="field-label">Rate Limit <span class="text-muted text-xs">(requests / minute — optional)</span></label>
+          <input type="number" id="editKeyRpm" class="form-input-full mb-md" placeholder="e.g. 60" min="1" />
+          <label class="field-label">IP Allowlist <span class="text-muted text-xs">(comma-separated — optional)</span></label>
+          <input type="text" id="editKeyIps" class="form-input-full mb-lg" placeholder="e.g. 1.2.3.4, 203.0.113.0/24" />
+          <div class="flex gap-md">
+            <button class="btn-secondary flex-1 pad-sm" onclick="closeEditKeyModal()">Cancel</button>
+            <button class="btn-primary flex-1 pad-sm" onclick="saveEditKey()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -200,7 +232,7 @@
 <script data-cfasync="false" src="shared.js?v=1134"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1224"></script>
-<script data-cfasync="false" src="keys.js?v=15"></script>
+<script data-cfasync="false" src="keys.js?v=16"></script>
 
 </body>
 </html>
