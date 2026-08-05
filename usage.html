@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="dashboard.css?v=1038" />
 <link rel="stylesheet" href="more.css?v=3" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1034" />
+<link rel="stylesheet" href="usage.css?v=1035" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -332,8 +332,8 @@ function renderUsageActivity(){
     else if(type==='consumption' || type==='api_call'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
     return usageActItemHtml(type, desc, time, amtHtml);
   });
-  var first = cards.slice(0,3).join('');
-  var rest = cards.slice(3);
+  var first = cards.slice(0,5).join('');
+  var rest = cards.slice(5);
   list.innerHTML = first
     + (rest.length
         ? '<div id="usageActivityCollapse" class="activity-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
