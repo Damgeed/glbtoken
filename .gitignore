@@ -5,3 +5,8 @@ backend/glbtoken.db
 .env
 scripts/.i18n_state.json
 make_guide_pdf.py
+
+# Test artifacts
+backend/test_glbtoken.db
+__pycache__/
+.pytest_cache/
