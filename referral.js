@@ -35,7 +35,7 @@ async function loadReferralStats() {
     const hintEl=document.getElementById('refShareHint');
     if(hintEl) hintEl.textContent=hasCode?'Share this code':'Generate to start earning';
     if(countEl) countEl.textContent=d.total_referrals||0;
-    if(earnEl) earnEl.textContent=(d.total_earned||0).toFixed(2);
+    if(earnEl) earnEl.textContent=fmtUSD(d.total_earned||0);
     if(totalRefsEl) totalRefsEl.textContent=d.total_referrals||0;
     // Reward history (merged into /api/referral/stats since v1127 — single
     // request instead of serializing stats → rewards on every load)
@@ -50,7 +50,7 @@ async function loadReferralStats() {
     }catch(e){}
     if(totalEarnEl) totalEarnEl.textContent=lifetime.toFixed(0)+' GT';
     const valEl=document.getElementById('refTotalEarnedVal');
-    if(valEl) valEl.textContent='↑ Value: $'+(lifetime*0.001).toFixed(2);
+    if(valEl) valEl.textContent='↑ Value: '+fmtUSD(lifetime*0.001);
     const pendingAmt=(d.pending_earnings!=null?d.pending_earnings:(d.total_earned||0));
     if(pendingEl) pendingEl.textContent=pendingAmt.toFixed(0)+' GT';
     const claimBtn=document.getElementById('refClaimBtn');

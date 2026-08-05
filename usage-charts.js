@@ -41,7 +41,7 @@
           }
         });
         if(summaryTotal)summaryTotal.textContent=(data.total_tokens||0).toLocaleString();
-        if(summaryCost)summaryCost.textContent='$'+(data.total_cost||0).toFixed(2);
+        if(summaryCost)summaryCost.textContent=fmtUSD(data.total_cost||0);
         if(summaryLabel)summaryLabel.innerHTML='Total: <strong>'+(data.total_tokens||0).toLocaleString()+'</strong> '+(isCost?'cost ($)':'tokens');
     }
     function setUsageRange(days){

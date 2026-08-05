@@ -798,9 +798,17 @@ window.updateBalance = function updateBalance(){
   const db=document.getElementById('dashBalance');
   if(db)db.textContent=b.toLocaleString();
   const du=document.getElementById('dashUsd');
-  if(du)du.textContent='$'+(b/1000).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' USD';
+  if(du)du.textContent=fmtUSD(b/1000)+' USD';
   const hb=document.getElementById('heroBalance');
   if(hb)hb.textContent=b.toLocaleString();
+};
+
+// ── Unified USD formatting (OVERVIEW is the reference) ──
+// "$1,234.56" — thousands separators + fixed decimals. Use everywhere a
+// dollar amount is displayed so all pages show digits identically.
+window.fmtUSD = function fmtUSD(n, dp){
+  dp = (dp == null) ? 2 : dp;
+  return '$' + (Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
 };
 
 // ── Mobile show-more collapse for TABLES (show 3 on mobile, all on desktop) ──

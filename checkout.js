@@ -29,7 +29,7 @@
       document.querySelectorAll('.pricing-card').forEach(c=>c.classList.remove('selected'));
       el.classList.add('selected');
       selectedAmount=amount;
-      document.getElementById('topupTotal').textContent='$'+amount.toFixed(2);
+      document.getElementById('topupTotal').textContent=fmtUSD(amount);
     }
     function selectCustomTopup(){
       document.querySelectorAll('.pricing-card').forEach(c=>c.classList.remove('selected'));

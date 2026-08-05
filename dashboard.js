@@ -22,7 +22,7 @@
           var date=t.created_at?fmtDT(t.created_at) : '-';
           var amtClass=t.type==='deposit'?'green':'red';
           var amtSign=t.type==='deposit'?'+':'-';
-          var amount='<span class="amount '+amtClass+'">'+amtSign+Math.abs(t.amount).toFixed(2)+'</span>';
+          var amount='<span class="amount '+amtClass+'">'+amtSign+Math.abs(t.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>';
           var row='<tr><td>'+date+'</td><td>'+escapeHtml(t.description||t.type)+'</td><td>'+amount+'</td><td>'+escapeHtml(t.status||'completed')+'</td></tr>';
           if(t.type==='deposit'||t.type==='topup') depRows+=row; else conRows+=row;
         });

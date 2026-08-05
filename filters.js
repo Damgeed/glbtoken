@@ -305,7 +305,7 @@
           var icon,colorCls,desc,val='';
           switch(a.type){
             case 'api_call': icon='🤖'; colorCls='var(--primary-subtle)'; desc=escapeHtml(a.model||'API call')+' · '+parseInt(a.tokens||0).toLocaleString()+' tok'+(a.cost?' · $'+a.cost.toFixed(6):''); break;
-            case 'topup': icon='💰'; colorCls='var(--success-subtle)'; desc='Top-up '+(a.amount?'$'+a.amount.toFixed(2):'')+' · +'+parseInt(a.tokens||0).toLocaleString()+' tokens'; val='+'+parseInt(a.tokens||0); break;
+            case 'topup': icon='💰'; colorCls='var(--success-subtle)'; desc='Top-up '+fmtUSD(a.amount)+' · +'+parseInt(a.tokens||0).toLocaleString()+' tokens'; val='+'+parseInt(a.tokens||0); break;
             case 'key_created': icon='🔑'; colorCls='var(--border)'; desc='Created API key: '+escapeHtml(a.description||''); break;
             case 'key_deleted': icon='🗑️'; colorCls='var(--border)'; desc='Deleted API key: '+escapeHtml(a.description||''); break;
             case 'key_paused': icon='⏸️'; colorCls='var(--border)'; desc='Paused API key: '+escapeHtml(a.description||''); break;
@@ -360,7 +360,7 @@
 
     // ── Transactions ──
     function txDepositRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>$'+escapeHtml(t.amount.toFixed(2))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
     }
     function txConsumptionRow(t){
       return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';

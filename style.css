@@ -1762,8 +1762,14 @@ input[type="range"]::-moz-range-thumb {
 }
 .label-muted-sm {
   font-size: 0.8rem;
-  font-weight: 400;
   color: var(--text-muted);
+  font-weight: 400;
+}
+/* Counts inside section titles (e.g. "Invoices 21") need breathing room —
+   .dash-section-title is flex so the whitespace between text and the count
+   is collapsed. */
+.dash-section-title .label-muted-sm {
+  margin-left: 0.45rem;
 }
 
 /* ── Text Utilities ── */

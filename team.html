@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1199" />
+  <link rel="stylesheet" href="style.css?v=1200" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="team.css?v=1050" />
   </head>
@@ -213,7 +213,7 @@
         <div class="member-toolbar">
           <input type="search" id="memberSearch" class="input-search" placeholder="Search members by name or email..." oninput="onMemberSearch(this.value)" />
           <span id="memberCount" class="text-sm-muted-3"></span>
-          <button class="keys-icon-btn" onclick="exportMembersCsv()" title="Export member list as CSV" aria-label="Export member list as CSV" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+          <button class="keys-icon-btn" onclick="exportMembersCsv()" title="Export member list as CSV" aria-label="Export member list as CSV" style="flex-shrink:0;margin-left:auto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
         </div>
         <div class="member-filters">
           <div class="filter-chips" id="memberFilterChips">
@@ -346,7 +346,7 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=15"></script>
 <script src="translations.js?v=1105"></script>
-<script data-cfasync="false" src="shared.js?v=1134"></script>
+<script data-cfasync="false" src="shared.js?v=1135"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -985,11 +985,11 @@ async function loadOrgUsage(orgId){
   if(!token || !orgId) return;
   var d = await safeApi('GET','/api/orgs/'+orgId+'/usage');
   if(!d) return;
-  document.getElementById('orgTotalSpend').textContent = '$'+(d.total_spent||0).toFixed(2);
+  document.getElementById('orgTotalSpend').textContent = fmtUSD(d.total_spent||0);
   document.getElementById('orgTotalCalls').textContent = (d.total_transactions||0).toLocaleString();
   document.getElementById('orgActiveMembers').textContent = d.total_members||0;
   var perCall = d.total_transactions ? ((d.total_spent||0)/d.total_transactions) : 0;
-  document.getElementById('orgAvgCost').textContent = '$'+perCall.toFixed(4);
+  document.getElementById('orgAvgCost').textContent = fmtUSD(perCall,4);
   // Cache per-member tokens so search/pagination re-renders keep the numbers
   lastUsageBreakdown = d.member_breakdown || [];
   fillTokens();

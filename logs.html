@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1199" />
+  <link rel="stylesheet" href="style.css?v=1200" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1023" />
   </head>
@@ -268,7 +268,7 @@
 <script src="nav.js?v=14"></script>
 <script src="footer.js?v=15"></script>
 <script src="translations.js?v=1105"></script>
-<script data-cfasync="false" src="shared.js?v=1134"></script>
+<script data-cfasync="false" src="shared.js?v=1135"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -459,9 +459,9 @@ async function loadCostBreakdown(days){
     var totalCost=0, totalCalls=0;
     models.forEach(function(m){ totalCost += (m.cost||0); totalCalls += (m.calls||0); });
     var totalCostEl=document.getElementById('cbTotalCost');
-    if(totalCostEl)totalCostEl.textContent='$'+totalCost.toFixed(2);
+    if(totalCostEl)totalCostEl.textContent=fmtUSD(totalCost);
     var avgEl=document.getElementById('cbAvgCost');
-    if(avgEl)avgEl.textContent=totalCalls>0 ? '$'+(totalCost/totalCalls).toFixed(4) : '$0.00';
+    if(avgEl)avgEl.textContent=totalCalls>0 ? fmtUSD(totalCost/totalCalls,4) : '$0.00';
     var maxModel='—',maxCost=-1;
     models.forEach(function(m){var c=m.cost||0;if(c>maxCost){maxCost=c;maxModel=m.model||'Unknown';}});
     var mostEl=document.getElementById('cbMostExpensive');
@@ -567,9 +567,9 @@ async function loadCostProjection(days){
     var actual=(data.period_cost!==undefined?data.period_cost:(data.last_30_days_cost||0));
     var avgDaily=(data.daily_avg||0);
     var actualDays=(data.days_requested||data.days_of_data||d);
-    document.getElementById('cpProjected').textContent='$'+projected.toFixed(2);
-    document.getElementById('cpActual').textContent='$'+actual.toFixed(2);
-    document.getElementById('cpAvgDaily').textContent='$'+avgDaily.toFixed(2);
+    document.getElementById('cpProjected').textContent=fmtUSD(projected);
+    document.getElementById('cpActual').textContent=fmtUSD(actual);
+    document.getElementById('cpAvgDaily').textContent=fmtUSD(avgDaily);
     var lbl=document.getElementById('cpActualLbl');
     if(lbl)lbl.textContent='Actual ('+actualDays+'d)';
     var chg=document.getElementById('cpProjectedChg');
