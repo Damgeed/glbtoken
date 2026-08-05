@@ -1039,12 +1039,33 @@ document.addEventListener('click',function(e){
 
 
     // ── Notifications (shared — used by notifications.html + dashboard.html) ──
+    function getNotifStore(key){
+      try{ return JSON.parse(localStorage.getItem(key))||[]; }catch(e){ return []; }
+    }
+    function setNotifStore(key, arr){
+      try{ localStorage.setItem(key, JSON.stringify(arr)); }catch(e){}
+    }
     function dismissNotif(el){
-      el.closest('.notif-item').remove();
+      var item=el.closest('.notif-item');
+      if(item){
+        var id=item.getAttribute('data-nid');
+        if(id){
+          var arr=getNotifStore('gt_dismissed_notifs');
+          if(arr.indexOf(id)===-1){ arr.push(id); setNotifStore('gt_dismissed_notifs', arr); }
+        }
+        item.remove();
+      }
     }
     function markAllRead(){
       var items=document.querySelectorAll('.notif-item .notif-dot');
       items.forEach(function(d){d.style.display='none'});
+      // Persist read state so dots stay gone after refresh
+      var read=getNotifStore('gt_read_notifs');
+      document.querySelectorAll('.notif-item[data-nid]').forEach(function(n){
+        var id=n.getAttribute('data-nid');
+        if(id && read.indexOf(id)===-1) read.push(id);
+      });
+      setNotifStore('gt_read_notifs', read);
       showToast('All marked as read','info');
     }
 

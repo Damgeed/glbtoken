@@ -404,20 +404,40 @@ function applyCustomRange(){
   showToast('Range applied: '+calFmt(calFrom)+' → '+calFmt(calTo)+' ('+days+' days)','success');
 }
 
+// Non-destructive chart empty state: inserts a <p> sibling WITHOUT rebuilding
+// the parent — innerHTML+= on parentNode detaches the canvas, making the chart
+// permanently invisible even after data arrives.
+function showChartEmpty(el, text){
+  if(!el) return;
+  if(el.parentNode.querySelector('.chart-empty-msg')) return;
+  var p = document.createElement('p');
+  p.className = 'chart-empty-msg text-muted text-center text-sm pad-sm-1';
+  p.textContent = text || 'No data available.';
+  el.parentNode.appendChild(p);
+}
+function clearChartEmpty(el){
+  if(!el) return;
+  var prev = el.parentNode.querySelector('.chart-empty-msg');
+  if(prev) prev.remove();
+}
+
 async function loadCostBreakdown(days){
   try{
     var el=document.getElementById('costByModelChart');
     if(!el)return;
     var data=await safeApi('GET','/api/analytics/cost-by-model?days='+(days||7));
-    if(!data||!data.models||!data.models.length){
+    // Backend returns a BARE ARRAY (results[]) — tolerate both shapes
+    var models = Array.isArray(data) ? data : ((data && data.models) || []);
+    clearChartEmpty(el);
+    if(!models.length){
       if(window.costChartInst){window.costChartInst.destroy();window.costChartInst=null}
-      el.parentNode.innerHTML+='<p class="text-muted text-center text-sm pad-sm-1">No cost data available.</p>';
+      showChartEmpty(el, 'No cost data available.');
       return;
     }
     if(window.costChartInst){window.costChartInst.destroy()}
-    var labels=data.models.map(function(m){return m.model||'Unknown'});
-    var costs=data.models.map(function(m){return m.cost||0});
-    var tokens=data.models.map(function(m){return m.tokens||0});
+    var labels=models.map(function(m){return m.model||'Unknown'});
+    var costs=models.map(function(m){return m.cost||0});
+    var tokens=models.map(function(m){return m.tokens||0});
     window.costChartInst=new Chart(el,{
       type:'bar',
       data:{
@@ -436,10 +456,14 @@ async function loadCostBreakdown(days){
         }
       }
     });
+    var totalCost=0, totalCalls=0;
+    models.forEach(function(m){ totalCost += (m.cost||0); totalCalls += (m.calls||0); });
     var totalCostEl=document.getElementById('cbTotalCost');
-    if(totalCostEl)totalCostEl.textContent='$'+(data.total_cost||0).toFixed(2);
+    if(totalCostEl)totalCostEl.textContent='$'+totalCost.toFixed(2);
+    var avgEl=document.getElementById('cbAvgCost');
+    if(avgEl)avgEl.textContent=totalCalls>0 ? '$'+(totalCost/totalCalls).toFixed(4) : '$0.00';
     var maxModel='—',maxCost=-1;
-    data.models.forEach(function(m){var c=m.cost||0;if(c>maxCost){maxCost=c;maxModel=m.model||'Unknown';}});
+    models.forEach(function(m){var c=m.cost||0;if(c>maxCost){maxCost=c;maxModel=m.model||'Unknown';}});
     var mostEl=document.getElementById('cbMostExpensive');
     if(mostEl)mostEl.textContent=maxModel;
   }catch(e){
@@ -452,19 +476,30 @@ async function loadErrorRate(days){
     var el=document.getElementById('errorRateChart');
     if(!el)return;
     var data=await safeApi('GET','/api/analytics/error-rate?days='+(days||7));
-    if(!data||!data.labels||!data.labels.length){
+    // Backend returns a BARE ARRAY of {date, success_count, error_count, error_rate_pct}
+    var rows = Array.isArray(data) ? data : ((data && data.labels) || []);
+    clearChartEmpty(el);
+    if(!rows.length){
       if(window.errorChartInst){window.errorChartInst.destroy();window.errorChartInst=null}
-      el.parentNode.innerHTML+='<p class="text-muted text-center text-sm pad-sm-1">No error rate data available.</p>';
+      showChartEmpty(el, 'No error rate data available.');
       return;
     }
+    var labels = rows.map(function(r){ return r.date||''; });
+    var success = rows.map(function(r){ return r.success_count||0; });
+    var errors = rows.map(function(r){ return r.error_count||0; });
+    var totalErrors = 0, lastErrDate = '';
+    rows.forEach(function(r){
+      if(r.error_count > 0){ totalErrors += (r.error_count||0); lastErrDate = r.date || lastErrDate; }
+    });
+    var avgRate = rows.reduce(function(a,r){ return a + (r.error_rate_pct||0); }, 0) / Math.max(1, rows.length);
     if(window.errorChartInst){window.errorChartInst.destroy()}
     window.errorChartInst=new Chart(el,{
       type:'line',
       data:{
-        labels:data.labels,
+        labels:labels,
         datasets:[
-          {label:'Success',data:data.success||[],borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:0.3,pointRadius:3},
-          {label:'Errors',data:data.errors||[],borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.3,pointRadius:3}
+          {label:'Success',data:success,borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:0.3,pointRadius:3},
+          {label:'Errors',data:errors,borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.3,pointRadius:3}
         ]
       },
       options:{
@@ -477,9 +512,11 @@ async function loadErrorRate(days){
       }
     });
     var errRateEl=document.getElementById('erErrorRate');
-    if(errRateEl)errRateEl.textContent=((data.error_rate||0)*100).toFixed(1)+'%';
+    if(errRateEl)errRateEl.textContent=avgRate.toFixed(1)+'%';
     var totalErrEl=document.getElementById('erTotalErrors');
-    if(totalErrEl)totalErrEl.textContent=(data.total_errors||0).toLocaleString();
+    if(totalErrEl)totalErrEl.textContent=totalErrors.toLocaleString();
+    var lastEl=document.getElementById('erLastError');
+    if(lastEl)lastEl.textContent=lastErrDate ? lastErrDate : 'None';
   }catch(e){
     showToast('Failed to load error rates','error');
   }
@@ -492,11 +529,13 @@ async function loadResponseTimes(days){
     clearTableCollapse('responseTimeCollapse','responseTimeMoreBtn');
     body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
     var data=await safeApi('GET','/api/analytics/response-times?days='+(days||7));
-    if(!data||!data.items||!data.items.length){
+    // Backend returns a BARE ARRAY — tolerate both shapes
+    var items = Array.isArray(data) ? data : ((data && data.items) || []);
+    if(!items.length){
       body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No response time data available.</td></tr>';
       return;
     }
-    renderTableWithCollapse('responseTimeBody', data.items.map(function(item){
+    renderTableWithCollapse('responseTimeBody', items.map(function(item){
       var ms=item.response_time_ms||0;
       var cls=ms<500?'speed-fast':ms<2000?'speed-medium':'speed-slow';
       return '<tr><td>'+escapeHtml(item.model||'-')+'</td><td>'+escapeHtml(item.provider||'-')+'</td><td class="'+cls+'">'+ms.toFixed(0)+' ms</td><td>'+escapeHtml(item.date||'')+'</td></tr>';

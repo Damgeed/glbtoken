@@ -14,7 +14,7 @@
       var el3=document.getElementById('customBuyBtn');
       var el4=document.getElementById('topupTotal');
       if(el1)el1.textContent='$'+val;
-      if(el2)el2.textContent=(val*1100).toLocaleString()+' Tokens';
+      if(el2)el2.textContent=(val*1000).toLocaleString()+' Tokens';
       if(el3)el3.textContent='Buy $'+val;
       if(el4)el4.textContent='$'+val+'.00';
       selectedAmount=val;
@@ -44,6 +44,9 @@
       if(!token){showToast('Please login first','error');return}
       const method=(selectedPayment||'stripe').toLowerCase();
       const payload={amount:selectedAmount,currency:'USD',payment_method:method,email:userData.email||''};
+      // Stash the pending top-up so the payment redirect (back to topup.html)
+      // can auto-verify via /api/topup and show the success card.
+      try{ sessionStorage.setItem('gt_pending_topup', JSON.stringify({amount:selectedAmount, method:method})); }catch(e){}
       // SECURITY: tokens are only credited after a REAL payment (webhook/verify).
       // The direct /api/topup credit endpoint now requires a verified payment ref.
       if(method==='stripe'){

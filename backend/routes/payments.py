@@ -161,7 +161,7 @@ def paystack_initialize(req: InitiatePaymentRequest, request: Request, user: Use
             "amount": amount_kobo,
             "currency": "GHS" if req.currency == "GHS" else "USD",
             "metadata": {"user_id": user.id, "payment_method": "paystack"},
-            "callback_url": "https://glbtoken.com/dashboard.html",
+            "callback_url": "https://glbtoken.com/topup.html?payment=success&reference={reference}",
         },
         headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}", "Content-Type": "application/json"},
     )
@@ -241,8 +241,8 @@ def stripe_create_checkout(req: InitiatePaymentRequest, request: Request, user: 
             # Shows a "Save my card for future purchases" checkbox on the hosted page.
             payment_method_options={"card": {"save_payment_method": True}},
             metadata={"user_id": str(user.id), "tokens": str(tokens)},
-            success_url="https://damgeed.github.io/glbtoken/#dashboard?payment=success",
-            cancel_url="https://damgeed.github.io/glbtoken/#plans",
+            success_url="https://glbtoken.com/topup.html?payment=success&session_id={CHECKOUT_SESSION_ID}",
+            cancel_url="https://glbtoken.com/topup.html?payment=cancelled",
         )
     except stripe_lib.error.StripeError as e:
         _400(f"Checkout failed: {getattr(e, 'user_message', None) or str(e)}")
@@ -710,8 +710,8 @@ def cards_setup(user: User = Depends(get_current_user)):
         customer=cus.id,
         payment_method_types=["card"],
         metadata={"user_id": str(user.id)},
-        success_url="https://damgeed.github.io/glbtoken/billing.html?card=success&session_id={CHECKOUT_SESSION_ID}",
-        cancel_url="https://damgeed.github.io/glbtoken/billing.html",
+        success_url="https://glbtoken.com/billing.html?card=success&session_id={CHECKOUT_SESSION_ID}",
+        cancel_url="https://glbtoken.com/billing.html",
     )
     return {"url": session.url, "session_id": session.id}
 

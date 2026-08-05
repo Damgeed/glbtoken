@@ -27,9 +27,9 @@
       <div id="topupStep1">
         <div class="pricing-grid">
           <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(5)">Buy $5</button></div>
-          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">22,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(20)">Buy $20</button></div>
-          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">120,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>30-day validity</li><li>Team sharing</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(100)">Buy $100</button></div>
-          <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">55,000 Tokens</div>
+          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(20)">Buy $20</button></div>
+          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">100,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>30-day validity</li><li>Team sharing</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(100)">Buy $100</button></div>
+          <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">50,000 Tokens</div>
             <div class="topup-slider-wrap">
               <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="topup-slider">
               <div class="topup-range-labels"><span>$2</span><span>$500</span></div>
@@ -100,6 +100,68 @@
 <script data-cfasync="false" src="shared.js?v=1133"></script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
 <script data-cfasync="false" src="checkout.js?v=7"></script>
+
+<script>
+// ── Payment redirect verification (Stripe / Paystack return to topup.html) ──
+// The success card (#topupSuccess) was dead code: providers redirected to
+// dashboard.html so it never rendered. Now they land here with the payment
+// ref in the URL; we verify with the provider via /api/topup (idempotent —
+// webhook and this path are mutually exclusive on the pending tx) and show
+// the real new balance.
+document.addEventListener('DOMContentLoaded', function(){
+  var params = new URLSearchParams(window.location.search);
+  var sessionId = params.get('session_id');
+  var reference = params.get('reference');
+  var cancelled = params.get('payment') === 'cancelled';
+  var ref = sessionId || reference;
+  if(cancelled){
+    showToast('Payment cancelled','info');
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return;
+  }
+  if(!ref) return;
+  var pending = null;
+  try{ pending = JSON.parse(sessionStorage.getItem('gt_pending_topup')||'null'); }catch(e){}
+  var method = (pending && pending.method) ? pending.method : (sessionId ? 'stripe' : 'paystack');
+  var amount = (pending && pending.amount) ? pending.amount : 0;
+  try{ sessionStorage.removeItem('gt_pending_topup'); }catch(e){}
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  // Switch to the success card immediately, then fill in real numbers
+  var hdr = document.getElementById('topupHeader');
+  if(hdr) hdr.style.display = 'none';
+  var suc = document.getElementById('topupSuccess');
+  if(suc){ suc.classList.remove('d-none'); suc.style.display = 'flex'; }
+  var msg = document.getElementById('topupSuccessMsg');
+  if(msg) msg.textContent = 'Verifying payment…';
+  var balEl = document.getElementById('topupBalanceValue');
+  if(balEl) balEl.textContent = '…';
+
+  safeApi('POST','/api/topup',{amount:amount,currency:'USD',payment_method:method,payment_ref:ref},30000,true).then(function(d){
+    if(d && d.status === 'success'){
+      if(msg) msg.textContent = Number(d.tokens_added||0).toLocaleString()+' tokens added to your wallet.';
+      if(balEl) balEl.textContent = Number(d.new_balance||0).toLocaleString()+' GT';
+      if(typeof updateBalance === 'function') updateBalance();
+    } else {
+      if(msg) msg.textContent = 'Payment received — tokens are on their way. Refresh in a moment if they haven\u2019t appeared.';
+    }
+  }).catch(function(){
+    // Payment may already be credited by the webhook (which is faster).
+    // Fall back to fetching the live balance so the card still shows real data.
+    if(msg) msg.textContent = 'Verifying with your bank… one moment.';
+    safeApi('GET','/api/dashboard',null,null,true).then(function(d){
+      if(d && typeof d.token_balance !== 'undefined'){
+        if(balEl) balEl.textContent = Number(d.token_balance||0).toLocaleString()+' GT';
+        if(msg) msg.textContent = 'Payment confirmed. Your balance has been updated.';
+      } else {
+        if(msg) msg.textContent = 'We couldn\u2019t verify the payment automatically. If you were charged, tokens will appear shortly.';
+      }
+    }).catch(function(){
+      if(msg) msg.textContent = 'We couldn\u2019t verify the payment automatically. If you were charged, tokens will appear shortly.';
+    });
+  });
+});
+</script>
 
 </body>
 </html>

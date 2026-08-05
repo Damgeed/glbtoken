@@ -5,10 +5,29 @@
    showConfirm from ui.js) come from shared.js
    ══════════════════════════════════════════ */
     // ── API Keys ──
+    async function doLoadKeys(){
+      try{
+        keys=await safeApi('GET','/api/keys');
+        if(keys) renderKeys(keys);
+      }catch(e){
+        // Leave the placeholder visible; api() already toasted the real error
+      }
+    }
     async function loadKeys(){
-      if(!token)return;
-      keys=await safeApi('GET','/api/keys');
-      if(keys) renderKeys(keys);
+      if(!token){
+        // New tab / session restore: the access token is minted asynchronously
+        // (refreshSession). Retry for ~3s; if still absent, fire the request
+        // anyway — api() has built-in 401 → refresh → retry, so it can recover
+        // without a cached token.
+        var attempts = 0;
+        (function tryLoad(){
+          if(token){ doLoadKeys(); return; }
+          if(attempts++ < 10){ setTimeout(tryLoad, 300); return; }
+          doLoadKeys();
+        })();
+        return;
+      }
+      doLoadKeys();
     }
 
     // ── Drag-reorder persistence (client-side display order) ──

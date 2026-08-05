@@ -312,11 +312,25 @@
     }
 
     function computeSummary(inv){
-      var total = 0;
+      var totalUsd = 0;
+      var totalNgn = 0;
       for(var i=0;i<inv.length;i++){
-        total += parseFloat(inv[i].amount) || 0;
+        var it = inv[i];
+        var st = String(it.status || 'completed').toLowerCase();
+        // Only count money actually received — skip pending/failed/refunded
+        if(st === 'completed' || st === 'success' || st === 'paid'){
+          var amt = parseFloat(it.amount) || 0;
+          if(it.currency === 'NGN') totalNgn += amt;
+          else totalUsd += amt;
+        }
       }
-      document.getElementById('summaryTotalSpent').textContent = '$' + total.toFixed(2);
+      var el = document.getElementById('summaryTotalSpent');
+      if(!el) return;
+      var usdStr = '$' + totalUsd.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      var ngnStr = '₦' + totalNgn.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+      if(totalUsd && totalNgn) el.textContent = usdStr + ' + ' + ngnStr;
+      else if(totalNgn) el.textContent = ngnStr;
+      else el.textContent = usdStr;
     }
 
     function loadBillingSummary(){

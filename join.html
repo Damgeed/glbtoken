@@ -46,8 +46,11 @@
 // ── Join organization via invite link ──
 (function(){
   var params = new URLSearchParams(window.location.search);
-  var orgId = params.get('org');
-  var inviteToken = params.get('token');
+  // URL params win; fall back to the pending invite stashed before login
+  // (afterLoginRedirect() lands here WITHOUT ?org=&token= — the stash is
+  // the only way the invite survives the auth round-trip)
+  var orgId = params.get('org') || sessionStorage.getItem('gt_pending_org');
+  var inviteToken = params.get('token') || sessionStorage.getItem('gt_pending_token');
   var statusEl = document.getElementById('joinStatus');
   var actionsEl = document.getElementById('joinActions');
 
@@ -91,12 +94,8 @@
     }
   }
 
-  // If user lands here after login/registration, auto-accept
-  if(sessionStorage.getItem('gt_pending_org') && sessionStorage.getItem('gt_pending_token')){
-    doJoin();
-  } else {
-    doJoin();
-  }
+  // If user lands here after login/registration, auto-accept (token restored by shared.js)
+  doJoin();
 })();
 </script>
 
