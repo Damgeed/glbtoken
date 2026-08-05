@@ -3,7 +3,6 @@
 .avatar-sm-green { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#00D68F,#4FC3F7);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff; }
 .avatar-sm-red { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#F4B400);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff; }
 .avatar-sm-blue { width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4FC3F7,#00D68F);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;color:#fff; }
-.input-search { flex:1;min-width:200px;padding:0.6rem 1rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem; }
 .input-field { padding:0.6rem 1rem;border-radius:8px;background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.85rem; }
 .btn-danger { color:#FF6B6B;border-color:#FF6B6B;padding:0.6rem 1.25rem;font-size:0.85rem; }
 

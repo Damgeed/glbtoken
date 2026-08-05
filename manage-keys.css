@@ -112,8 +112,8 @@
     flex-wrap: nowrap;
   }
   .keys-controls-row .sort-btn {
-    padding: 0.32rem 0.5rem;
-    font-size: 0.72rem;
+    padding: 0.3rem 0.44rem;
+    font-size: 0.7rem;
     gap: 4px;
     white-space: nowrap;
   }
@@ -127,6 +127,10 @@
   }
   .keys-io-group {
     gap: 0.3rem;
+    /* visual separator: keeps select/export symbols clearly apart from the
+       sort buttons even when the row is tight */
+    padding-left: 0.5rem;
+    border-left: 1px solid var(--border);
   }
 }
 @media (max-width: 340px) {
@@ -134,8 +138,8 @@
     gap: 0.3rem;
   }
   .keys-controls-row .sort-btn {
-    padding: 0.28rem 0.38rem;
-    font-size: 0.66rem;
+    padding: 0.26rem 0.34rem;
+    font-size: 0.64rem;
     gap: 3px;
   }
   .keys-controls-row .keys-icon-btn {
@@ -148,6 +152,7 @@
   }
   .keys-io-group {
     gap: 0.25rem;
+    padding-left: 0.4rem;
   }
 }
 

@@ -102,20 +102,21 @@
 /* Copy button */
 .refs-copy-btn {
   border: none;
-  background: #F4B400;
-  color: #241A00;
+  background: rgba(244, 180, 0, 0.12);
+  color: #F4B400;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  width: 3rem;
+  width: 2.4rem;
   flex-shrink: 0;
+  border-radius: 6px;
   transition: background 0.15s ease;
 }
 .refs-copy-btn .copy-label { display: none; }
-.refs-copy-btn:hover { background: #E0A500; }
-.refs-copy-btn.copied { background: #E0A500; color: #000000; }
+.refs-copy-btn:hover { background: rgba(244, 180, 0, 0.22); color: #FFC733; }
+.refs-copy-btn.copied { background: rgba(244, 180, 0, 0.22); color: #00D68F; }
 /* Copy symbol on the Your Code card */
 .code-wrap {
   display: flex;

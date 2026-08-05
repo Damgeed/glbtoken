@@ -1912,6 +1912,24 @@ input[type="range"]::-moz-range-thumb {
   font-size: 0.9rem;
   box-sizing: border-box;
 }
+/* Shared search field (list/toolbar search bars) — same tokens as
+   form-input-full but sized for toolbar rows; used by team/members,
+   models, keys, etc. */
+.input-search {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+.input-search:focus {
+  outline: none;
+  border-color: var(--primary);
+}
 .dash-section-title {
   font-size: 1rem;
   font-weight: 600;
