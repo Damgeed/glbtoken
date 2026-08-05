@@ -123,6 +123,16 @@
             <span class="text-xs font-normal text-muted">Manage your API access</span>
           </div>
           <button class="btn-action" style="flex-shrink:0" onclick="showCreateKeyModal()">+ New Key</button>
+          <button class="btn-action btn-ghost" style="flex-shrink:0" id="bulkToggleBtn" onclick="enterBulkMode()" title="Select multiple keys">☑ Select</button>
+          <button class="btn-action btn-ghost" style="flex-shrink:0" onclick="exportKeysCsv()" title="Download keys as CSV">⬇ Export</button>
+          <button class="btn-action btn-ghost" style="flex-shrink:0;display:none" id="bulkDoneBtn" onclick="exitBulkMode()">Done</button>
+        </div>
+        <div id="bulkBar" class="hidden" style="display:none;margin-top:0.6rem;padding:0.6rem 0.75rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;align-items:center;gap:0.6rem;flex-wrap:wrap">
+          <span style="font-size:0.8rem;color:var(--text-secondary)" id="bulkCount">0 selected</span>
+          <button class="sort-btn" onclick="bulkToggleAll()">Select All</button>
+          <button class="sort-btn btn-activate" onclick="bulkSetActive(true)">Activate</button>
+          <button class="sort-btn btn-pause" onclick="bulkSetActive(false)">Pause</button>
+          <button class="sort-btn btn-delete" onclick="bulkDelete()">Delete</button>
         </div>
         <div class="flex gap-sm flex-wrap">
           <input type="search" id="keySearch" placeholder="Search keys…" class="form-input-full hide-mobile" style="max-width:220px;flex:1 1 140px;padding:0.45rem 0.6rem;font-size:0.8rem" aria-label="Search API keys" />

@@ -14,3 +14,4 @@ requests
 stripe
 paystack-python
 slowapi
+alembic

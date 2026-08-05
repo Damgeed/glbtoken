@@ -72,6 +72,7 @@
             <button class="swipe-action swipe-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
           </div>
           <div class="api-key-card">
+            <input type="checkbox" class="key-check" data-key-id="${escapeHtml(String(key.id))}" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select key" />
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${key.id})" title="Edit key" aria-label="Edit key">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
@@ -381,6 +382,90 @@
           || (k.key_prefix||'').toLowerCase().indexOf(q)>-1;
       });
       renderKeys(filtered);
+    }
+
+    // ── Bulk mode: multi-select pause / activate / delete ──
+    var _bulkMode=false;
+    function enterBulkMode(){
+      _bulkMode=true;
+      document.querySelectorAll('.key-check').forEach(function(c){c.style.display='';});
+      document.getElementById('bulkBar').style.display='flex';
+      document.getElementById('bulkBar').classList.remove('hidden');
+      document.getElementById('bulkDoneBtn').style.display='';
+      document.getElementById('bulkToggleBtn').style.display='none';
+      updateBulkCount();
+    }
+    function exitBulkMode(){
+      _bulkMode=false;
+      document.querySelectorAll('.key-check').forEach(function(c){c.checked=false;c.style.display='none';});
+      var bar=document.getElementById('bulkBar'); if(bar){bar.style.display='none';bar.classList.add('hidden');}
+      var done=document.getElementById('bulkDoneBtn'); if(done)done.style.display='none';
+      var tg=document.getElementById('bulkToggleBtn'); if(tg)tg.style.display='';
+      updateBulkCount();
+    }
+    function updateBulkCount(){
+      var n=document.querySelectorAll('.key-check:checked').length;
+      var el=document.getElementById('bulkCount'); if(el)el.textContent=n+' selected';
+    }
+    function bulkToggleAll(){
+      var boxes=document.querySelectorAll('.key-check');
+      var allChecked=boxes.length>0&&Array.prototype.every.call(boxes,function(b){return b.checked;});
+      boxes.forEach(function(b){b.checked=!allChecked;});
+      updateBulkCount();
+    }
+    function selectedKeyIds(){
+      return Array.prototype.slice.call(document.querySelectorAll('.key-check:checked'))
+        .map(function(b){return parseInt(b.getAttribute('data-key-id'),10);});
+    }
+    async function bulkSetActive(active){
+      var ids=selectedKeyIds();
+      if(!ids.length){ showToast('Select at least one key','error'); return; }
+      var label=active?'activate':'pause';
+      showConfirm(active?'Activate keys?':'Pause keys?', active?'Re-enable access for '+ids.length+' key(s)?':'Stop '+ids.length+' key(s) immediately?', async function(){
+        for(var i=0;i<ids.length;i++){
+          await safeApi('PUT','/api/keys/'+ids[i],{is_active:active});
+        }
+        loadKeys();
+        showToast(ids.length+' key(s) '+(active?'activated':'paused'),'success');
+      });
+    }
+    async function bulkDelete(){
+      var ids=selectedKeyIds();
+      if(!ids.length){ showToast('Select at least one key','error'); return; }
+      showConfirm('Delete keys?','Delete '+ids.length+' API key(s)? This cannot be undone.', async function(){
+        for(var i=0;i<ids.length;i++){
+          await safeApi('DELETE','/api/keys/'+ids[i]);
+        }
+        loadKeys();
+        showToast(ids.length+' key(s) deleted','info');
+      });
+    }
+
+    // ── Export keys as CSV (formula-injection guarded) ──
+    function csvGuard(v){
+      v=(v==null?'':String(v));
+      return /^[=+\-@]/.test(v) ? "'"+v : v;
+    }
+    function exportKeysCsv(){
+      if(!keys||!keys.length){ showToast('No keys to export','error'); return; }
+      var header=['name','key_prefix','permissions','created_at','last_used','requests','tokens_spent','expires_at','rate_limit_rpm','ip_allowlist','status'];
+      var rows=[header];
+      keys.forEach(function(k){
+        rows.push([
+          csvGuard(k.name), csvGuard(k.key_prefix), csvGuard(k.permissions),
+          k.created_at||'', k.last_used||'', k.request_count||0,
+          k.total_spent||0, k.expires_at||'', k.rate_limit_rpm||'', csvGuard(k.ip_allowlist||''),
+          k.is_active?'active':'inactive'
+        ]);
+      });
+      var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+      var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='glbtoken-keys-'+new Date().toISOString().slice(0,10)+'.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      showToast('Keys exported','success');
     }
     function sortKeys(mode){
       const s=[...keys];
