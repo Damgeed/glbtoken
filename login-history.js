@@ -15,7 +15,7 @@ async function loadLoginHistory(offset) {
     if (!body) return;
     const events = d.events || d || [];
     if (!events.length && off === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">No login history</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem">No login history</td></tr>';
       return;
     }
     const rows = events.map(renderLoginRow);
@@ -45,6 +45,22 @@ function getFlag(location) {
   return map[code] || '🌍';
 }
 
+function getBrowserShort(ua) {
+  if (!ua) return '—';
+  var u = ua.toLowerCase();
+  if (u.indexOf('edg/') !== -1 || u.indexOf('edge/') !== -1) return 'Edge';
+  if (u.indexOf('opr/') !== -1 || u.indexOf('opera') !== -1) return 'Opera';
+  if (u.indexOf('chrome/') !== -1 && u.indexOf('chromium') === -1) return 'Chrome';
+  if (u.indexOf('firefox/') !== -1) return 'Firefox';
+  if (u.indexOf('safari/') !== -1) return 'Safari';
+  if (u.indexOf('msie') !== -1 || u.indexOf('trident') !== -1) return 'IE';
+  if (u.indexOf('wget') !== -1) return 'Wget';
+  if (u.indexOf('curl') !== -1) return 'cURL';
+  if (u.indexOf('python') !== -1) return 'Python';
+  if (u.indexOf('postman') !== -1) return 'Postman';
+  return '—';
+}
+
 function renderLoginRow(event) {
   const deviceIcon = event.device_type === 'mobile' ? '📱' : event.device_type === 'tablet' ? '📲' : '💻';
   const statusBadge = event.success ? '<span class="badge-success">Success</span>' : '<span class="badge-failed">Failed</span>';
@@ -60,9 +76,11 @@ function renderLoginRow(event) {
     locHtml = '🌍 <span class="loc-city">Unknown</span>';
   }
   const device = escapeHtml(event.device_name || event.device_type || '—');
+  const browser = '<span class="td-browser">' + escapeHtml(getBrowserShort(event.user_agent)) + '</span>';
   const ts = window.fmtDTStack ? fmtDTStack(event.created_at) : '<div class="td-date-strong">—</div>';
   return '<tr class="history-row">'
     + '<td><span class="device-icon">' + deviceIcon + '</span><span>' + device + '</span></td>'
+    + '<td class="td-browser-cell">' + browser + '</td>'
     + '<td class="td-location">' + locHtml + '</td>'
     + '<td class="td-ip">' + ip + '</td>'
     + '<td>' + statusBadge + '</td>'
