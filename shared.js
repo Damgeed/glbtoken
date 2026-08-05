@@ -382,6 +382,13 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️';
     }catch(e){}})();
 
+    // ── Compact cards (persisted across all dash pages) ──
+    (function(){try{
+      if(localStorage.getItem('gt_compact')==='1'){
+        document.body.classList.add('compact-cards');
+      }
+    }catch(e){}})();
+
     function toggleTheme(){
       const h=document.documentElement;
       const isDark=h.classList.contains('dark');

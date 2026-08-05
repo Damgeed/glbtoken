@@ -95,6 +95,22 @@
         Referrals
       </a>
     </div>
+    <!-- MORE -->
+    <div class="dash-sidebar-section">
+      <div class="dash-sidebar-label">More</div>
+      <a class="dash-sidebar-item" href="announcements.html">
+        <svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 13v-2z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg>
+        Announcements
+      </a>
+      <a class="dash-sidebar-item" href="activity.html">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Activity Feed
+      </a>
+      <a class="dash-sidebar-item" href="cost-projection.html">
+        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Cost Projection
+      </a>
+    </div>
   </div>
   <div class="dash-sidebar-backdrop" onclick="toggleDashSidebar()"></div>
   <div class="dash-content">
@@ -117,10 +133,6 @@
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</h3>
           <div class="settings-field-group">
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-              <div style="flex:1"><div class="settings-item-name-sm">Account ID</div><div class="settings-item-desc-sm" id="acctId" style="font-family:monospace">—</div></div>
-            </div>
-            <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Token Balance</div><div class="settings-item-desc-sm" id="acctBalance" style="font-size:0.9rem;font-weight:600;color:var(--primary)">—</div></div>
             </div>
@@ -131,6 +143,7 @@
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Email Verified</div><div class="settings-item-desc-sm" id="acctEmailVerified">—</div></div>
+              <button class="btn-secondary settings-btn-right" id="verifyEmailBtn" onclick="openEmailVerifyModal()" style="display:none">Verify</button>
             </div>
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -224,7 +237,7 @@
           </div>
         </div>
       </div>
-      <!-- Notifications are now managed from the Notifications page -->
+      <!-- Webhooks -->
       <div class="settings-card" style="margin-top:1rem">
         <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Webhooks</h3>
         <div class="settings-field-group">
@@ -380,8 +393,8 @@
 
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
-<script src="translations.js?v=1106"></script>
-<script data-cfasync="false" src="shared.js?v=1136"></script>
+<script src="translations.js?v=1107"></script>
+<script data-cfasync="false" src="shared.js?v=1137"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 <script data-cfasync="false" src="login-history.js?v=1118"></script>
@@ -515,7 +528,7 @@ function openTwoFAModal(mode){
     +   '</div>'
     + '</div>'
     + '<div style="display:flex;gap:0.5rem;margin-top:0.75rem">'
-    +   '<input type="text" id="twofaCode" placeholder="6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="flex:1;padding:0.7rem 0.85rem;border-radius:10px;background:rgba(244,180,0,0.05);border:1px solid '+border+';color:'+textClr+';font-size:0.95rem;letter-spacing:0.4rem;text-align:center;font-family:monospace;outline:none">'
+    +   '<input type="text" id="twofaCode" placeholder="6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="flex:1;min-width:0;padding:0.7rem 0.85rem;border-radius:10px;background:rgba(244,180,0,0.05);border:1px solid '+border+';color:'+textClr+';font-size:0.95rem;letter-spacing:0.4rem;text-align:center;font-family:monospace;outline:none">'
     +   '<button id="twofaConfirmBtn" onclick="confirmTwoFA()" style="padding:0.7rem 1.2rem;border-radius:10px;border:none;background:linear-gradient(135deg,#F4B400 0%,#E08E27 100%);color:#0A0B14;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(244,180,0,0.25)">'
     +     (isSetup ? 'Enable' : 'Disable 2FA')
     +   '</button>'
@@ -527,7 +540,7 @@ function openTwoFAModal(mode){
   document.body.appendChild(m);
   if(!document.getElementById('twofaModalStyle')){
     var s = document.createElement('style'); s.id = 'twofaModalStyle';
-    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}#twofaCode{width:auto}@media (max-width:420px){#twofaCode{font-size:0.85rem!important;letter-spacing:0.28rem!important;padding:0.62rem 0.5rem!important}#twofaConfirmBtn{padding:0.62rem 0.75rem!important;font-size:0.78rem!important}}';
     document.head.appendChild(s);
   }
   m.onclick = function(e){ if(e.target === m) closeTwoFAModal(); };
@@ -859,14 +872,15 @@ function loadSettingsExtras(){
 function loadAccountOverview(){
   safeApi('GET','/api/user/profile',null,null,true).then(function(p){
     if(!p) return;
-    var idEl = document.getElementById('acctId');
-    if(idEl) idEl.textContent = p.id || '—';
     var balEl = document.getElementById('acctBalance');
     if(balEl) balEl.textContent = Number(p.token_balance||0).toLocaleString() + ' tokens';
     var spentEl = document.getElementById('acctSpent');
     if(spentEl) spentEl.textContent = '$' + Number(p.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
     var verEl = document.getElementById('acctEmailVerified');
-    if(verEl) verEl.textContent = p.email_verified ? '✅ Verified' : '⚠️ Not verified';
+    var verBtn = document.getElementById('verifyEmailBtn');
+    var verified = !!p.email_verified;
+    if(verEl) verEl.textContent = verified ? '✅ Verified' : '⚠️ Not verified';
+    if(verBtn) verBtn.style.display = verified ? 'none' : '';
     var sinceEl = document.getElementById('acctSince');
     if(sinceEl && p.created_at){
       var d = new Date(p.created_at);
@@ -874,6 +888,113 @@ function loadAccountOverview(){
     }
   });
 }
+
+// ── Email Verification (real — /api/auth/send-verification + /api/auth/verify-email) ──
+var _emailVerifyStep = 'send'; // 'send' | 'code'
+window.openEmailVerifyModal = function(){
+  var existing = document.getElementById('emailVerifyModal');
+  if(existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = 'emailVerifyModal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,14,0.72);backdrop-filter:blur(6px);animation:twofaFadeIn 0.18s ease;padding:1rem';
+  var theme = document.documentElement.className;
+  var isDark = theme === 'dark';
+  var cardBg = isDark ? '#171923' : '#ffffff';
+  var textClr = isDark ? '#f3f5f7' : '#1a1a2e';
+  var muted = isDark ? '#8b93a7' : '#666';
+  var border = isDark ? '#2c2f3d' : '#e2e2ea';
+  var email = (document.getElementById('settingsEmail') ? document.getElementById('settingsEmail').value : '') || 'your email';
+
+  m.innerHTML =
+    '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.75rem;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease;max-height:92dvh;overflow-y:auto">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem">'
+    +   '<h3 style="margin:0;font-size:1.05rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
+    +     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+    +     'Verify your email'
+    +   '</h3>'
+    +   '<button onclick="closeEmailVerifyModal()" style="background:none;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
+    + '</div>'
+    + '<p style="color:'+muted+';font-size:0.82rem;margin:0 0 1rem;line-height:1.5">'
+    +   'We\'ll send a 6-digit code to <strong style="color:'+textClr+'">'+escapeHtml(email)+'</strong>. Enter it below to confirm this address is really yours.'
+    + '</p>'
+    + '<div style="display:flex;gap:0.5rem;margin-top:0.75rem">'
+    +   '<input type="text" id="emailOtpInput" placeholder="6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="flex:1;min-width:0;padding:0.7rem 0.85rem;border-radius:10px;background:rgba(244,180,0,0.05);border:1px solid '+border+';color:'+textClr+';font-size:0.95rem;letter-spacing:0.4rem;text-align:center;font-family:monospace;outline:none">'
+    +   '<button id="emailVerifyConfirmBtn" onclick="confirmEmailVerification()" style="padding:0.7rem 1.2rem;border-radius:10px;border:none;background:linear-gradient(135deg,#F4B400 0%,#E08E27 100%);color:#0A0B14;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(244,180,0,0.25)">Verify</button>'
+    + '</div>'
+    + '<div id="emailVerifyStatus" style="margin-top:0.7rem;font-size:0.78rem;color:'+muted+';line-height:1.5;min-height:1.2em">Sending code…</div>'
+    + '<div style="margin-top:0.5rem;display:flex;gap:0.75rem;justify-content:center">'
+    +   '<button onclick="sendVerificationCode()" style="background:none;border:none;color:#F4B400;font-size:0.78rem;cursor:pointer;text-decoration:underline">Resend code</button>'
+    +   '<a href="https://support.glbtoken.com" target="_blank" rel="noopener" style="color:#8b93a7;font-size:0.72rem;text-decoration:none">Need help? Contact support →</a>'
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(m);
+  if(!document.getElementById('emailVerifyModalStyle')){
+    var s = document.createElement('style'); s.id = 'emailVerifyModalStyle';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}@media (max-width:420px){#emailOtpInput{font-size:0.85rem!important;letter-spacing:0.28rem!important;padding:0.62rem 0.5rem!important}#emailVerifyConfirmBtn{padding:0.62rem 0.75rem!important;font-size:0.78rem!important}}';
+    document.head.appendChild(s);
+  }
+  m.onclick = function(e){ if(e.target === m) closeEmailVerifyModal(); };
+  var otpEl = document.getElementById('emailOtpInput');
+  if(otpEl){ otpEl.focus(); otpEl.onkeydown = function(e){ if(e.key === 'Enter') confirmEmailVerification(); }; }
+  _emailVerifyStep = 'send';
+  sendVerificationCode();
+};
+
+window.closeEmailVerifyModal = function(){
+  var m = document.getElementById('emailVerifyModal');
+  if(m) m.remove();
+};
+
+window.sendVerificationCode = function(){
+  var status = document.getElementById('emailVerifyStatus');
+  if(status) status.textContent = 'Sending code…';
+  fetch(API_URL + '/api/auth/send-verification', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.status === 'sent'){
+      _emailVerifyStep = 'code';
+      if(status) status.textContent = '✅ Code sent — check your inbox (expires in 10 minutes).';
+      var otpEl = document.getElementById('emailOtpInput');
+      if(otpEl) otpEl.focus();
+    } else {
+      if(status) status.textContent = (d && d.detail) || '⚠️ Could not send the code right now — try again in a minute.';
+    }
+  })
+  .catch(function(){
+    if(status) status.textContent = '⚠️ Could not send the code right now — check your connection and try again.';
+  });
+};
+
+window.confirmEmailVerification = function(){
+  var code = document.getElementById('emailOtpInput').value.trim();
+  if(!code || code.length < 6){ showToast('Enter the 6-digit code from your email','error'); return; }
+  var btn = document.getElementById('emailVerifyConfirmBtn');
+  btn.disabled = true;
+  fetch(API_URL + '/api/auth/verify-email', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({otp: code})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    btn.disabled = false;
+    if(d && d.status === 'verified'){
+      showToast('Email verified!','success');
+      closeEmailVerifyModal();
+      var verEl = document.getElementById('acctEmailVerified');
+      if(verEl) verEl.textContent = '✅ Verified';
+      var verBtn = document.getElementById('verifyEmailBtn');
+      if(verBtn) verBtn.style.display = 'none';
+    } else {
+      showToast((d && d.detail) || 'Invalid code — try again','error');
+    }
+  })
+  .catch(function(){ btn.disabled = false; showToast('Failed — try again','error'); });
+};
 
 // ── Referral (real referral stats) ──
 function loadReferralCard(){
