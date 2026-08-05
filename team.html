@@ -208,11 +208,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-inline">
             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
           </svg>
-          Team Members
+          Team Members <span id="memberCount" class="label-muted-sm"></span>
         </div>
         <div class="member-toolbar">
           <input type="search" id="memberSearch" class="input-search" placeholder="Search members by name or email..." oninput="onMemberSearch(this.value)" />
-          <span id="memberCount" class="text-sm-muted-3"></span>
         </div>
         <div class="member-filters">
           <div class="filter-chips" id="memberFilterChips">
@@ -831,7 +830,7 @@ function renderMembers(myRole, orgId){
   if(memberPage > totalPages) memberPage = totalPages;
   var pageRows = filtered.slice((memberPage-1)*memberPageSize, memberPage*memberPageSize);
   var countEl = document.getElementById('memberCount');
-  if(countEl) countEl.textContent = filtered.length ? (filtered.length+' member'+(filtered.length===1?'':'s')+(q?' found':'')) : '';
+  if(countEl) countEl.textContent = filtered.length+' member'+(filtered.length===1?'':'s');
   if(!filtered.length){
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">'+(q ? 'No members match "'+escapeHtml(memberQuery)+'"' : 'No members yet')+'</td></tr>';
     var mobEmpty = document.getElementById('teamMembersMobile');
