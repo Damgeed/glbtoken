@@ -172,6 +172,9 @@ function showDashSection(section) {
   <div class="dash-sidebar-backdrop" onclick="toggleDashSidebar()"></div>
   <div class="dash-content">
 
+    <!-- ═══════ ANNOUNCEMENT BANNER (public) ═══════ -->
+    <div id="announcementBanner" class="announcement-stack" style="display:none"></div>
+
     <!-- ===== OVERVIEW SECTION ===== -->
     <div class="dash-section active" id="section-overview">
       <div class="dash-header">
@@ -303,6 +306,31 @@ function showDashSection(section) {
             <span id="activityCount">0 events</span>
             <a href="usage.html" class="activity-view-all">View all →</a>
           </div>
+        </div>
+      </div>
+
+      <!-- ═══════ ADMIN: ANNOUNCEMENT MANAGER ═══════ -->
+      <div class="dash-card stat-card" id="adminAnnounceCard" style="display:none">
+        <div class="dash-section-title section-header">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-gold"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg> Announcements <span class="text-sm-muted">Admin</span></span>
+        </div>
+        <div class="announce-form">
+          <div class="announce-form-row">
+            <input type="text" id="annTitle" class="ann-input" placeholder="Title (optional)" maxlength="120" />
+            <select id="annPriority" class="ann-select">
+              <option value="info">ℹ️ Info</option>
+              <option value="warning">⚠️ Warning</option>
+              <option value="success">✅ Success</option>
+            </select>
+          </div>
+          <textarea id="annMessage" class="ann-textarea" rows="2" placeholder="Announcement message…" maxlength="1000"></textarea>
+          <div class="announce-form-row announce-form-actions">
+            <button type="button" class="btn-primary btn-sm" onclick="createAnnouncement()">Publish</button>
+            <button type="button" class="btn-ghost btn-sm" onclick="refreshAnnouncements(true)">Refresh</button>
+          </div>
+        </div>
+        <div id="annList" class="ann-list">
+          <div class="text-sm-muted" style="padding:0.5rem 0">No announcements yet.</div>
         </div>
       </div>
 

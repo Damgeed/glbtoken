@@ -6,10 +6,10 @@ from sqlalchemy import desc, func
 from typing import Optional
 import secrets
 
-from database import get_db, User, Transaction, AIModel, AdminLog
+from database import get_db, User, Transaction, AIModel, AdminLog, Announcement
 from auth import get_current_user, get_optional_user
 from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET
-from schemas import AdminBalanceRequest, SyncUsersRequest
+from schemas import AdminBalanceRequest, SyncUsersRequest, AnnouncementCreate, AnnouncementUpdate
 
 router = APIRouter()
 
@@ -310,3 +310,102 @@ def admin_delete_user(
     )
     return {"status": "deleted", "user_id": uid, "email": email}
 
+
+
+# ── Announcements (admin CRUD) ──
+
+def _announcement_dict(a):
+    return {
+        "id": a.id,
+        "title": a.title,
+        "message": a.message,
+        "priority": a.priority,
+        "is_active": a.is_active,
+        "created_at": a.created_at.isoformat() if a.created_at else None,
+        "expires_at": a.expires_at.isoformat() if a.expires_at else None,
+    }
+
+
+def _parse_expiry(value):
+    """Parse ISO datetime string → naive/aware datetime, or None."""
+    from datetime import datetime, timezone
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
+
+
+@router.get("/api/admin/announcements")
+@limiter.limit("30/minute")
+def admin_list_announcements(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user.is_admin:
+        _403("Admin access required")
+    rows = db.query(Announcement).order_by(desc(Announcement.created_at)).all()
+    return {"announcements": [_announcement_dict(a) for a in rows]}
+
+
+@router.post("/api/admin/announcements")
+@limiter.limit("10/minute")
+def admin_create_announcement(req: AnnouncementCreate, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user.is_admin:
+        _403("Admin access required")
+    if req.priority not in ("info", "warning", "success"):
+        _400("priority must be info, warning or success")
+    a = Announcement(
+        title=(req.title or "").strip(),
+        message=req.message.strip(),
+        priority=req.priority,
+        is_active=True,
+        created_by=user.id,
+        expires_at=_parse_expiry(req.expires_at),
+    )
+    db.add(a)
+    db.commit()
+    db.refresh(a)
+    _audit(db, user, "create_announcement", detail=f'{{"announcement_id": {a.id}, "title": "{a.title[:50]}"}}', ip=_client_ip(request))
+    return {"status": "created", "announcement": _announcement_dict(a)}
+
+
+@router.patch("/api/admin/announcements/{announcement_id}")
+@limiter.limit("20/minute")
+def admin_update_announcement(announcement_id: int, req: AnnouncementUpdate, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user.is_admin:
+        _403("Admin access required")
+    a = db.query(Announcement).filter(Announcement.id == announcement_id).first()
+    if not a:
+        _404("Announcement not found")
+    if req.is_active is not None:
+        a.is_active = req.is_active
+    if req.title is not None:
+        a.title = (req.title or "").strip()
+    if req.message is not None:
+        a.message = req.message.strip()
+    if req.priority is not None:
+        if req.priority not in ("info", "warning", "success"):
+            _400("priority must be info, warning or success")
+        a.priority = req.priority
+    if req.expires_at is not None:
+        a.expires_at = _parse_expiry(req.expires_at)
+    db.commit()
+    db.refresh(a)
+    _audit(db, user, "update_announcement", detail=f'{{"announcement_id": {a.id}}}', ip=_client_ip(request))
+    return {"status": "updated", "announcement": _announcement_dict(a)}
+
+
+@router.delete("/api/admin/announcements/{announcement_id}")
+@limiter.limit("10/minute")
+def admin_delete_announcement(announcement_id: int, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not user.is_admin:
+        _403("Admin access required")
+    a = db.query(Announcement).filter(Announcement.id == announcement_id).first()
+    if not a:
+        _404("Announcement not found")
+    db.delete(a)
+    db.commit()
+    _audit(db, user, "delete_announcement", detail=f'{{"announcement_id": {announcement_id}}}', ip=_client_ip(request))
+    return {"status": "deleted", "announcement_id": announcement_id}

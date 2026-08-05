@@ -334,3 +334,20 @@ class UserSettingsUpdate(BaseModel):
     webhook_url: Optional[str] = None
     webhook_secret: Optional[str] = None
     webhook_events: Optional[list] = None
+
+
+# ── Announcement Schemas ──
+
+class AnnouncementCreate(BaseModel):
+    title: str = ""
+    message: str = Field(min_length=1)
+    priority: str = "info"  # info | warning | success
+    expires_at: Optional[str] = None  # ISO datetime string or null
+
+
+class AnnouncementUpdate(BaseModel):
+    is_active: Optional[bool] = None
+    title: Optional[str] = None
+    message: Optional[str] = None
+    priority: Optional[str] = None
+    expires_at: Optional[str] = None

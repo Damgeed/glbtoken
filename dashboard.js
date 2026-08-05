@@ -514,9 +514,123 @@ async function loadRecentTx(){
   }).join('');
 }
 
+// ── Announcements (public banner + admin manager) ──
+function _annDismissed(){
+  try{ return JSON.parse(localStorage.getItem('gt_ann_dismissed')||'[]'); }catch(e){ return []; }
+}
+function _annDismiss(id){
+  var list = _annDismissed();
+  if(list.indexOf(id) === -1){ list.push(id); localStorage.setItem('gt_ann_dismissed', JSON.stringify(list)); }
+}
+function dismissAnnouncement(id){
+  _annDismiss(id);
+  var el = document.getElementById('annBanner_'+id);
+  if(el) el.style.display = 'none';
+}
+async function loadAnnouncements(){
+  var container = document.getElementById('announcementBanner');
+  if(!container) return;
+  var data = await safeApi('GET','/api/announcements',null,null,true);
+  if(!data || !data.announcements || !data.announcements.length){
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+  var dismissed = _annDismissed();
+  var visible = data.announcements.filter(function(a){ return dismissed.indexOf(a.id) === -1; });
+  if(!visible.length){ container.style.display = 'none'; container.innerHTML = ''; return; }
+  var icons = {info:'ℹ️', warning:'⚠️', success:'✅'};
+  container.innerHTML = visible.map(function(a){
+    var icon = icons[a.priority] || 'ℹ️';
+    var cls = 'announcement-banner announcement-'+ (a.priority||'info');
+    var titleHtml = a.title ? '<strong>'+escapeHtml(a.title)+'</strong> ' : '';
+    return '<div class="'+cls+'" id="annBanner_'+a.id+'">'
+      + '<span class="ann-icon">'+icon+'</span>'
+      + '<span class="ann-text">'+titleHtml+escapeHtml(a.message)+'</span>'
+      + '<button type="button" class="ann-close" onclick="dismissAnnouncement('+a.id+')" aria-label="Dismiss">✕</button>'
+      + '</div>';
+  }).join('');
+  container.style.display = 'block';
+}
+async function refreshAnnouncements(force){
+  var card = document.getElementById('adminAnnounceCard');
+  if(!card) return;
+  var list = document.getElementById('annList');
+  if(!list) return;
+  if(!force && list.dataset.loaded === '1') return;
+  var data = await safeApi('GET','/api/admin/announcements',null,null,true);
+  if(!data || !data.announcements){ return; }
+  list.dataset.loaded = '1';
+  if(!data.announcements.length){
+    list.innerHTML = '<div class="text-sm-muted" style="padding:0.5rem 0">No announcements yet.</div>';
+    return;
+  }
+  list.innerHTML = data.announcements.map(function(a){
+    var stateCls = a.is_active ? 'ann-state-on' : 'ann-state-off';
+    var stateTxt = a.is_active ? 'Live' : 'Off';
+    var prio = a.priority || 'info';
+    return '<div class="ann-admin-row">'
+      + '<div class="ann-admin-main"><div class="ann-admin-title">'+escapeHtml(a.title||'(no title)')+'</div>'
+      + '<div class="ann-admin-msg">'+escapeHtml(a.message)+'</div>'
+      + '<div class="ann-admin-meta">'+prio+' · '+escapeHtml((a.created_at||'').replace('T',' ').slice(0,16))+'</div></div>'
+      + '<div class="ann-admin-actions">'
+      + '<span class="ann-state '+stateCls+'" onclick="toggleAnnouncement('+a.id+','+(a.is_active?'false':'true')+')">'+stateTxt+'</span>'
+      + '<button type="button" class="btn-ghost btn-sm" onclick="deleteAnnouncement('+a.id+')">Delete</button>'
+      + '</div></div>';
+  }).join('');
+}
+async function createAnnouncement(){
+  var title = (document.getElementById('annTitle').value||'').trim();
+  var message = (document.getElementById('annMessage').value||'').trim();
+  var priority = document.getElementById('annPriority').value;
+  if(!message){ showToast('Message is required','error'); return; }
+  var res = await safeApi('POST','/api/admin/announcements',{title:title,message:message,priority:priority});
+  if(!res) return;
+  document.getElementById('annTitle').value = '';
+  document.getElementById('annMessage').value = '';
+  showToast('Announcement published','success');
+  refreshAnnouncements(false);
+  loadAnnouncements();
+}
+async function toggleAnnouncement(id, isActive){
+  var res = await safeApi('PATCH','/api/admin/announcements/'+id,{is_active:isActive});
+  if(!res) return;
+  showToast(isActive ? 'Announcement live' : 'Announcement hidden','success');
+  refreshAnnouncements(true);
+  loadAnnouncements();
+}
+async function deleteAnnouncement(id){
+  if(typeof confirmModal === 'function'){
+    confirmModal('Delete this announcement?', function(){
+      safeApi('DELETE','/api/admin/announcements/'+id).then(function(res){
+        if(!res) return;
+        showToast('Announcement deleted','success');
+        refreshAnnouncements(true);
+        loadAnnouncements();
+      });
+    });
+  } else {
+    if(!window.confirm('Delete this announcement?')) return;
+    var res = await safeApi('DELETE','/api/admin/announcements/'+id);
+    if(!res) return;
+    showToast('Announcement deleted','success');
+    refreshAnnouncements(true);
+    loadAnnouncements();
+  }
+}
+function initAnnouncements(){
+  loadAnnouncements();
+  // Admin panel: show only for admins (is_admin surfaced in /api/auth/me + cached userData)
+  var ud = {};
+  try{ ud = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ ud = {}; }
+  var card = document.getElementById('adminAnnounceCard');
+  if(card && ud.is_admin){ card.style.display = ''; refreshAnnouncements(false); }
+}
+
 // ── Boot: load everything + 30s real-time refresh ──
 (function(){
   function bootDashboard(){
+    initAnnouncements();
     if(!token) return;
     loadDashboardStats();
     loadActivityFeed();

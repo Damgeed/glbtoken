@@ -853,6 +853,7 @@ def get_me(user: User = Depends(get_current_user)):
         "token_balance": user.token_balance,
         "total_spent": user.total_spent,
         "email_verified": user.email_verified,
+        "is_admin": bool(getattr(user, "is_admin", False)),
         "created_at": user.created_at.isoformat() if user.created_at else None,
     }
 

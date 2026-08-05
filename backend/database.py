@@ -280,6 +280,19 @@ class AdminLog(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+class Announcement(Base):
+    """Site-wide announcements shown as a dismissible banner on the dashboard."""
+    __tablename__ = "announcements"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False, default="")
+    message = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=True)
+    priority = Column(String, default="info")        # info | warning | success
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    expires_at = Column(DateTime, nullable=True)
+
+
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)

@@ -5,16 +5,41 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 import json, re
 
-from database import get_db, User, AIModel
+from database import get_db, User, AIModel, Announcement
 from auth import get_current_user
 from newapi_integration import health_check
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter
-from schemas import ContactRequest, UserSettingsUpdate
+from schemas import ContactRequest, UserSettingsUpdate, AnnouncementCreate
 
 # Re-import send_email from auth_routes since it's a shared helper
 from routes.auth_routes import send_email
 
 router = APIRouter()
+
+
+# ── Announcements (public) ──
+
+@router.get("/api/announcements")
+@limiter.limit("60/minute")
+def list_announcements(request: Request, db: Session = Depends(get_db)):
+    """Public list of currently-active announcements (dashboard banner)."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    rows = (db.query(Announcement)
+              .filter(Announcement.is_active == True)
+              .filter((Announcement.expires_at.is_(None)) | (Announcement.expires_at > now))
+              .order_by(Announcement.created_at.desc())
+              .limit(10)
+              .all())
+    return {
+        "announcements": [{
+            "id": a.id,
+            "title": a.title,
+            "message": a.message,
+            "priority": a.priority,
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+        } for a in rows]
+    }
 
 
 # ── Contact Form ──
