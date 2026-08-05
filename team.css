@@ -620,6 +620,8 @@
 #memberSort { margin-left: auto; }
 /* Title row: count sits LEFT (icon + count as one group), title text right */
 .member-count-group { display: inline-flex; align-items: center; }
+/* Bold gold number for at-a-glance member count (matches .num.gold) */
+.member-count-group strong { font-weight: 700; color: #FFC733; font-variant-numeric: tabular-nums; }
 @media (max-width: 767px) {
   /* Chips + sort + export flow on ONE wrapping line so Name A–Z sits
      inline with All/Owner/Admin/Member and the export button. Chips get

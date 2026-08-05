@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1200" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1057" />
+<link rel="stylesheet" href="team.css?v=1058" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -833,7 +833,7 @@ function renderMembers(myRole, orgId){
   if(memberPage > totalPages) memberPage = totalPages;
   var pageRows = filtered.slice((memberPage-1)*memberPageSize, memberPage*memberPageSize);
   var countEl = document.getElementById('memberCount');
-  if(countEl) countEl.textContent = filtered.length+' member'+(filtered.length===1?'':'s');
+  if(countEl) countEl.innerHTML = '<strong>'+filtered.length+'</strong> member'+(filtered.length===1?'':'s');
   if(!filtered.length){
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">'+(q ? 'No members match "'+escapeHtml(memberQuery)+'"' : 'No members yet')+'</td></tr>';
     var mobEmpty = document.getElementById('teamMembersMobile');
