@@ -29,8 +29,26 @@ async function loadReferralStats() {
     document.querySelectorAll('.ref-link-box, .refs-link-box, .ref-share-row, .refs-share-row, .ref-share-btn-row, .refs-share-btn-row, #share-socials').forEach(function(el){el.style.display=hasCode?'':'none';});
     const monthEl=document.getElementById('refMonthChg');
     if(monthEl){
-      var monthCount=(d.history||[]).reduce(function(s,h){return s+(h.referrals||0);},0);
-      monthEl.textContent=monthCount>0?(monthCount+' this month'):'No referrals yet';
+      var hist=(d.history||[]);
+      var n=hist.length;
+      // Real trend: recent 7d vs previous days (per-day avg, referrals)
+      var recentRef=0, prevRef=0, recentDays=0, prevDays=0;
+      if(n>0){
+        var split=Math.min(7, n);
+        var recentSlice=hist.slice(n-split), prevSlice=hist.slice(0, n-split);
+        recentSlice.forEach(function(h){ recentRef+=(h.referrals||0); });
+        prevSlice.forEach(function(h){ prevRef+=(h.referrals||0); });
+        recentDays=recentSlice.length; prevDays=prevSlice.length;
+      }
+      if(recentDays>0 && prevDays>0 && (recentRef>0 || prevRef>0)){
+        var rAvg=recentRef/recentDays, pAvg=prevRef/prevDays;
+        var up=rAvg>=pAvg;
+        monthEl.textContent=(up?'↑ +':'↓ ')+Math.abs(rAvg-pAvg).toFixed(1)+'/day vs prev';
+        monthEl.className='chg '+(up?'up':'down');
+      } else {
+        monthEl.textContent='No referrals yet';
+        monthEl.className='chg text-muted';
+      }
     }
     const hintEl=document.getElementById('refShareHint');
     if(hintEl) hintEl.textContent=hasCode?'Share this code':'Generate to start earning';
@@ -50,7 +68,28 @@ async function loadReferralStats() {
     }catch(e){}
     if(totalEarnEl) totalEarnEl.textContent=lifetime.toFixed(0)+' GT';
     const valEl=document.getElementById('refTotalEarnedVal');
-    if(valEl) valEl.textContent='Value: '+fmtUSD(lifetime*0.001);
+    if(valEl){
+      // Real trend: recent 7d vs previous days (per-day avg earnings, GT)
+      var hist2=(d.history||[]);
+      var n2=hist2.length;
+      var recentEarn=0, prevEarn=0, rDays=0, pDays=0;
+      if(n2>0){
+        var split2=Math.min(7, n2);
+        var rSlice=hist2.slice(n2-split2), pSlice=hist2.slice(0, n2-split2);
+        rSlice.forEach(function(h){ recentEarn+=(h.earnings||0); });
+        pSlice.forEach(function(h){ prevEarn+=(h.earnings||0); });
+        rDays=rSlice.length; pDays=pSlice.length;
+      }
+      if(rDays>0 && pDays>0 && (recentEarn>0 || prevEarn>0)){
+        var rAvgE=recentEarn/rDays, pAvgE=prevEarn/pDays;
+        var eUp=rAvgE>=pAvgE;
+        valEl.textContent=(eUp?'↑ +':'↓ ')+fmtUSD(Math.abs(rAvgE-pAvgE)*0.001)+'/day vs prev';
+        valEl.className='chg '+(eUp?'up':'down');
+      } else {
+        valEl.textContent='Value: '+fmtUSD(lifetime*0.001);
+        valEl.className='chg text-muted';
+      }
+    }
     const pendingAmt=(d.pending_earnings!=null?d.pending_earnings:(d.total_earned||0));
     if(pendingEl) pendingEl.textContent=pendingAmt.toFixed(0)+' GT';
     const claimBtn=document.getElementById('refClaimBtn');

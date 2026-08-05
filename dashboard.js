@@ -250,6 +250,40 @@ async function loadDashboardStats(){
     // ── Balance trend badge + sparkline (real, from daily_usage) ──
     var du = d.daily_usage || {};
     var vals = (du.values || []).map(Number);
+    var reqs = (du.requests || []).map(Number);
+    // ── Stat-card trend arrows (real progress: recent window vs previous) ──
+    // Total Spent / API Requests / Tokens Consumed use the same recent-vs-prev
+    // window as the balance badge; Models Used shows active-model count change.
+    function trendMeta(arr, recentN){
+      var n = arr.length;
+      if(n < 2) return null;
+      var rn = Math.min(recentN || 3, n);
+      var recentArr = arr.slice(n - rn);
+      var prevArr = arr.slice(0, n - rn);
+      var recent = recentArr.reduce(function(a,b){return a+b;},0) / recentArr.length;
+      var prev = prevArr.reduce(function(a,b){return a+b;},0) / prevArr.length;
+      if(prev <= 0) return null; // no baseline — can't claim a trend
+      var pct = (recent - prev) / prev * 100;
+      return { up: pct >= 0, pct: Math.abs(pct), label: (pct >= 0 ? '↑ +' : '↓ ') + pct.toFixed(1) + '%' };
+    }
+    function renderTrend(id, meta, fallback){
+      var el = document.getElementById(id);
+      if(!el) return;
+      if(!meta){ el.textContent = fallback || '—'; el.className = 'chg text-muted'; return; }
+      el.textContent = meta.label + ' vs prev';
+      el.className = 'chg ' + (meta.up ? 'up' : 'down');
+    }
+    renderTrend('dashSpentTrend', trendMeta(vals, 3), 'Lifetime');
+    renderTrend('dashReqTrend', trendMeta(reqs, 3), 'Total calls');
+    // Models Used: compare distinct models in recent window vs prev window
+    var usageModels = (d.usage_by_model || []).length;
+    var modelsTrend = null;
+    if(usageModels > 0){
+      // usage_by_model only covers the requested window (7d default); we don't
+      // have a prev-window count here, so show active count in window instead.
+      modelsTrend = null;
+    }
+    renderTrend('dashModelsTrend', modelsTrend, usageModels > 0 ? (usageModels + ' active') : 'No usage');
     var badge = document.getElementById('dashTrendBadge');
     if(badge){
       var n = vals.length;

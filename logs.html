@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1203" />
+  <link rel="stylesheet" href="style.css?v=1204" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="logs.css?v=1024" />
   </head>
@@ -138,7 +138,7 @@
           Cost Breakdown by Model <span class="label-muted-sm">Per-model spend</span>
         </div>
         <div class="stat-cards">
-          <div class="dash-stat-card"><div class="num" id="cbTotalCost">$0.00</div><div class="lbl">Total Cost</div><div class="chg text-muted">Lifetime</div></div>
+          <div class="dash-stat-card"><div class="num" id="cbTotalCost">$0.00</div><div class="lbl">Total Cost</div><div class="chg up" id="cbTotalCostTrend">Lifetime</div></div>
           <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg text-muted">Avg cost/call</div></div>
           <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg text-muted">Per request</div></div>
         </div>
@@ -425,9 +425,16 @@ async function loadCostBreakdown(days){
   try{
     var el=document.getElementById('costByModelChart');
     if(!el)return;
-    var data=await safeApi('GET','/api/analytics/cost-by-model?days='+(days||7));
+    days=days||7;
+    var prevDays=Math.min(days*2, 365);
+    var res=await Promise.all([
+      safeApi('GET','/api/analytics/cost-by-model?days='+days,null,null,true),
+      safeApi('GET','/api/analytics/cost-by-model?days='+prevDays,null,null,true)
+    ]);
     // Backend returns a BARE ARRAY (results[]) — tolerate both shapes
+    var data=res[0], prevData=res[1];
     var models = Array.isArray(data) ? data : ((data && data.models) || []);
+    var prevModels = Array.isArray(prevData) ? prevData : ((prevData && prevData.models) || []);
     clearChartEmpty(el);
     if(!models.length){
       if(window.costChartInst){window.costChartInst.destroy();window.costChartInst=null}
@@ -460,6 +467,23 @@ async function loadCostBreakdown(days){
     models.forEach(function(m){ totalCost += (m.cost||0); totalCalls += (m.calls||0); });
     var totalCostEl=document.getElementById('cbTotalCost');
     if(totalCostEl)totalCostEl.textContent=fmtUSD(totalCost);
+    // Trend: current window cost vs the previous window (prevModels covers 2x days,
+    // so subtract current-window cost to get the prior period).
+    var prevTotalCost=0;
+    prevModels.forEach(function(m){ prevTotalCost += (m.cost||0); });
+    prevTotalCost = Math.max(0, prevTotalCost - totalCost);
+    var trendEl=document.getElementById('cbTotalCostTrend');
+    if(trendEl){
+      if(prevTotalCost > 0 && days > 0){
+        var pct=(totalCost - prevTotalCost)/prevTotalCost*100;
+        var up=pct>=0;
+        trendEl.textContent=(up?'↑ +':'↓ ')+pct.toFixed(1)+'% vs prev '+days+'d';
+        trendEl.className='chg '+(up?'up':'down');
+      } else {
+        trendEl.textContent='Lifetime';
+        trendEl.className='chg text-muted';
+      }
+    }
     var avgEl=document.getElementById('cbAvgCost');
     if(avgEl)avgEl.textContent=totalCalls>0 ? fmtUSD(totalCost/totalCalls,4) : '$0.00';
     var maxModel='—',maxCost=-1;

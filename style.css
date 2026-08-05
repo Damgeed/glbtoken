@@ -1611,6 +1611,9 @@ input[type="range"]::-moz-range-thumb {
 .dash-stat-card .chg.up {
   color: var(--success);
 }
+.dash-stat-card .chg.down {
+  color: var(--destructive);
+}
 /* ── Syntax Highlighting ── */
 .syn-str { color: var(--code-string); }
 .syn-kw { color: var(--code-keyword); }
@@ -5822,6 +5825,9 @@ body {
 }
 .dash-stat-card .chg.up {
   color: var(--success);
+}
+.dash-stat-card .chg.down {
+  color: var(--destructive);
 }
 .dash-section-title {
   font-size: 1rem;
