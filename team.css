@@ -589,6 +589,15 @@
   flex-wrap: wrap;
   margin-bottom: 0.6rem;
 }
+/* Sort select + Export button live together, pushed to the right of the
+   filter chips (mobile: full-width row with select flexing). */
+.member-filters-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
 .filter-chips { display: flex; gap: 0.35rem; flex-wrap: wrap; }
 .chip {
   padding: 0.28rem 0.7rem;
@@ -612,6 +621,15 @@
 @media (max-width: 767px) {
   .member-filters { flex-direction: column; align-items: stretch; }
   #memberSort { margin-left: 0; width: 100%; box-sizing: border-box; }
+  .member-filters-right {
+    width: 100%;
+    margin-left: 0;
+  }
+  .member-filters-right #memberSort {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 /* ── Member rows are clickable (open detail drawer) ── */
