@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1204" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1029" />
+<link rel="stylesheet" href="settings.css?v=1030" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -113,6 +113,31 @@
         </div>
       </div>
       <div class="settings-grid">
+        <div class="dash-card">
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</h3>
+          <div class="settings-field-group">
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              <div style="flex:1"><div class="settings-item-name-sm">Account ID</div><div class="settings-item-desc-sm" id="acctId" style="font-family:monospace">—</div></div>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              <div style="flex:1"><div class="settings-item-name-sm">Token Balance</div><div class="settings-item-desc-sm" id="acctBalance" style="font-size:0.9rem;font-weight:600;color:var(--primary)">—</div></div>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <div style="flex:1"><div class="settings-item-name-sm">Total Spent</div><div class="settings-item-desc-sm" id="acctSpent">—</div></div>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div style="flex:1"><div class="settings-item-name-sm">Email Verified</div><div class="settings-item-desc-sm" id="acctEmailVerified">—</div></div>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <div style="flex:1"><div class="settings-item-name-sm">Member Since</div><div class="settings-item-desc-sm" id="acctSince">—</div></div>
+            </div>
+          </div>
+        </div>
         <div class="dash-card">
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
           <div class="settings-field-group">
@@ -295,6 +320,30 @@
         </div>
       </div>
 
+      <!-- Referral -->
+      <div class="settings-card" style="margin-top:1rem">
+        <div class="dash-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M17 20l5-5-5-5"/><path d="M7 4l-5 5 5 5"/><path d="M14 4l-4 16"/></svg>
+          Referral
+        </div>
+        <div class="settings-field-group">
+          <div class="settings-badge-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            <div style="flex:1"><div class="settings-item-name-sm">Your Referral Code</div><div class="settings-item-desc-sm" id="refCode" style="font-family:monospace;font-size:0.95rem;font-weight:600;color:var(--primary)">—</div></div>
+            <button class="btn-secondary settings-btn-right" id="refCopyBtn" onclick="copyRefCode()">Copy</button>
+          </div>
+          <div class="settings-badge-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div style="flex:1"><div class="settings-item-name-sm">Lifetime Earned</div><div class="settings-item-desc-sm" id="refEarned">—</div></div>
+          </div>
+          <div class="settings-badge-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <div style="flex:1"><div class="settings-item-name-sm">Total Referrals</div><div class="settings-item-desc-sm" id="refTotal">—</div></div>
+          </div>
+          <div class="settings-item-desc-sm" style="margin-top:0.35rem">Share your code — friends get tokens, you earn rewards. <a href="referrals.html" style="color:var(--primary)">View referral dashboard →</a></div>
+        </div>
+      </div>
+
       <!-- Danger Zone -->
       <div class="settings-card" style="margin-top:1rem;border-color:rgba(255,77,79,0.35)">
         <div class="dash-section-title" style="color:var(--destructive,#ff4d4f)">
@@ -331,9 +380,9 @@
 
   
 
-<script src="nav.js?v=15"></script>
+<script src="nav.js?v=16"></script>
 <script src="footer.js?v=15"></script>
-<script src="translations.js?v=1105"></script>
+<script src="translations.js?v=1106"></script>
 <script data-cfasync="false" src="shared.js?v=1136"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
@@ -681,7 +730,9 @@ function loadSettingsExtras(){
   var darkEl = document.getElementById('setDarkMode');
   if(darkEl) darkEl.checked = theme !== 'light';
   var compactEl = document.getElementById('setCompact');
-  if(compactEl) compactEl.checked = localStorage.getItem('gt_compact') === '1';
+  var isCompact = localStorage.getItem('gt_compact') === '1';
+  if(compactEl) compactEl.checked = isCompact;
+  document.body.classList.toggle('compact-cards', isCompact);
   // Language
   var langEl = document.getElementById('setLang');
   if(langEl){
@@ -717,6 +768,52 @@ function loadSettingsExtras(){
     if(pEl && typeof d.product_updates !== 'undefined') pEl.checked = !!d.product_updates;
   });
 }
+
+// ── Account Overview (real profile/dashboard data) ──
+function loadAccountOverview(){
+  safeApi('GET','/api/user/profile',null,null,true).then(function(p){
+    if(!p) return;
+    var idEl = document.getElementById('acctId');
+    if(idEl) idEl.textContent = p.id || '—';
+    var balEl = document.getElementById('acctBalance');
+    if(balEl) balEl.textContent = Number(p.token_balance||0).toLocaleString() + ' tokens';
+    var spentEl = document.getElementById('acctSpent');
+    if(spentEl) spentEl.textContent = '$' + Number(p.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    var verEl = document.getElementById('acctEmailVerified');
+    if(verEl) verEl.textContent = p.email_verified ? '✅ Verified' : '⚠️ Not verified';
+    var sinceEl = document.getElementById('acctSince');
+    if(sinceEl && p.created_at){
+      var d = new Date(p.created_at);
+      sinceEl.textContent = d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+    }
+  });
+}
+
+// ── Referral (real referral stats) ──
+function loadReferralCard(){
+  safeApi('GET','/api/referral/stats',null,null,true).then(function(d){
+    if(!d) return;
+    var codeEl = document.getElementById('refCode');
+    if(codeEl && d.code) codeEl.textContent = d.code;
+    var earnedEl = document.getElementById('refEarned');
+    if(earnedEl) earnedEl.textContent = '$' + Number(d.lifetime_earned||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    var totalEl = document.getElementById('refTotal');
+    if(totalEl) totalEl.textContent = (d.total_referrals||0) + ' friends';
+  });
+}
+
+window.copyRefCode = function(){
+  var code = document.getElementById('refCode').textContent;
+  if(!code || code === '—'){ showToast('No referral code yet','error'); return; }
+  (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject())
+    .then(function(){ showToast('Referral code copied!','success'); })
+    .catch(function(){
+      var ta = document.createElement('textarea');
+      ta.value = code; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); showToast('Referral code copied!','success'); }catch(e){ showToast('Copy failed — select the code manually','error'); }
+      document.body.removeChild(ta);
+    });
+};
 
 // ── Notifications — real data (transactions / balance / API keys) ──
 var NOTIF_DISMISS_KEY = 'gt_dismissed_notifs';
@@ -837,6 +934,8 @@ document.addEventListener('DOMContentLoaded', function(){
   loadNotifications();
   loadNotifSettings();
   loadSettingsExtras();
+  loadAccountOverview();
+  loadReferralCard();
   if(typeof loadLoginHistory === 'function') loadLoginHistory(0);
 });
 </script>

@@ -177,6 +177,29 @@
   display: block;
 }
 
+/* ── Settings card wrap container (Webhooks / Recent Notifications / etc.) ── */
+.settings-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.settings-card + .settings-card {
+  margin-top: 1rem;
+}
+@media (max-width: 768px) {
+  .settings-card {
+    padding: 1rem;
+  }
+}
+body.compact-cards .settings-card {
+  padding: 0.9rem 1.1rem;
+}
+
 /* ── Settings inline style extraction ── */
 /* Sidebar toggle arrow */
 .settings-sidebar-arrow {
