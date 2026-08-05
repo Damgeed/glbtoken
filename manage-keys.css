@@ -64,3 +64,24 @@
     gap: 0.4rem;
   }
 }
+
+/* ── Bulk-mode inline chip row ──
+   Replaces the old popup card (bg-alt + border + radius). The chips sit in the
+   same place the sort controls occupy, so entering select mode never "pops up"
+   a container — the row just swaps content. */
+.keys-bulk-row {
+  align-items: center;
+}
+.keys-bulk-row #bulkCount {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary, #F4B400);
+  white-space: nowrap;
+}
+.keys-controls-row {
+  align-items: center;
+}
+.keys-controls-row .keys-icon-btn {
+  width: 32px;
+  height: 32px;
+}

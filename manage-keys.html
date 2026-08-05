@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1196" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="manage-keys.css?v=1024" />
+<link rel="stylesheet" href="manage-keys.css?v=1025" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -123,28 +123,29 @@
           </div>
           <div class="keys-title-actions">
             <button class="btn-action" onclick="showCreateKeyModal()">+ New Key</button>
-            <button class="keys-icon-btn" id="bulkToggleBtn" onclick="enterBulkMode()" title="Select multiple keys" aria-label="Select keys">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-            </button>
-            <button class="keys-icon-btn" onclick="exportKeysCsv()" title="Download keys as CSV" aria-label="Export keys">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            </button>
             <button class="btn-action btn-ghost" style="display:none" id="bulkDoneBtn" onclick="exitBulkMode()">Done</button>
           </div>
         </div>
-        <div id="bulkBar" class="hidden" style="display:none;margin-top:0.6rem;padding:0.6rem 0.75rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;align-items:center;gap:0.6rem;flex-wrap:wrap">
-          <span style="font-size:0.8rem;color:var(--text-secondary)" id="bulkCount">0 selected</span>
-          <button class="sort-btn" onclick="bulkToggleAll()">Select All</button>
-          <button class="sort-btn btn-activate" onclick="bulkSetActive(true)">Activate</button>
-          <button class="sort-btn btn-pause" onclick="bulkSetActive(false)">Pause</button>
-          <button class="sort-btn btn-delete" onclick="bulkDelete()">Delete</button>
-        </div>
-        <div class="flex gap-sm flex-wrap">
+        <div class="flex gap-sm flex-wrap keys-controls-row" id="keysControlsRow">
           <input type="search" id="keySearch" placeholder="Search keys…" class="form-input-full hide-mobile" style="max-width:220px;flex:1 1 140px;padding:0.45rem 0.6rem;font-size:0.8rem" aria-label="Search API keys" />
           <button class="sort-btn" onclick="sortKeys('newest')">↓ Newest</button>
           <button class="sort-btn" onclick="sortKeys('oldest')">↑ Oldest</button>
           <button class="sort-btn" onclick="sortKeys('name')">A-Z</button>
           <button class="sort-btn" onclick="sortKeys('usage')">Usage</button>
+          <span style="flex:1 1 auto" aria-hidden="true"></span>
+          <button class="keys-icon-btn" id="bulkToggleBtn" onclick="enterBulkMode()" title="Select multiple keys" aria-label="Select keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </button>
+          <button class="keys-icon-btn" onclick="exportKeysCsv()" title="Download keys as CSV" aria-label="Export keys">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+        <div class="flex gap-sm flex-wrap keys-bulk-row" id="bulkBar" style="display:none">
+          <span id="bulkCount">0 selected</span>
+          <button class="sort-btn" onclick="bulkToggleAll()">Select All</button>
+          <button class="sort-btn btn-activate" onclick="bulkSetActive(true)">Activate</button>
+          <button class="sort-btn btn-pause" onclick="bulkSetActive(false)">Pause</button>
+          <button class="sort-btn btn-delete" onclick="bulkDelete()">Delete</button>
         </div>
         <div id="keyList"><p class="text-muted text-sm text-center pad-sm-1">Loading keys...</p></div>
       </div>
@@ -247,7 +248,7 @@
 <script data-cfasync="false" src="shared.js?v=1134"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
-<script data-cfasync="false" src="keys.js?v=18"></script>
+<script data-cfasync="false" src="keys.js?v=19"></script>
 
 </body>
 </html>

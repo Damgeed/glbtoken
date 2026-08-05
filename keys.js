@@ -72,7 +72,7 @@
             <button class="swipe-action swipe-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
           </div>
           <div class="api-key-card">
-            <input type="checkbox" class="key-check" data-key-id="${escapeHtml(String(key.id))}" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select key" />
+            <input type="checkbox" class="key-check" data-key-id="${escapeHtml(String(key.id))}" onchange="updateBulkCount()" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select key" />
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${key.id})" title="Edit key" aria-label="Edit key">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
@@ -385,22 +385,24 @@
     }
 
     // ── Bulk mode: multi-select pause / activate / delete ──
+    // Entering bulk mode swaps the controls row (search + sort + select/download
+    // icons) for an inline chip row (count + Select All + Activate/Pause/Delete).
+    // No popup container — the chips simply take the controls row's place.
     var _bulkMode=false;
     function enterBulkMode(){
       _bulkMode=true;
       document.querySelectorAll('.key-check').forEach(function(c){c.style.display='';});
-      document.getElementById('bulkBar').style.display='flex';
-      document.getElementById('bulkBar').classList.remove('hidden');
-      document.getElementById('bulkDoneBtn').style.display='';
-      document.getElementById('bulkToggleBtn').style.display='none';
+      var cr=document.getElementById('keysControlsRow'); if(cr)cr.style.display='none';
+      var bar=document.getElementById('bulkBar'); if(bar){bar.style.display='flex';bar.classList.remove('hidden');}
+      var done=document.getElementById('bulkDoneBtn'); if(done)done.style.display='';
       updateBulkCount();
     }
     function exitBulkMode(){
       _bulkMode=false;
       document.querySelectorAll('.key-check').forEach(function(c){c.checked=false;c.style.display='none';});
+      var cr=document.getElementById('keysControlsRow'); if(cr)cr.style.display='';
       var bar=document.getElementById('bulkBar'); if(bar){bar.style.display='none';bar.classList.add('hidden');}
       var done=document.getElementById('bulkDoneBtn'); if(done)done.style.display='none';
-      var tg=document.getElementById('bulkToggleBtn'); if(tg)tg.style.display='';
       updateBulkCount();
     }
     function updateBulkCount(){
