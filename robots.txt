@@ -10,6 +10,9 @@ Disallow: /billing.html
 Disallow: /logs.html
 Disallow: /team.html
 Disallow: /referrals.html
-Disallow: /history.html
+Disallow: /notifications.html
+Disallow: /presets.html
+Disallow: /join.html
+Disallow: /2fa-challenge.html
 
 Sitemap: https://glbtoken.com/sitemap.xml

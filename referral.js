@@ -221,6 +221,11 @@ async function claimRefRewards(){
   } else {
     bootWithRetry(0);
   }
+  // Show native "More…" share button only when Web Share API is available
+  if(navigator.share){
+    var nb = document.getElementById('nativeShareBtn');
+    if(nb) nb.style.display = '';
+  }
 })();
 
 // ── Copy + share (shared by referrals.html + referral.html) ──
@@ -254,14 +259,21 @@ function shareRef(platform){
   var el=document.getElementById('refCode');
   var base=(el&&el.textContent)?el.textContent:'https://glbtoken.com/register.html?ref=';
   var link=base+(base.indexOf('?')>=0?'&':'?')+'src='+platform;
+  var rewardTxt='Get free tokens and access to 100+ AI models!';
+  // Try native Web Share API first on mobile (much higher conversion than a new tab)
+  if(platform==='native' && navigator.share){
+    navigator.share({title:'GlbTOKEN', text:rewardTxt+' Use my referral link:', url:link})
+      .catch(function(){});
+    return;
+  }
   var url=encodeURIComponent(link);
-  var text=encodeURIComponent('Join me on GlbTOKEN and get access to 100+ AI models! Use my referral link:');
+  var text=encodeURIComponent(rewardTxt+' Use my referral link:');
   var href='';
   switch(platform){
     case 'twitter': href='https://twitter.com/intent/tweet?text='+text+'&url='+url; break;
     case 'whatsapp': href='https://wa.me/?text='+text+'%20'+url; break;
     case 'telegram': href='https://t.me/share/url?url='+url+'&text='+text; break;
-    case 'email': href='mailto:?subject=Join%20GlbTOKEN&body='+text+'%20'+url; break;
+    case 'email': href='mailto:?subject=Join%20Me%20on%20GlbTOKEN&body='+text+'%20'+url; break;
     case 'facebook': href='https://www.facebook.com/sharer/sharer.php?u='+url; break;
     case 'linkedin': href='https://www.linkedin.com/sharing/share-offsite/?url='+url; break;
   }
