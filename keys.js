@@ -385,24 +385,25 @@
     }
 
     // ── Bulk mode: multi-select pause / activate / delete ──
-    // Entering bulk mode swaps the controls row (search + sort + select/download
-    // icons) for an inline chip row (count + Select All + Activate/Pause/Delete).
-    // No popup container — the chips simply take the controls row's place.
+    // Entering bulk mode swaps the Select icon for a Done icon in the SAME slot
+    // (io-group), keeps the Export button in place, and shows the bulk chip row
+    // (count + Select All / Activate / Pause / Delete icons). The controls row
+    // and + New Key never move.
     var _bulkMode=false;
     function enterBulkMode(){
       _bulkMode=true;
       document.querySelectorAll('.key-check').forEach(function(c){c.style.display='';});
-      var cr=document.getElementById('keysControlsRow'); if(cr)cr.style.display='none';
+      var sel=document.getElementById('bulkToggleBtn'); if(sel)sel.style.display='none';
+      var done=document.getElementById('bulkDoneIconBtn'); if(done)done.style.display='';
       var bar=document.getElementById('bulkBar'); if(bar){bar.style.display='flex';bar.classList.remove('hidden');}
-      var done=document.getElementById('bulkDoneBtn'); if(done)done.style.display='';
       updateBulkCount();
     }
     function exitBulkMode(){
       _bulkMode=false;
       document.querySelectorAll('.key-check').forEach(function(c){c.checked=false;c.style.display='none';});
-      var cr=document.getElementById('keysControlsRow'); if(cr)cr.style.display='';
+      var sel=document.getElementById('bulkToggleBtn'); if(sel)sel.style.display='';
+      var done=document.getElementById('bulkDoneIconBtn'); if(done)done.style.display='none';
       var bar=document.getElementById('bulkBar'); if(bar){bar.style.display='none';bar.classList.add('hidden');}
-      var done=document.getElementById('bulkDoneBtn'); if(done)done.style.display='none';
       updateBulkCount();
     }
     function updateBulkCount(){

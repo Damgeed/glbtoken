@@ -118,3 +118,13 @@
   color: #e5484d;
   background: rgba(229, 72, 77, 0.08);
 }
+
+/* ── Mobile: bigger edit (✎) tap target next to key names ── */
+@media (max-width: 768px) {
+  .api-key-card .key-info .key-name .key-edit {
+    font-size: 1.05rem;
+    padding: 0.15rem 0.35rem;
+    margin-left: 0.15rem;
+    opacity: 0.7;
+  }
+}
