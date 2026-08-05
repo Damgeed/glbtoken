@@ -39,7 +39,7 @@
 
 client = OpenAI(
   api_key=<span class="syn-str">"sk-glt_..."</span>,
-  base_url=<span class="syn-str">"https://glbtoken-api.onrender.com/api/proxy"</span>
+  base_url=<span class="syn-str">"https://api.glbtoken.com/v1"</span>
 )
 
 response = client.chat.completions.create(
@@ -55,7 +55,7 @@ print(response.choices[0].message.content)</pre>
   <!-- Base URL -->
   <div class="dash-card doc-section">
     <h3 class="section-heading"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heading-icon"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> Base URL</h3>
-    <div class="base-url-display">https://glbtoken-api.onrender.com/api/proxy</div>
+    <div class="base-url-display">https://api.glbtoken.com/v1</div>
     <p data-i18n="sdk-compat" class="desc-sm">This endpoint is fully compatible with the OpenAI SDK. Just change the <code translate="no" class="inline-code-lg">base_url</code> and your <code translate="no" class="inline-code-lg">api_key</code>.</p>
   </div>
 
@@ -72,7 +72,7 @@ print(response.choices[0].message.content)</pre>
     <h3 class="section-heading"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heading-icon"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> Available Models</h3>
     <p class="desc-text">List all available models with pricing:</p>
     <div class="code-wrapper" data-copy><button onclick="copyCode(this)" class="copy-btn" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-      <pre translate="no" class="code-block">curl https://glbtoken-api.onrender.com/api/proxy/models \
+      <pre translate="no" class="code-block">curl https://api.glbtoken.com/v1/models \
   -H <span class="syn-str">"Authorization: Bearer sk-glt_..."</span></pre>
     </div>
     <p data-i18n="browse-models" class="text-footnote">Or browse all models on the <a href="models.html">Models</a> page.</p>
@@ -83,7 +83,7 @@ print(response.choices[0].message.content)</pre>
     <h3 class="section-heading"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heading-icon"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Chat Completions</h3>
     <p data-i18n="chat-compat" class="desc-text">Send a chat completion request (OpenAI-compatible):</p>
     <div class="code-wrapper" data-copy><button onclick="copyCode(this)" class="copy-btn" title="Copy code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-      <pre translate="no" class="code-block">curl https://glbtoken-api.onrender.com/api/proxy/v1/chat/completions \
+      <pre translate="no" class="code-block">curl https://api.glbtoken.com/v1/chat/completions \
   -H <span class="syn-str">"Content-Type: application/json"</span> \
   -H <span class="syn-str">"Authorization: Bearer sk-glt_..."</span> \
   -d '{
@@ -108,7 +108,7 @@ print(response.choices[0].message.content)</pre>
 
 client = OpenAI(
   api_key=<span class="syn-str">"sk-glt_..."</span>,
-  base_url=<span class="syn-str">"https://glbtoken-api.onrender.com/api/proxy"</span>
+  base_url=<span class="syn-str">"https://api.glbtoken.com/v1"</span>
 )
 
 stream = client.chat.completions.create(
@@ -130,7 +130,7 @@ stream = client.chat.completions.create(
 
 <span class="syn-kw">const</span> client = <span class="syn-kw">new</span> OpenAI({
   apiKey: <span class="syn-str">"sk-glt_..."</span>,
-  baseURL: <span class="syn-str">"https://glbtoken-api.onrender.com/api/proxy"</span>
+  baseURL: <span class="syn-str">"https://api.glbtoken.com/v1"</span>
 });
 
 <span class="syn-kw">const</span> completion = <span class="syn-kw">await</span> client.chat.completions.create({

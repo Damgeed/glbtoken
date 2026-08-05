@@ -363,7 +363,6 @@
       if(pageId==='models'){if(typeof loadModels==='function')loadModels();}
       if(pageId==='referral'&&token){if(typeof loadReferralStats==='function')loadReferralStats();}
       if(pageId==='team'&&token){if(typeof loadOrgs==='function')loadOrgs();}
-      if(pageId==='playground'&&token){if(typeof loadConversations==='function')loadConversations();if(typeof loadPlaygroundModels==='function')loadPlaygroundModels();}
       if(pageId==='history'&&token){if(typeof loadLoginHistory==='function')loadLoginHistory();}
     })();
 
@@ -630,7 +629,6 @@
       if(pageId==='models'){if(typeof loadModels==='function')loadModels();}
       if(pageId==='referral'&&token){if(typeof loadReferralStats==='function')loadReferralStats();}
       if(pageId==='team'&&token){if(typeof loadOrgs==='function')loadOrgs();}
-      if(pageId==='playground'&&token){if(typeof loadConversations==='function')loadConversations();if(typeof loadPlaygroundModels==='function')loadPlaygroundModels();}
     });
     // Parse URL error param (from Auth0 callback failure redirect)
     (function(){

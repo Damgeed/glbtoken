@@ -175,7 +175,6 @@
 <script data-cfasync="false" src="shared.js?v=1133"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
-<script data-cfasync="false" src="playground.js?v=1120"></script>
 
 <script>
 // ── Playground chat functionality (ChatGPT/GlbGPT UX) ──
@@ -296,24 +295,34 @@ function sendPlaygroundMessage(){
   // Show typing indicator
   showTypingIndicator();
 
-  // Simulate AI response
-  setTimeout(function(){
+  // ── Call the REAL model API (bills tokens server-side — never simulated) ──
+  var payload = {
+    model: getSelectedModel(),
+    messages: getPlaygroundMessages(),
+    temperature: 0.7,
+    max_tokens: 2048,
+    stream: false
+  };
+  var t0 = Date.now();
+  api('POST', '/api/playground/chat', payload, 120000).then(function(d){
     removeTypingIndicator();
     var modelSelect = document.getElementById('modelSelect');
-    var modelOption = modelSelect.options[modelSelect.selectedIndex];
-    var modelName = modelOption.text;
-    var response = getSimulatedResponse(text);
-    var tokenCount = Math.floor(Math.random() * 300) + 50;
-    var responseTime = (Math.random() * 2.5 + 0.5).toFixed(2);
+    var modelOption = modelSelect ? modelSelect.options[modelSelect.selectedIndex] : null;
+    var modelName = modelOption ? modelOption.text : '';
+    var response = (d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content)
+      || (d && d.response) || 'No response';
+    var tokenCount = (d && d.tokens_used) || 0;
+    var responseTime = ((Date.now() - t0) / 1000).toFixed(2);
 
     var aiMsg = document.createElement('div');
     aiMsg.className = 'playground-msg ai';
     aiMsg.innerHTML = '<div class="msg-avatar">'
-      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-      + '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>'
       + '<div class="msg-body">'
-      + '<div class="bubble">'+response+'</div>'
-      + '<div class="msg-meta"><span class="model-badge">'+modelName.split(' — ')[0]+'</span><span>'+tokenCount+' tokens</span><span>'+responseTime+'s</span></div>'
+      + '<div class="bubble">'+escapeHtml(response)+'</div>'
+      + '<div class="msg-meta"><span class="model-badge">'+escapeHtml(modelName.split(' — ')[0])+'</span><span>'+tokenCount+' tokens</span><span>'+responseTime+'s</span>'
+      + (typeof d.balance_remaining !== 'undefined' ? '<span>Balance: '+Number(d.balance_remaining).toLocaleString()+' GT</span>' : '')
+      + '</div>'
       + '</div>';
     chat.appendChild(aiMsg);
     chat.scrollTop = chat.scrollHeight;
@@ -328,15 +337,28 @@ function sendPlaygroundMessage(){
     } else {
       document.getElementById('chatInput').focus();
     }
+  }).catch(function(e){
+    removeTypingIndicator();
+    var errMsg = (e && e.message) ? e.message : 'Connection failed';
+    var aiMsg = document.createElement('div');
+    aiMsg.className = 'playground-msg ai';
+    aiMsg.innerHTML = '<div class="msg-avatar">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>'
+      + '<div class="msg-body">'
+      + '<div class="bubble" style="color:var(--destructive)">Error: '+escapeHtml(errMsg)+'</div>'
+      + '</div>';
+    chat.appendChild(aiMsg);
+    chat.scrollTop = chat.scrollHeight;
+    renderPlaygroundCode();
 
-    // Update conversation title
-    var active = document.querySelector('.playground-history-item.active .conv-title');
-    if(active && active.textContent === 'New conversation'){
-      active.textContent = text.substring(0, 30) + (text.length > 30 ? '...' : '');
-      var ct = document.getElementById('conversationTitle');
-      if(ct) ct.textContent = active.textContent;
+    isProcessing = false;
+    document.getElementById('sendBtn').disabled = false;
+    if(window.innerWidth <= 768){
+      document.getElementById('chatInput').focus({preventScroll:true});
+    } else {
+      document.getElementById('chatInput').focus();
     }
-  }, 1500 + Math.random() * 1000);
+  });
 }
 
 // ── Typing Indicator ──
@@ -358,16 +380,6 @@ function showTypingIndicator(){
 function removeTypingIndicator(){
   var typing = document.getElementById('typingIndicator');
   if(typing) typing.remove();
-}
-
-// ── Simulated Responses ──
-function getSimulatedResponse(text){
-  var responses = [
-    "That's a great question! Let me break it down for you.\n\nBased on my analysis, here are the key points to consider:\n\n1. **Performance**: Modern AI models excel at this type of task, especially when the input is well-structured.\n\n2. **Best Practices**: I recommend using a systematic approach — break the problem into smaller, manageable parts.\n\n3. **Example**: Here's a simple implementation:\n\n```python\ndef solution(data):\n    result = []\n    for item in data:\n        processed = transform(item)\n        result.append(processed)\n    return result\n```\n\nWould you like me to go into more detail on any specific aspect?",
-    "I can help with that! Here's what I know about this topic.\n\n**Overview:**\nThe field has evolved significantly over the past few years. Key developments include:\n\n- Better algorithmic efficiency\n- Larger-scale training data\n- Improved hardware acceleration\n\n**Practical Application:**\nWhen implementing this, consider:\n1. Start with a clear specification\n2. Use proper error handling\n3. Test with realistic data\n4. Monitor performance metrics\n\nLet me know if you'd like specific code examples or further explanation!",
-    "Excellent question! Here's my detailed response.\n\n## Key Insights\n\nAfter careful consideration, I believe the most important factors are:\n\n### 1. Architecture\nModern approaches use transformer-based designs that scale efficiently.\n\n### 2. Data Quality\nHigh-quality, diverse training data remains crucial for good results.\n\n### 3. Evaluation\nAlways validate your outputs against ground truth when possible.\n\nFeel free to ask follow-up questions!"
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
 }
 
 // ── Utilities ──

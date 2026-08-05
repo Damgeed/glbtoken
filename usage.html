@@ -114,9 +114,33 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-lg">
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
-            Login History
+            Usage &amp; History
           </h1>
-          <p>Review all login attempts to your account</p>
+          <p>Track your token usage, transactions, and account activity</p>
+        </div>
+      </div>
+
+      <!-- Usage Analytics Chart -->
+      <div class="dash-card stat-card">
+        <div class="dash-section-title filter-btn-row">
+          <span class="filter-btn-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Usage</span>
+          <div class="filter-badge-row" id="usageRangeBtns">
+            <button class="sort-btn usage-range active badge" data-days="7" onclick="setUsageRange(7)">7d</button>
+            <button class="sort-btn usage-range badge" data-days="30" onclick="setUsageRange(30)">30d</button>
+            <button class="sort-btn usage-range badge" data-days="90" onclick="setUsageRange(90)">90d</button>
+          </div>
+          <select id="usageModelFilter" class="filter-badge-item" onchange="refreshUsageChart()">
+            <option value="">All Models</option>
+          </select>
+          <div class="filter-badge-right" id="usageModeBtns">
+            <button class="sort-btn usage-mode active badge" data-mode="tokens" onclick="setUsageMode('tokens')">Tokens</button>
+            <button class="sort-btn usage-mode badge" data-mode="cost" onclick="setUsageMode('cost')">Cost</button>
+          </div>
+        </div>
+        <div class="chart-container chart-container-rel"><canvas id="dailyChart"></canvas></div>
+        <div class="chart-axis-labels" id="usageSummary">
+          <span id="usageTotalLabel">Total: <strong id="usageTotalVal" class="text-semibold">0</strong> tokens</span>
+          <span id="usageCostLabel">Cost: <strong id="usageCostVal" class="text-semibold">$0.00</strong></span>
         </div>
       </div>
 
@@ -267,6 +291,7 @@
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1222"></script>
 <script data-cfasync="false" src="filters.js?v=1129"></script>
+<script data-cfasync="false" src="usage-charts.js?v=2"></script>
 
 <!-- ── Usage Script ── -->
 <script>
@@ -396,10 +421,10 @@ function renderHistoryRow(item){
   var city=locParts[0]||item.location;
   var country=locParts[1]||'';
   return '<tr>'
-    + '<td class="td-date"><div class="td-date-strong">'+date+'</div><div class="td-time">'+time+'</div></td>'
-    + '<td class="ip-col td-ip">'+item.ip+'</td>'
-    + '<td class="td-device">'+item.device+'</td>'
-    + '<td class="td-location">'+getFlag(item.location)+' <span class="loc-city">'+city+'</span><span class="loc-country">'+(country?', '+country:'')+'</span></td>'
+    + '<td class="td-date"><div class="td-date-strong">'+escapeHtml(date)+'</div><div class="td-time">'+escapeHtml(time)+'</div></td>'
+    + '<td class="ip-col td-ip">'+escapeHtml(item.ip)+'</td>'
+    + '<td class="td-device">'+escapeHtml(item.device)+'</td>'
+    + '<td class="td-location">'+getFlag(item.location)+' <span class="loc-city">'+escapeHtml(city)+'</span><span class="loc-country">'+(country?', '+escapeHtml(country):'')+'</span></td>'
     + '<td>'+statusIcon+'</td>'
     + '</tr>';
 }
@@ -498,6 +523,8 @@ document.addEventListener('DOMContentLoaded', function(){
   setTimeout(function(){
     if(typeof loadUsageActivity === 'function') loadUsageActivity();
     if(typeof loadLoginHistory === 'function') loadLoginHistory();
+    if(typeof populateModelFilter === 'function') populateModelFilter();
+    if(typeof refreshUsageChart === 'function') refreshUsageChart();
   }, 50);
 });
 </script>
