@@ -618,10 +618,40 @@
 }
 .chip-count { opacity: 0.7; font-size: 0.7rem; margin-left: 0.15rem; font-weight: 500; }
 #memberSort { margin-left: auto; }
-/* Title row: count sits LEFT (icon + count as one group), title text right */
-.member-count-group { display: inline-flex; align-items: center; }
+/* ── Team Members title row: icon left, centered count pill, title right ── */
+.team-title-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.6rem;
+}
+.team-title-row .icon-inline { justify-self: start; }
+.team-title-text { justify-self: end; }
+.team-title-row .label-muted-sm { margin-left: 0; }
+.member-count-group {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(244, 180, 0, 0.12);
+  border: 1px solid rgba(244, 180, 0, 0.35);
+  border-radius: 20px;
+  padding: 0.14rem 0.7rem;
+  white-space: nowrap;
+}
 /* Bold gold number for at-a-glance member count (matches .num.gold) */
 .member-count-group strong { font-weight: 700; color: #FFC733; font-variant-numeric: tabular-nums; }
+/* ── Name A–Z: custom dropdown (native arrow removed, gold chevron) ── */
+.member-filters-right #memberSort {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 20px;
+  border: 1px solid rgba(244, 180, 0, 0.4);
+  background: var(--bg-alt) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FFC733' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 0.55rem center / 12px 12px;
+  padding: 0.3rem 1.7rem 0.3rem 0.7rem;
+  color: var(--text);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
 @media (max-width: 767px) {
   /* Chips + sort + export flow on ONE wrapping line so Name A–Z sits
      inline with All/Owner/Admin/Member and the export button. Chips get
@@ -631,7 +661,7 @@
   .member-filters .chip { padding: 0.18rem 0.4rem; font-size: 0.68rem; }
   .member-filters-right {
     width: auto;
-    margin-left: 0;
+    margin-left: auto;
     gap: 0.25rem;
   }
   .member-filters-right #memberSort {
@@ -639,7 +669,7 @@
     flex: 0 1 auto;
     min-width: 0;
     font-size: 0.7rem;
-    padding: 0.2rem 0.35rem;
+    padding: 0.2rem 1.55rem 0.2rem 0.5rem;
   }
 }
 
