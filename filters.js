@@ -408,8 +408,10 @@
     function switchTxTab(el,tab){
       document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));
       el.classList.add('active');
-      document.getElementById('txDeposits').style.display=tab==='deposits'?'block':'none';
-      document.getElementById('txConsumption').style.display=tab==='consumption'?'block':'none';
+      var dep=document.getElementById('txDeposits');
+      var con=document.getElementById('txConsumption');
+      if(dep)dep.classList.toggle('d-none',tab!=='deposits');
+      if(con)con.classList.toggle('d-none',tab!=='consumption');
       var dBtn=document.getElementById('txDepositMoreBtn');
       var cBtn=document.getElementById('txConsumptionMoreBtn');
       if(dBtn)dBtn.style.display=(tab==='deposits' && dBtn.getAttribute('data-count'))?'':'none';
