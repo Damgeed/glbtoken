@@ -22,7 +22,7 @@ from auth0 import (
     get_social_login_url, send_passwordless_code, verify_passwordless_code,
     send_sms_code, verify_sms_code
 )
-from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email
+from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email, SIGNUP_BONUS_TOKENS
 from schemas import (
     RegisterRequest, LoginRequest, GoogleAuthRequest, GithubAuthRequest,
     Auth0LoginRequest, SendCodeRequest, VerifyCodeRequest,
@@ -130,7 +130,7 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             email=req.email,
             password_hash=hash_password(req.password),
             country=req.country,
-            token_balance=0,
+            token_balance=SIGNUP_BONUS_TOKENS,
             referred_by=_resolve_ref(db, req.ref),
             signup_ip=_client_ip(request),
             referral_source=_clean_src(req.src),
@@ -374,7 +374,7 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
             name=user_info.get("name", email.split("@")[0]),
             email=email,
             password_hash=None,
-            token_balance=0,
+            token_balance=SIGNUP_BONUS_TOKENS,
             email_verified=True,
             referred_by=_resolve_ref(db, body.ref),
             signup_ip=_client_ip(request),
@@ -463,7 +463,7 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
             name=user_info.get("name", phone),
             email=email,
             password_hash=None,
-            token_balance=0,
+            token_balance=SIGNUP_BONUS_TOKENS,
             email_verified=True,
             is_admin=False,
         )
@@ -543,7 +543,7 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
             name=info["name"],
             email=info["email"],
             google_id=info["sub"],
-            token_balance=0,
+            token_balance=SIGNUP_BONUS_TOKENS,
             email_verified=info["email_verified"],
         )
         db.add(user)
@@ -615,7 +615,7 @@ def _resolve_social_user(db, info, id_field="google_id"):
             email=db_email,
             google_id=(sub or None) if id_field != "github_id" else None,
             github_id=(sub or None) if id_field == "github_id" else None,
-            token_balance=0,
+            token_balance=SIGNUP_BONUS_TOKENS,
             email_verified=email_verified,
         )
         db.add(user)
@@ -758,7 +758,7 @@ async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLog
     else:
         user = User(
             name=info["name"], email=info["email"],
-            google_id=info["sub"], token_balance=0,
+            google_id=info["sub"], token_balance=SIGNUP_BONUS_TOKENS,
             email_verified=info["email_verified"],
         )
         db.add(user); db.commit(); db.refresh(user)
@@ -811,7 +811,7 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
         # name claim, which is what made "full name switch to random code".
         name=name or info["name"] or info["email"].split("@")[0],
         email=info["email"],
-        google_id=info["sub"], token_balance=0,
+        google_id=info["sub"], token_balance=SIGNUP_BONUS_TOKENS,
         email_verified=info["email_verified"],
     )
     db.add(user); db.commit(); db.refresh(user)

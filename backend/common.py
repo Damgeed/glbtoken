@@ -52,6 +52,11 @@ REFERRAL_REWARD_GT = float(os.getenv("REFERRAL_REWARD_GT", "2.0"))
 # Anti-fraud: minimum real consumption (tokens) before a referred user triggers
 # the referrer's reward. Blocks signup-and-abandon farming.
 REFERRAL_MIN_SPEND_TOKENS = int(os.getenv("REFERRAL_MIN_SPEND_TOKENS", "1000"))
+# Signup bonus — GT credited to every NEW account at registration (all channels:
+# email/password, phone, email-code, Auth0, social OAuth). Matches the public
+# "25,000 free tokens" promise (FAQ + marketing). 0 disables the bonus.
+# Tune via env (Railway) without redeploying.
+SIGNUP_BONUS_TOKENS = float(os.getenv("SIGNUP_BONUS_TOKENS", "25000"))
 # Disposable / temp-mail domains whose signups never trigger a referral reward.
 DISPOSABLE_EMAIL_DOMAINS = set(
     d.strip().lower() for d in os.getenv(

@@ -2,3 +2,21 @@
 #section-apikeys {
   display: block !important;
 }
+
+/* ── Mobile: API Keys toolbar — title on its own row, actions spread evenly ──
+   Desktop keeps the single-row layout (title left, buttons right).
+   On narrow screens the 3 action buttons (+ New Key / Select / Export) were
+   crushing the title into a ~77px column. Fix: wrap so the title takes the
+   full first row and the actions get a clean second row with equal widths. */
+@media (max-width: 768px) {
+  #section-apikeys .dash-section-title {
+    flex-wrap: wrap;
+    row-gap: 0.6rem;
+  }
+  #section-apikeys .dash-section-title > div:first-child {
+    flex: 1 1 100%;
+  }
+  #section-apikeys .dash-section-title > .btn-action {
+    flex: 1 1 0%;
+  }
+}
