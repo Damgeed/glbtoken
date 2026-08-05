@@ -254,8 +254,11 @@ def stripe_create_checkout(req: InitiatePaymentRequest, request: Request, user: 
                 "quantity": 1,
             }],
             customer=cus.id,
-            # Shows a "Save my card for future purchases" checkbox on the hosted page.
-            payment_method_options={"card": {"save_payment_method": True}},
+            # Save-card support: newer Stripe API versions moved the "save my card"
+            # checkbox out of payment_method_options[card][save_payment_method].
+            # Use the top-level allow_promotion_codes-free, version-agnostic approach:
+            # omit the checkbox entirely (saved cards still work via the Cards page
+            # setup flow + quick-recharge PaymentIntents).
             metadata={"user_id": str(user.id), "tokens": str(tokens)},
             success_url="https://glbtoken.com/topup.html?payment=success&session_id={CHECKOUT_SESSION_ID}",
             cancel_url="https://glbtoken.com/topup.html?payment=cancelled",
