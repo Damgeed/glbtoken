@@ -6220,6 +6220,11 @@ body {
 .topup-modal-text { color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem; }
 .topup-payment-grid { margin-bottom:1.5rem; }
 .topup-modal-btn { width:100%;padding:0.875rem;font-size:1rem; }
+.crypto-asset-row { margin-bottom:1.25rem; }
+.topup-modal-label { display:block;font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.4rem; }
+.crypto-asset-select { width:100%;padding:0.6rem 0.75rem;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.9rem;appearance:auto; }
+.crypto-asset-select:focus { outline:none;border-color:rgba(244,180,0,0.5); }
+.topup-modal-hint { margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted); }
 
 
 

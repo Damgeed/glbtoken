@@ -39,6 +39,32 @@
     function selectPayment(el,method){
       document.querySelectorAll('.payment-opt,.payment-card').forEach(p=>p.classList.remove('selected'));
       el.classList.add('selected');selectedPayment=method;
+      var row=document.getElementById('cryptoAssetRow');
+      if(row){ row.style.display = (method==='crypto') ? 'block' : 'none'; }
+      if(method==='crypto') loadCryptoAssets();
+    }
+    // ── Crypto assets from backend (/api/payments/crypto/addresses) ──
+    var _cryptoAssetsLoaded = false;
+    async function loadCryptoAssets(){
+      var sel=document.getElementById('cryptoAssetSelect');
+      if(!sel) return;
+      if(_cryptoAssetsLoaded) return;
+      try{
+        var d=await safeApi('GET','/api/payments/crypto/addresses',null,null,true);
+        var assets=(d&&d.addresses)||[];
+        if(!assets.length) return;
+        _cryptoAssetsLoaded=true;
+        sel.innerHTML=assets.map(function(a){
+          var label=String(a.asset||'').replace(/_/g,' ');
+          return '<option value="'+escapeHtml(a.asset)+'">'+escapeHtml(label)+'</option>';
+        }).join('');
+        var hint=document.getElementById('cryptoAssetHint');
+        if(hint&&assets.length>1) hint.textContent='Select the network you want to pay with.';
+      }catch(e){ /* fall back to default USDT_TRC20 */ }
+    }
+    function onCryptoAssetChange(sel){
+      var hint=document.getElementById('cryptoAssetHint');
+      if(hint) hint.textContent='Selected: '+String(sel.value||'').replace(/_/g,' ');
     }
     async function processTopup(){
       if(!token){showToast('Please login first','error');return}
@@ -60,7 +86,9 @@
         return;
       }
       if(method==='crypto'){
-        const d=await safeApi('POST','/api/payments/crypto/create',{amount:selectedAmount,currency:'USDT_TRC20',payment_method:'USDT_TRC20'});
+        var assetSel=document.getElementById('cryptoAssetSelect');
+        var asset=assetSel?assetSel.value:'USDT_TRC20';
+        const d=await safeApi('POST','/api/payments/crypto/create',{amount:selectedAmount,currency:asset,payment_method:asset});
         if(d&&d.address) showCryptoInstructions(d);
         return;
       }
@@ -93,7 +121,7 @@
       };
       m.querySelector('#cryptoConfirmBtn').onclick=async function(){
         m.querySelector('#cryptoConfirmBtn').disabled=true;m.querySelector('#cryptoConfirmBtn').textContent='Confirming...';
-        const r=await safeApi('POST','/api/topup',{amount:d.usd_amount,currency:'USDT_TRC20',payment_method:'crypto',payment_ref:d.reference});
+        const r=await safeApi('POST','/api/topup',{amount:d.usd_amount,currency:d.asset||'USDT_TRC20',payment_method:'crypto',payment_ref:d.reference});
         if(r&&r.status==='success'){
           m.remove();
           if(typeof showTopupSuccessPopup==='function') showTopupSuccessPopup(r.tokens_added);

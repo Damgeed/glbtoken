@@ -10,12 +10,21 @@
       const grid=document.getElementById('modelGrid');
       const filter=document.getElementById('providerFilter');
       if(!grid)return;
-      const m=await safeApi('GET','/api/models',null,null,true); if(!m){grid.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem">Backend not connected. Start the API server.</p>';return}
+      const [m, provStats]=await Promise.all([
+        safeApi('GET','/api/models',null,null,true),
+        safeApi('GET','/api/models/providers',null,null,true).catch(function(){return null;})
+      ]);
+      if(!m){grid.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem">Backend not connected. Start the API server.</p>';return}
       models=m;
         document.getElementById('modelCount').textContent=`${m.length} models loaded`;
-        // Populate provider filter
+        // Populate provider filter — show model count per provider from /api/models/providers
+        var provCounts={};
+        if(Array.isArray(provStats)) provStats.forEach(function(p){ if(p&&p.name) provCounts[p.name]=p.count||0; });
         const provs=[...new Set(m.map(x=>x.provider))].sort();
-        filter.innerHTML='<option value="">All Providers</option>'+provs.map(p=>`<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+        filter.innerHTML='<option value="">All Providers</option>'+provs.map(p=>{
+          var cnt=provCounts[p]||0;
+          return `<option value="${escapeHtml(p)}">${escapeHtml(p)}${cnt?' ('+cnt+')':''}</option>`;
+        }).join('');
         // Populate category pills
         const cats = [...new Set(m.map(x => x.category).filter(Boolean))];
         const cpills = document.getElementById('catPills');

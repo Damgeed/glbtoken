@@ -30,12 +30,7 @@
         conBody.innerHTML=conRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No consumption yet</td></tr>';
     }
     // ── Billing ──
-    function addPaymentMethod(){
-      showToast('Payment method management coming soon','info');
-    }
-    function viewAllInvoices(){
-      showToast('Invoice history coming soon','info');
-    }
+    // (Payment method + invoice management live in billing.html — no dashboard stubs)
 
     // ── Advanced Analytics Dashboard Functions ──
 
