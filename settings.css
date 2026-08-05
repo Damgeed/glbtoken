@@ -320,6 +320,28 @@ button.settings-save-btn:hover {
 .notif-item.faded .settings-icon {
   opacity: 0.55;
 }
+/* Notifications always use dark cards (Bud: no gray in light mode /
+   light-blue in night — stay consistent dark navy in BOTH themes) */
+.notif-item.dash-card {
+  background: hsl(222 38% 8%);
+  border-color: hsl(222 26% 17%);
+}
+html.light .notif-item.dash-card {
+  background: hsl(222 38% 8%);
+  border-color: hsl(222 26% 17%);
+}
+html.light .notif-item.dash-card .settings-item-name {
+  color: hsl(210 22% 96%);
+}
+html.light .notif-item.dash-card .settings-item-desc {
+  color: hsl(210 14% 65%);
+}
+html.light .notif-item.dash-card .settings-delete-btn {
+  color: hsl(210 14% 65%);
+}
+.notif-item.dash-card:hover {
+  background: hsl(222 35% 11%) !important;
+}
 /* Settings row (disabled) */
 .settings-row-disabled {
   display: flex;

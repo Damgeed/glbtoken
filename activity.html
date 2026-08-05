@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="style.css?v=1205" />
 <link rel="stylesheet" href="dashboard.css?v=1037" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="more.css?v=1" />
+<link rel="stylesheet" href="more.css?v=2" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -148,9 +148,7 @@
           </div>
         </div>
         <div class="act-list" id="actList">
-          <div class="activity-item activity-row" style="opacity:0.6">
-            <div class="flex-grow"><div class="text-desc">Loading activity…</div></div>
-          </div>
+          <div class="act-card" style="opacity:0.6"><div class="act-card-desc">Loading activity…</div></div>
         </div>
         <div id="actEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No activity yet — buy tokens or use AI models to see activity here</div></div>
       </div>
@@ -209,11 +207,15 @@ function fmtActTime(iso){
 
 function actItemHtml(type, desc, time, amtHtml){
   var icon, iconCls;
-  if(type==='topup' || type==='deposit'){ icon=SVGS.money; iconCls='activity-icon activity-icon-teal'; }
-  else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=SVGS.key; iconCls='activity-icon activity-icon-gold'; }
-  else if(type==='consumption'){ icon=SVGS.alert; iconCls='activity-icon activity-icon-red'; }
-  else { icon=SVGS.code; iconCls='color-dot-blue'; }
-  return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div>'+(amtHtml?'<div class="activity-amt">'+amtHtml+'</div>':'')+'</div>';
+  if(type==='topup' || type==='deposit'){ icon=SVGS.money; iconCls='act-card-icon-teal'; }
+  else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=SVGS.key; iconCls='act-card-icon-gold'; }
+  else if(type==='consumption'){ icon=SVGS.alert; iconCls='act-card-icon-red'; }
+  else { icon=SVGS.code; iconCls='act-card-icon-blue'; }
+  return '<div class="act-card">'
+    + '<div class="act-card-top"><div class="act-card-icon '+iconCls+'">'+icon+'</div><div class="act-card-time">'+time+'</div></div>'
+    + '<div class="act-card-desc">'+desc+'</div>'
+    + (amtHtml ? '<div class="act-card-amt">'+amtHtml+'</div>' : '')
+    + '</div>';
 }
 
 function renderActivity(){
@@ -258,7 +260,7 @@ function loadActivity(){
     renderActivity();
   }).catch(function(){
     var list = document.getElementById('actList');
-    if(list) list.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">Could not load activity</div></div></div>';
+    if(list) list.innerHTML = '<div class="act-card" style="opacity:0.6"><div class="act-card-desc">Could not load activity</div></div>';
   });
 }
 

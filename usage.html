@@ -20,7 +20,7 @@
        styles so the Usage chart card matches the Overview design exactly -->
 <link rel="stylesheet" href="dashboard.css?v=1037" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1032" />
+<link rel="stylesheet" href="usage.css?v=1034" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -209,7 +209,10 @@
           </svg>
           Login History
         </div>
-        <div class="settings-item-desc-sm" style="margin-bottom:0.75rem">Recent sign-in activity across all devices. If you see something unfamiliar, change your password and enable two-factor auth.</div>
+        <div class="login-hint">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Recent sign-in activity across all devices. If you see something unfamiliar, change your password and enable two-factor auth.</span>
+        </div>
         <div class="login-filters">
           <input type="text" id="loginDateFilter" placeholder="Filter by date" class="filter-input" oninput="filterLoginHistory()">
           <select id="loginDeviceFilter" class="filter-input" onchange="filterLoginHistory()">
