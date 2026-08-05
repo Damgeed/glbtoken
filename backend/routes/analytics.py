@@ -23,9 +23,9 @@ router = APIRouter()
 _ANALYTICS_CACHE: dict = {}
 _ANALYTICS_TTL = 30
 
-def _cache_get(key: str):
+def _cache_get(key: str, ttl: int = None):
     hit = _ANALYTICS_CACHE.get(key)
-    if hit and _time.time() - hit[0] < _ANALYTICS_TTL:
+    if hit and _time.time() - hit[0] < (ttl or _ANALYTICS_TTL):
         return hit[1]
     return None
 
@@ -50,6 +50,13 @@ async def get_dashboard(
     db: Session = Depends(get_db),
     days: int = Query(7, ge=1, le=90, description="Number of days of data to return"),
 ):
+    # 10s TTL cache — the overview polls every 30s; without this every poll
+    # re-runs the New API balance sync + all aggregations, which is the main
+    # remaining source of "overview feels slow". 10s keeps balance fresh enough.
+    cache_key = f"dashboard:{user.id}:{days}"
+    cached = _cache_get(cache_key, ttl=10)
+    if cached is not None:
+        return cached
     # Usage by model (last N days)
     since_dashboard = datetime.now(timezone.utc) - timedelta(days=days)
     usage = db.query(Transaction.model_used, func.sum(Transaction.tokens)).filter(
@@ -146,7 +153,7 @@ async def get_dashboard(
         Transaction.type == "consumption"
     ).scalar() or 0
 
-    return {
+    result = {
         "token_balance": user.token_balance,
         "synced_balance": synced_balance,
         "total_spent": user.total_spent,
@@ -174,6 +181,8 @@ async def get_dashboard(
         ],
         "newapi": newapi_usage,
     }
+    _cache_set(cache_key, result)
+    return result
 
 
 # ── New API Request Logs ──
