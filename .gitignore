@@ -10,3 +10,4 @@ make_guide_pdf.py
 backend/test_glbtoken.db
 __pycache__/
 .pytest_cache/
+test_glbtoken.db
