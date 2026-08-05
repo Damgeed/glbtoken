@@ -641,7 +641,8 @@
 /* Bold gold number for at-a-glance member count (matches .num.gold) */
 .member-count-group strong { font-weight: 700; color: #FFC733; font-variant-numeric: tabular-nums; }
 /* ── Name A–Z: custom dropdown (native arrow removed, gold chevron) ── */
-.member-filters-right #memberSort {
+.member-filters-right #memberSort,
+#memberBulkRole {
   appearance: none;
   -webkit-appearance: none;
   border-radius: 20px;
@@ -651,6 +652,29 @@
   color: var(--text);
   font-size: 0.78rem;
   cursor: pointer;
+}
+/* ── Bulk-select mode: inline action bar (mirrors manage-keys bulk row) ── */
+.member-bulk-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  background: rgba(244, 180, 0, 0.06);
+  border: 1px solid rgba(244, 180, 0, 0.22);
+  border-radius: 10px;
+}
+.member-bulk-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #F4B400;
+  white-space: nowrap;
+}
+.member-bulk-bar .keys-icon-btn { width: 34px; height: 34px; }
+@media (max-width: 420px) {
+  .member-bulk-bar .keys-icon-btn { width: 32px; height: 32px; }
+  .member-bulk-count { font-size: 0.75rem; }
 }
 @media (max-width: 767px) {
   /* Chips + sort + export flow on ONE wrapping line so Name A–Z sits

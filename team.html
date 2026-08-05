@@ -228,8 +228,20 @@
               <option value="tokens-asc">Least tokens</option>
               <option value="role">Role</option>
             </select>
+            <button class="keys-icon-btn" id="memberBulkBtn" onclick="enterMemberBulkMode()" title="Select multiple members" aria-label="Select members" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></button>
             <button class="keys-icon-btn" onclick="exportMembersCsv()" title="Export member list as CSV" aria-label="Export member list as CSV" style="flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
           </div>
+        </div>
+        <!-- Bulk action bar (replaces the search toolbar in bulk-select mode) -->
+        <div class="member-bulk-bar" id="memberBulkBar" style="display:none">
+          <span id="memberBulkCount" class="member-bulk-count">0 selected</span>
+          <button class="keys-icon-btn" onclick="memberBulkToggleAll()" title="Select all visible members" aria-label="Select all visible members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg></button>
+          <select id="memberBulkRole" class="tag-filter" onchange="memberBulkChangeRole(this.value)" title="Change role of selected members">
+            <option value="">Set role…</option>
+            <option value="admin">Admin</option>
+            <option value="member">Member</option>
+          </select>
+          <button class="keys-icon-btn keys-icon-danger" onclick="memberBulkRemove()" title="Remove selected members" aria-label="Remove selected members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
         </div>
         <div  class="scroll-x">
           <table class="tx-table">
@@ -363,6 +375,7 @@ var memberPageSize = 10;
 var lastUsageBreakdown = [];  // cached per-member tokens from /usage for re-fill after search/pagination
 var memberRoleFilter = 'all'; // 'all' | 'owner' | 'admin' | 'member'
 var memberSort = 'name';      // 'name' | 'tokens-desc' | 'tokens-asc' | 'role'
+var memberBulkMode = false;   // bulk-select mode (multi-select → role change / remove)
 var pendingInvites = [];      // server-truth invite list for stats/countdown
 var currentMaxMembers = 0;    // org member capacity (for insight bar)
 var currentInviteStats = null; // invite funnel stats from get_org (owner/admin)
@@ -437,6 +450,87 @@ function onMemberSort(val){
   memberSort = val || 'name';
   memberPage = 1;
   renderMembers();
+}
+
+// ── Bulk member actions (multi-select → change role / remove) ──
+// Mirrors the API-keys bulk pattern: icon button swaps to Done, the search
+// toolbar swaps to a bulk bar (count + select-all + role + remove).
+var BULK_SELECT_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>';
+var BULK_DONE_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+function enterMemberBulkMode(){
+  memberBulkMode = true;
+  document.querySelectorAll('.member-check').forEach(function(c){ c.style.display = ''; });
+  var btn = document.getElementById('memberBulkBtn');
+  if(btn){ btn.innerHTML = BULK_DONE_SVG; btn.title = 'Done selecting'; btn.setAttribute('onclick','exitMemberBulkMode()'); }
+  var bar = document.getElementById('memberBulkBar');
+  if(bar){ bar.style.display = 'flex'; bar.classList.add('open'); }
+  // Role change is owner-only (matches the per-row rule); admins keep remove-only.
+  var roleSel = document.getElementById('memberBulkRole');
+  if(roleSel) roleSel.style.display = (currentMyRole === 'owner') ? '' : 'none';
+  updateMemberBulkCount();
+}
+function exitMemberBulkMode(){
+  memberBulkMode = false;
+  document.querySelectorAll('.member-check').forEach(function(c){ c.checked = false; c.style.display = 'none'; });
+  var btn = document.getElementById('memberBulkBtn');
+  if(btn){ btn.innerHTML = BULK_SELECT_SVG; btn.title = 'Select multiple members'; btn.setAttribute('onclick','enterMemberBulkMode()'); }
+  var bar = document.getElementById('memberBulkBar');
+  if(bar){ bar.style.display = 'none'; bar.classList.remove('open'); }
+  var roleSel = document.getElementById('memberBulkRole');
+  if(roleSel) roleSel.value = '';
+  updateMemberBulkCount();
+}
+function updateMemberBulkCount(){
+  var n = document.querySelectorAll('.member-check:checked').length;
+  var el = document.getElementById('memberBulkCount');
+  if(el) el.textContent = n + ' selected';
+}
+function memberBulkSelected(){
+  var ids = [];
+  document.querySelectorAll('.member-check:checked').forEach(function(c){
+    ids.push(c.getAttribute('data-member-id'));
+  });
+  return ids;
+}
+function memberBulkToggleAll(){
+  var boxes = document.querySelectorAll('.member-check:not(:disabled)');
+  var allChecked = boxes.length > 0 && Array.prototype.every.call(boxes, function(b){ return b.checked; });
+  boxes.forEach(function(b){ b.checked = !allChecked; });
+  updateMemberBulkCount();
+}
+async function memberBulkChangeRole(role){
+  if(!role) return;
+  var roleSel = document.getElementById('memberBulkRole');
+  if(roleSel) roleSel.value = '';
+  var ids = memberBulkSelected();
+  if(!ids.length){ showToast('Select at least one member','error'); return; }
+  var label = capRole(role);
+  showConfirm('Change role?', 'Change '+ids.length+' member'+(ids.length===1?'':'s')+' to '+label+'?', async function(){
+    var ok = 0, fail = 0;
+    for(var i=0;i<ids.length;i++){
+      var d = await safeApi('PUT','/api/orgs/'+currentOrgId+'/members/'+ids[i]+'/role',{role:role});
+      if(d && d.status === 'updated') ok++; else fail++;
+    }
+    exitMemberBulkMode();
+    await loadOrgDetails(currentOrgId);
+    if(ok) showToast(ok+' member'+(ok===1?'':'s')+' updated to '+label,'success');
+    if(fail) showToast(fail+' update'+(fail===1?'':'s')+' failed','error');
+  }, 'Change');
+}
+async function memberBulkRemove(){
+  var ids = memberBulkSelected();
+  if(!ids.length){ showToast('Select at least one member','error'); return; }
+  showConfirm('Remove members?', 'Remove '+ids.length+' member'+(ids.length===1?'':'s')+' from this organization? This cannot be undone.', async function(){
+    var ok = 0, fail = 0;
+    for(var i=0;i<ids.length;i++){
+      var d = await safeApi('DELETE','/api/orgs/'+currentOrgId+'/members/'+ids[i]);
+      if(d) ok++; else fail++;
+    }
+    exitMemberBulkMode();
+    await loadOrgDetails(currentOrgId);
+    if(ok) showToast(ok+' member'+(ok===1?'':'s')+' removed','info');
+    if(fail) showToast(fail+' removal'+(fail===1?'':'s')+' failed','error');
+  }, 'Remove');
 }
 
 // ── Invite helpers (countdown / stats) ──
@@ -605,6 +699,7 @@ async function loadTeamOrgs(){
 }
 
 function resetTeamView(){
+  exitMemberBulkMode();
   document.getElementById('orgName').textContent = 'No organization';
   document.getElementById('orgAvatar').textContent = '—';
   document.getElementById('orgMemberCount').textContent = '0 members';
@@ -664,6 +759,11 @@ async function loadOrgDetails(orgId){
   currentInviteStats = d.invite_stats || null;
   var myRole = d.my_role || 'member';
   var canManage = (myRole === 'owner' || myRole === 'admin');
+  // Bulk actions are owner/admin only — hide the toggle (and drop any open
+  // bulk mode) for plain members.
+  var bulkBtn = document.getElementById('memberBulkBtn');
+  if(bulkBtn) bulkBtn.style.display = canManage ? '' : 'none';
+  if(!canManage && memberBulkMode) exitMemberBulkMode();
   var roleEl = document.getElementById('orgRoleBadge');
   roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+capRole(myRole);
   setOrgSectionsVisible(true);
@@ -886,8 +986,13 @@ function renderMembers(myRole, orgId){
       var actionsCell = hasActions
         ? '<div class="flex-row-gap">'+transferBtn+removeBtn+'</div>'
         : '';
+      // Bulk-select checkbox: inside the Member cell (no new column). Owner rows
+      // and admin rows (when the viewer is an admin) are not selectable.
+      var canSelect = !isOwner && !(role === 'admin' && m.role === 'admin');
+      var checkStyle = memberBulkMode ? '' : 'display:none;';
+      var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+m.user_id+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
       return '<tr data-member="'+m.user_id+'" onclick="openMemberDrawer('+m.user_id+')" title="View member details">'+
-        '<td data-label="Member"><div class="flex-row"><div class="'+avatarClassFor(m.name)+'">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
+        '<td data-label="Member"><div class="flex-row">'+checkBox+'<div class="'+avatarClassFor(m.name)+'">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
         '<td data-label="Email">'+escapeHtml(m.email||'—')+'</td>'+
         '<td data-label="Role">'+roleCell+'</td>'+
         '<td data-label="Tokens Used" id="tok-'+m.user_id+'">…</td>'+
@@ -949,8 +1054,12 @@ function mobileMemberCardHtml(m, role, orgId){
     : '';
   var hasActions = transferBtn || removeBtn;
   var swipeW = (transferBtn && removeBtn) ? 150 : 75;
+  var canSelect = !isOwner && !(role === 'admin' && m.role === 'admin');
+  var checkStyle = memberBulkMode ? '' : 'display:none;';
+  var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+m.user_id+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
   var cardBody = '<div class="member-card" data-member="'+m.user_id+'" onclick="openMemberDrawer('+m.user_id+')">'
     + '<div class="member-card-top">'
+    + checkBox
     + '<div class="member-card-name"><div class="'+avatarClassFor(m.name)+'">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
     + '<div class="member-card-role">'+roleCell+'</div>'
     + '</div>'
