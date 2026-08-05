@@ -172,7 +172,7 @@
         <div class="dash-stat-card"><div class="num" id="orgTotalSpend">$0.00</div><div class="lbl">Total Spend</div><div class="chg up">—</div></div>
         <div class="dash-stat-card"><div class="num" id="orgTotalCalls">0</div><div class="lbl">Total API Calls</div><div class="chg up">—</div></div>
         <div class="dash-stat-card"><div class="num" id="orgActiveMembers">0</div><div class="lbl">Active Members</div><div class="chg text-muted" >This month</div></div>
-        <div class="dash-stat-card"><div class="num" id="orgAvgCost">$0.0000</div><div class="lbl">Avg Cost / Call</div><div class="chg down">—</div></div>
+        <div class="dash-stat-card"><div class="num" id="orgAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg down">—</div></div>
       </div>
 
       <!-- Team Insights (mix / capacity / top consumers) -->
@@ -709,7 +709,7 @@ function resetTeamView(){
   document.getElementById('orgTotalSpend').textContent = '$0.00';
   document.getElementById('orgTotalCalls').textContent = '0';
   document.getElementById('orgActiveMembers').textContent = '0';
-  document.getElementById('orgAvgCost').textContent = '$0.000';
+  document.getElementById('orgAvgCost').textContent = '$0.00';
   document.getElementById('teamMembersBody').innerHTML = memberEmptyRowHtml('Select an organization to view members', 'Choose an organization from the list above');
   var mobReset = document.getElementById('teamMembersMobile');
   if(mobReset) mobReset.innerHTML = '';
@@ -1121,7 +1121,10 @@ async function loadOrgUsage(orgId){
   document.getElementById('orgTotalCalls').textContent = (d.total_transactions||0).toLocaleString();
   document.getElementById('orgActiveMembers').textContent = d.total_members||0;
   var perCall = d.total_transactions ? ((d.total_spent||0)/d.total_transactions) : 0;
-  document.getElementById('orgAvgCost').textContent = fmtUSD(perCall,4);
+  // Adaptive precision: no data → $0.00; ≥1¢ → 2 decimals; tiny per-call
+  // costs (<1¢) keep 4 decimals so they don't round to $0.00
+  var avgEl = document.getElementById('orgAvgCost');
+  if(avgEl) avgEl.textContent = (!d.total_transactions || perCall >= 0.01) ? fmtUSD(perCall, 2) : fmtUSD(perCall, 4);
   // Cache per-member tokens so search/pagination re-renders keep the numbers
   lastUsageBreakdown = d.member_breakdown || [];
   fillTokens();
