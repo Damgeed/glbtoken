@@ -600,7 +600,7 @@
 }
 .filter-chips { display: flex; gap: 0.35rem; flex-wrap: wrap; }
 .chip {
-  padding: 0.28rem 0.7rem;
+  padding: 0.45rem 0.7rem;
   border-radius: 20px;
   background: var(--bg-alt);
   border: 1px solid var(--border);
@@ -647,7 +647,7 @@
   border-radius: 20px;
   border: 1px solid rgba(244, 180, 0, 0.4);
   background: var(--bg-alt) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FFC733' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 0.55rem center / 12px 12px;
-  padding: 0.3rem 1.7rem 0.3rem 0.7rem;
+  padding: 0.45rem 1.7rem 0.45rem 0.7rem;
   color: var(--text);
   font-size: 0.78rem;
   cursor: pointer;
@@ -658,7 +658,7 @@
      slightly compact so the whole row fits from 360px+. */
   .member-filters { align-items: center; gap: 0.2rem; }
   .member-filters .filter-chips { gap: 0.2rem; }
-  .member-filters .chip { padding: 0.18rem 0.4rem; font-size: 0.68rem; }
+  .member-filters .chip { padding: 0.45rem 0.4rem; font-size: 0.68rem; }
   .member-filters-right {
     width: auto;
     margin-left: auto;
@@ -669,7 +669,7 @@
     flex: 0 1 auto;
     min-width: 0;
     font-size: 0.7rem;
-    padding: 0.2rem 1.55rem 0.2rem 0.5rem;
+    padding: 0.45rem 1.55rem 0.45rem 0.5rem;
   }
 }
 
