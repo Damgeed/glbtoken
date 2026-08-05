@@ -331,3 +331,6 @@ class UserSettingsUpdate(BaseModel):
     low_balance_alert: Optional[bool] = None
     login_alerts: Optional[bool] = None
     theme: Optional[str] = None
+    webhook_url: Optional[str] = None
+    webhook_secret: Optional[str] = None
+    webhook_events: Optional[list] = None

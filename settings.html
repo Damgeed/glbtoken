@@ -154,6 +154,26 @@
         </div>
       </div>
       <!-- Notifications are now managed from the Notifications page -->
+      <div class="settings-card" style="margin-top:1rem">
+        <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Webhooks</h3>
+        <div class="settings-field-group">
+          <div><label class="settings-field-label">Webhook URL</label><input type="url" id="webhookUrl" placeholder="https://your-app.com/hook" class="settings-input" autocomplete="off" spellcheck="false"></div>
+          <div><label class="settings-field-label">Signing Secret <span class="text-muted text-xs">(optional — used for X-GlbTOKEN-Signature HMAC)</span></label><input type="password" id="webhookSecret" placeholder="Shared secret" class="settings-input" autocomplete="new-password"></div>
+          <div><label class="settings-field-label">Events</label>
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.35rem">
+              <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer"><input type="checkbox" id="whLowBalance" checked> Low balance</label>
+              <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer"><input type="checkbox" id="whKeyCreated" checked> Key created</label>
+              <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer"><input type="checkbox" id="whKeyDeleted" checked> Key deleted</label>
+              <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;cursor:pointer"><input type="checkbox" id="whTopup" checked> Top-up success</label>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.75rem">
+            <button class="settings-btn-full" onclick="saveWebhookSettings()">Save Webhook</button>
+            <button class="btn-secondary" onclick="testWebhook()">Send Test</button>
+          </div>
+          <div class="settings-item-desc-sm" style="margin-top:0.6rem">Payloads are POSTed as JSON with <code style="font-size:0.72rem">X-GlbTOKEN-Signature</code> (HMAC-SHA256 hex of the body) and <code style="font-size:0.72rem">X-GlbTOKEN-Event</code> headers.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -177,7 +197,7 @@
   
 
 <script src="nav.js?v=14"></script>
-<script src="footer.js?v=14"></script>
+<script src="footer.js?v=15"></script>
 <script src="translations.js?v=1105"></script>
 <script data-cfasync="false" src="shared.js?v=1134"></script>
 <script>requireAuth()</script>
@@ -343,6 +363,69 @@ window.confirmTwoFA = function(){
 };
 
 checkTwoFAStatus();
+loadWebhookSettings();
+
+window.saveWebhookSettings = function(){
+  var url = document.getElementById('webhookUrl').value.trim();
+  if(url && !/^https?:\/\//.test(url)){ showToast('Webhook URL must start with http:// or https://','error'); return; }
+  var events = [];
+  if(document.getElementById('whLowBalance').checked) events.push('low_balance');
+  if(document.getElementById('whKeyCreated').checked) events.push('key.created');
+  if(document.getElementById('whKeyDeleted').checked) events.push('key.deleted');
+  if(document.getElementById('whTopup').checked) events.push('topup.success');
+  fetch(API_URL + '/api/user/settings', {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({
+      webhook_url: url,
+      webhook_secret: document.getElementById('webhookSecret').value,
+      webhook_events: events
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.status === 'updated'){
+      showToast('Webhook saved!','success');
+    } else {
+      showToast((d && d.detail) || 'Failed to save webhook','error');
+    }
+  })
+  .catch(function(){ showToast('Failed to save webhook','error'); });
+};
+
+window.testWebhook = function(){
+  fetch(API_URL + '/api/user/webhook/test', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')}
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.status === 'sent'){
+      showToast('Test webhook sent to ' + d.url,'success');
+    } else {
+      showToast((d && d.detail) || 'No webhook URL configured','error');
+    }
+  })
+  .catch(function(){ showToast('Failed to send test webhook','error'); });
+};
+
+function loadWebhookSettings(){
+  fetch(API_URL + '/api/user/settings', {headers:{'Authorization':'Bearer '+(token||'')}})
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(!d) return;
+    if(document.getElementById('webhookUrl')) document.getElementById('webhookUrl').value = d.webhook_url || '';
+    if(document.getElementById('webhookSecret')) document.getElementById('webhookSecret').value = d.webhook_secret || '';
+    var ev = d.webhook_events || null;
+    if(ev && ev.length){
+      if(document.getElementById('whLowBalance')) document.getElementById('whLowBalance').checked = ev.indexOf('low_balance') > -1;
+      if(document.getElementById('whKeyCreated')) document.getElementById('whKeyCreated').checked = ev.indexOf('key.created') > -1;
+      if(document.getElementById('whKeyDeleted')) document.getElementById('whKeyDeleted').checked = ev.indexOf('key.deleted') > -1;
+      if(document.getElementById('whTopup')) document.getElementById('whTopup').checked = ev.indexOf('topup.success') > -1;
+    }
+  })
+  .catch(function(){});
+}
 
 window.saveNotificationSettings = function(){
   var settings = {

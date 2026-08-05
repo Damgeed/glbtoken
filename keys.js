@@ -76,6 +76,7 @@
               <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${key.id})" title="Edit key" aria-label="Edit key">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
               <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?fmtDT(key.created_at):'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+fmtDT(key.last_used):'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''}${key.ip_allowlist?' · <span class="ip-allow" title="Allowed IPs">IPs: '+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+              <div class="key-spark" id="spark-${key.id}" data-key-id="${key.id}" title="Token usage — last 7 days"><span class="spark-empty">—</span></div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">
@@ -100,12 +101,46 @@
       initKeySwipe();
       initKeyDrag();
       refreshKeyMoreBtn();
+      loadSparklines();
     }
     function toggleKeyMore(){
       const collapse=document.getElementById('keyCollapse');
       if(!collapse)return;
       collapse.classList.toggle('open');
       refreshKeyMoreBtn();
+    }
+
+    // ── 7-day usage sparkline per key (inline SVG, no Chart.js needed) ──
+    function sparklineSvg(series){
+      const W=120,H=28,P=2;
+      if(!series||!series.length) return '';
+      const max=Math.max.apply(null,series.concat([1]));
+      const pts=series.map(function(v,i){
+        const x=P+(i*(W-2*P)/(series.length-1||1));
+        const y=H-P-(v/max)*(H-2*P);
+        return [x.toFixed(1),y.toFixed(1)];
+      });
+      const line=pts.map(function(p,i){return (i?'L':'M')+p[0]+','+p[1];}).join(' ');
+      const area=line+' L'+pts[pts.length-1][0]+','+(H-P)+' L'+pts[0][0]+','+(H-P)+' Z';
+      return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'
+        +'<path d="'+area+'" fill="rgba(244,180,0,0.12)" stroke="none"/>'
+        +'<path d="'+line+'" fill="none" stroke="#F4B400" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
+        +'<circle cx="'+pts[pts.length-1][0]+'" cy="'+pts[pts.length-1][1]+'" r="2.2" fill="#F4B400"/>'
+        +'</svg>';
+    }
+    function loadSparklines(){
+      document.querySelectorAll('.key-spark[data-key-id]').forEach(function(el){
+        var kid=el.getAttribute('data-key-id');
+        if(el.__sparkLoaded)return; el.__sparkLoaded=true;
+        safeApi('GET','/api/keys/'+encodeURIComponent(kid)+'/usage')
+          .then(function(d){
+            if(d&&Array.isArray(d.series)){
+              var any=d.series.some(function(v){return v>0;});
+              el.innerHTML = any ? sparklineSvg(d.series) : '<span class="spark-empty">No usage</span>';
+            }
+          })
+          .catch(function(){});
+      });
     }
     function refreshKeyMoreBtn(){
       const collapse=document.getElementById('keyCollapse');

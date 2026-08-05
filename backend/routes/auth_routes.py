@@ -1033,15 +1033,48 @@ async def logout(request: Request, body: dict = Body(...), db: Session = Depends
 
 # ── Helper: send_email ──
 
-def send_email(to: str, subject: str, body: str) -> bool:
+def _email_html(title: str, text_body: str) -> str:
+    """Branded HTML wrapper (GlbTOKEN dark theme, gold accent)."""
+    import html as _html
+    paragraphs = [p.strip() for p in text_body.split("\n") if p.strip()]
+    body_html = "".join(f'<p style="margin:0 0 14px;line-height:1.6">{_html.escape(p)}</p>' for p in paragraphs)
+    return f"""<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#0A0B14;font-family:Inter,-apple-system,'Segoe UI',sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0A0B14;padding:32px 16px">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#161822;border:1px solid #2A2B3D;border-radius:14px;overflow:hidden">
+<tr><td style="padding:28px 32px 6px">
+  <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em">
+    <span style="color:#F4B400">Glb</span><span style="color:#E6E9F2">TOKEN</span>
+  </div>
+</td></tr>
+<tr><td style="padding:18px 32px 6px">
+  <h1 style="margin:0 0 12px;font-size:17px;font-weight:600;color:#E6E9F2">{_html.escape(title)}</h1>
+  <div style="font-size:14px;color:#A9AEBF">{body_html}</div>
+</td></tr>
+<tr><td style="padding:20px 32px 28px">
+  <div style="border-top:1px solid #2A2B3D;padding-top:16px;font-size:12px;color:#7F8490">
+    <p style="margin:0 0 6px">GlbTOKEN — One balance. 340+ AI models. Pay-as-you-go.</p>
+    <p style="margin:0">Questions? Reply to this email or visit <a href="https://glbtoken.com" style="color:#F4B400;text-decoration:none">glbtoken.com</a></p>
+  </div>
+</td></tr>
+</table>
+</td></tr>
+</table></body></html>"""
+
+
+def send_email(to: str, subject: str, body: str, html_body: str = None) -> bool:
     from common import _smtp_host, _smtp_port, _smtp_user, _smtp_pass, _from_addr
     smtp_host, smtp_port, smtp_user, smtp_pass, from_addr = _smtp_host, _smtp_port, _smtp_user, _smtp_pass, _from_addr
     if not smtp_host:
         print(f"📧 SMTP not configured. Would send email to {to}: {subject}")
         return False
     from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
     import smtplib
-    msg = MIMEText(body, "plain", "utf-8")
+    msg = MIMEMultipart("alternative")
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+    msg.attach(MIMEText(html_body or _email_html(subject, body), "html", "utf-8"))
     msg["Subject"] = subject
     msg["From"] = from_addr
     msg["To"] = to

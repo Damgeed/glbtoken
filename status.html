@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>System Status — GlbTOKEN</title>
+<meta name="description" content="GlbTOKEN platform status — API availability, database, model routing." />
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0B14;--card:#161822;--border:#2A2B3D;--text:#E6E9F2;--muted:#7F8490;--primary:#F4B400;--ok:#00D68F;--bad:#FF6B6B;--warn:#FFB347}
+body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,sans-serif;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:560px;margin:0 auto}
+.logo{text-align:center;font-size:1.7rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:0.25rem}
+.logo .g{color:var(--primary)}.logo .t{color:var(--text)}
+.tagline{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:2rem}
+.banner{display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:1rem;border-radius:12px;margin-bottom:1.25rem;font-weight:600;font-size:0.95rem;border:1px solid var(--border);background:var(--card)}
+.banner.ok{color:var(--ok);border-color:rgba(0,214,143,0.35);background:rgba(0,214,143,0.07)}
+.banner.bad{color:var(--bad);border-color:rgba(255,107,107,0.35);background:rgba(255,107,107,0.07)}
+.dot{width:10px;height:10px;border-radius:50%;background:currentColor;flex-shrink:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0.35rem 0;margin-bottom:1rem;overflow:hidden}
+.row{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1.1rem;border-bottom:1px solid rgba(42,43,61,0.6)}
+.row:last-child{border-bottom:none}
+.row .lbl{display:flex;align-items:center;gap:0.55rem;font-size:0.9rem;font-weight:500}
+.row .lbl .ico{font-size:1rem}
+.row .val{font-size:0.85rem;font-weight:600}
+.val.ok{color:var(--ok)}.val.bad{color:var(--bad)}.val.warn{color:var(--warn)}.val.mut{color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:0.75rem;margin-top:1.5rem;line-height:1.8}
+.footer a{color:var(--primary);text-decoration:none}
+.last-updated{text-align:center;color:var(--muted);font-size:0.75rem;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><span class="g">Glb</span><span class="t">TOKEN</span></div>
+  <div class="tagline">System Status</div>
+  <div class="banner" id="banner"><span class="dot"></span><span id="bannerText">Checking status…</span></div>
+  <div class="last-updated" id="lastUpdated"></div>
+  <div class="card">
+    <div class="row"><div class="lbl"><span class="ico">🖥️</span> API Server</div><div class="val mut" id="apiStatus">—</div></div>
+    <div class="row"><div class="lbl"><span class="ico">🗄️</span> Database</div><div class="val mut" id="dbStatus">—</div></div>
+    <div class="row"><div class="lbl"><span class="ico">🧠</span> Model Routing (New API)</div><div class="val mut" id="newapiStatus">—</div></div>
+    <div class="row"><div class="lbl"><span class="ico">🤖</span> Active Models</div><div class="val mut" id="modelsStatus">—</div></div>
+    <div class="row"><div class="lbl"><span class="ico">📦</span> Version</div><div class="val mut" id="versionStatus">—</div></div>
+  </div>
+  <div class="footer">
+    Need help? <a href="contact.html">Contact support</a><br />
+    <a href="/">← Back to GlbTOKEN</a>
+  </div>
+</div>
+<script>
+(function(){
+  var API_URL = 'https://glbtoken-backend-production.up.railway.app';
+  function setVal(id, text, cls){ var el = document.getElementById(id); el.textContent = text; el.className = 'val ' + (cls || 'mut'); }
+  function check(){
+    fetch(API_URL + '/api/health', {cache:'no-store'})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ return {status:r.status, d:d}; }); })
+      .then(function(res){
+        var d = res.d || {};
+        var ok = res.status === 200;
+        var banner = document.getElementById('banner');
+        var bannerText = document.getElementById('bannerText');
+        if(ok && d.newapi_connected !== false && d.database !== false){
+          banner.className = 'banner ok'; bannerText.textContent = 'All Systems Operational';
+        } else {
+          banner.className = 'banner bad';
+          bannerText.textContent = 'Partial Outage — some components are degraded';
+        }
+        setVal('apiStatus', ok ? 'Operational' : 'Down', ok ? 'ok' : 'bad');
+        setVal('dbStatus', d.database === false ? 'Down' : 'Operational', d.database === false ? 'bad' : 'ok');
+        setVal('newapiStatus', d.newapi_connected ? 'Operational' : 'Degraded', d.newapi_connected ? 'ok' : 'warn');
+        setVal('modelsStatus', (d.models_count != null ? d.models_count : '—') + ' models', 'mut');
+        setVal('versionStatus', d.version || '—', 'mut');
+        var ts = d.timestamp ? new Date(d.timestamp * 1000).toLocaleString() : new Date().toLocaleString();
+        document.getElementById('lastUpdated').textContent = 'Last checked: ' + ts;
+      })
+      .catch(function(){
+        var banner = document.getElementById('banner');
+        banner.className = 'banner bad'; document.getElementById('bannerText').textContent = 'Cannot reach status service';
+        setVal('apiStatus', 'Unreachable', 'bad');
+        document.getElementById('lastUpdated').textContent = 'Last checked: ' + new Date().toLocaleString();
+      });
+  }
+  check();
+  setInterval(check, 30000);
+})();
+</script>
+</body>
+</html>

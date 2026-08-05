@@ -19,6 +19,20 @@ from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, Ca
 
 router = APIRouter()
 
+
+def _emit_topup_webhook(user, tokens: int, method: str):
+    """Fire-and-forget topup.success webhook (no-op when unconfigured)."""
+    try:
+        from webhooks import send_webhook, event_enabled
+        if user and event_enabled(user, "topup.success"):
+            send_webhook(user, "topup.success", {
+                "tokens_added": tokens,
+                "new_balance": user.token_balance,
+                "method": method,
+            })
+    except Exception as e:
+        print(f"⚠️ topup.success webhook failed: {e}")
+
 # 10s TTL cache for the transactions list (overview + billing poll it every 30s)
 _TXN_CACHE: dict = {}
 
@@ -130,6 +144,7 @@ async def topup(req: TopupRequest, request: Request, user: User = Depends(get_cu
     user.token_balance += tokens
     user.total_spent += amount
     db.commit()
+    _emit_topup_webhook(user, tokens, "topup")
 
     # ── Sync quota to New API ──
     try:
@@ -210,6 +225,7 @@ def paystack_verify(reference: str = Body(...), request: Request = None, user: U
     user.token_balance += tokens
     user.total_spent += amount
     db.commit()
+    _emit_topup_webhook(user, tokens, "paystack")
     return {"status": "success", "tokens_added": tokens, "new_balance": user.token_balance}
 
 
@@ -303,6 +319,7 @@ def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: U
     user.token_balance += tokens
     user.total_spent += req.amount
     db.commit()
+    _emit_topup_webhook(user, tokens, "stripe")
     return {"status": "success", "tokens_added": tokens, "new_balance": user.token_balance}
 
 
@@ -343,6 +360,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         tx.tokens = tokens
         tx.amount = amount
         db.commit()
+        _emit_topup_webhook(user, tokens, "stripe_webhook")
     if event["type"] == "payment_intent.succeeded":
         # Safety net for one-click recharge — endpoint already credits, so skip if present.
         pi = event["data"]["object"]
@@ -359,6 +377,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             tx.tokens = tokens
             tx.amount = amount
             db.commit()
+            _emit_topup_webhook(user, tokens, "stripe_webhook")
     return {"status": "ok"}
 
 

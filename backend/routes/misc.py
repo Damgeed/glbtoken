@@ -2,9 +2,10 @@
 
 from fastapi import APIRouter, Depends, Body, Request
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 import json, re
 
-from database import get_db, User
+from database import get_db, User, AIModel
 from auth import get_current_user
 from newapi_integration import health_check
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter
@@ -43,16 +44,26 @@ async def contact_form(req: ContactRequest, request: Request):
 # ── Health Check ──
 
 @router.get("/api/health")
-async def health():
+async def health(db: Session = Depends(get_db)):
     # Check New API connectivity
     newapi_ok = False
     try:
         newapi_ok = await health_check()
     except Exception as e:
         print(f"⚠️ Health check New API connectivity error: {e}")
+    import time as _time
+    db_ok = True
+    models_count = 0
+    try:
+        models_count = db.query(func.count(AIModel.id)).filter(AIModel.is_active == True).scalar() or 0
+    except Exception:
+        db_ok = False
     return {
         "status": "ok", "version": "1.0.0", "name": "GlbTOKEN API",
         "newapi_connected": newapi_ok,
+        "database": db_ok,
+        "models_count": models_count,
+        "timestamp": int(_time.time()),
     }
 
 
@@ -70,7 +81,21 @@ def get_user_settings(user: User = Depends(get_current_user)):
         "low_balance_alert": settings.get("low_balance_alert", True),
         "login_alerts": settings.get("login_alerts", True),
         "theme": settings.get("theme", "light"),
+        "webhook_url": settings.get("webhook_url", ""),
+        "webhook_secret": settings.get("webhook_secret", ""),
+        "webhook_events": settings.get("webhook_events", None),
     }
+
+
+@router.post("/api/user/webhook/test")
+def test_webhook(user: User = Depends(get_current_user)):
+    """Send a test webhook to the user's configured URL (if any)."""
+    from webhooks import get_webhook_url, send_webhook
+    url = get_webhook_url(user)
+    if not url:
+        _400("No webhook URL configured")
+    send_webhook(user, "test.ping", {"message": "GlbTOKEN webhook test", "user_email": user.email})
+    return {"status": "sent", "url": url}
 
 
 @router.put("/api/user/settings")
@@ -93,6 +118,15 @@ def update_user_settings(
         settings["login_alerts"] = req.login_alerts
     if req.theme is not None:
         settings["theme"] = req.theme
+    if req.webhook_url is not None:
+        url = (req.webhook_url or "").strip()
+        if url and not (url.startswith("https://") or url.startswith("http://")):
+            _400("webhook_url must start with http:// or https://")
+        settings["webhook_url"] = url
+    if req.webhook_secret is not None:
+        settings["webhook_secret"] = (req.webhook_secret or "").strip()
+    if req.webhook_events is not None:
+        settings["webhook_events"] = req.webhook_events
 
     user.settings = json.dumps(settings)
     db.commit()
@@ -103,5 +137,8 @@ def update_user_settings(
             "low_balance_alert": settings.get("low_balance_alert", True),
             "login_alerts": settings.get("login_alerts", True),
             "theme": settings.get("theme", "light"),
+            "webhook_url": settings.get("webhook_url", ""),
+            "webhook_secret": settings.get("webhook_secret", ""),
+            "webhook_events": settings.get("webhook_events", None),
         },
     }

@@ -97,6 +97,12 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
     db.add(key)
     db.commit()
     db.refresh(key)
+    try:
+        from webhooks import send_webhook, event_enabled
+        if event_enabled(user, "key.created"):
+            send_webhook(user, "key.created", {"key_id": key.id, "name": key.name, "permissions": key.permissions})
+    except Exception as e:
+        print(f"⚠️ key.created webhook failed: {e}")
     return {
         "id": key.id,
         "name": key.name,
@@ -104,6 +110,34 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
         "permissions": key.permissions,
         "created_at": key.created_at.isoformat(),
     }
+
+
+@router.get("/api/keys/{key_id}/usage")
+@limiter.limit("60/minute")
+def key_usage_series(key_id: int, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Per-key daily token usage for the last 7 days (sparkline data)."""
+    key = db.query(ApiKey).filter(ApiKey.id == key_id, ApiKey.user_id == user.id).first()
+    if not key:
+        _404("API key not found")
+    from datetime import datetime, timezone, timedelta
+    from sqlalchemy import func as _func, cast, Date
+    since = datetime.now(timezone.utc) - timedelta(days=6)
+    rows = db.query(
+        _func.date(Transaction.created_at).label("day"),
+        _func.coalesce(_func.sum(Transaction.tokens), 0).label("tokens"),
+    ).filter(
+        Transaction.user_id == user.id,
+        Transaction.key_id == key_id,
+        Transaction.type == "consumption",
+        Transaction.created_at >= since,
+    ).group_by(_func.date(Transaction.created_at)).all()
+    by_day = {str(r.day): float(r.tokens or 0) for r in rows}
+    # Fill all 7 days (oldest → newest) so the sparkline has a stable width
+    series = []
+    for i in range(6, -1, -1):
+        d = (datetime.now(timezone.utc) - timedelta(days=i)).date()
+        series.append(by_day.get(str(d), 0.0))
+    return {"key_id": key_id, "days": 7, "series": series}
 
 
 @router.put("/api/keys/{key_id}")
@@ -131,4 +165,10 @@ def delete_key(key_id: int, request: Request, user: User = Depends(get_current_u
         _404("API key not found")
     db.delete(key)
     db.commit()
+    try:
+        from webhooks import send_webhook, event_enabled
+        if event_enabled(user, "key.deleted"):
+            send_webhook(user, "key.deleted", {"key_id": key.id, "name": key.name})
+    except Exception as e:
+        print(f"⚠️ key.deleted webhook failed: {e}")
     return {"status": "deleted"}

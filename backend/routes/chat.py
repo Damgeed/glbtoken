@@ -67,6 +67,12 @@ def _maybe_low_balance_alert(user: User, db: Session):
                 f"Top up soon to avoid interrupted API calls.\n"
                 f"https://glbtoken.com/topup.html",
             )
+            try:
+                from webhooks import send_webhook, event_enabled
+                if event_enabled(user, "low_balance"):
+                    send_webhook(user, "low_balance", {"balance": balance, "usd": usd, "threshold": LOW_BALANCE_THRESHOLD})
+            except Exception as e:
+                print(f"⚠️ Low-balance webhook failed: {e}")
         elif balance >= LOW_BALANCE_REARM and sent:
             s["low_balance_sent"] = False
             user.settings = json.dumps(s)
