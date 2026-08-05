@@ -7289,7 +7289,9 @@ body {
   .settings-grid > .dash-card + .dash-card,
   .billing-grid > .dash-card + .dash-card,
   .mini-chart-grid > .dash-card + .dash-card,
-  .charts-side-grid > .dash-card + .dash-card {
+  .charts-side-grid > .dash-card + .dash-card,
+  .notif-grid > .dash-card + .dash-card,
+  .notif-grid > .notif-item + .notif-item {
     margin-top: 0;
   }
   /* Stacking margin for dash-cards NOT inside a grid (e.g. apikeys.html) */
