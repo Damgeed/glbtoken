@@ -589,8 +589,8 @@
   flex-wrap: wrap;
   margin-bottom: 0.6rem;
 }
-/* Sort select + Export button live together, pushed to the right of the
-   filter chips (mobile: full-width row with select flexing). */
+/* Select + Export buttons live together, pushed to the right of the
+   filter chips + sort (mirrors manage-keys io-group). */
 .member-filters-right {
   display: flex;
   align-items: center;
@@ -617,7 +617,6 @@
   font-weight: 600;
 }
 .chip-count { opacity: 0.7; font-size: 0.7rem; margin-left: 0.15rem; font-weight: 500; }
-#memberSort { margin-left: auto; }
 /* ── Team Members title row: icon left, centered count pill, title right ── */
 .team-title-row {
   display: grid;
@@ -641,7 +640,7 @@
 /* Bold gold number for at-a-glance member count (matches .num.gold) */
 .member-count-group strong { font-weight: 700; color: #FFC733; font-variant-numeric: tabular-nums; }
 /* ── Name A–Z: custom dropdown (native arrow removed, gold chevron) ── */
-.member-filters-right #memberSort,
+#memberSort,
 #memberBulkRole {
   appearance: none;
   -webkit-appearance: none;
@@ -683,17 +682,17 @@
   .member-filters { align-items: center; gap: 0.2rem; }
   .member-filters .filter-chips { gap: 0.2rem; }
   .member-filters .chip { padding: 0.45rem 0.4rem; font-size: 0.68rem; }
-  .member-filters-right {
-    width: auto;
-    margin-left: auto;
-    gap: 0.25rem;
-  }
-  .member-filters-right #memberSort {
+  #memberSort {
     width: auto;
     flex: 0 1 auto;
     min-width: 0;
     font-size: 0.7rem;
     padding: 0.45rem 1.55rem 0.45rem 0.5rem;
+  }
+  .member-filters-right {
+    width: auto;
+    margin-left: auto;
+    gap: 0.25rem;
   }
 }
 

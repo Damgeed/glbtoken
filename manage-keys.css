@@ -53,12 +53,17 @@
 /* ── Bulk-mode inline chip row ──
    Replaces the old popup card (bg-alt + border + radius). The chips sit in the
    same place the sort controls occupy, so entering select mode never "pops up"
-   a container — the row just swaps content. */
+   a container — the row just swaps content. Matches team.html's
+   .member-bulk-bar background (gold tint container). */
 .keys-bulk-row {
   align-items: center;
   gap: 0.4rem;
   /* breathing room between the sort/select row above and the bulk actions */
   margin-top: 0.75rem;
+  padding: 0.45rem 0.6rem;
+  background: rgba(244, 180, 0, 0.06);
+  border: 1px solid rgba(244, 180, 0, 0.22);
+  border-radius: 10px;
 }
 .keys-bulk-row #bulkCount {
   font-size: 0.8rem;
