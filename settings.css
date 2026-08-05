@@ -492,3 +492,80 @@ body.compact-cards .toggle-row {
   display: block;
   margin: 0 auto;
 }
+
+/* ── 2x grid for Data & Privacy + Danger Zone (desktop) ── */
+.settings-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.settings-grid-2 > .settings-card {
+  margin-top: 0;
+}
+@media (max-width: 900px) {
+  .settings-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .settings-grid-2 > .settings-card {
+    margin-top: 0;
+  }
+}
+
+/* ── Login History filters (inline row) ── */
+.login-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: nowrap;
+}
+.login-filters .settings-input {
+  max-width: 170px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.78rem;
+}
+.login-filters select.settings-input {
+  max-width: 140px;
+  flex: 1;
+}
+.login-filters input.settings-input {
+  flex: 1.4;
+}
+@media (max-width: 640px) {
+  .login-filters {
+    flex-wrap: wrap;
+  }
+  .login-filters .settings-input {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+}
+
+/* ── Login History table cells (nice timestamp + location, like Login Attempts) ── */
+.td-date {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.td-date-strong {
+  font-weight: 600;
+}
+.td-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.td-ip {
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+.td-location {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.loc-city {
+  color: var(--text, #e8eaf0);
+}
+.loc-country {
+  color: var(--text-muted);
+}
+

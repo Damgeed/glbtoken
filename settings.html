@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1204" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1031" />
+<link rel="stylesheet" href="settings.css?v=1032" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -287,14 +287,14 @@
           Login History
         </div>
         <div class="settings-item-desc-sm" style="margin-bottom:0.75rem">Recent sign-in activity across all devices. If you see something unfamiliar, change your password and enable two-factor auth.</div>
-        <div class="settings-flex" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem">
-          <input type="text" id="loginDateFilter" placeholder="Filter by date" class="settings-input" style="max-width:160px;padding:0.45rem 0.6rem;font-size:0.78rem" oninput="filterLoginHistory()">
-          <select id="loginDeviceFilter" class="settings-input" style="max-width:130px;padding:0.45rem 0.6rem;font-size:0.78rem" onchange="filterLoginHistory()">
+        <div class="login-filters">
+          <input type="text" id="loginDateFilter" placeholder="Filter by date" class="settings-input" oninput="filterLoginHistory()">
+          <select id="loginDeviceFilter" class="settings-input" onchange="filterLoginHistory()">
             <option value="all">All devices</option>
             <option value="mobile">📱 Mobile</option>
             <option value="desktop">💻 Desktop</option>
           </select>
-          <select id="loginStatusFilter" class="settings-input" style="max-width:130px;padding:0.45rem 0.6rem;font-size:0.78rem" onchange="filterLoginHistory()">
+          <select id="loginStatusFilter" class="settings-input" onchange="filterLoginHistory()">
             <option value="all">All status</option>
             <option value="success">Success</option>
             <option value="failed">Failed</option>
@@ -306,13 +306,12 @@
             <tbody id="loginHistoryBody"></tbody>
           </table>
         </div>
-        <div class="settings-center-mt" id="loginLoadMoreWrap">
-          <button class="btn-secondary settings-center-text" id="loginLoadMore" onclick="loadLoginHistory()" style="display:none">Load More</button>
-        </div>
       </div>
 
+      <!-- Data & Privacy + Danger Zone (2x grid on desktop) -->
+      <div class="settings-grid-2">
       <!-- Data & Privacy -->
-      <div class="settings-card" style="margin-top:1rem">
+      <div class="settings-card">
         <div class="dash-section-title">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
           Data &amp; Privacy
@@ -331,32 +330,8 @@
         </div>
       </div>
 
-      <!-- Referral -->
-      <div class="settings-card" style="margin-top:1rem">
-        <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M17 20l5-5-5-5"/><path d="M7 4l-5 5 5 5"/><path d="M14 4l-4 16"/></svg>
-          Referral
-        </div>
-        <div class="settings-field-group">
-          <div class="settings-badge-card">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-            <div style="flex:1"><div class="settings-item-name-sm">Your Referral Code</div><div class="settings-item-desc-sm" id="refCode" style="font-family:monospace;font-size:0.95rem;font-weight:600;color:var(--primary)">—</div></div>
-            <button class="btn-secondary settings-btn-right" id="refCopyBtn" onclick="copyRefCode()">Copy</button>
-          </div>
-          <div class="settings-badge-card">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            <div style="flex:1"><div class="settings-item-name-sm">Lifetime Earned</div><div class="settings-item-desc-sm" id="refEarned">—</div></div>
-          </div>
-          <div class="settings-badge-card">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-            <div style="flex:1"><div class="settings-item-name-sm">Total Referrals</div><div class="settings-item-desc-sm" id="refTotal">—</div></div>
-          </div>
-          <div class="settings-item-desc-sm" style="margin-top:0.35rem">Share your code — friends get tokens, you earn rewards. <a href="referrals.html" style="color:var(--primary)">View referral dashboard →</a></div>
-        </div>
-      </div>
-
       <!-- Danger Zone -->
-      <div class="settings-card" style="margin-top:1rem;border-color:rgba(255,77,79,0.35)">
+      <div class="settings-card" style="border-color:rgba(255,77,79,0.35)">
         <div class="dash-section-title" style="color:var(--destructive,#ff4d4f)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Danger Zone
@@ -368,6 +343,7 @@
             <button class="btn-secondary settings-btn-right" style="border-color:rgba(255,77,79,0.5);color:var(--destructive,#ff4d4f)" onclick="deleteAccount()">Delete</button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -397,7 +373,7 @@
 <script data-cfasync="false" src="shared.js?v=1137"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
-<script data-cfasync="false" src="login-history.js?v=1118"></script>
+<script data-cfasync="false" src="login-history.js?v=1119"></script>
 
 <!-- ── Settings Scripts ── -->
 <script>
@@ -996,32 +972,6 @@ window.confirmEmailVerification = function(){
   .catch(function(){ btn.disabled = false; showToast('Failed — try again','error'); });
 };
 
-// ── Referral (real referral stats) ──
-function loadReferralCard(){
-  safeApi('GET','/api/referral/stats',null,null,true).then(function(d){
-    if(!d) return;
-    var codeEl = document.getElementById('refCode');
-    if(codeEl && d.code) codeEl.textContent = d.code;
-    var earnedEl = document.getElementById('refEarned');
-    if(earnedEl) earnedEl.textContent = '$' + Number(d.lifetime_earned||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-    var totalEl = document.getElementById('refTotal');
-    if(totalEl) totalEl.textContent = (d.total_referrals||0) + ' friends';
-  });
-}
-
-window.copyRefCode = function(){
-  var code = document.getElementById('refCode').textContent;
-  if(!code || code === '—'){ showToast('No referral code yet','error'); return; }
-  (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject())
-    .then(function(){ showToast('Referral code copied!','success'); })
-    .catch(function(){
-      var ta = document.createElement('textarea');
-      ta.value = code; document.body.appendChild(ta); ta.select();
-      try{ document.execCommand('copy'); showToast('Referral code copied!','success'); }catch(e){ showToast('Copy failed — select the code manually','error'); }
-      document.body.removeChild(ta);
-    });
-};
-
 // ── Notifications — real data (transactions / balance / API keys) ──
 var NOTIF_DISMISS_KEY = 'gt_dismissed_notifs';
 var NOTIF_READ_KEY = 'gt_read_notifs';
@@ -1168,7 +1118,6 @@ document.addEventListener('DOMContentLoaded', function(){
   loadNotifSettings();
   loadSettingsExtras();
   loadAccountOverview();
-  loadReferralCard();
   if(typeof loadLoginHistory === 'function') loadLoginHistory(0);
 });
 </script>
