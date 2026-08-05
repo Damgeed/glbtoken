@@ -618,17 +618,26 @@
 }
 .chip-count { opacity: 0.7; font-size: 0.7rem; margin-left: 0.15rem; font-weight: 500; }
 #memberSort { margin-left: auto; }
+/* Title row: count sits LEFT (icon + count as one group), title text right */
+.member-count-group { display: inline-flex; align-items: center; }
 @media (max-width: 767px) {
-  .member-filters { flex-direction: column; align-items: stretch; }
-  #memberSort { margin-left: 0; width: 100%; box-sizing: border-box; }
+  /* Chips + sort + export flow on ONE wrapping line so Name A–Z sits
+     inline with All/Owner/Admin/Member and the export button. Chips get
+     slightly compact so the whole row fits from 360px+. */
+  .member-filters { align-items: center; gap: 0.2rem; }
+  .member-filters .filter-chips { gap: 0.2rem; }
+  .member-filters .chip { padding: 0.18rem 0.4rem; font-size: 0.68rem; }
   .member-filters-right {
-    width: 100%;
+    width: auto;
     margin-left: 0;
+    gap: 0.25rem;
   }
   .member-filters-right #memberSort {
     width: auto;
-    flex: 1;
+    flex: 0 1 auto;
     min-width: 0;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.35rem;
   }
 }
 
