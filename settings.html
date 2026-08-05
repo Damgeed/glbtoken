@@ -346,18 +346,22 @@ checkTwoFAStatus();
 
 window.saveNotificationSettings = function(){
   var settings = {
-    email: document.getElementById('notifEmail').checked,
-    low_balance: document.getElementById('notifLowBalance').checked,
+    email_notifications: document.getElementById('notifEmail').checked,
+    low_balance_alert: document.getElementById('notifLowBalance').checked,
     login_alerts: document.getElementById('notifLogin').checked
   };
-  fetch(API_URL + '/api/user/notifications', {
+  fetch(API_URL + '/api/user/settings', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify(settings)
   })
   .then(function(r){ return r.json(); })
   .then(function(data){
-    showToast('Notification preferences saved!','success');
+    if(data && data.status === 'updated'){
+      showToast('Notification preferences saved!','success');
+    } else {
+      showToast((data && data.detail) || 'Failed to save notification preferences','error');
+    }
   })
   .catch(function(e){
     showToast('Failed to save notification preferences','error');
