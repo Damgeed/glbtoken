@@ -448,9 +448,19 @@
     }
     function exportKeysCsv(){
       if(!keys||!keys.length){ showToast('No keys to export','error'); return; }
+      // Export ONLY selected keys when in bulk mode with a selection;
+      // otherwise export all keys (matches "export everything" default).
+      var ids = _bulkMode ? selectedKeyIds() : [];
+      var toExport = keys;
+      if(ids.length){
+        var idSet = {};
+        ids.forEach(function(id){ idSet[id] = true; });
+        toExport = keys.filter(function(k){ return idSet[k.id]; });
+        if(!toExport.length){ showToast('Select at least one key to export','error'); return; }
+      }
       var header=['name','key_prefix','permissions','created_at','last_used','requests','tokens_spent','expires_at','rate_limit_rpm','ip_allowlist','status'];
       var rows=[header];
-      keys.forEach(function(k){
+      toExport.forEach(function(k){
         rows.push([
           csvGuard(k.name), csvGuard(k.key_prefix), csvGuard(k.permissions),
           k.created_at||'', k.last_used||'', k.request_count||0,
@@ -462,10 +472,10 @@
       var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
       var a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
-      a.download='glbtoken-keys-'+new Date().toISOString().slice(0,10)+'.csv';
+      a.download=ids.length ? 'glbtoken-keys-selected-'+new Date().toISOString().slice(0,10)+'.csv' : 'glbtoken-keys-'+new Date().toISOString().slice(0,10)+'.csv';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
-      showToast('Keys exported','success');
+      showToast((ids.length ? ids.length + ' key(s) exported' : 'All keys exported'),'success');
     }
     function sortKeys(mode){
       const s=[...keys];

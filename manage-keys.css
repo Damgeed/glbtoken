@@ -20,3 +20,47 @@
     flex: 1 1 0%;
   }
 }
+
+/* ── API Keys title row: compact actions that never crowd the title ──
+   New Key stays a labelled primary button; Select and Export collapse to
+   icon-only buttons (title tooltips). The group hugs the right edge and
+   shrinks as a unit so the title keeps room even at 320px. */
+.keys-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.keys-title-actions .btn-action {
+  white-space: nowrap;
+}
+.keys-icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.keys-icon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(244, 180, 0, 0.06);
+}
+@media (max-width: 480px) {
+  .keys-title-actions .btn-action {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
+  }
+  .keys-title-actions {
+    gap: 0.4rem;
+  }
+}

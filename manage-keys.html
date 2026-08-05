@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1196" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="manage-keys.css?v=1023" />
+<link rel="stylesheet" href="manage-keys.css?v=1024" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -115,16 +115,22 @@
 
       <!-- Key Management Card -->
       <div class="dash-card">
-        <div class="dash-section-title">
+        <div class="dash-section-title keys-title-row">
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;min-width:0">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle mr-6" style="flex-shrink:0"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
             <span>Your API Keys</span>
             <span class="text-xs font-normal text-muted">Manage your API access</span>
           </div>
-          <button class="btn-action" style="flex-shrink:0" onclick="showCreateKeyModal()">+ New Key</button>
-          <button class="btn-action btn-ghost" style="flex-shrink:0" id="bulkToggleBtn" onclick="enterBulkMode()" title="Select multiple keys">☑ Select</button>
-          <button class="btn-action btn-ghost" style="flex-shrink:0" onclick="exportKeysCsv()" title="Download keys as CSV">⬇ Export</button>
-          <button class="btn-action btn-ghost" style="flex-shrink:0;display:none" id="bulkDoneBtn" onclick="exitBulkMode()">Done</button>
+          <div class="keys-title-actions">
+            <button class="btn-action" onclick="showCreateKeyModal()">+ New Key</button>
+            <button class="keys-icon-btn" id="bulkToggleBtn" onclick="enterBulkMode()" title="Select multiple keys" aria-label="Select keys">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </button>
+            <button class="keys-icon-btn" onclick="exportKeysCsv()" title="Download keys as CSV" aria-label="Export keys">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+            <button class="btn-action btn-ghost" style="display:none" id="bulkDoneBtn" onclick="exitBulkMode()">Done</button>
+          </div>
         </div>
         <div id="bulkBar" class="hidden" style="display:none;margin-top:0.6rem;padding:0.6rem 0.75rem;background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;align-items:center;gap:0.6rem;flex-wrap:wrap">
           <span style="font-size:0.8rem;color:var(--text-secondary)" id="bulkCount">0 selected</span>
@@ -241,7 +247,7 @@
 <script data-cfasync="false" src="shared.js?v=1134"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
-<script data-cfasync="false" src="keys.js?v=17"></script>
+<script data-cfasync="false" src="keys.js?v=18"></script>
 
 </body>
 </html>
