@@ -248,6 +248,9 @@
         var row=[d, t.amount!=null?t.amount:'', t.currency||'USD', t.payment_method||t.method||t.provider||'', t.tokens||t.tokens_added||0, t.status||'completed'];
         csv+=row.map(function(v){
           v=String(v);
+          // CSV formula-injection guard: Excel/Sheets executes cells starting
+          // with = + - @ as formulas — neutralize them with a leading apostrophe.
+          if(/^[=+\-@\t\r]/.test(v)) v="'"+v;
           return (v.indexOf(',')>=0||v.indexOf('"')>=0||v.indexOf('\n')>=0)?'"'+v.replace(/"/g,'""')+'"':v;
         }).join(',')+'\n';
       });
