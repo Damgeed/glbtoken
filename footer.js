@@ -3,8 +3,10 @@
  * Injects the EXACT footer HTML into <div id="footer-container">.
  *
  * Dashboard variant: when the container has data-mini="1", the SAME full
- * footer is injected but hidden by default behind a bottom drawer, with a
- * floating ⬆️ arrow at bottom-center that pops the original footer up on click.
+ * footer is injected but hidden by default behind a bottom drawer. A small
+ * solid trapezoid tab at bottom-center appears only when the user scrolls to
+ * the bottom; clicking it pops the original footer up. Clicking anywhere on
+ * the screen (scrim) or the tab again hides it.
  */
 (function() {
   var FOOTER_HTML =
@@ -36,6 +38,16 @@
     var footer = container.querySelector('footer');
     if (footer) footer.classList.add('footer-drawer');
 
+    // Scrim: click anywhere outside the drawer to hide it.
+    var scrim = document.createElement('div');
+    scrim.className = 'footer-scrim';
+    scrim.id = 'footerScrim';
+    scrim.setAttribute('aria-hidden', 'true');
+    scrim.onclick = function() { toggleFooterDrawer(); };
+    container.insertBefore(scrim, container.firstChild);
+
+    // Solid trapezoid tab (wide base, narrower top, curved corners) that
+    // kisses the bottom edge — shown only near the bottom of the page.
     var arrow = document.createElement('button');
     arrow.type = 'button';
     arrow.className = 'footer-arrow';
@@ -44,20 +56,50 @@
     arrow.setAttribute('aria-expanded', 'false');
     arrow.title = 'Footer';
     arrow.innerHTML =
-      '<svg width="88" height="48" viewBox="0 0 88 48" aria-hidden="true">' +
+      '<svg width="74" height="40" viewBox="0 0 88 48" aria-hidden="true">' +
         '<path class="fa-tab" d="M20 4 Q20 0 24 0 L64 0 Q68 0 68 4 L79 42 Q81 47 76 47 L12 47 Q7 47 9 42 Z" />' +
         '<g class="fa-chevron"><polyline points="35 27 44 16 53 27" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
       '</svg>';
     arrow.onclick = function() { toggleFooterDrawer(); };
     container.insertBefore(arrow, container.firstChild);
+
+    // Scroll listeners: only show the tab near the bottom of the page.
+    window.addEventListener('scroll', updateFooterTabVisibility, { passive: true });
+    var dc = document.querySelector('.dash-content');
+    if (dc) dc.addEventListener('scroll', updateFooterTabVisibility, { passive: true });
+    window.addEventListener('resize', updateFooterTabVisibility);
+    updateFooterTabVisibility();
   }
+
+  window.updateFooterTabVisibility = function() {
+    var arrow = document.getElementById('footerArrow');
+    if (!arrow) return;
+    if (document.body.classList.contains('has-footer-open')) {
+      arrow.classList.add('show');
+      return;
+    }
+    var nearBottom = false;
+    var scroller = document.scrollingElement || document.documentElement;
+    if (scroller.scrollHeight > scroller.clientHeight + 10) {
+      nearBottom = (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 90);
+    } else {
+      var dc = document.querySelector('.dash-content');
+      if (dc && dc.scrollHeight > dc.clientHeight + 10) {
+        nearBottom = (dc.scrollTop + dc.clientHeight >= dc.scrollHeight - 90);
+      } else {
+        nearBottom = true; // page too short to scroll — always show
+      }
+    }
+    arrow.classList.toggle('show', nearBottom);
+  };
 
   window.toggleFooterDrawer = function() {
     var open = document.body.classList.toggle('has-footer-open');
     var drawer = document.querySelector('.footer-drawer');
     var arrow = document.getElementById('footerArrow');
+    var scrim = document.getElementById('footerScrim');
     if (open && drawer) {
-      // Let the fixed drawer's own height drive the arrow/FAB lift (CSS var).
+      // Let the fixed drawer's own height drive the tab/FAB lift (CSS var).
       document.documentElement.style.setProperty('--footer-h', drawer.offsetHeight + 'px');
     }
     if (arrow) {
@@ -65,6 +107,8 @@
       arrow.setAttribute('aria-expanded', open ? 'true' : 'false');
       arrow.setAttribute('aria-label', open ? 'Hide footer' : 'Show footer');
     }
+    if (scrim) scrim.setAttribute('aria-hidden', open ? 'false' : 'true');
+    updateFooterTabVisibility();
   };
 
   document.addEventListener('DOMContentLoaded', injectFooter);

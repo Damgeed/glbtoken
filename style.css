@@ -3333,32 +3333,57 @@ footer {
   padding: 3rem 0 2rem;
 }
 /* ── Dashboard footer drawer (original footer hidden, pops up via bottom tab ⬆️) ── */
+.footer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 798;
+  background: rgba(5, 7, 14, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+body.has-footer-open .footer-scrim {
+  opacity: 1;
+  visibility: visible;
+}
 .footer-arrow {
   position: fixed;
   bottom: 0;                     /* kisses the lower edge of the screen */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(12px);
   z-index: 810;
-  width: 88px;
-  height: 48px;
+  width: 74px;
+  height: 40px;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.footer-arrow svg { display: block; filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.45)); }
-.fa-tab {
-  fill: rgba(244, 180, 0, 0.12);
-  stroke: rgba(244, 180, 0, 0.5);
-  stroke-width: 1.5;
-  transition: fill 0.2s ease, stroke 0.2s ease;
+.footer-arrow.show,
+body.has-footer-open .footer-arrow {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
 }
-.footer-arrow:hover .fa-tab { fill: rgba(244, 180, 0, 0.2); stroke: var(--primary); }
-.footer-arrow:active { transform: translateX(-50%) scale(0.95); }
+.footer-arrow svg { display: block; filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.5)); }
+.fa-tab {
+  fill: var(--primary);
+  stroke: none;
+  transition: fill 0.2s ease;
+}
+.footer-arrow.show:hover .fa-tab,
+body.has-footer-open .footer-arrow:hover .fa-tab { fill: var(--primary-hover); }
+.footer-arrow.show:active,
+body.has-footer-open .footer-arrow:active { transform: translateX(-50%) translateY(0) scale(0.94); }
 .fa-chevron {
-  stroke: var(--primary);
-  stroke-width: 2.5;
+  stroke: #0a0b14;
+  stroke-width: 3;
   transform-origin: 44px 24px;
   transition: transform 0.25s ease;
 }
