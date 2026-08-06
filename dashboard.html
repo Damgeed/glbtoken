@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1211" />
+  <link rel="stylesheet" href="style.css?v=1212" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="dashboard.css?v=1040" />
   </head>
@@ -387,8 +387,8 @@ function showDashSection(section) {
 </div>
 </div>
 
-<!-- FOOTER: Injected by footer.js -->
-<div id="footer-container"></div>
+<!-- FOOTER: Injected by footer.js (data-mini = Google anchor-ad style bar, no full footer on dashboard) -->
+<div id="footer-container" data-mini="1"></div>
 
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
@@ -403,7 +403,7 @@ function showDashSection(section) {
   </div>
 
 <script src="nav.js?v=17"></script>
-<script src="footer.js?v=15"></script>
+<script src="footer.js?v=16"></script>
 <script src="translations.js?v=1108"></script>
 <script data-cfasync="false" src="shared.js?v=1140"></script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>

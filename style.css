@@ -3332,6 +3332,86 @@ footer {
   border-top: 1px solid var(--border);
   padding: 3rem 0 2rem;
 }
+/* ── Dashboard mini footer (Google anchor-ad style bottom bar) ── */
+.footer-anchor {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 800;
+  background: rgba(9, 11, 20, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.35);
+  padding: 0.55rem 2.2rem 0.55rem 1rem;
+}
+.footer-anchor-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.footer-anchor-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.footer-anchor-logo img { display: block; }
+.footer-anchor-name { letter-spacing: 0.01em; }
+.footer-anchor-tag {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 340px;
+}
+.footer-anchor-links { display: flex; align-items: center; gap: 0.9rem; }
+.footer-anchor-links a {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-anchor-links a:hover { color: var(--primary); }
+.footer-anchor-copy { color: var(--text-muted); font-size: 0.74rem; }
+.footer-anchor-close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.35rem;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.footer-anchor-close:hover { color: var(--text); background: var(--border-light); }
+/* Keep floating chat clear of the anchor bar on dashboard */
+body.has-anchor-footer .chat-fab { bottom: 4.5rem; }
+body.has-anchor-footer .chat-window { bottom: 8.5rem; }
+body.has-anchor-footer { padding-bottom: 3.25rem; }
+@media (max-width: 767px) {
+  .footer-anchor { padding: 0.5rem 2.1rem 0.5rem 0.75rem; }
+  .footer-anchor-inner { gap: 0.7rem; justify-content: flex-start; }
+  .footer-anchor-tag { display: none; }
+  .footer-anchor-links a:nth-child(n+3) { display: none; }
+  .footer-anchor-copy { display: none; }
+}
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
