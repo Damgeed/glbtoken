@@ -101,8 +101,8 @@
   }
 }
 .billing-stat-card {
-  background: var(--bg-alt);
-  border: 1px solid var(--border-light);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 1rem;
   text-align: center;
