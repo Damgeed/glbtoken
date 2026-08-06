@@ -3396,6 +3396,7 @@ body.has-footer-open .footer-arrow:active { transform: translateX(-50%) translat
   bottom: 0;
   z-index: 799;
   background: var(--bg);
+  border-radius: 16px 16px 0 0; /* curved top, flat base */
   transform: translateY(105%);
   transition: transform 0.35s ease;
   pointer-events: none;
@@ -3416,6 +3417,18 @@ body.has-footer-open .chat-window { bottom: calc(var(--footer-h, 320px) + 5.5rem
   .footer-arrow { width: 64px; height: 24px; }
   .footer-arrow svg { width: 64px; height: 24px; }
   .footer-drawer { max-height: 50vh; }
+  /* Grabber handle — bottom-sheet affordance, swipe down to dismiss */
+  .footer-drawer::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+  }
   /* Compact footer inside the mobile drawer — don't overwhelm the screen */
   .footer-drawer footer { padding: 0.85rem 0 0.6rem; }
   .footer-drawer .footer-grid { gap: 0.5rem; }

@@ -58,7 +58,7 @@
     arrow.title = 'Footer';
     arrow.innerHTML =
       '<svg width="80" height="30" viewBox="0 0 96 36" aria-hidden="true">' +
-        '<path class="fa-tab" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 31 Q89 35 84 35 L12 35 Q7 35 9 31 Z" />' +
+        '<path class="fa-tab" d="M22 8 Q22 0 30 0 L66 0 Q74 0 74 8 L88 31 L84 35 L12 35 L9 31 Z" />' +
         '<g class="fa-chevron"><polyline points="39 23 48 12 57 23" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
       '</svg>';
     arrow.onclick = function() { toggleFooterDrawer(); };
@@ -72,8 +72,9 @@
       toggleFooterDrawer();
     });
 
-    // Scroll listeners: on mobile, scrolling the page dismisses the open
-    // drawer (bottom-sheet behavior) so it never blocks the screen.
+    // Scroll listeners: ANY scroll on mobile dismisses the open drawer
+    // (bottom-sheet behavior); elsewhere the tab visibility tracks the bottom.
+    // Uses document-level capture so every scroll container is covered.
     function onPageScroll() {
       if (document.body.classList.contains('has-footer-open')) {
         if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
@@ -83,10 +84,29 @@
       }
       updateFooterTabVisibility();
     }
-    window.addEventListener('scroll', onPageScroll, { passive: true });
-    var dc = document.querySelector('.dash-content');
-    if (dc) dc.addEventListener('scroll', onPageScroll, { passive: true });
+    document.addEventListener('scroll', onPageScroll, true);
     window.addEventListener('resize', updateFooterTabVisibility);
+
+    // Mobile: swipe down on the open drawer to dismiss it (bottom-sheet).
+    if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+      var drawerEl = document.querySelector('.footer-drawer');
+      if (drawerEl) {
+        var touchStartY = null;
+        drawerEl.addEventListener('touchstart', function(e) {
+          touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        drawerEl.addEventListener('touchmove', function(e) {
+          if (!document.body.classList.contains('has-footer-open')) return;
+          if (touchStartY === null) return;
+          if (drawerEl.scrollTop > 0) return; // let internal scrolling win
+          var dy = e.touches[0].clientY - touchStartY;
+          if (dy > 24) {
+            touchStartY = null;
+            toggleFooterDrawer();
+          }
+        }, { passive: true });
+      }
+    }
     updateFooterTabVisibility();
   }
 
