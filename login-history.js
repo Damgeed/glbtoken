@@ -83,7 +83,7 @@ function renderLoginRow(event) {
     + '<td class="td-browser-cell">' + browser + '</td>'
     + '<td class="td-location">' + locHtml + '</td>'
     + '<td class="td-ip">' + ip + '</td>'
-    + '<td>' + statusBadge + '</td>'
+    + '<td class="tx-td-center">' + statusBadge + '</td>'
     + '<td class="td-date">' + ts + '</td>'
     + '</tr>';
 }

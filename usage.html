@@ -15,13 +15,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1226" />
+  <link rel="stylesheet" href="style.css?v=1227" />
   <!-- dashboard.css provides the shared .dash-card / .filter-btn-row / .chart-axis-labels
        styles so the Usage chart card matches the Overview design exactly -->
-<link rel="stylesheet" href="dashboard.css?v=1040" />
-<link rel="stylesheet" href="more.css?v=5" />
+<link rel="stylesheet" href="dashboard.css?v=1041" />
+<link rel="stylesheet" href="more.css?v=6" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1038" />
+<link rel="stylesheet" href="usage.css?v=1039" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -261,7 +261,7 @@
         </div>
         <div class="scroll-x tx-scroll" id="loginScrollX">
           <table class="tx-table" id="loginTable">
-            <thead><tr><th>Device</th><th>Browser</th><th>Location</th><th>IP</th><th>Status</th><th>Time</th></tr></thead>
+            <thead><tr><th>Device</th><th>Browser</th><th>Location</th><th>IP</th><th class="tx-th-center">Status</th><th>Time</th></tr></thead>
             <tbody id="loginHistoryBody">
               <tr><td colspan="6" class="td-empty">Loading login history…</td></tr>
             </tbody>
@@ -295,9 +295,9 @@
 <script data-cfasync="false" src="shared.js?v=1141"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1226"></script>
-<script data-cfasync="false" src="filters.js?v=1137"></script>
+<script data-cfasync="false" src="filters.js?v=1138"></script>
 <script data-cfasync="false" src="usage-charts.js?v=4"></script>
-<script data-cfasync="false" src="login-history.js?v=1121"></script>
+<script data-cfasync="false" src="login-history.js?v=1122"></script>
 
 <!-- ── Usage Script ── -->
 <script>

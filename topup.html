@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1226" />
+  <link rel="stylesheet" href="style.css?v=1227" />
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -26,8 +26,8 @@
       <div id="topupStep1">
         <div class="pricing-grid">
           <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(5)">Buy $5</button></div>
-          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>30-day validity</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(20)">Buy $20</button></div>
-          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">100,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>30-day validity</li><li>Team sharing</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(100)">Buy $100</button></div>
+          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>Tokens never expire</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(20)">Buy $20</button></div>
+          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">100,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>Tokens never expire</li><li>Team sharing</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(100)">Buy $100</button></div>
           <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">50,000 Tokens</div>
             <div class="topup-slider-wrap">
               <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="topup-slider">

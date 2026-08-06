@@ -28,7 +28,7 @@
 .blog-article .article-meta .tag {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--primary-subtle);
   color: var(--primary);
   font-size: 0.75rem;
@@ -75,6 +75,11 @@
   border-collapse: collapse;
   margin-bottom: 1rem;
   font-size: 0.85rem;
+}
+/* Numeric price/quantity columns in blog content tables — right-align header + cells together */
+.blog-article table.num-right th:nth-child(n+2),
+.blog-article table.num-right td:nth-child(n+2) {
+  text-align: right;
 }
 .blog-article thead tr {
   border-bottom: 1px solid var(--border);

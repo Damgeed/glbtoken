@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1226" />
+  <link rel="stylesheet" href="style.css?v=1227" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1074" />
+<link rel="stylesheet" href="team.css?v=1075" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -278,9 +278,9 @@
         </div>
         <div  class="scroll-x">
           <table class="tx-table">
-            <thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Tokens Used</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Member</th><th>Email</th><th>Role</th><th class="tx-th-right">Tokens Used</th><th>Actions</th></tr></thead>
             <tbody id="teamMembersBody">
-              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Select an organization to view members</td></tr>
+              <tr><td colspan="5" class="td-empty">Select an organization to view members</td></tr>
             </tbody>
           </table>
         </div>
@@ -1027,7 +1027,7 @@ function renderMembers(myRole, orgId){
         '<td data-label="Member"><div class="flex-row">'+checkBox+'<div class="'+avatarClassFor(m.name)+'">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
         '<td data-label="Email">'+escapeHtml(m.email||'—')+'</td>'+
         '<td data-label="Role">'+roleCell+'</td>'+
-        '<td data-label="Tokens Used" id="tok-'+m.user_id+'">…</td>'+
+        '<td data-label="Tokens Used" class="tx-td-right" id="tok-'+m.user_id+'">…</td>'+
         '<td data-label="Actions"'+(hasActions?'':' class="no-actions"')+'>'+(actionsCell || '<span style="color:var(--text-muted);font-size:0.8rem">—</span>')+'</td></tr>';
     }).join('');
     tbody.innerHTML = rows;

@@ -10,7 +10,7 @@
 .text-sm-secondary { font-size:0.72rem;color:var(--text-secondary); }
 .text-xs-muted { font-size:0.68rem;color:var(--text-muted); }
 .text-sm-medium { font-size:0.72rem;font-weight:500;color:var(--text); }
-.badge { padding:0.25rem 0.5rem;font-size:0.65rem;border-radius:4px; }
+
 .flex-grow { flex:1;min-width:0; }
 .text-desc { font-size:0.75rem;color:var(--text-secondary);line-height:1.3; }
 .text-micro-top { font-size:0.62rem;color:var(--text-muted);margin-top:0.1rem; }
@@ -852,7 +852,7 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.2rem 0.5rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 0.7rem;
   font-weight: 500;
   background: rgba(0, 214, 143, 0.12);
@@ -1052,7 +1052,7 @@
 .filter-badge-item {
   font-size: 0.65rem;
   padding: 0.2rem 0.35rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--bg-alt);
   border: 1px solid var(--border);
   cursor: pointer;

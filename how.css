@@ -65,11 +65,11 @@
 .tag-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
 
 /* Tag colors */
-.tag-gold { background: rgba(244, 180, 0, 0.15); color: #F4B400; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
-.tag-green { background: rgba(0, 214, 143, 0.15); color: #00D68F; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
-.tag-blue { background: rgba(79, 195, 247, 0.15); color: #4FC3F7; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
-.tag-purple { background: rgba(124, 77, 255, 0.15); color: #7C4DFF; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
-.tag-red { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 500; }
+.tag-gold { background: rgba(244, 180, 0, 0.15); color: #F4B400; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 500; }
+.tag-green { background: rgba(0, 214, 143, 0.15); color: #00D68F; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 500; }
+.tag-blue { background: rgba(79, 195, 247, 0.15); color: #4FC3F7; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 500; }
+.tag-purple { background: rgba(124, 77, 255, 0.15); color: #7C4DFF; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 500; }
+.tag-red { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 500; }
 
 /* Card heading */
 .viz-title { margin: 0 0 0.25rem; font-size: 1rem; }

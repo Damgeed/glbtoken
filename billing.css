@@ -50,7 +50,7 @@
   background: rgba(244, 180, 0, 0.14);
   border: 1px solid rgba(244, 180, 0, 0.35);
   padding: 0.12rem 0.4rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
 .pm-row-default {
@@ -162,23 +162,8 @@
   font-size: 0.75rem;
   color: var(--text-muted);
 }
-.payment-card .badge {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
-  background: var(--primary-subtle);
-  border-radius: 4px;
-  color: var(--primary);
-  font-weight: 500;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-.status-badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 500;
-}
+
+
 /* Table cell styles — matched to Login Attempts table (usage.css) */
 .td-date {
   font-size: 0.85rem;
@@ -194,22 +179,10 @@
 .td-device {
   font-size: 0.85rem;
 }
-.status-paid {
-  background: var(--success-subtle, rgba(0, 214, 143, 0.12));
-  color: var(--success, #00d68f);
-}
-.status-pending {
-  background: rgba(255, 183, 0, 0.12);
-  color: #ffb700;
-}
-.status-failed {
-  background: rgba(255, 77, 79, 0.12);
-  color: #ff4d4f;
-}
-.status-refunded {
-  background: rgba(114, 46, 209, 0.12);
-  color: #722ed1;
-}
+
+
+
+
 .receipt-link {
   color: var(--primary);
   text-decoration: none;

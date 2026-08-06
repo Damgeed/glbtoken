@@ -14,19 +14,11 @@
 }
 @media (max-width: 768px) {
   /* Transaction History — compact to fit screen without horizontal scroll
-     (like Recent Transactions on overview). .tx-fit marks the container. */
+     (like Recent Transactions on overview). .tx-fit marks the container.
+     Padding/font-size intentionally NOT overridden — the shared .tx-table
+     mobile media query (style.css) keeps every table uniform. */
   .tx-scroll.tx-fit table {
     min-width: 0;
-  }
-  .tx-scroll.tx-fit th,
-  .tx-scroll.tx-fit td {
-    padding: 0.45rem 0.4rem;
-    font-size: 0.72rem;
-    white-space: nowrap;
-  }
-  .tx-scroll.tx-fit thead th {
-    font-size: 0.6rem;
-    padding: 0.45rem 0.4rem;
   }
   .tx-scroll.tx-fit::after {
     display: none !important;

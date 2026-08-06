@@ -8,8 +8,7 @@
 .ann-title{font-size:1rem;font-weight:700;color:var(--text);line-height:1.4}
 .ann-date{font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem}
 .ann-body{font-size:0.88rem;color:var(--text-secondary);line-height:1.65;margin-top:0.55rem;white-space:pre-line}
-.ann-badge{flex-shrink:0;font-size:0.68rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.22rem 0.6rem;border-radius:999px}
-.ann-badge-info{color:#4FC3F7;background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.35)}
+.ann-badge{flex-shrink:0;font-size:0.68rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.22rem 0.6rem;border-radius:var(--radius-sm);background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.35)}
 .ann-badge-warning{color:#FFB347;background:rgba(255,179,71,0.1);border:1px solid rgba(255,179,71,0.4)}
 .ann-badge-success{color:#4CAF50;background:rgba(76,175,80,0.1);border:1px solid rgba(76,175,80,0.35)}
 

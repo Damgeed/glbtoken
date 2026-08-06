@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1226" />
+  <link rel="stylesheet" href="style.css?v=1227" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="logs.css?v=1025" />
+<link rel="stylesheet" href="logs.css?v=1026" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -198,9 +198,9 @@
         </div>
         <div class="overflow-auto">
           <table class="tx-table" id="responseTimeTable">
-            <thead><tr><th>Model</th><th>Provider</th><th>Avg Response Time</th><th>Date</th></tr></thead>
+            <thead><tr><th>Model</th><th>Provider</th><th class="tx-th-right">Avg Response Time</th><th>Date</th></tr></thead>
             <tbody id="responseTimeBody">
-              <tr><td colspan="4" class="empty-state-alt">Loading response times...</td></tr>
+              <tr><td colspan="4" class="td-empty">Loading response times...</td></tr>
             </tbody>
           </table>
         </div>
@@ -226,9 +226,9 @@
         </div>
         <div class="overflow-auto">
           <table class="tx-table" id="keyUsageTable">
-            <thead><tr><th>Key</th><th>Model</th><th>Calls</th><th>Tokens</th></tr></thead>
+            <thead><tr><th>Key</th><th>Model</th><th class="tx-th-right">Calls</th><th class="tx-th-right">Tokens</th></tr></thead>
             <tbody id="keyUsageBody">
-              <tr><td colspan="4" class="empty-state-alt">Loading key usage...</td></tr>
+              <tr><td colspan="4" class="td-empty">Loading key usage...</td></tr>
             </tbody>
           </table>
         </div>
@@ -252,9 +252,9 @@
         <div class="logs-table-hint">Click a row for details</div>
         <div class="overflow-auto">
           <table class="tx-table" id="requestLogTable">
-            <thead><tr><th>Time</th><th>Model</th><th>Tokens</th><th>Cost</th><th>Status</th></tr></thead>
+            <thead><tr><th>Time</th><th>Model</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Cost</th><th class="tx-th-center">Status</th></tr></thead>
             <tbody id="requestLogBody">
-              <tr><td colspan="5" class="empty-state-alt">Loading request logs...</td></tr>
+              <tr><td colspan="5" class="td-empty">Loading request logs...</td></tr>
             </tbody>
           </table>
         </div>
@@ -587,18 +587,18 @@ async function loadResponseTimes(days){
     var body=document.getElementById('responseTimeBody');
     if(!body)return;
     clearTableCollapse('responseTimeCollapse','responseTimeMoreBtn');
-    body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
+    body.innerHTML='<tr><td colspan="4" class="td-empty">Loading...</td></tr>';
     var data=await safeApi('GET','/api/analytics/response-times?days='+(days||7));
     // Backend returns a BARE ARRAY — tolerate both shapes
     var items = Array.isArray(data) ? data : ((data && data.items) || []);
     if(!items.length){
-      body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No response time data available.</td></tr>';
+      body.innerHTML='<tr><td colspan="4" class="td-empty">No response time data available.</td></tr>';
       return;
     }
     renderTableWithCollapse('responseTimeBody', items.map(function(item){
       var ms=item.response_time_ms||0;
       var cls=ms<500?'speed-fast':ms<2000?'speed-medium':'speed-slow';
-      return '<tr><td>'+escapeHtml(item.model||'-')+'</td><td>'+escapeHtml(item.provider||'-')+'</td><td class="'+cls+'">'+ms.toFixed(0)+' ms</td><td>'+escapeHtml(item.date||'')+'</td></tr>';
+      return '<tr><td>'+escapeHtml(item.model||'-')+'</td><td>'+escapeHtml(item.provider||'-')+'</td><td class="'+cls+' tx-td-right">'+ms.toFixed(0)+' ms</td><td>'+escapeHtml(item.date||'')+'</td></tr>';
     }), 'responseTimeCollapse', 'responseTimeMoreBtn');
   }catch(e){
     var b2=document.getElementById('responseTimeBody');
@@ -641,15 +641,15 @@ async function loadKeyUsage(days){
     var body=document.getElementById('keyUsageBody');
     if(!body)return;
     clearTableCollapse('keyUsageCollapse','keyUsageMoreBtn');
-    body.innerHTML='<tr><td colspan="4" class="empty-state-sm">Loading...</td></tr>';
+    body.innerHTML='<tr><td colspan="4" class="td-empty">Loading...</td></tr>';
     var data=await safeApi('GET','/api/analytics/key-usage?days='+(days||30));
     var items=Array.isArray(data)?data:((data&&data.keys)||(data&&data.items)||[]);
     if(!items.length){
-      body.innerHTML='<tr><td colspan="4" class="empty-state-sm">No key usage data available.</td></tr>';
+      body.innerHTML='<tr><td colspan="4" class="td-empty">No key usage data available.</td></tr>';
       return;
     }
     renderTableWithCollapse('keyUsageBody', items.map(function(k){
-      return '<tr><td>'+escapeHtml(k.key||k.key_prefix||'-')+'</td><td>'+escapeHtml(k.model||'All')+'</td><td>'+(k.calls||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td></tr>';
+      return '<tr><td>'+escapeHtml(k.key||k.key_prefix||'-')+'</td><td>'+escapeHtml(k.model||'All')+'</td><td class="tx-td-right">'+(k.calls||0).toLocaleString()+'</td><td class="tx-td-right">'+(k.tokens||0).toLocaleString()+'</td></tr>';
     }), 'keyUsageCollapse', 'keyUsageMoreBtn');
   }catch(e){
     var b2=document.getElementById('keyUsageBody');
@@ -688,7 +688,7 @@ function renderRequestLogRows(){
   if(!body)return;
   var items=logsCurrentItems.filter(logsStatusMatch);
   if(!items.length){
-    body.innerHTML='<tr><td colspan="5" class="empty-state-sm">'
+    body.innerHTML='<tr><td colspan="5" class="td-empty">'
       +(logsStatusFilter==='all'
         ?'No request logs yet. Make an API call to see it here.'
         :'No '+(logsStatusFilter==='success'?'successful':'error')+' requests on this page.')
@@ -704,15 +704,15 @@ function renderRequestLogRows(){
     var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
     var time=l.created_at||l.time||'';
     var logId=l.id||'';
-    var tkCell='<td class="td-tokens">'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens));
+    var tkCell='<td class="td-tokens tx-td-right">'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens));
     if(pt||ct){ tkCell+='<span class="td-tokens-sub">in '+Number(pt).toLocaleString()+' · out '+Number(ct).toLocaleString()+'</span>'; }
     tkCell+='</td>';
     return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'" title="Status '+status+' — click for details">'
       + '<td class="td-date">'+escapeHtml(time)+'</td>'
       + '<td>'+escapeHtml(model)+'</td>'
       + tkCell
-      + '<td class="gold">$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
-      + '<td><span class="status-badge '+statusCls+'">'+escapeHtml(String(status))+'</span></td>'
+      + '<td class="gold tx-td-right">$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
+      + '<td class="tx-td-center"><span class="status-badge '+statusCls+'">'+escapeHtml(String(status))+'</span></td>'
       + '</tr>';
   }).join('');
   // attach click → detail drawer

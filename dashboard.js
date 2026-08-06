@@ -538,7 +538,7 @@ async function loadRecentTx(){
     var detail = escapeHtml(t.model_used || t.payment_method || '-');
     var amtCls = (t.type==='deposit'||t.type==='topup') ? 'gold' : 'red';
     var amt = ((t.type==='deposit'||t.type==='topup')?'+':'') + String(t.tokens||0);
-    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status||'completed')+'</span></td></tr>';
+    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td class="tx-td-center"><span style="color:var(--success)">'+escapeHtml(t.status||'completed')+'</span></td></tr>';
   }).join('');
 }
 
