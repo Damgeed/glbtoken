@@ -324,27 +324,6 @@
     function startOAuth(provider, btn){
       if (oauthTimeout) clearTimeout(oauthTimeout);
       setBtnLoading(btn, true, 'Connecting...');
-      // Microsoft (windowslive) does NOT support PKCE code flow in Auth0 —
-      // use the server-side implicit URL (/api/auth/auth0/social-url) instead.
-      // callback.html FLOW B (#id_token) handles the implicit response.
-      if (provider === 'microsoft') {
-        var csrfState = Array.from(new Uint8Array(32), function(b){ return b.toString(36)[2] || '0'; }).join('').substring(0, 32);
-        sessionStorage.setItem('gt_oauth_state', csrfState);
-        sessionStorage.setItem('gt_oauth_cancel', '1');
-        api('GET', '/api/auth/auth0/social-url?provider=microsoft&state=' + encodeURIComponent(csrfState)).then(function(res){
-          if (!res || !res.url) {
-            setBtnLoading(btn, false);
-            showToast('Microsoft login unavailable', 'error');
-            return;
-          }
-          window.location.href = res.url;
-          oauthTimeout = setTimeout(function(){ oauthTimeout=null; setBtnLoading(btn, false); }, 6000);
-        }).catch(function(){
-          setBtnLoading(btn, false);
-          showToast('Microsoft login failed', 'error');
-        });
-        return;
-      }
       // Get Auth0 config from Railway (client ID stays hidden server-side)
       api('GET', '/api/auth/auth0/config').then(function(cfg){
         if (!cfg || !cfg.configured) {

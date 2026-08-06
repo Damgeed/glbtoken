@@ -207,9 +207,11 @@
       if(welcome) welcome.style.display='flex';
     }
     function sendAIChatMsg(){
+      if(window.__aiSending) return;
+      window.__aiSending = true;
       const input = document.getElementById('aiChatInput');
       const msg = input.value.trim();
-      if(!msg) return;
+      if(!msg){ window.__aiSending = false; return; }
       const msgs = document.getElementById('aiChatMsgs');
       // Hide welcome
       const welcome = document.getElementById('aiWelcome');
@@ -228,10 +230,10 @@
         setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 300);
       }
       msgs.scrollTop = msgs.scrollHeight;
-      // Disable button
+      // Visual "sending" state WITHOUT disabling the button — btn.disabled=true
+      // makes iOS Safari drop input focus and dismiss the keyboard.
       const btn = document.getElementById('aiSendBtn');
-      btn.disabled = true;
-      btn.textContent = '⋯';
+      if(btn){ btn.setAttribute('aria-disabled','true'); btn.style.opacity='0.5'; btn.textContent = '⋯'; }
       // Add typing indicator
       const typingDiv = document.createElement('div');
       typingDiv.className = 'chat-msg ai';
@@ -273,8 +275,8 @@
             requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
           }
         }
-        btn.disabled = false;
-        btn.textContent = '➤';
+        btn.setAttribute('aria-disabled','false'); btn.style.opacity=''; btn.textContent = '➤';
+        window.__aiSending = false;
       })();
     }
 
@@ -671,7 +673,7 @@ function sendChatMsg(inputOverride){
   const btn=document.getElementById('chatSendBtn');
   const msg=(input&&input.value?input.value:'').trim();if(!msg)return;
   _sendingMsg = true;
-  if(btn){btn.disabled=true;btn.style.opacity='0.5'}
+  if(btn){btn.setAttribute('aria-disabled','true');btn.style.opacity='0.5'}
   const msgs=document.getElementById('chatMsgs');
   const userHtml='<div class="chat-msg user"><div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div></div>';
   msgs.innerHTML+=userHtml;
@@ -690,7 +692,7 @@ function sendChatMsg(inputOverride){
     msgs.innerHTML+=aiHtml;msgs.scrollTop=msgs.scrollHeight;
     saveChatHistory();
     _sendingMsg = false;
-    if(btn){btn.disabled=false;btn.style.opacity='1'}
+    if(btn){btn.setAttribute('aria-disabled','false');btn.style.opacity='1'}
     // Refocus input on mobile after lockout release
     if(window.innerWidth <= 768 && input) {
       input.focus({preventScroll:true});

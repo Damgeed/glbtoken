@@ -28,7 +28,7 @@
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0A0B14;
+  body { background: #070a12;
     min-height: 100vh;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
@@ -48,6 +48,13 @@ body { padding-top: 0 !important; }
 .wrap, body > .container, body > .dashboard { margin-left: auto !important; margin-right: auto !important; margin-top: 1.5rem !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
 </style>
+<script>
+/* Visual demo pages are dark-only: force dark theme regardless of user preference */
+(function(){try{
+  document.documentElement.className = 'dark';
+  localStorage.setItem('gt_theme', 'dark');
+}catch(e){}})();
+</script>
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -461,11 +468,11 @@ body { padding-top: 0 !important; }
 <button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
 </div>
 </div>
-<script src="nav.js?v=17"></script>
+<script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1108"></script>
 <script data-cfasync="false" src="shared.js?v=1142"></script>
-<script data-cfasync="false" src="ui.js?v=1226"></script>
+<script data-cfasync="false" src="ui.js?v=1227"></script>
 
 </body>
 </html>
