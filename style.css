@@ -3373,12 +3373,12 @@ body.has-footer-open .footer-arrow {
 }
 .footer-arrow svg { display: block; filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.5)); }
 .fa-tab {
-  fill: var(--primary);
+  fill: hsl(43 42% 60%);
   stroke: none;
   transition: fill 0.2s ease;
 }
 .footer-arrow.show:hover .fa-tab,
-body.has-footer-open .footer-arrow:hover .fa-tab { fill: var(--primary-hover); }
+body.has-footer-open .footer-arrow:hover .fa-tab { fill: hsl(43 46% 68%); }
 .footer-arrow.show:active,
 body.has-footer-open .footer-arrow:active { transform: translateX(-50%) translateY(0) scale(0.94); }
 .fa-chevron {

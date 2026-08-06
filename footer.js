@@ -86,8 +86,6 @@
       var dc = document.querySelector('.dash-content');
       if (dc && dc.scrollHeight > dc.clientHeight + 10) {
         nearBottom = (dc.scrollTop + dc.clientHeight >= dc.scrollHeight - 90);
-      } else {
-        nearBottom = true; // page too short to scroll — always show
       }
     }
     arrow.classList.toggle('show', nearBottom);
