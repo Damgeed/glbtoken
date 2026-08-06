@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1208" />
+  <link rel="stylesheet" href="style.css?v=1209" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1072" />
+<link rel="stylesheet" href="team.css?v=1073" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -367,8 +367,8 @@
 
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
-<script src="translations.js?v=1107"></script>
-<script data-cfasync="false" src="shared.js?v=1137"></script>
+<script src="translations.js?v=1108"></script>
+<script data-cfasync="false" src="shared.js?v=1138"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -835,12 +835,12 @@ async function loadOrgDetails(orgId){
       invitesEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">No pending invites for this organization.</p>';
     } else {
       var invRows = invites.map(function(iv){ return inviteRowHtml(iv, orgId, canManage); });
-      var invFirst = invRows.slice(0,3).join('');
-      var invRest = invRows.slice(3);
+      var invFirst = invRows.slice(0,5).join('');
+      var invRest = invRows.slice(5);
       invitesEl.innerHTML = invFirst
         + (invRest.length
             ? '<div id="inviteCollapse" class="invite-collapse" data-count="'+invRest.length+'">'+invRest.join('')+'</div>'
-              + '<button id="inviteMoreBtn" class="list-more-btn" onclick="toggleMobileInvites()">Show More ('+invRest.length+') ▼</button>'
+              + '<button id="inviteMoreBtn" class="list-more-btn" onclick="toggleMobileInvites()">Show More ('+invRest.length+') ▾</button>'
             : '');
       refreshInviteMoreBtn();
     }
@@ -904,8 +904,8 @@ function refreshMemberMoreBtn(){
   if(!count){ btn.style.display = 'none'; return; }
   btn.style.display = '';
   btn.innerHTML = collapse.classList.contains('open')
-    ? 'Show Less ▲'
-    : 'Show More ('+count+') ▼';
+    ? 'Show Less ▴'
+    : 'Show More ('+count+') ▾';
 }
 function toggleMobileInvites(){
   var collapse = document.getElementById('inviteCollapse');
@@ -922,8 +922,8 @@ function refreshInviteMoreBtn(){
   if(!count){ btn.style.display = 'none'; return; }
   btn.style.display = '';
   btn.innerHTML = collapse.classList.contains('open')
-    ? 'Show Less ▲'
-    : 'Show More ('+count+') ▼';
+    ? 'Show Less ▴'
+    : 'Show More ('+count+') ▾';
 }
 
 // Shared empty-state for the member table + mobile card list (icon + title + hint)
@@ -1011,12 +1011,12 @@ function renderMembers(myRole, orgId){
     if(mobList){
       // Mobile: all filtered members, first 4 visible + "Show More" collapse
       var mobileCards = filtered.map(function(m){ return mobileMemberCardHtml(m, role, orgId); });
-      var mobFirst = mobileCards.slice(0,3).join('');
-      var mobRest = mobileCards.slice(3);
+      var mobFirst = mobileCards.slice(0,5).join('');
+      var mobRest = mobileCards.slice(5);
       mobList.innerHTML = mobFirst
         + (mobRest.length
             ? '<div id="memberCollapse" class="member-collapse" data-count="'+mobRest.length+'">'+mobRest.join('')+'</div>'
-              + '<button id="memberMoreBtn" class="list-more-btn" onclick="toggleMobileMembers()">Show More ('+mobRest.length+') ▼</button>'
+              + '<button id="memberMoreBtn" class="list-more-btn" onclick="toggleMobileMembers()">Show More ('+mobRest.length+') ▾</button>'
             : '');
       refreshMemberMoreBtn();
     }

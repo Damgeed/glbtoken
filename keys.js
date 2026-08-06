@@ -91,13 +91,13 @@
           </div>
         </div>
       `);
-      // Mobile: first 3 visible, rest behind a Show-More toggle (desktop shows all)
-      const first=cards.slice(0,3).join('');
-      const rest=cards.slice(3);
+      // Mobile: first 5 visible, rest behind a Show-More toggle (desktop shows all)
+      const first=cards.slice(0,5).join('');
+      const rest=cards.slice(5);
       list.innerHTML=first
         + (rest.length
             ? '<div id="keyCollapse" class="key-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
-              + '<button id="keyMoreBtn" class="list-more-btn" onclick="toggleKeyMore()">Show More ('+rest.length+') ▼</button>'
+              + '<button id="keyMoreBtn" class="list-more-btn" onclick="toggleKeyMore()">Show More ('+rest.length+') ▾</button>'
             : '');
       initKeySwipe();
       initKeyDrag();
@@ -151,7 +151,7 @@
       collapse.setAttribute('data-count',count);
       if(!count){btn.style.display='none';return;}
       btn.style.display='';
-      btn.innerHTML=collapse.classList.contains('open')?'Show Less ▲':'Show More ('+count+') ▼';
+      btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
     }
 
     // ── Swipe-left to reveal Pause/Delete (mobile, iOS-mail style) ──

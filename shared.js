@@ -824,8 +824,8 @@ window.fmtUSD = function fmtUSD(n, dp){
 window.renderTableWithCollapse = function renderTableWithCollapse(bodyId, rows, collapseId, btnId){
   var body=document.getElementById(bodyId);
   if(!body)return;
-  var first=rows.slice(0,3).join('');
-  var rest=rows.slice(3);
+  var first=rows.slice(0,5).join('');
+  var rest=rows.slice(5);
   body.innerHTML=first;
   var oldC=document.getElementById(collapseId);
   if(oldC)oldC.remove();
@@ -843,7 +843,7 @@ window.renderTableWithCollapse = function renderTableWithCollapse(bodyId, rows, 
   btn.id=btnId;
   btn.type='button';
   btn.className='list-more-btn';
-  btn.innerHTML='Show More ('+rest.length+') ▼';
+  btn.innerHTML='Show More ('+rest.length+') ▾';
   btn.onclick=function(){toggleTableMore(collapseId,btnId);};
   var wrap=table.parentNode;
   wrap.parentNode.insertBefore(btn,wrap.nextSibling);
@@ -867,5 +867,5 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
   collapse.setAttribute('data-count',count);
   if(!count){btn.style.display='none';return;}
   btn.style.display='';
-  btn.innerHTML=collapse.classList.contains('open')?'Show Less ▲':'Show More ('+count+') ▼';
+  btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
 };

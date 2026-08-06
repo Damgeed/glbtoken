@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1208" />
+  <link rel="stylesheet" href="style.css?v=1209" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
 <link rel="stylesheet" href="presets.css?v=1021" />
@@ -204,8 +204,8 @@
 
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
-<script src="translations.js?v=1107"></script>
-<script data-cfasync="false" src="shared.js?v=1137"></script>
+<script src="translations.js?v=1108"></script>
+<script data-cfasync="false" src="shared.js?v=1138"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -247,12 +247,12 @@ async function loadPresets(){
       card += '</div></div>';
       cards.push(card);
     }
-    var first = cards.slice(0,3).join('');
-    var rest = cards.slice(3);
+    var first = cards.slice(0,5).join('');
+    var rest = cards.slice(5);
     var out = '<div class="presets-grid">' + first + '</div>';
     if(rest.length){
       out += '<div id="presetsCollapse" class="presets-grid presets-collapse" data-count="'+rest.length+'">' + rest.join('') + '</div>';
-      out += '<button id="presetsMoreBtn" class="list-more-btn" onclick="togglePresetsMore()">Show More ('+rest.length+') ▼</button>';
+      out += '<button id="presetsMoreBtn" class="list-more-btn" onclick="togglePresetsMore()">Show More ('+rest.length+') ▾</button>';
     }
     list.innerHTML = out;
     refreshPresetsMoreBtn();
@@ -277,7 +277,7 @@ function refreshPresetsMoreBtn(){
   collapse.setAttribute('data-count', count);
   if(!count){ btn.style.display = 'none'; return; }
   btn.style.display = '';
-  btn.innerHTML = collapse.classList.contains('open') ? 'Show Less ▲' : 'Show More ('+count+') ▼';
+  btn.innerHTML = collapse.classList.contains('open') ? 'Show Less ▴' : 'Show More ('+count+') ▾';
 }
 
 /* ── Show Preset Modal (Create or Edit) ── */

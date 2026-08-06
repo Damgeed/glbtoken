@@ -969,6 +969,7 @@ I18N["Context window"] = {"zh-CN": "上下文窗口", "ru": "Окно конте
 I18N["Input price"] = {"zh-CN": "输入价格", "ru": "Цена ввода", "ja": "入力価格", "de": "Eingabepreis"};
 I18N["Output price"] = {"zh-CN": "输出价格", "ru": "Цена вывода", "ja": "出力価格", "de": "Ausgabepreis"};
 I18N["Show less ▴"] = {"zh-CN": "收起 ▴", "ru": "Свернуть ▴", "ja": "表示を減らす ▴", "de": "Weniger anzeigen ▴"};
+I18N["Show Less ▴"] = {"zh-CN": "收起 ▴", "ru": "Свернуть ▴", "ja": "表示を減らす ▴", "de": "Weniger anzeigen ▴"};
 I18N["Drag to reorder"] = {"zh-CN": "拖动以排序", "ru": "Перетащите для изменения порядка", "ja": "ドラッグして並べ替え", "de": "Zum Sortieren ziehen"};
 I18N["Key prefix copied"] = {"zh-CN": "密钥前缀已复制", "ru": "Префикс ключа скопирован", "ja": "キーのプレフィックスをコピーしました", "de": "Schlüsselpräfix kopiert"};
 I18N["Key deleted"] = {"zh-CN": "密钥已删除", "ru": "Ключ удалён", "ja": "キーを削除しました", "de": "Schlüssel gelöscht"};

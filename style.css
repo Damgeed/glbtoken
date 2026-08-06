@@ -2390,15 +2390,15 @@ input[type="range"]::-moz-range-thumb {
 .cat-more-btn {
   grid-column: 1/-1;
   display: block;
-  width: 100%;
-  padding: 0.6rem;
-  margin-top: 0.25rem;
-  border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
+  width: fit-content;
+  margin: 0.6rem auto 0;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(244, 180, 0, 0.08);
+  border: 1px solid rgba(244, 180, 0, 0.35);
   color: var(--primary);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   text-align: center;
   transition: all 0.15s;
@@ -8106,19 +8106,28 @@ body {
 #keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
 .list-more-btn {
   display: block;
-  width: 100%;
-  margin: 0.6rem auto 0;
-  padding: 0.5rem;
+  width: fit-content;
+  margin: 0.75rem auto 0;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
   background: rgba(244, 180, 0, 0.08);
-  border: 1px dashed rgba(244, 180, 0, 0.35);
-  color: #FFC733;
-  font-size: 0.8rem;
-  border-radius: 10px;
+  border: 1px solid rgba(244, 180, 0, 0.35);
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   text-align: center;
+  transition: all 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
+.list-more-btn:hover {
+  background: rgba(244, 180, 0, 0.15);
+  border-color: var(--primary);
+}
 .list-more-btn:active { background: rgba(244, 180, 0, 0.16); }
+@media (max-width: 767px) {
+  .list-more-btn { width: 100%; }
+}
 @media (max-width: 767px) {
   .key-collapse, .activity-collapse { display: none; }
   .key-collapse.open, .activity-collapse.open { display: flex; flex-direction: column; gap: 0.5rem; }

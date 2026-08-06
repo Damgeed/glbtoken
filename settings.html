@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1208" />
+  <link rel="stylesheet" href="style.css?v=1209" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1039" />
+<link rel="stylesheet" href="settings.css?v=1040" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -337,8 +337,8 @@
 
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
-<script src="translations.js?v=1107"></script>
-<script data-cfasync="false" src="shared.js?v=1137"></script>
+<script src="translations.js?v=1108"></script>
+<script data-cfasync="false" src="shared.js?v=1138"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -677,15 +677,14 @@ window.toggleNotifMore = function(btn){
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'
         + '</div>');
     });
-    btn.innerHTML = 'Show less <span class="notif-more-caret">▴</span>';
+    btn.innerHTML = 'Show Less <span class="notif-more-caret">▴</span>';
     btn.setAttribute('data-open','1');
   } else {
     // Collapse: remove the expanded items (keep first 5)
-    var isMobile = window.innerWidth <= 768;
-    var keep = isMobile ? 5 : 0;
+    var keep = 5;
     var rows = list.querySelectorAll('.notif-item');
     for(var i = rows.length - 1; i >= keep; i--){ rows[i].remove(); }
-    btn.innerHTML = 'Show more (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
+    btn.innerHTML = 'Show More (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
     btn.removeAttribute('data-open');
   }
 };
@@ -970,8 +969,7 @@ function loadNotifications(){
     return '$'+Number(t.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
   function render(items){
-    var isMobile = window.innerWidth <= 768;
-    var limit = isMobile ? 5 : items.length;
+    var limit = 5; // uniform show-more: 5 cards max everywhere
     var visible = items.filter(function(n){ return dismissed.indexOf(n.id) === -1; });
     var hidden = visible.slice(limit);
     visible = visible.slice(0, limit);
@@ -997,7 +995,7 @@ function loadNotifications(){
     if(moreWrap){
       if(hidden.length){
         moreWrap.style.display = 'block';
-        document.getElementById('notifMoreBtn').innerHTML = 'Show more (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
+        document.getElementById('notifMoreBtn').innerHTML = 'Show More (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
         document.getElementById('notifMoreBtn').dataset.hidden = JSON.stringify(hidden.map(function(n){ return n; }));
       } else {
         moreWrap.style.display = 'none';

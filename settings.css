@@ -494,11 +494,10 @@ body.compact-cards .toggle-row {
 
 /* ── Show more notifications button ── */
 .notif-more-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1.1rem;
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem;
   border-radius: 999px;
   background: rgba(244, 180, 0, 0.08);
   border: 1px solid rgba(244, 180, 0, 0.35);

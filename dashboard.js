@@ -496,8 +496,8 @@ async function loadActivityFeed(){
     return itemHtml(type, desc, time, amtHtml);
   });
   // Mobile: first 3 visible, rest behind a Show-More toggle (desktop shows all 8)
-  var actFirst = activityCards.slice(0,3).join('');
-  var actRest = activityCards.slice(3);
+  var actFirst = activityCards.slice(0,5).join('');
+  var actRest = activityCards.slice(5);
   container.innerHTML = actFirst
     + (actRest.length
         ? '<div id="activityCollapse" class="activity-collapse" data-count="'+actRest.length+'">'+actRest.join('')+'</div>'
@@ -519,8 +519,8 @@ function refreshActivityMoreBtn(){
   if(!count){ btn.style.display = 'none'; return; }
   btn.style.display = '';
   btn.innerHTML = collapse.classList.contains('open')
-    ? 'Show Less ▲'
-    : 'Show More ('+count+') ▼';
+    ? 'Show Less ▴'
+    : 'Show More ('+count+') ▾';
 }
 
 // ── Recent Transactions (real, 5-col table) ──
