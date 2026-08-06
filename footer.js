@@ -2,9 +2,10 @@
  * footer.js — Reusable footer injector
  * Injects the EXACT footer HTML into <div id="footer-container">.
  *
- * Dashboard variant: when the container has data-mini="1", render a slim
- * Google-anchor-ad style bar (fixed bottom strip, dismissible ✕) instead of
- * the full footer.
+ * Dashboard variant: when the container has data-mini="1", the full footer is
+ * replaced by a Google-anchor-ad style bottom bar that stays HIDDEN until the
+ * user clicks the floating ⬆️ toggle (footer-toggle). Click again (or the ✕
+ * inside the bar) to collapse it back.
  */
 (function() {
   function injectFooter() {
@@ -32,8 +33,11 @@
 
   function injectMiniFooter(container) {
     var html =
-      '<div class="footer-anchor" id="footerAnchor">' +
-        '<button type="button" class="footer-anchor-close" onclick="dismissFooterAnchor()" aria-label="Close footer">✕</button>' +
+      '<button type="button" class="footer-toggle" id="footerToggle" onclick="toggleFooterAnchor()" aria-label="Show footer" title="Footer" aria-expanded="false">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>' +
+      '</button>' +
+      '<div class="footer-anchor" id="footerAnchor" aria-hidden="true">' +
+        '<button type="button" class="footer-anchor-close" onclick="toggleFooterAnchor()" aria-label="Close footer">✕</button>' +
         '<div class="footer-anchor-inner">' +
           '<a href="/" class="footer-anchor-logo notranslate"><img src="logo-nav.png" alt="GlbTOKEN" width="20" height="22" /><span class="footer-anchor-name notranslate">GlbTOKEN</span></a>' +
           '<span class="footer-anchor-tag" data-i18n="footer-tagline">Global Token for AI. One balance, 100+ models, 56 providers. Pay-as-you-go.</span>' +
@@ -48,13 +52,18 @@
       '</div>';
 
     container.innerHTML = html;
-    document.body.classList.add('has-anchor-footer');
   }
 
-  window.dismissFooterAnchor = function() {
-    var el = document.getElementById('footerAnchor');
-    if (el) el.remove();
-    document.body.classList.remove('has-anchor-footer');
+  window.toggleFooterAnchor = function() {
+    var bar = document.getElementById('footerAnchor');
+    var btn = document.getElementById('footerToggle');
+    if (!bar) return;
+    var open = document.body.classList.toggle('has-anchor-footer');
+    if (btn) {
+      btn.classList.toggle('active', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    bar.setAttribute('aria-hidden', open ? 'false' : 'true');
   };
 
   document.addEventListener('DOMContentLoaded', injectFooter);
