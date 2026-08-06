@@ -58,18 +58,7 @@
     arrow.title = 'Footer';
     arrow.innerHTML =
       '<svg width="80" height="30" viewBox="0 0 96 36" aria-hidden="true">' +
-        '<defs>' +
-          '<linearGradient id="faGoldEdge" x1="0" y1="0" x2="1" y2="0">' +
-            '<stop offset="0" stop-color="#C9A24B"/>' +
-            '<stop offset="0.5" stop-color="#EACB7A"/>' +
-            '<stop offset="1" stop-color="#C9A24B"/>' +
-          '</linearGradient>' +
-        '</defs>' +
         '<path class="fa-tab" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 31 Q89 35 84 35 L12 35 Q7 35 9 31 Z" />' +
-        '<path class="fa-rim" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 31 Q89 35 84 35 L12 35 Q7 35 9 31 Z" />' +
-        '<circle class="fa-splash" cx="14" cy="32" r="2"/>' +
-        '<circle class="fa-splash" cx="82" cy="32" r="2"/>' +
-        '<circle class="fa-splash" cx="48" cy="34" r="1.5"/>' +
         '<g class="fa-chevron"><polyline points="39 23 48 12 57 23" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
       '</svg>';
     arrow.onclick = function() { toggleFooterDrawer(); };
