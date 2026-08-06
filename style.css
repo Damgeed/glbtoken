@@ -2882,6 +2882,19 @@ input[type="range"]::-moz-range-thumb {
   transform: scale(1.1);
   box-shadow: 0 0 30px hsla(44 96% 52% / 0.4);
 }
+/* Desktop: frosted chat FAB so the dash sidebar footer (Refund, © brand) shows through */
+@media (min-width: 769px) {
+  .chat-fab {
+    background: hsla(44 96% 52% / 0.45);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+  .chat-fab:hover {
+    background: hsla(44 96% 52% / 0.78);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+}
 .chat-window {
   position: fixed;
   bottom: 5.5rem;
@@ -3347,16 +3360,6 @@ footer {
   font-size: 0.72rem;
   color: var(--text-muted);
   opacity: 0.7;
-}
-.footer-grid { gap: 0.5rem; }
-  .footer-drawer .footer-brand p { font-size: 0.72rem; margin-top: 0.3rem; }
-  .footer-drawer .footer-col h4 { margin-bottom: 0.2rem; font-size: 0.75rem; }
-  .footer-drawer .footer-col a,
-  .footer-drawer .footer-col span { margin-bottom: 0.15rem; font-size: 0.78rem; }
-  .footer-drawer .footer-bottom { margin-top: 0.4rem; padding-top: 0.35rem; }
-  body.has-footer-open .footer-arrow { bottom: var(--footer-h, 280px); }
-  body.has-footer-open .chat-fab { bottom: calc(var(--footer-h, 280px) + 0.9rem); }
-  body.has-footer-open .chat-window { bottom: calc(var(--footer-h, 280px) + 4.5rem); }
 }
 .footer-grid {
   display: grid;
