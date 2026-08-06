@@ -211,11 +211,29 @@ body { padding-top: 0 !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
 </style>
 <script>
-/* Visual demo pages are dark-only: force dark theme regardless of user preference */
-(function(){try{
-  document.documentElement.className = 'dark';
-  localStorage.setItem('gt_theme', 'dark');
-}catch(e){}})();
+/* Visual demo pages are dark-only: force dark here, never touch the
+   user's global theme preference (gt_theme), and no-op the theme toggle
+   so the navbar stays dark too. Runs after shared.js defines toggleTheme. */
+(function(){
+  try{ document.documentElement.className = 'dark'; }catch(e){}
+  function lock(){
+    try{
+      document.documentElement.className = 'dark';
+      window.toggleTheme = function(){ return; };
+      var b = document.getElementById('themeBtn');
+      if(b) b.textContent = '🌙';
+      var m = document.getElementById('themeBtnMobile');
+      if(m) m.textContent = '🌙';
+    }catch(e){}
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', lock);
+  } else {
+    lock();
+  }
+  setTimeout(lock, 300);
+  setTimeout(lock, 1000);
+})();
 </script>
 </head>
 <body>
