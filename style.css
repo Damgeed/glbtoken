@@ -3332,6 +3332,32 @@ footer {
   border-top: 1px solid var(--border);
   padding: 3rem 0 2rem;
 }
+/* ── Dash sidebar footer links (Option A: footer lives in the sidebar) ── */
+.dash-sidebar-footer {
+  margin-top: auto;
+  padding: 0.75rem 0 0.25rem;
+  border-top: 1px solid var(--border);
+}
+.dash-sidebar-footer .dash-sidebar-label {
+  margin-top: 0.5rem;
+  opacity: 0.65;
+}
+.dash-sidebar-copy {
+  padding: 0.6rem 1.25rem 0.25rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+.footer-grid { gap: 0.5rem; }
+  .footer-drawer .footer-brand p { font-size: 0.72rem; margin-top: 0.3rem; }
+  .footer-drawer .footer-col h4 { margin-bottom: 0.2rem; font-size: 0.75rem; }
+  .footer-drawer .footer-col a,
+  .footer-drawer .footer-col span { margin-bottom: 0.15rem; font-size: 0.78rem; }
+  .footer-drawer .footer-bottom { margin-top: 0.4rem; padding-top: 0.35rem; }
+  body.has-footer-open .footer-arrow { bottom: var(--footer-h, 280px); }
+  body.has-footer-open .chat-fab { bottom: calc(var(--footer-h, 280px) + 0.9rem); }
+  body.has-footer-open .chat-window { bottom: calc(var(--footer-h, 280px) + 4.5rem); }
+}
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -7079,6 +7105,8 @@ body {
     border-radius: 0 12px 12px 0;
     align-self: flex-start;
     height: 100%;
+    display: flex;
+    flex-direction: column;
     border-right: 1px solid var(--border);
     padding: 1.5rem 0 1rem;
     background: var(--card);

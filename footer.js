@@ -1,8 +1,8 @@
 /**
  * footer.js — Reusable footer injector
  * Injects the EXACT footer HTML into <div id="footer-container">.
- * Dash pages use the same normal footer in document flow — no drawers,
- * no handles, no custom logic. Identical on every page.
+ * Dash pages no longer include a footer-container: their footer links live
+ * at the bottom of the dash sidebar instead (see dash-sidebar-footer).
  */
 (function() {
   var FOOTER_HTML =

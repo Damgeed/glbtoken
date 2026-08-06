@@ -572,10 +572,10 @@ async function loadAnnouncements(){
     var icon = icons[a.priority] || 'ℹ️';
     var cls = 'announcement-banner announcement-'+ (a.priority||'info');
     var titleHtml = a.title ? '<strong>'+escapeHtml(a.title)+'</strong> ' : '';
-    return '<div class="'+cls+'" id="annBanner_'+a.id+'">'
+    return '<div class="'+cls+'" id="annBanner_'+safeJsId(a.id)+'">'
       + '<span class="ann-icon">'+icon+'</span>'
       + '<span class="ann-text">'+titleHtml+escapeHtml(a.message)+'</span>'
-      + '<button type="button" class="ann-close" onclick="dismissAnnouncement('+a.id+')" aria-label="Dismiss">✕</button>'
+      + '<button type="button" class="ann-close" onclick="dismissAnnouncement('+safeJsId(a.id)+')" aria-label="Dismiss">✕</button>'
       + '</div>';
   }).join('');
   container.style.display = 'block';
@@ -602,8 +602,8 @@ async function refreshAnnouncements(force){
       + '<div class="ann-admin-msg">'+escapeHtml(a.message)+'</div>'
       + '<div class="ann-admin-meta">'+prio+' · '+escapeHtml((a.created_at||'').replace('T',' ').slice(0,16))+'</div></div>'
       + '<div class="ann-admin-actions">'
-      + '<span class="ann-state '+stateCls+'" onclick="toggleAnnouncement('+a.id+','+(a.is_active?'false':'true')+')">'+stateTxt+'</span>'
-      + '<button type="button" class="btn-ghost btn-sm" onclick="deleteAnnouncement('+a.id+')">Delete</button>'
+      + '<span class="ann-state '+stateCls+'" onclick="toggleAnnouncement('+safeJsId(a.id)+','+(a.is_active?'false':'true')+')">'+stateTxt+'</span>'
+      + '<button type="button" class="btn-ghost btn-sm" onclick="deleteAnnouncement('+safeJsId(a.id)+')">Delete</button>'
       + '</div></div>';
   }).join('');
 }

@@ -417,6 +417,13 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       return d.innerHTML;
     }
 
+    // Whitelist for IDs interpolated into inline onclick handlers.
+    // Server-assigned ids are numeric/alphanumeric — strip anything else so a
+    // hostile value can never break out of the JS string/attribute context.
+    function safeJsId(v){
+      return String(v==null?'':v).replace(/[^A-Za-z0-9_-]/g,'');
+    }
+
     // ── API Helper ──
     let models = [], selectedAmount = 5, selectedPayment = 'stripe';
     let chartInst = null, sparkInst = null, sortDir = 'price_asc';
