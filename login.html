@@ -124,6 +124,10 @@
     if (banner) {
       try {
         var msg = decodeURIComponent(err);
+        var errDesc = new URLSearchParams(window.location.search).get('error_description');
+        if (errDesc) {
+          try { msg = msg + ' — ' + decodeURIComponent(errDesc); } catch(e2) {}
+        }
         banner.textContent = msg;
       } catch(e) {
         banner.textContent = 'An error occurred. Please try again.';

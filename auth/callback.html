@@ -34,13 +34,16 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
   var code = queryParams.get('code');
   var idToken = hashParams ? hashParams.get('id_token') : null;
   var error = queryParams.get('error') || (hashParams ? hashParams.get('error') : null);
+  var errorDesc = queryParams.get('error_description') || (hashParams ? hashParams.get('error_description') : null);
   var returnedState = queryParams.get('state') || (hashParams ? hashParams.get('state') : null);
   var codeVerifier = sessionStorage.getItem('gt_code_verifier');
   var storedState = sessionStorage.getItem('gt_oauth_state');
 
   // Handle Auth0 error response
   if (error) {
-    window.location.replace('/login.html?error=' + encodeURIComponent(error));
+    var errQ = 'error=' + encodeURIComponent(error);
+    if (errorDesc) errQ += '&error_description=' + encodeURIComponent(errorDesc);
+    window.location.replace('/login.html?' + errQ);
     return;
   }
 
