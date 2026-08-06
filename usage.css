@@ -1,4 +1,17 @@
 /* ── Usage page mobile table overrides ── */
+/* Scroll template for table cards: keep header fixed, let rows scroll (slide up/down) */
+.dash-card .scroll-x.tx-scroll {
+  max-height: 380px;
+  overflow-y: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.dash-card .scroll-x.tx-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
 @media (max-width: 768px) {
   #historyBody {
     min-width: 550px;

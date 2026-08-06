@@ -5672,7 +5672,19 @@ html.light .star.white {
 .icon-inline-lg { vertical-align:middle;margin-right:8px; }
 .icon-inline-sm { vertical-align:middle;margin-right:4px; }
 .scroll-x { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-.scroll-x table { min-width:500px; }
+/* Scroll template for table cards: keep header fixed, let rows scroll (slide up/down).
+   Add .tx-scroll to any .scroll-x table card to get the activity-style scroll. */
+.scroll-x.tx-scroll {
+  max-height: 380px;
+  overflow-y: auto;
+}
+.scroll-x.tx-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
+.scroll-x.tx-scroll table { min-width: 500px; }
 .scroll-x table th,
 .scroll-x table td { white-space:nowrap; }
 .scroll-x table td button { white-space:nowrap; }
