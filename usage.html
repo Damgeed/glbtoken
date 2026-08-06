@@ -177,6 +177,7 @@
             <div class="flex-grow"><div class="text-desc">Loading activity…</div></div>
           </div>
         </div>
+        <button id="usageActivityMoreBtn" class="list-more-btn" onclick="toggleUsageActivityMore()" style="display:none">Show More ▼</button>
         <div id="usageActEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No activity yet — buy tokens or use AI models to see activity here</div></div>
       </div>
 
@@ -337,8 +338,16 @@ function renderUsageActivity(){
   list.innerHTML = first
     + (rest.length
         ? '<div id="usageActivityCollapse" class="activity-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
-          + '<button id="usageActivityMoreBtn" class="list-more-btn" onclick="toggleUsageActivityMore()">Show More ('+rest.length+') ▼</button>'
         : '');
+  var moreBtn = document.getElementById('usageActivityMoreBtn');
+  if(moreBtn){
+    if(rest.length){
+      moreBtn.style.display = '';
+      moreBtn.textContent = 'Show More ('+rest.length+') ▼';
+    } else {
+      moreBtn.style.display = 'none';
+    }
+  }
 }
 window.setUsageActFilter = function(btn){
   _usageActFilter = btn.getAttribute('data-type') || 'all';

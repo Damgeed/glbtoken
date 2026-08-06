@@ -218,8 +218,8 @@
   .dash-activity.activity-scroll .activity-collapse.open {
     display: contents;
   }
-  /* Show More toggle visible on desktop too */
-  #usageActivityMoreBtn { display: block !important; }
+  /* Show More toggle visible on desktop too (JS controls visibility via inline display) */
+  #usageActivityMoreBtn:not([style*="display: none"]) { display: block; }
 }
 @media (min-width: 1100px) {
   .dash-activity.activity-scroll {
@@ -227,7 +227,7 @@
   }
 }
 @media (max-width: 767px) {
-  #usageActivityMoreBtn { display: block; }
+  #usageActivityMoreBtn:not([style*="display: none"]) { display: block; }
 }
 
 /* ── Login History (shared login-history.js — same styling as settings) ── */

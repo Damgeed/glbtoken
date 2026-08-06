@@ -8081,7 +8081,17 @@ body {
 
 /* ── Shared show-more collapse (mobile): keys, activity, etc. ── */
 .key-collapse, .activity-collapse { display: block; }   /* desktop: show all */
+/* Expanded collapse inside a flex/grid activity container must keep card gaps
+   (dashboard / any page using .dash-activity without usage.css grid rules) */
+.dash-activity .activity-collapse.open,
+.dash-activity .key-collapse.open {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+/* Show More toggles: hidden until JS populates them (JS controls via inline display) */
 #keyMoreBtn, #activityMoreBtn { display: none; }
+#keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
 .list-more-btn {
   display: block;
   width: 100%;
@@ -8099,8 +8109,8 @@ body {
 .list-more-btn:active { background: rgba(244, 180, 0, 0.16); }
 @media (max-width: 767px) {
   .key-collapse, .activity-collapse { display: none; }
-  .key-collapse.open, .activity-collapse.open { display: block; }
-  #keyMoreBtn, #activityMoreBtn { display: block; }
+  .key-collapse.open, .activity-collapse.open { display: flex; flex-direction: column; gap: 0.5rem; }
+  #keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
 }
 
 /* ── Table show-more collapse (logs/usage/billing/referrals): second tbody ── */

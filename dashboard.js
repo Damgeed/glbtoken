@@ -501,7 +501,6 @@ async function loadActivityFeed(){
   container.innerHTML = actFirst
     + (actRest.length
         ? '<div id="activityCollapse" class="activity-collapse" data-count="'+actRest.length+'">'+actRest.join('')+'</div>'
-          + '<button id="activityMoreBtn" class="list-more-btn" onclick="toggleActivityMore()">Show More ('+actRest.length+') ▼</button>'
         : '');
   refreshActivityMoreBtn();
 }
