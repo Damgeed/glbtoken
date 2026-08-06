@@ -228,7 +228,7 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
             print(f"⚠️ Login alert failed: {e}")
     token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "country": user.country}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent, "country": user.country}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 @router.get("/api/auth/google")
@@ -284,7 +284,7 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
         return {"requires_2fa": True, "pre_token": pre_token}
     token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 @router.get("/api/auth/github")
@@ -321,7 +321,7 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         return {"requires_2fa": True, "pre_token": pre_token}
     token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 # ── Auth0 Routes ──

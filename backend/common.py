@@ -112,6 +112,39 @@ def _403(detail: str = "Forbidden"):
     raise HTTPException(status_code=403, detail=detail)
 
 
+# ═══════════════════════════════════════════════════════════════
+# CUSTOMER TIER HELPERS — derived from lifetime spend (no DB column)
+#   starter      <  $20
+#   professional $20 – $99.99
+#   enterprise   >= $100  (Enterprise+ unlocks Team / organization features)
+# ═══════════════════════════════════════════════════════════════
+
+TIER_ORDER = {"starter": 0, "professional": 1, "enterprise": 2}
+ENTERPRISE_SPEND = 100.0
+PROFESSIONAL_SPEND = 20.0
+
+def user_tier(user) -> str:
+    """Derive a customer's tier from lifetime spend (total_spent)."""
+    spent = float(getattr(user, "total_spent", 0) or 0)
+    if spent >= ENTERPRISE_SPEND:
+        return "enterprise"
+    if spent >= PROFESSIONAL_SPEND:
+        return "professional"
+    return "starter"
+
+def require_tier(user, tier: str, feature: str = ""):
+    """Raise 403 unless the user's tier is at least `tier`.
+
+    Example: require_tier(user, 'enterprise', 'Team access')
+    """
+    if TIER_ORDER.get(user_tier(user), 0) < TIER_ORDER.get(tier, 2):
+        _403(
+            f"{feature} is available on the {tier.capitalize()} plan and above. "
+            "Upgrade to unlock access."
+        )
+
+
+
 def _429(detail: str = "Too many requests"):
     raise HTTPException(status_code=429, detail=detail)
 

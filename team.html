@@ -392,12 +392,26 @@
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1141"></script>
+<script data-cfasync="false" src="shared.js?v=1142"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1226"></script>
 
 <script>
 // ===== Team Management — real data from /api/orgs =====
+// ── Enterprise+ access gate ──
+if (!window.isEnterprise || !window.isEnterprise()) {
+  var _teamSection = document.getElementById('section-team');
+  if(_teamSection){
+    _teamSection.innerHTML =
+      '<div class="dash-card" style="text-align:center;padding:3rem 1.5rem">' +
+      '<div style="font-size:2.5rem;margin-bottom:0.75rem">🔒</div>' +
+      '<h2 style="margin-bottom:0.5rem">Team access is Enterprise+</h2>' +
+      '<p style="color:var(--text-muted);margin-bottom:1.5rem;max-width:420px;margin-left:auto;margin-right:auto">Organize your team, share tokens, and manage roles — included with the Enterprise plan. Tokens never expire.</p>' +
+      '<a class="btn-primary" href="topup.html" style="text-decoration:none">Upgrade to Enterprise →</a>' +
+      '</div>';
+  }
+  window.__teamGated = true;
+}
 var currentOrgId = '';
 var currentMyRole = 'member';
 var allMembers = [];          // full member list of the selected org (server truth)
@@ -1723,6 +1737,7 @@ function renderBatchResult(sent, dup, fail, fails, invalid){
     window.addEventListener('resize', updateOrgScrollArrows);
     setTimeout(updateOrgScrollArrows, 300);
   }
+  if(window.__teamGated){ return; }  // Enterprise+ gate: skip team bootstrapping
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', bootTeam);
   } else {

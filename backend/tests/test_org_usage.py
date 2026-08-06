@@ -18,6 +18,10 @@ def test_org_usage_counts_consumption_only(make_user, client, db):
     owner = make_user(name="Org Owner", email="owner@test.com", password="pass1234", balance=500.0)
     member = make_user(name="API Member", email="api@test.com", password="pass1234", balance=500.0)
 
+    # Org creation is Enterprise+ — owner must be above the $100 spend threshold
+    owner.total_spent = 100.0
+    db.commit()
+
     # Owner creates the org (auto-added as owner)
     h = _auth_headers(client, "owner@test.com", "pass1234")
     r = client.post("/api/orgs", json={"name": "Stats Org"}, headers=h)
@@ -48,8 +52,8 @@ def test_org_usage_counts_consumption_only(make_user, client, db):
     assert data["total_transactions"] == 3, f"expected 3 API calls, got {data['total_transactions']}"
     assert data["total_members"] == 2
 
-    # total_spent = member total_spent (the canonical figure)
-    assert abs(data["total_spent"] - 150.0) < 1e-6
+    # total_spent = sum of members' canonical user.total_spent (owner 100 + member 150)
+    assert abs(data["total_spent"] - 250.0) < 1e-6
 
     # Avg-cost is finite and non-negative
     assert data["total_spent"] / data["total_transactions"] >= 0
@@ -62,6 +66,9 @@ def test_org_usage_counts_consumption_only(make_user, client, db):
 
 def test_org_usage_zero_calls_zero_stats(make_user, client, db):
     owner = make_user(name="Quiet Owner", email="quiet@test.com", password="pass1234", balance=100.0)
+    # Enterprise+ gate: owner must be above the $100 spend threshold to create an org
+    owner.total_spent = 200.0
+    db.commit()
     h = _auth_headers(client, "quiet@test.com", "pass1234")
     r = client.post("/api/orgs", json={"name": "Quiet Org"}, headers=h)
     org_id = r.json()["id"]

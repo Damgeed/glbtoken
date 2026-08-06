@@ -779,6 +779,35 @@ window.applyAuth = function applyAuth(){
     var me = document.getElementById('mEmail'); if(me) me.textContent = (userData && userData.email) || '';
   }
   if(typeof updateBalance === 'function') updateBalance();
+  applyTeamNavGate();
+};
+
+// ── Customer Tier (Enterprise+ gates Team features) ──
+// Tier is derived from lifetime spend (total_spent) — same thresholds as the backend.
+window.getUserTier = function getUserTier(){
+  var spent = parseFloat((userData && userData.total_spent) || 0) || 0;
+  if(spent >= 100) return 'enterprise';
+  if(spent >= 20) return 'professional';
+  return 'starter';
+};
+window.isEnterprise = function isEnterprise(){ return window.getUserTier() === 'enterprise'; };
+window.applyTeamNavGate = function applyTeamNavGate(){
+  // Hide the Team sidebar entry (and its section label) for non-Enterprise users.
+  if(window.isEnterprise()) return;
+  var hidden = 0;
+  document.querySelectorAll('.dash-sidebar-item[href="team.html"]').forEach(function(a){
+    var label = a.previousElementSibling;
+    if(label && label.classList && label.classList.contains('dash-sidebar-label') &&
+       (label.textContent || '').trim() === 'Team'){
+      label.style.display = 'none'; hidden++;
+    }
+    a.style.display = 'none'; hidden++;
+  });
+  // Any other Team links (e.g. inline dashboard cards)
+  document.querySelectorAll('a[href="team.html"]').forEach(function(a){
+    if(a.style.display !== 'none'){ a.style.display = 'none'; hidden++; }
+  });
+  return hidden;
 };
 
 // ── Date+time formatter (YYYY-MM-DD HH:MM, 24h) — used by tables that

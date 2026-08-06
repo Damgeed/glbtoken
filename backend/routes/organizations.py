@@ -11,7 +11,7 @@ import re
 
 from database import get_db, User, Organization, OrgMember, OrgInvite, Transaction
 from auth import get_current_user
-from common import _400, _403, _404, _500, limiter
+from common import _400, _403, _404, _500, limiter, require_tier, user_tier
 from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest, TransferOwnerRequest
 from routes.auth_routes import send_email
 
@@ -21,7 +21,8 @@ router = APIRouter()
 @router.post("/api/orgs")
 @limiter.limit("10/minute")
 def create_org(req: CreateOrgRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Create a new organization."""
+    """Create a new organization. Enterprise+ only."""
+    require_tier(user, "enterprise", "Team access")
     if not req.name or not req.name.strip():
         _400("Organization name is required")
     
@@ -216,7 +217,8 @@ def delete_org(org_id: int, request: Request,
 @limiter.limit("60/minute")
 def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
                   user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Invite a user by email to join the organization. Generates an invite token."""
+    """Invite a user by email to join the organization. Generates an invite token. Enterprise+ only."""
+    require_tier(user, "enterprise", "Team access")
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
         _404("Organization not found")
