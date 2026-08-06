@@ -31,7 +31,7 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body { background: #0a0a0f;
+  body { background: var(--bg);
     min-height: 100vh;
     padding: 3rem 2rem;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -298,32 +298,17 @@
 body { padding-top: 0 !important; }
 .wrap, body > .container, body > .dashboard { margin-left: auto !important; margin-right: auto !important; margin-top: 1.5rem !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
+
+/* ── Light mode adaptation ── */
+html.light .container { background: transparent; }
+html.light .card { background: var(--card); border-color: var(--border); box-shadow: var(--shadow-card); }
+html.light .card:hover { border-color: var(--primary); }
+html.light .provider-name,
+html.light .model-badge,
+html.light .header p { color: var(--text-secondary); }
+html.light .footer { color: var(--text-muted); }
+
 </style>
-<script>
-/* Visual demo pages are dark-only: force dark here, never touch the
-   user's global theme preference (gt_theme), and no-op the theme toggle
-   so the navbar stays dark too. Runs after shared.js defines toggleTheme. */
-(function(){
-  try{ document.documentElement.className = 'dark'; }catch(e){}
-  function lock(){
-    try{
-      document.documentElement.className = 'dark';
-      window.toggleTheme = function(){ return; };
-      var b = document.getElementById('themeBtn');
-      if(b) b.textContent = '🌙';
-      var m = document.getElementById('themeBtnMobile');
-      if(m) m.textContent = '🌙';
-    }catch(e){}
-  }
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', lock);
-  } else {
-    lock();
-  }
-  setTimeout(lock, 300);
-  setTimeout(lock, 1000);
-})();
-</script>
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>

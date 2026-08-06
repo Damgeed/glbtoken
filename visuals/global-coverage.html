@@ -28,7 +28,7 @@
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a12;
+  body { background: var(--bg);
     min-height: 100vh;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     overflow-x: hidden;
@@ -146,32 +146,15 @@
 body { padding-top: 0 !important; }
 .wrap, body > .container, body > .dashboard { margin-left: auto !important; margin-right: auto !important; margin-top: 1.5rem !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
+
+/* ── Light mode adaptation ── */
+html.light .container { background: var(--card); }
+html.light .header .subtitle,
+html.light .legend-item,
+html.light .stat-card .label { color: var(--text-secondary); }
+html.light .stat-card { background: var(--card-hover); border-color: var(--border); }
+
 </style>
-<script>
-/* Visual demo pages are dark-only: force dark here, never touch the
-   user's global theme preference (gt_theme), and no-op the theme toggle
-   so the navbar stays dark too. Runs after shared.js defines toggleTheme. */
-(function(){
-  try{ document.documentElement.className = 'dark'; }catch(e){}
-  function lock(){
-    try{
-      document.documentElement.className = 'dark';
-      window.toggleTheme = function(){ return; };
-      var b = document.getElementById('themeBtn');
-      if(b) b.textContent = '🌙';
-      var m = document.getElementById('themeBtnMobile');
-      if(m) m.textContent = '🌙';
-    }catch(e){}
-  }
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', lock);
-  } else {
-    lock();
-  }
-  setTimeout(lock, 300);
-  setTimeout(lock, 1000);
-})();
-</script>
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>

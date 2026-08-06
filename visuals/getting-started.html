@@ -28,7 +28,7 @@
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body { background: #0A0B14;color:#e0e0e0;font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;min-height:100vh;padding:0}
+body { background: var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding:0}
 .wrap{max-width:900px;width:100%}
 h1{text-align:center;font-size:2rem;font-weight:700;margin-bottom:0.3rem}
 h1 .glb{color:#F4B400}
@@ -81,32 +81,14 @@ h1 .token{color:#00D68F}
 body { padding-top: 0 !important; }
 .wrap, body > .container, body > .dashboard { margin-left: auto !important; margin-right: auto !important; margin-top: 1.5rem !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
+
+/* ── Light mode adaptation ── */
+html.light .card { background: var(--card); border-color: var(--border); box-shadow: var(--shadow-card); }
+html.light .code-block { background: #f6f8fa; border-color: var(--border); }
+html.light .footer { color: var(--text-secondary); }
+html.light .sub { color: var(--text-muted); }
+
 </style>
-<script>
-/* Visual demo pages are dark-only: force dark here, never touch the
-   user's global theme preference (gt_theme), and no-op the theme toggle
-   so the navbar stays dark too. Runs after shared.js defines toggleTheme. */
-(function(){
-  try{ document.documentElement.className = 'dark'; }catch(e){}
-  function lock(){
-    try{
-      document.documentElement.className = 'dark';
-      window.toggleTheme = function(){ return; };
-      var b = document.getElementById('themeBtn');
-      if(b) b.textContent = '🌙';
-      var m = document.getElementById('themeBtnMobile');
-      if(m) m.textContent = '🌙';
-    }catch(e){}
-  }
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', lock);
-  } else {
-    lock();
-  }
-  setTimeout(lock, 300);
-  setTimeout(lock, 1000);
-})();
-</script>
 </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
