@@ -54,6 +54,7 @@ async def lifespan(app: FastAPI):
             'signup_ip': "VARCHAR DEFAULT ''",
             'referral_source': "VARCHAR DEFAULT ''",
             'default_payment_method_id': 'VARCHAR',
+            'public_id': 'VARCHAR',
         }
         with engine.connect() as conn:
             for col_name, col_type in all_columns.items():
@@ -62,6 +63,26 @@ async def lifespan(app: FastAPI):
                     conn.execute(sql)
                     print(f"✅ Added missing column: {col_name}")
             conn.commit()
+        # Backfill public_id for existing users (OpenRouter-style u_xxx)
+        try:
+            from common import ensure_public_id
+            from database import SessionLocal
+            from sqlalchemy import select
+            s = SessionLocal()
+            try:
+                users = s.execute(select(User)).scalars().all()
+                changed = 0
+                for u in users:
+                    if not getattr(u, "public_id", None):
+                        ensure_public_id(u)
+                        changed += 1
+                if changed:
+                    s.commit()
+                    print(f"✅ Backfilled public_id for {changed} existing users")
+            finally:
+                s.close()
+        except Exception as e:
+            print(f"⚠️ public_id backfill error (non-critical): {e}")
     except Exception as e:
         print(f"⚠️ Migration error (non-critical): {e}")
     # Auto-migrate: API key + transaction new columns

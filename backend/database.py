@@ -80,6 +80,7 @@ class User(Base):
     signup_ip = Column(String, default="")             # anti-fraud: registration IP
     referral_source = Column(String, default="")       # channel attribution (src=twitter etc.)
     default_payment_method_id = Column(String, nullable=True)  # saved card PM id for one-click recharge
+    public_id = Column(String, unique=True, index=True, nullable=True)  # OpenRouter-style u_xxx public ID (auto-generated)
     
     api_keys = relationship("ApiKey", back_populates="user", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")

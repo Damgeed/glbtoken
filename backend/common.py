@@ -144,6 +144,21 @@ def require_tier(user, tier: str, feature: str = ""):
         )
 
 
+def ensure_public_id(user) -> str:
+    """Return the user's OpenRouter-style public ID (u_xxx), generating one if missing.
+
+    Idempotent: existing users keep their ID; new users get a random one.
+    Format mirrors OpenRouter: lowercase 'u_' + 22 URL-safe random chars.
+    """
+    import secrets
+
+    if getattr(user, "public_id", None):
+        return user.public_id
+    new_id = "u_" + secrets.token_urlsafe(16)  # 22 chars, e.g. u_5f3a..._xQ
+    user.public_id = new_id
+    return new_id
+
+
 
 def _429(detail: str = "Too many requests"):
     raise HTTPException(status_code=429, detail=detail)

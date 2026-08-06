@@ -175,10 +175,14 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         # Don't block registration on New API failure
     
     auth = _auth_response(user, db)
+    from common import ensure_public_id
+    public_id = ensure_public_id(user)
+    db.commit()
     result = {
         "user": {
             "id": user.id, "name": user.name, "email": user.email,
             "token_balance": user.token_balance,
+            "public_id": public_id,
         },
         "token": auth["token"],
         "refresh_token": auth["refresh_token"],
@@ -228,7 +232,10 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
             print(f"⚠️ Login alert failed: {e}")
     token = create_access_token({"sub": str(user.id)})
     auth = _auth_response(user, db)
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent, "country": user.country}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
+    from common import ensure_public_id
+    public_id = ensure_public_id(user)
+    db.commit()
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent, "country": user.country, "public_id": public_id}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 @router.get("/api/auth/google")
@@ -988,9 +995,13 @@ def get_login_history(request: Request, user: User = Depends(get_current_user), 
 # ── User Profile (get/update) ──
 
 @router.get("/api/user/profile")
-def get_profile(user: User = Depends(get_current_user)):
+def get_profile(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    from common import ensure_public_id
+    public_id = ensure_public_id(user)
+    db.commit()  # persist newly generated public_id
     return {
         "id": user.id,
+        "public_id": public_id,
         "name": user.name,
         "email": user.email,
         "country": user.country,
