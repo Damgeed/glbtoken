@@ -3352,8 +3352,8 @@ body.has-footer-open .footer-scrim {
   left: 50%;
   transform: translateX(-50%) translateY(12px);
   z-index: 810;
-  width: 74px;
-  height: 40px;
+  width: 80px;
+  height: 36px;
   padding: 0;
   border: none;
   background: transparent;
@@ -3384,7 +3384,7 @@ body.has-footer-open .footer-arrow:active { transform: translateX(-50%) translat
 .fa-chevron {
   stroke: #0a0b14;
   stroke-width: 3;
-  transform-origin: 44px 24px;
+  transform-origin: 48px 22px;
   transition: transform 0.25s ease;
 }
 .footer-arrow.active .fa-chevron { transform: rotate(180deg); }
