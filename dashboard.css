@@ -1228,29 +1228,7 @@
   cursor: pointer;
   text-decoration: none;
 }
-/* Full width table */
-.tx-table-full {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 0.35rem;
-  font-size: 0.82rem;
-}
-/* Table header cell */
-.tx-th {
-  padding: 0.5rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border);
-}
-.tx-th-right {
-  text-align: right;
-}
-.tx-th-center {
-  text-align: center;
-}
+/* Table header cell (shared .tx-table styles live in style.css) */
 /* Table empty cell */
 .td-empty {
   text-align: center;

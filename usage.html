@@ -15,13 +15,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1210" />
+  <link rel="stylesheet" href="style.css?v=1211" />
   <!-- dashboard.css provides the shared .dash-card / .filter-btn-row / .chart-axis-labels
        styles so the Usage chart card matches the Overview design exactly -->
-<link rel="stylesheet" href="dashboard.css?v=1039" />
+<link rel="stylesheet" href="dashboard.css?v=1040" />
 <link rel="stylesheet" href="more.css?v=5" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1037" />
+<link rel="stylesheet" href="usage.css?v=1038" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -194,13 +194,13 @@
         </div>
         <div class="scroll-x tx-scroll tx-fit">
           <table class="tx-table" id="txDeposits">
-            <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Tokens</th><th>Status</th></tr></thead>
-            <tbody id="txDepositBody"><tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr></tbody>
+            <thead><tr><th>Date</th><th class="tx-th-right">Amount</th><th>Method</th><th class="tx-th-right">Tokens</th><th class="tx-th-center">Status</th></tr></thead>
+            <tbody id="txDepositBody"><tr><td colspan="5" class="td-empty">No deposits</td></tr></tbody>
             <tbody class="tx-collapse" id="txDepositCollapse"></tbody>
           </table>
           <table class="tx-table d-none" id="txConsumption">
-            <thead><tr><th>Date</th><th>Model</th><th>Tokens</th><th>Type</th></tr></thead>
-            <tbody id="txConsumptionBody"><tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr></tbody>
+            <thead><tr><th>Date</th><th>Model</th><th class="tx-th-right">Tokens</th><th>Type</th></tr></thead>
+            <tbody id="txConsumptionBody"><tr><td colspan="4" class="td-empty">No consumption</td></tr></tbody>
             <tbody class="tx-collapse" id="txConsumptionCollapse"></tbody>
           </table>
         </div>
@@ -238,7 +238,7 @@
           <table class="tx-table" id="loginTable">
             <thead><tr><th>Device</th><th>Browser</th><th>Location</th><th>IP</th><th>Status</th><th>Time</th></tr></thead>
             <tbody id="loginHistoryBody">
-              <tr><td colspan="6" class="tx-empty-cell">Loading login history…</td></tr>
+              <tr><td colspan="6" class="td-empty">Loading login history…</td></tr>
             </tbody>
           </table>
         </div>
@@ -271,7 +271,7 @@
 <script data-cfasync="false" src="shared.js?v=1140"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
-<script data-cfasync="false" src="filters.js?v=1135"></script>
+<script data-cfasync="false" src="filters.js?v=1136"></script>
 <script data-cfasync="false" src="usage-charts.js?v=4"></script>
 <script data-cfasync="false" src="login-history.js?v=1121"></script>
 

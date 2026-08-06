@@ -360,10 +360,10 @@
 
     // ── Transactions ──
     function txDepositRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td class="amount">'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="amount gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
     }
     function txConsumptionRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="amount red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
     }
     // Render first 5 rows, hide the rest behind a yellow Show More toggle (like Activity)
     function renderTxRows(firstBodyId, collapseBodyId, btnId, rows, rowFn, emptyHtml){
@@ -395,8 +395,8 @@
       const d=await safeApi('GET','/api/transactions?limit=50',null,null,true); if(!d)return;
         const dep=d.items.filter(t=>t.type==='deposit');
         const con=d.items.filter(t=>t.type==='consumption');
-        renderTxRows('txDepositBody','txDepositCollapse','txDepositMoreBtn',dep,txDepositRow,'<tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr>');
-        renderTxRows('txConsumptionBody','txConsumptionCollapse','txConsumptionMoreBtn',con,txConsumptionRow,'<tr><td colspan="4" class="tx-empty-cell">No consumption</td></tr>');
+        renderTxRows('txDepositBody','txDepositCollapse','txDepositMoreBtn',dep,txDepositRow,'<tr><td colspan="5" class="td-empty">No deposits</td></tr>');
+        renderTxRows('txConsumptionBody','txConsumptionCollapse','txConsumptionMoreBtn',con,txConsumptionRow,'<tr><td colspan="4" class="td-empty">No consumption</td></tr>');
     }
     function toggleTxMore(btn, collapseId){
       var c=document.getElementById(collapseId);

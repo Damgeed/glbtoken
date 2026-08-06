@@ -92,12 +92,6 @@
   font-size: 0.85rem;
 }
 /* Empty table cell */
-.tx-empty-cell {
-  text-align: center;
-  color: var(--text-muted);
-  padding: 1.5rem;
-  font-size: 0.85rem;
-}
 /* Filter row (wide gap variant) */
 .filter-row-wide {
   display: flex;

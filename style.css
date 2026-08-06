@@ -2181,6 +2181,7 @@ input[type="range"]::-moz-range-thumb {
 }
 .tx-table .amount {
   font-weight: 600;
+  text-align: right;
 }
 .tx-table .green {
   color: var(--success);
@@ -2393,7 +2394,7 @@ input[type="range"]::-moz-range-thumb {
   width: fit-content;
   margin: 0.75rem auto 0;
   padding: 0.5rem 1.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: rgba(244, 180, 0, 0.08);
   border: 1px solid rgba(244, 180, 0, 0.35);
   color: var(--primary);
@@ -6045,7 +6046,7 @@ body {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 0.35rem;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 .tx-table th {
   padding: 0.6rem 0.5rem;
@@ -6077,6 +6078,9 @@ body {
   background: rgba(244, 180, 0, 0.05);
   border-color: rgba(244, 180, 0, 0.45);
 }
+/* Shared column alignment helpers (Recent Transactions / Transaction History / tables) */
+.tx-th-right { text-align: right; }
+.tx-th-center { text-align: center; }
 .dash-activity {
   display: flex;
   flex-direction: column;
@@ -8114,7 +8118,7 @@ body {
   width: fit-content;
   margin: 0.75rem auto 0;
   padding: 0.5rem 1.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: rgba(244, 180, 0, 0.08);
   border: 1px solid rgba(244, 180, 0, 0.35);
   color: var(--primary);
