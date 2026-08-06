@@ -56,9 +56,9 @@
     arrow.setAttribute('aria-expanded', 'false');
     arrow.title = 'Footer';
     arrow.innerHTML =
-      '<svg width="80" height="36" viewBox="0 0 96 44" aria-hidden="true">' +
-        '<path class="fa-tab" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 38 Q89 43 84 43 L12 43 Q7 43 9 38 Z" />' +
-        '<g class="fa-chevron"><polyline points="39 27 48 16 57 27" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
+      '<svg width="80" height="30" viewBox="0 0 96 36" aria-hidden="true">' +
+        '<path class="fa-tab" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 31 Q89 35 84 35 L12 35 Q7 35 9 31 Z" />' +
+        '<g class="fa-chevron"><polyline points="39 23 48 12 57 23" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
       '</svg>';
     arrow.onclick = function() { toggleFooterDrawer(); };
     container.insertBefore(arrow, container.firstChild);
