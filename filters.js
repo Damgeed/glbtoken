@@ -403,7 +403,7 @@
       if(!c)return;
       c.classList.toggle('open');
       var open=c.classList.contains('open');
-      if(btn) btn.textContent = open ? 'Show Less ▴' : 'Show More (' + btn.getAttribute('data-count') + ') ▼';
+      if(btn) btn.textContent = open ? 'Show Less ▴' : 'Show More (' + btn.getAttribute('data-count') + ') ▾';
     }
     function switchTxTab(el,tab){
       document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));

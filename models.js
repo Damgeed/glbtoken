@@ -125,7 +125,7 @@
         if (items.length > showCount) {
           html += items.slice(0, showCount).map(m => buildCard(m, getCatMeta(m.category))).join('');
           html += `<div class="cat-more-wrap" style="display:none">${items.slice(showCount).map(m => buildCard(m, getCatMeta(m.category))).join('')}</div>`;
-          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show ${items.length - showCount} more ▾</button>`;
+          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show More (${items.length - showCount}) ▾</button>`;
         } else {
           html += items.map(m => buildCard(m, getCatMeta(m.category))).join('');
         }
@@ -145,7 +145,7 @@
         if (items.length > showCount) {
           html += items.slice(0, showCount).map(m => buildCard(m, null)).join('');
           html += `<div class="cat-more-wrap" style="display:none">${items.slice(showCount).map(m => buildCard(m, null)).join('')}</div>`;
-          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show ${items.length - showCount} more ▾</button>`;
+          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show More (${items.length - showCount}) ▾</button>`;
         } else {
           html += items.map(m => buildCard(m, null)).join('');
         }
@@ -158,11 +158,11 @@
       const exp = btn.getAttribute('data-expanded') === 'true';
       if (exp) {
         wrap.style.display = 'none';
-        btn.textContent = btn.textContent.replace(/^Show less/, 'Show ' + (wrap.children.length) + ' more') + ' ▾';
+        btn.textContent = 'Show More (' + wrap.children.length + ') ▾';
         btn.setAttribute('data-expanded', 'false');
       } else {
         wrap.style.display = '';
-        btn.textContent = 'Show less ▴';
+        btn.textContent = 'Show Less ▴';
         btn.setAttribute('data-expanded', 'true');
       }
     }

@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1209" />
+  <link rel="stylesheet" href="style.css?v=1210" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="settings.css?v=1040" />
   </head>
@@ -821,8 +821,13 @@ function loadAccountOverview(){
     var verEl = document.getElementById('acctEmailVerified');
     var verBtn = document.getElementById('verifyEmailBtn');
     var verified = !!p.email_verified;
-    if(verEl) verEl.textContent = verified ? '✅ Verified' : '⚠️ Not verified';
-    if(verBtn) verBtn.style.display = verified ? 'none' : '';
+    var acctEmail = p.email || '';
+    // Synthetic addresses (phone signup / Apple hide-my-email / GitHub fallback)
+    // are not real mailboxes — they can never be email-verified, so show "—"
+    // instead of a misleading "Not verified" + Verify button.
+    var synthetic = /@(phone\.glbtoken\.io|privaterelay\.local|github\.com)$/i.test(acctEmail);
+    if(verEl) verEl.textContent = synthetic ? '—' : (verified ? '✅ Verified' : '⚠️ Not verified');
+    if(verBtn) verBtn.style.display = (verified || synthetic) ? 'none' : '';
     var sinceEl = document.getElementById('acctSince');
     if(sinceEl && p.created_at){
       var d = new Date(p.created_at);

@@ -133,6 +133,7 @@ async def verify_google_token(token: str) -> dict:
             "id": data["sub"],
             "email": data["email"],
             "name": data.get("name", ""),
+            "email_verified": str(data.get("email_verified", "false")).lower() in ("true", "1"),
         }
 
 async def verify_github_code(code: str) -> dict:
@@ -170,13 +171,18 @@ async def verify_github_code(code: str) -> dict:
             headers={"Authorization": f"Bearer {access_token}"},
         )
         emails = email_resp.json() if email_resp.status_code == 200 else []
-        primary_email = next(
-            (e["email"] for e in emails if e.get("primary")),
-            user_data.get("email", f"{user_data['login']}@github.com")
-        )
-        
+        primary = next((e for e in emails if e.get("primary")), None)
+        primary_email = (primary or {}).get("email") or user_data.get("email")
+        email_verified = bool((primary or {}).get("verified"))
+        if not primary_email:
+            # No real email available — fall back to a synthetic address that is
+            # NEVER marked verified (it is not a real mailbox).
+            primary_email = f"{user_data['login']}@github.com"
+            email_verified = False
+
         return {
             "id": str(user_data["id"]),
             "email": primary_email,
             "name": user_data.get("name", user_data["login"]),
+            "email_verified": email_verified,
         }

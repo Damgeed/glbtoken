@@ -275,7 +275,7 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
         "sub": google_user.get("id") or "",
         "email": google_user.get("email") or "",
         "name": google_user.get("name") or "",
-        "email_verified": True,
+        "email_verified": google_user.get("email_verified", False),
     }
     user, _ = _resolve_social_user(db, info)
     record_login_event(user.id, request, True, db)
@@ -312,7 +312,7 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         "sub": github_user.get("id") or "",
         "email": github_user.get("email") or "",
         "name": github_user.get("name") or "",
-        "email_verified": True,
+        "email_verified": github_user.get("email_verified", False),
     }
     user, _ = _resolve_social_user(db, info, id_field="github_id")
     record_login_event(user.id, request, True, db)
@@ -457,6 +457,10 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
         _400("Verification failed. Please try again.")
     
     email = user_info.get("email", f"{phone}@phone.glbtoken.io")
+    # A synthetic phone address (phone@phone.glbtoken.io) is not a real mailbox —
+    # it can never be email-verified. Only mark verified when Auth0 actually
+    # reports a verified email for this phone user.
+    email_verified = bool(user_info.get("email") and user_info.get("email_verified"))
     user = db.query(User).filter(User.email == email).first()
     if not user:
         user = User(
@@ -464,7 +468,7 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
             email=email,
             password_hash=None,
             token_balance=SIGNUP_BONUS_TOKENS,
-            email_verified=True,
+            email_verified=email_verified,
             is_admin=False,
         )
         db.add(user)
@@ -482,7 +486,8 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
         except Exception as e:
             print(f"⚠️ New API sync failed on verify-sms-code: {e}")
     else:
-        user.email_verified = True
+        # Don't force email_verified=True on phone logins — a synthetic
+        # phone address cannot prove email ownership.
         db.commit()
     
     jwt_token = create_access_token({"sub": str(user.id)})

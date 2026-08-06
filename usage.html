@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1209" />
+  <link rel="stylesheet" href="style.css?v=1210" />
   <!-- dashboard.css provides the shared .dash-card / .filter-btn-row / .chart-axis-labels
        styles so the Usage chart card matches the Overview design exactly -->
 <link rel="stylesheet" href="dashboard.css?v=1039" />
@@ -177,7 +177,7 @@
             <div class="flex-grow"><div class="text-desc">Loading activity…</div></div>
           </div>
         </div>
-        <button id="usageActivityMoreBtn" class="list-more-btn" onclick="toggleUsageActivityMore()" style="display:none">Show More ▼</button>
+        <button id="usageActivityMoreBtn" class="list-more-btn" onclick="toggleUsageActivityMore()" style="display:none">Show More ▾</button>
         <div id="usageActEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No activity yet — buy tokens or use AI models to see activity here</div></div>
       </div>
 
@@ -204,8 +204,8 @@
             <tbody class="tx-collapse" id="txConsumptionCollapse"></tbody>
           </table>
         </div>
-        <button class="list-more-btn" id="txDepositMoreBtn" onclick="toggleTxMore(this,'txDepositCollapse')" style="display:none">Show More ▼</button>
-        <button class="list-more-btn" id="txConsumptionMoreBtn" onclick="toggleTxMore(this,'txConsumptionCollapse')" style="display:none">Show More ▼</button>
+        <button class="list-more-btn" id="txDepositMoreBtn" onclick="toggleTxMore(this,'txDepositCollapse')" style="display:none">Show More ▾</button>
+        <button class="list-more-btn" id="txConsumptionMoreBtn" onclick="toggleTxMore(this,'txConsumptionCollapse')" style="display:none">Show More ▾</button>
         
       </div>
 
@@ -271,7 +271,7 @@
 <script data-cfasync="false" src="shared.js?v=1140"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
-<script data-cfasync="false" src="filters.js?v=1134"></script>
+<script data-cfasync="false" src="filters.js?v=1135"></script>
 <script data-cfasync="false" src="usage-charts.js?v=4"></script>
 <script data-cfasync="false" src="login-history.js?v=1121"></script>
 
@@ -360,7 +360,7 @@ function toggleUsageActivityMore(){
   if(!c) return;
   c.classList.toggle('open');
   var btn = document.getElementById('usageActivityMoreBtn');
-  if(btn) btn.textContent = c.classList.contains('open') ? 'Show Less ▴' : 'Show More (' + c.getAttribute('data-count') + ') ▼';
+  if(btn) btn.textContent = c.classList.contains('open') ? 'Show Less ▴' : 'Show More (' + c.getAttribute('data-count') + ') ▾';
 }
 function loadUsageActivity(){
   var container = document.getElementById('usageActivityList');
