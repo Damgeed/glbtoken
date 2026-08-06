@@ -38,9 +38,9 @@
 .doc-table thead tr { border-bottom: 1px solid var(--border); color: var(--text-muted); }
 .doc-table tbody tr { border-bottom: 1px solid var(--border-light); }
 .doc-table th { text-align: left; padding: 0.625rem 0.75rem; }
-.doc-table th.t-right { text-align: right; }
+.doc-table th.t-right { text-align: right !important; }
 .doc-table td { padding: 0.5rem 0.75rem; }
-.doc-table td.t-right { text-align: right; }
+.doc-table td.t-right { text-align: right !important; }
 /* Mobile: allow horizontal scroll instead of breaking layout */
 @media (max-width: 768px) {
   .doc-table { display: block; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }

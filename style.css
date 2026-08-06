@@ -5740,11 +5740,6 @@ html.light .star.white {
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .flex-row-wrap { display:flex;gap:0.5rem;flex-wrap:wrap; }
 .scroll-hint { display:none; }
-/* 📱 dashboard card scroll containers */
-@keyframes scrollHintPulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
 /* ── Professional Dashboard Styling ── */
 body {
   background: var(--bg);
@@ -6122,8 +6117,8 @@ body {
   border-color: rgba(244, 180, 0, 0.45);
 }
 /* Shared column alignment helpers (Recent Transactions / Transaction History / tables) */
-.tx-th-right { text-align: right; }
-.tx-th-center { text-align: center; }
+.tx-th-right { text-align: right !important; }
+.tx-th-center { text-align: center !important; }
 .dash-activity {
   display: flex;
   flex-direction: column;
@@ -7826,30 +7821,6 @@ body {
   }
   .params-panel {
     padding: 0.5rem 0.75rem;
-  }
-
-  .dash-card div[style*="overflow-x:auto"],
-  .dash-card .scroll-x {
-    position: relative;
-  }
-  .dash-card div[style*="overflow-x:auto"]::after,
-  .dash-card .scroll-x::after {
-    content: "→";
-    position: absolute;
-    right: 4px;
-    bottom: 1.4rem;
-    font-size: 1.2rem;
-    color: var(--primary);
-    opacity: 0.6;
-    pointer-events: none;
-    animation: scrollHintPulse 1.8s ease-in-out infinite;
-    z-index: 2;
-    line-height: 1;
-  }
-  .dash-card.is-scrolled div[style*="overflow-x:auto"]::after,
-  .dash-card.is-scrolled .scroll-x::after {
-    opacity: 0 !important;
-    animation: none !important;
   }
 
   .notif-grid {

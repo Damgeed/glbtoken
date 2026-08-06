@@ -360,7 +360,7 @@
 
     // ── Transactions ──
     function txDepositRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td class="amount">'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="amount gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td class="amount gold">'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="amount gold">+'+escapeHtml(String(t.tokens||0))+'</td><td><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
     }
     function txConsumptionRow(t){
       return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="amount red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
