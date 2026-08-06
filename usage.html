@@ -19,9 +19,9 @@
   <!-- dashboard.css provides the shared .dash-card / .filter-btn-row / .chart-axis-labels
        styles so the Usage chart card matches the Overview design exactly -->
 <link rel="stylesheet" href="dashboard.css?v=1039" />
-<link rel="stylesheet" href="more.css?v=4" />
+<link rel="stylesheet" href="more.css?v=5" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1036" />
+<link rel="stylesheet" href="usage.css?v=1037" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -192,7 +192,7 @@
           <button class="tx-tab active tx-tab-btn" onclick="switchTxTab(this,'deposits')">Deposits</button>
           <button class="tx-tab tx-tab-btn" onclick="switchTxTab(this,'consumption')">Consumption</button>
         </div>
-        <div class="scroll-x tx-scroll">
+        <div class="scroll-x tx-scroll tx-fit">
           <table class="tx-table" id="txDeposits">
             <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Tokens</th><th>Status</th></tr></thead>
             <tbody id="txDepositBody"><tr><td colspan="5" class="tx-empty-cell">No deposits</td></tr></tbody>
@@ -268,10 +268,10 @@
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1138"></script>
+<script data-cfasync="false" src="shared.js?v=1140"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
-<script data-cfasync="false" src="filters.js?v=1133"></script>
+<script data-cfasync="false" src="filters.js?v=1134"></script>
 <script data-cfasync="false" src="usage-charts.js?v=4"></script>
 <script data-cfasync="false" src="login-history.js?v=1121"></script>
 
@@ -290,7 +290,7 @@ var USAGE_SVGS = {
 };
 function fmtUsageActTime(iso){
   if(!iso) return '<strong>—</strong>';
-  var d = new Date(iso);
+  var d = new Date((typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime());
   if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();

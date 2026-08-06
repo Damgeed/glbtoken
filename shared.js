@@ -778,7 +778,7 @@ window.applyAuth = function applyAuth(){
 //    need a real timestamp (Recent Transactions, Reward History, keys…)
 window.fmtDT = function fmtDT(iso){
   if(!iso) return '';
-  var d = new Date(iso);
+  var d = new Date((typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime());
   if(isNaN(d.getTime())) return '';
   function p(n){ return (n<10?'0':'')+n; }
   return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
@@ -788,12 +788,25 @@ window.fmtDT = function fmtDT(iso){
 //    Login Attempts / billing invoices tables (td-date-strong + td-time)
 window.fmtDTStack = function fmtDTStack(iso){
   if(!iso) return '<div class="td-date-strong">—</div>';
-  var d = new Date(iso);
+  var d = new Date(parseUTCDate(iso));
   if(isNaN(d.getTime())) return '<div class="td-date-strong">—</div>';
   function p(n){ return (n<10?'0':'')+n; }
   var date = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
   var time = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
   return '<div class="td-date-strong">'+date+'</div><div class="td-time">'+time+'</div>';
+};
+
+// ── UTC-safe date parse ──
+// Backend stores naive UTC (SQLite returns tz-less datetimes; isoformat() has no
+// timezone suffix). new Date(iso) would parse those as LOCAL time, shifting every
+// displayed timestamp by the UTC offset (e.g. +8h in Asia). Normalize to UTC first.
+window.parseUTCDate = function parseUTCDate(iso){
+  if(!iso) return NaN;
+  var norm = String(iso).trim();
+  if(!/Z$|[+-]\d{2}:?\d{2}$/.test(norm)){
+    norm = norm.replace(' ', 'T') + 'Z';
+  }
+  return new Date(norm).getTime();
 };
 
 // ── Balance UI sync (shared so it works on all pages, not just usage) ──

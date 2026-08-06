@@ -214,7 +214,7 @@ function fmtCompact(n){
 }
 function timeAgo(iso){
   if(!iso) return '';
-  var t = new Date(iso).getTime();
+  var t = (typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime();
   if(isNaN(t)) return '';
   var s = Math.floor((Date.now() - t)/1000);
   if(s < 60) return 'Just now';
@@ -447,7 +447,7 @@ async function renderSpendingDonut(days){
 // ── Activity feed (real — /api/dashboard recent_activity, keeps demo structure) ──
 function fmtActivityTime(iso){
   if(!iso) return '<strong>—</strong>';
-  var d = new Date(iso);
+  var d = new Date(typeof window.parseUTCDate === 'function' ? window.parseUTCDate(iso) : new Date(iso).getTime());
   if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();

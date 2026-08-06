@@ -368,7 +368,7 @@
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1138"></script>
+<script data-cfasync="false" src="shared.js?v=1140"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -391,7 +391,7 @@ var drawerUserId = null;      // member currently shown in the detail drawer
 
 function timeAgo(iso){
   if(!iso) return '';
-  var then = new Date(iso).getTime();
+  var then = (typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime();
   if(isNaN(then)) return '';
   var secs = Math.floor((Date.now() - then) / 1000);
   if(secs < 60) return 'just now';
@@ -544,7 +544,7 @@ async function memberBulkRemove(){
 // ── Invite helpers (countdown / stats) ──
 function fmtCountdown(iso){
   if(!iso) return '';
-  var then = new Date(iso).getTime();
+  var then = (typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime();
   if(isNaN(then)) return '';
   var diff = then - Date.now();
   if(diff <= 0) return 'Expired';

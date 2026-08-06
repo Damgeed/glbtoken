@@ -53,6 +53,10 @@
 .cp-bar-row .cp-bar-label strong{color:var(--text)}
 
 @media (max-width:768px){
+  .cp-stats{grid-template-columns:repeat(3,1fr);gap:0.5rem}
+  .cp-stat{padding:0.75rem 0.6rem}
   .cp-stat-value{font-size:1.35rem}
+  .cp-stat-label{font-size:0.6rem;letter-spacing:0.03em}
+  .cp-stat-sub{font-size:0.65rem}
   .ann-item{padding:1rem}
 }

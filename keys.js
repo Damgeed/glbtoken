@@ -264,7 +264,7 @@
       return String(Math.round(n));
     }
     function fmtExpiry(iso){
-      const d=new Date(iso);const now=Date.now();
+      const d=new Date((typeof window.parseUTCDate==='function')?window.parseUTCDate(iso):new Date(iso).getTime());const now=Date.now();
       if(isNaN(d.getTime()))return '';
       if(d.getTime()<now)return '<span class="expiry-soon">Expired</span>';
       const days=Math.ceil((d.getTime()-now)/86400000);

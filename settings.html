@@ -338,7 +338,7 @@
 <script src="nav.js?v=17"></script>
 <script src="footer.js?v=15"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1138"></script>
+<script data-cfasync="false" src="shared.js?v=1140"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1225"></script>
 
@@ -947,7 +947,7 @@ function getNotifArr(key){
 }
 function notifTime(iso){
   if(!iso) return '';
-  var diff = (Date.now() - new Date(iso).getTime())/1000;
+  var diff = (Date.now() - (typeof window.parseUTCDate === 'function' ? window.parseUTCDate(iso) : new Date(iso).getTime()))/1000;
   if(diff < 60) return 'Just now';
   if(diff < 3600) return Math.floor(diff/60)+' min ago';
   if(diff < 86400) return Math.floor(diff/3600)+' hour'+(diff>=7200?'s':'')+' ago';

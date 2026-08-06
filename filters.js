@@ -312,7 +312,7 @@
             case 'consumption': icon='⚡'; colorCls='var(--success-subtle)'; desc=escapeHtml(a.model||'Consumption')+' · '+parseInt(a.tokens||0).toLocaleString()+' tokens'; val='-'+parseInt(a.tokens||0); break;
             default: icon='📋'; colorCls='var(--border)'; desc=escapeHtml(a.description||a.type||''); break;
           }
-          var dt=a.created_at?new Date(a.created_at).toLocaleString():'';
+          var dt=a.created_at?new Date((typeof window.parseUTCDate==='function')?window.parseUTCDate(a.created_at):new Date(a.created_at).getTime()).toLocaleString():'';
           var expandId='act-expand-'+i;
           var hasLog=a.type==='api_call'&&a.log_id?' data-log-id="'+escapeHtml(String(a.log_id))+'" data-model="'+escapeHtml(a.model||'')+'" data-tokens="'+(a.tokens||0)+'" data-cost="'+(a.cost||0)+'"':'';
           return '<div class="dash-activity-item" style="cursor:'+(hasLog?'pointer':'default')+'"'+(hasLog?' onclick="toggleLogContent(this,'+"'"+expandId+"'"+')"':'')+'>'+
