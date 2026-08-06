@@ -38,16 +38,17 @@
     var footer = container.querySelector('footer');
     if (footer) footer.classList.add('footer-drawer');
 
-    // Scrim: click anywhere outside the drawer to hide it.
+    // Scrim: visual backdrop only. Clicks pass through (pointer-events none
+    // on mobile so the page stays scrollable); a document-level listener
+    // closes the drawer when tapping outside it.
     var scrim = document.createElement('div');
     scrim.className = 'footer-scrim';
     scrim.id = 'footerScrim';
     scrim.setAttribute('aria-hidden', 'true');
-    scrim.onclick = function() { toggleFooterDrawer(); };
     container.insertBefore(scrim, container.firstChild);
 
-    // Solid trapezoid tab (wide base, narrower top, curved corners) that
-    // kisses the bottom edge — shown only near the bottom of the page.
+    // Cream trapezoid tab with gold edge — wide base, narrower top, curved
+    // corners; kisses the bottom edge, shown only near the bottom of the page.
     var arrow = document.createElement('button');
     arrow.type = 'button';
     arrow.className = 'footer-arrow';
@@ -57,16 +58,45 @@
     arrow.title = 'Footer';
     arrow.innerHTML =
       '<svg width="80" height="30" viewBox="0 0 96 36" aria-hidden="true">' +
+        '<defs>' +
+          '<linearGradient id="faGoldEdge" x1="0" y1="0" x2="1" y2="0">' +
+            '<stop offset="0" stop-color="#C9A24B"/>' +
+            '<stop offset="0.5" stop-color="#EACB7A"/>' +
+            '<stop offset="1" stop-color="#C9A24B"/>' +
+          '</linearGradient>' +
+        '</defs>' +
         '<path class="fa-tab" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 31 Q89 35 84 35 L12 35 Q7 35 9 31 Z" />' +
+        '<path class="fa-rim" d="M24 4 Q24 0 28 0 L68 0 Q72 0 72 4 L87 31 Q89 35 84 35 L12 35 Q7 35 9 31 Z" />' +
+        '<circle class="fa-splash" cx="14" cy="32" r="2"/>' +
+        '<circle class="fa-splash" cx="82" cy="32" r="2"/>' +
+        '<circle class="fa-splash" cx="48" cy="34" r="1.5"/>' +
         '<g class="fa-chevron"><polyline points="39 23 48 12 57 23" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
       '</svg>';
     arrow.onclick = function() { toggleFooterDrawer(); };
     container.insertBefore(arrow, container.firstChild);
 
-    // Scroll listeners: only show the tab near the bottom of the page.
-    window.addEventListener('scroll', updateFooterTabVisibility, { passive: true });
+    // Close the drawer when tapping anywhere outside it (desktop + mobile).
+    document.addEventListener('click', function(e) {
+      if (!document.body.classList.contains('has-footer-open')) return;
+      var t = e.target;
+      if (t && t.closest && (t.closest('.footer-drawer') || t.closest('.footer-arrow'))) return;
+      toggleFooterDrawer();
+    });
+
+    // Scroll listeners: on mobile, scrolling the page dismisses the open
+    // drawer (bottom-sheet behavior) so it never blocks the screen.
+    function onPageScroll() {
+      if (document.body.classList.contains('has-footer-open')) {
+        if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+          toggleFooterDrawer();
+          return;
+        }
+      }
+      updateFooterTabVisibility();
+    }
+    window.addEventListener('scroll', onPageScroll, { passive: true });
     var dc = document.querySelector('.dash-content');
-    if (dc) dc.addEventListener('scroll', updateFooterTabVisibility, { passive: true });
+    if (dc) dc.addEventListener('scroll', onPageScroll, { passive: true });
     window.addEventListener('resize', updateFooterTabVisibility);
     updateFooterTabVisibility();
   }
