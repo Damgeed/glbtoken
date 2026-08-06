@@ -44,7 +44,10 @@
     arrow.setAttribute('aria-expanded', 'false');
     arrow.title = 'Footer';
     arrow.innerHTML =
-      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+      '<svg width="88" height="48" viewBox="0 0 88 48" aria-hidden="true">' +
+        '<path class="fa-tab" d="M20 4 Q20 0 24 0 L64 0 Q68 0 68 4 L79 42 Q81 47 76 47 L12 47 Q7 47 9 42 Z" />' +
+        '<g class="fa-chevron"><polyline points="35 27 44 16 53 27" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
+      '</svg>';
     arrow.onclick = function() { toggleFooterDrawer(); };
     container.insertBefore(arrow, container.firstChild);
   }
