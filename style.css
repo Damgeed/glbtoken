@@ -5546,6 +5546,12 @@ html.light .star.white {
 .icon-inline { vertical-align:middle;margin-right:6px; }
 .icon-inline-lg { vertical-align:middle;margin-right:8px; }
 .icon-inline-sm { vertical-align:middle;margin-right:4px; }
+/* Keep icon + title text together inside a flex .dash-section-title */
+.dash-title-group {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
 .scroll-x { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 /* Scroll template for table cards: keep header fixed, let rows scroll (slide up/down).
    Add .tx-scroll to any .scroll-x table card to get the activity-style scroll. */

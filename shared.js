@@ -1009,27 +1009,30 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
     var sels = '.visual-wide, .scroll-x, .overflow-auto, .tx-scroll, [class*="card-row"], [class*="scroll-row"], [class*="cards-scroll"]';
     var wides = document.querySelectorAll(sels);
     for(var i=0;i<wides.length;i++){
-      var w = wides[i];
-      if(hHints.indexOf(w) !== -1) continue;
-      if(w.scrollWidth <= w.clientWidth + 20) continue; // not overflowing
-      hHints.push(w);
-      var hh = document.createElement('div');
-      hh.className = 'v-scroll-hint h-scroll-hint';
-      hh.setAttribute('aria-hidden','true');
-      hh.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-      var pos = getComputedStyle(w).position;
-      if(pos === 'static') w.style.position = 'relative';
-      w.appendChild(hh);
-      var hidden = false;
-      function onHScroll(){
-        if(!hh.parentNode) return;
-        if(w.scrollLeft > 30){
-          if(!hidden){ hidden = true; hh.classList.add('v-hide'); }
-        } else {
-          if(hidden){ hidden = false; hh.classList.remove('v-hide'); }
+      (function(w){
+        // Skip the referral charts row — canvas charts don't need a swipe hint
+        if(w.classList && w.classList.contains('chart-scroll-row')) return;
+        if(hHints.indexOf(w) !== -1) return;
+        if(w.scrollWidth <= w.clientWidth + 20) return; // not overflowing
+        hHints.push(w);
+        var hh = document.createElement('div');
+        hh.className = 'v-scroll-hint h-scroll-hint';
+        hh.setAttribute('aria-hidden','true');
+        hh.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+        var pos = getComputedStyle(w).position;
+        if(pos === 'static') w.style.position = 'relative';
+        w.appendChild(hh);
+        var hidden = false;
+        function onHScroll(){
+          if(!hh.parentNode) return;
+          if(w.scrollLeft > 30){
+            if(!hidden){ hidden = true; hh.classList.add('v-hide'); }
+          } else {
+            if(hidden){ hidden = false; hh.classList.remove('v-hide'); }
+          }
         }
-      }
-      w.addEventListener('scroll', onHScroll, {passive:true});
+        w.addEventListener('scroll', onHScroll, {passive:true});
+      })(wides[i]);
     }
   }
   var htries = 0;

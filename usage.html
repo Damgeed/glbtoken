@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1230" />
+  <link rel="stylesheet" href="style.css?v=1231" />
   <!-- dashboard.css provides the shared .dash-card / .filter-btn-row / .chart-axis-labels
        styles so the Usage chart card matches the Overview design exactly -->
 <link rel="stylesheet" href="dashboard.css?v=1043" />
@@ -186,8 +186,8 @@
       <div class="dash-card">
         <div class="act-toolbar">
           <div class="dash-section-title" style="margin:0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            All Events
+            <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            All Events</span>
             <span class="label-muted-sm" id="usageActivityCount">0 events</span>
           </div>
           <div class="act-filter-row" id="usageActFilters">
@@ -210,8 +210,8 @@
       <!-- Transaction History -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Transaction History
+          <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Transaction History</span>
           <span class="tx-title-sub">Deposits & Consumption</span>
         </div>
         <div class="tx-tab-row">
@@ -293,7 +293,7 @@
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1148"></script>
+<script data-cfasync="false" src="shared.js?v=1149"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1228"></script>
 <script data-cfasync="false" src="filters.js?v=1139"></script>
