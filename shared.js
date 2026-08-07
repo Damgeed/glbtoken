@@ -973,15 +973,21 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
     mo.observe(document.documentElement, {childList:true, subtree:true});
   }
 
-  // 2) Vertical scroll-down hint — flashing chevrons, hides on first scroll.
-  //    Only when the page actually overflows, and only on mobile.
-  var hintShown = false;
-  function showVHint(){
-    if(hintShown) return;
+  // 2) Vertical scroll-down hint — persistent flashing chevrons, center bottom.
+  //    Shows on ANY overflowing page (mobile). Stays flashing while at/near the
+  //    top; hides while scrolling; reappears when back near the top.
+  var vHintEl = null;
+  var vHintHidden = false;
+  function pageOverflows(){
     var doc = document.documentElement;
-    if(doc.scrollHeight <= window.innerHeight + 60) return; // nothing to scroll
-    if(document.getElementById('vScrollHint')) return;
-    hintShown = true;
+    var body = document.body;
+    var sh = Math.max(doc.scrollHeight, body ? body.scrollHeight : 0);
+    var ch = window.innerHeight || doc.clientHeight || 0;
+    // +80 tolerance absorbs mobile URL-bar height jitter
+    return sh > ch + 80;
+  }
+  function ensureVHint(){
+    if(vHintEl || !pageOverflows()) return;
     var h = document.createElement('div');
     h.id = 'vScrollHint';
     h.className = 'v-scroll-hint';
@@ -989,26 +995,28 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
     h.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
       + '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
     document.body.appendChild(h);
-    var gone = false;
-    function hide(){
-      if(gone) return;
-      gone = true;
-      h.classList.add('v-hide');
-      setTimeout(function(){ if(h.parentNode) h.parentNode.removeChild(h); }, 500);
-      window.removeEventListener('scroll', hide);
-      window.removeEventListener('touchmove', hide);
-    }
-    window.addEventListener('scroll', hide, {passive:true});
-    window.addEventListener('touchmove', hide, {passive:true});
-    setTimeout(hide, 6000); // never linger longer than 6s
+    vHintEl = h;
   }
-  // Retry a few times: async content changes scrollHeight after load
+  function onVScroll(){
+    if(!vHintEl) return;
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    if(y > 90){
+      if(!vHintHidden){ vHintHidden = true; vHintEl.classList.add('v-hide'); }
+    } else {
+      if(vHintHidden){ vHintHidden = false; vHintEl.classList.remove('v-hide'); }
+    }
+  }
+  // capture:true catches scrolls from inner containers too (dash lists etc.)
+  document.addEventListener('scroll', onVScroll, {capture:true, passive:true});
+  // Create the hint once content settles (async loads change scrollHeight)
   var tries = 0;
   var timer = setInterval(function(){
-    showVHint();
-    if(++tries > 10) clearInterval(timer);
-  }, 500);
-  window.addEventListener('load', showVHint);
+    ensureVHint();
+    if(++tries > 14) clearInterval(timer);
+  }, 400);
+  window.addEventListener('load', ensureVHint);
+  window.addEventListener('orientationchange', function(){ setTimeout(ensureVHint, 300); });
+  window.addEventListener('resize', function(){ setTimeout(ensureVHint, 300); });
 
   // 3) Horizontal swipe hint for wide visual diagrams (.visual-wide) —
   //    flashing right chevron at the container's right edge, hides on scroll.
@@ -1035,7 +1043,6 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
         w.removeEventListener('scroll', hideH);
       }
       w.addEventListener('scroll', hideH, {passive:true});
-      setTimeout(hideH, 5000);
     }
   }
   var htries = 0;
