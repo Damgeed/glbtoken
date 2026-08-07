@@ -507,7 +507,19 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
                 e2._surfaced = true;
                 throw e2;
               } catch(refreshError){
-                // Refresh failed — fall through to normal session expired handling
+                // Refresh failed — before declaring session expired, check if
+                // another tab rotated the token (multi-tab race). If storage now
+                // holds a DIFFERENT refresh token, retry once with it.
+                var rt2 = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+                if(rt2 && rt2 !== rt){
+                  try {
+                    await refreshSession();
+                    opts.headers['Authorization'] = 'Bearer '+token;
+                    const retryResp2 = await fetch(API_URL+path, opts);
+                    if(retryResp2.ok) return await retryResp2.json();
+                  } catch(e2){ /* fall through to session expired handling */ }
+                }
+                // Fall through to normal session expired handling
               }
             }
             // Anonymous visitor hitting a protected endpoint — not a session problem
@@ -571,7 +583,12 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     }
     window.addEventListener('pageshow',function(e){
       if(e.persisted && !(window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'))){
-        window.location.replace('login.html');
+        // Only force login on protected pages. Public pages (visuals, pricing,
+        // how, models, etc.) must restore normally on back/swipe — otherwise
+        // guests get hijacked to login.html every time they navigate back.
+        var page = window.location.pathname.split('/').pop();
+        var isProtected = ['dashboard.html','settings.html','logs.html','billing.html','usage.html','manage-keys.html','team.html','referrals.html','playground.html','apikeys.html','topup.html'].indexOf(page) !== -1;
+        if(isProtected){ window.location.replace('login.html'); }
       }
     });
 

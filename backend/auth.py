@@ -40,6 +40,15 @@ def create_access_token(data: dict, expires_minutes: int | None = None) -> str:
 
 def generate_refresh_token(user_id: int, db: Session) -> str:
     """Generate a refresh token, store its SHA-256 hash, return the raw token."""
+    # Opportunistic cleanup: drop this user's expired tokens (rotation is
+    # non-destructive now, so without this the table would grow until expiry)
+    try:
+        db.query(RefreshToken).filter(
+            RefreshToken.user_id == user_id,
+            RefreshToken.expires_at < datetime.now(timezone.utc)
+        ).delete(synchronize_session=False)
+    except Exception:
+        pass
     raw = secrets.token_hex(32)  # 64-char hex string
     token_hash = hashlib.sha256(raw.encode()).hexdigest()
     expires = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
@@ -49,7 +58,14 @@ def generate_refresh_token(user_id: int, db: Session) -> str:
     return raw
 
 def validate_refresh_token(raw: str, db: Session) -> int:
-    """Validate a refresh token. Returns user_id if valid. Raises 401 on failure."""
+    """Validate a refresh token. Returns user_id if valid. Raises 401 on failure.
+
+    NOTE: rotation is NON-destructive — the old token is NOT revoked here.
+    Revoking on every refresh caused false logouts with multiple tabs: two tabs
+    refreshing the same token race, the loser gets 401 despite a valid session,
+    and the frontend then clears the session and redirects to login. Old tokens
+    stay valid until the 30-day expiry; explicit logout still revokes.
+    """
     token_hash = hashlib.sha256(raw.encode()).hexdigest()
     entry = db.query(RefreshToken).filter(
         RefreshToken.token_hash == token_hash,
@@ -58,9 +74,6 @@ def validate_refresh_token(raw: str, db: Session) -> int:
     ).first()
     if not entry:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
-    # Rotate: revoke old token
-    entry.revoked = True
-    db.commit()
     return entry.user_id
 
 
