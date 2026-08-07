@@ -123,12 +123,19 @@ def generate_api_key() -> str:
 async def verify_google_token(token: str) -> dict:
     """Verify Google OAuth token and return user info."""
     async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+        resp = await client.post(
+            "https://oauth2.googleapis.com/tokeninfo",
+            data={"id_token": token},
         )
         if resp.status_code != 200:
             raise HTTPException(status_code=400, detail="Invalid Google token")
         data = resp.json()
+        # CRITICAL: verify the audience (aud) matches OUR Google OAuth client.
+        # Without this, any valid id_token issued to a different Google app
+        # (containing the victim's email) would pass verification → account takeover.
+        aud = data.get("aud", "")
+        if not GOOGLE_CLIENT_ID or aud != GOOGLE_CLIENT_ID:
+            raise HTTPException(status_code=401, detail="Invalid Google token audience")
         return {
             "id": data["sub"],
             "email": data["email"],

@@ -25,17 +25,6 @@
       if(!token){showPage('register');return}
       selectedAmount=amt;showPage('topup');
     }
-    function selectPackage(el,amount){
-      document.querySelectorAll('.pricing-card').forEach(c=>c.classList.remove('selected'));
-      el.classList.add('selected');
-      selectedAmount=amount;
-      document.getElementById('topupTotal').textContent=fmtUSD(amount);
-    }
-    function selectCustomTopup(){
-      document.querySelectorAll('.pricing-card').forEach(c=>c.classList.remove('selected'));
-      var card=document.getElementById('customCard');card.classList.add('selected');
-      updateCustomPricing();
-    }
     function selectPayment(el,method){
       document.querySelectorAll('.payment-opt,.payment-card').forEach(p=>p.classList.remove('selected'));
       el.classList.add('selected');selectedPayment=method;

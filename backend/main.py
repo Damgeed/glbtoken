@@ -287,5 +287,8 @@ if __name__ == "__main__":
     sys.stdout.flush()
     # proxy_headers=True: trust X-Forwarded-For from the Railway ingress proxy so
     # request.client.host (and the slowapi rate limiter) see the REAL client IP.
-    # forwarded_allow_ips="*" is safe here because Railway is the only ingress.
-    uvicorn.run(app, host="0.0.0.0", port=port, proxy_headers=True, forwarded_allow_ips="*")
+    # forwarded_allow_ips: DO NOT use "*" — it lets clients forge X-Forwarded-For
+    # and bypass rate limits. Default to empty (trust no proxy headers) unless
+    # FORWARDED_ALLOW_IPS is explicitly set to the ingress proxy IPs.
+    forwarded_ips = os.getenv("FORWARDED_ALLOW_IPS", "").strip()
+    uvicorn.run(app, host="0.0.0.0", port=port, proxy_headers=True, forwarded_allow_ips=forwarded_ips)

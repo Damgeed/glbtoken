@@ -12,23 +12,6 @@
       }
       return _flightCache[key];
     }
-    async function loadTransactions(){
-      if(!token)return;
-      var depBody=document.getElementById('depositBody'), conBody=document.getElementById('consumptionBody');
-      if(!depBody||!conBody)return;
-      var txns=await safeApi('GET','/api/transactions',null,null,true); if(!txns||!txns.length){depBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No transactions yet</td></tr>';return}
-        var depRows='', conRows='';
-        txns.forEach(function(t){
-          var date=t.created_at?fmtDT(t.created_at) : '-';
-          var amtClass=t.type==='deposit'?'green':'red';
-          var amtSign=t.type==='deposit'?'+':'-';
-          var amount='<span class="amount '+amtClass+'">'+amtSign+Math.abs(t.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>';
-          var row='<tr><td>'+date+'</td><td>'+escapeHtml(t.description||t.type)+'</td><td>'+amount+'</td><td>'+escapeHtml(t.status||'completed')+'</td></tr>';
-          if(t.type==='deposit'||t.type==='topup') depRows+=row; else conRows+=row;
-        });
-        depBody.innerHTML=depRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No deposits yet</td></tr>';
-        conBody.innerHTML=conRows||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No consumption yet</td></tr>';
-    }
     // ── Billing ──
     // (Payment method + invoice management live in billing.html — no dashboard stubs)
 
@@ -174,30 +157,6 @@
       if(monthlyEl)monthlyEl.textContent='$'+(data.projected_monthly||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
       if(dailyEl)dailyEl.textContent='$'+(data.daily_average||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
     }
-
-    async function loadSpeedComparison(){
-      var body=document.getElementById('speedComparisonBody');
-      if(!body)return;
-      body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--text-muted)">Loading...</td></tr>';
-      var result=await safeApi('GET','/api/available-models',null,8000,true); if(!result){ body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Failed to load speed comparison.</td></tr>';return}
-        var models=(result&&result.models)||[];
-        if(!models.length){
-          body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No speed comparison data available.</td></tr>';
-          return;
-        }
-        var sorted=models.filter(function(m){return m.prompt_price>0;}).sort(function(a,b){return (a.prompt_price||0)-(b.prompt_price||0);}).slice(0,20);
-        body.innerHTML=sorted.map(function(m){
-          var name=m.name||m.model||m.model_id||'Unknown';
-          var provider=m.provider||'-';
-          var price=m.prompt_price||0;
-          var speedCls=price<0.0000005?'speed-fast':price<0.000002?'speed-medium':'speed-slow';
-          var speedLabel=price<0.0000005?'Fast':price<0.000002?'Medium':'Slower';
-          return '<tr><td>'+escapeHtml(name)+'</td><td>'+escapeHtml(provider)+'</td><td class="'+speedCls+'">'+speedLabel+'</td><td>$'+(price*1000).toFixed(4)+'/1K</td></tr>';
-        }).join('');
-
-    }
-
-
 
 /* ══════════════════════════════════════════
    DASHBOARD REAL-DATA WIRING (2026-08)

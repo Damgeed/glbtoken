@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Two-Factor Verification — GlbTOKEN</title>
 <meta name="robots" content="noindex,nofollow" />
+<meta name="referrer" content="no-referrer" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://glbtoken-backend-production.up.railway.app https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -52,7 +53,15 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
   var API_URL = 'https://glbtoken-backend-production.up.railway.app';
   var params = new URLSearchParams(window.location.search);
   var preToken = params.get('pre') || '';
-  var next = params.get('next') || '/dashboard.html';
+  // Whitelist `next`: only allow same-site relative paths (e.g. /dashboard.html).
+  // Block absolute URLs (http/https), protocol-relative (//), and javascript: —
+  // otherwise an attacker can craft ?next=https://evil.com and steal the JWT
+  // that gets appended to the redirect URL below.
+  var rawNext = params.get('next') || '/dashboard.html';
+  var next = '/dashboard.html';
+  if(rawNext && rawNext.charAt(0) === '/' && rawNext.charAt(1) !== '/' && !/^\/\//.test(rawNext) && !/^\/[a-z]+:/i.test(rawNext)){
+    next = rawNext;
+  }
 
   if(!preToken){
     window.location.replace('/login.html?error=missing_2fa_session');

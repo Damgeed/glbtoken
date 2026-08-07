@@ -57,22 +57,6 @@
 
 
 
-    function startUsageTicker(){
-      var tickerEl=document.getElementById('usageTicker');
-      if(!tickerEl)return;
-      if(window._tickerInterval)clearInterval(window._tickerInterval);
-      async function updateTicker(){
-        var data=await safeApi('GET','/api/dashboard',null,5000,true);
-        if(!data)return;
-        var todayCalls=data.today_requests||data.total_requests||0;
-        var todayTokens=data.today_tokens||data.total_tokens_consumed||0;
-        var balance=data.token_balance||0;
-        tickerEl.innerHTML='<span class="ticker-item">📊 <strong>Today:</strong> '+todayCalls.toLocaleString()+' calls · '+todayTokens.toLocaleString()+' tokens</span><span class="ticker-item">💰 <strong>Balance:</strong> '+balance.toLocaleString()+' GT</span>';
-      }
-      updateTicker();
-      window._tickerInterval=setInterval(updateTicker,30000);
-    }
-
     // ── Auth0 Social Login Callback ──
     async function handleAuth0Callback(){
       // Called on /auth/callback page — no nav/toast DOM elements here
@@ -110,23 +94,6 @@
     }
 
     // ── Forgot Password ──
-    function showForgotPassword(){
-      // Create modal overlay
-      var overlay = document.createElement('div');
-      overlay.className = 'modal-overlay';
-      overlay.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;inset:0;z-index:9999';
-      var t = window.t || function(key, fallback) { return (typeof I18N !== 'undefined' && I18N[key] && I18N[key][curLang]) ? I18N[key][curLang] : fallback; };
-      overlay.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
-        '<h3 style="margin:0 0 0.5rem;color:var(--text)">' + t("Reset Password","Reset Password") + '</h3>' +
-        '<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">' + t("Enter your email and we'll send a reset link.","Enter your email and we'll send a reset link.") + '</p>' +
-        '<div class="auth-field"><label>' + t("Email","Email") + '</label><input type="email" id="resetEmail" placeholder="you@example.com"></div>' +
-        '<div id="resetError" style="color:#ff4444;font-size:0.85rem;margin-bottom:1rem;text-align:center;display:none"></div>' +
-        '<div style="display:flex;gap:0.75rem;margin-top:1rem">' +
-        '<button class="btn-primary" style="flex:1;font-size:0.8rem;white-space:nowrap" id="resetSendBtn" onclick="sendResetLink()">' + t("Send Reset Link","Send Reset Link") + '</button>' +
-        '<button class="btn-secondary" style="flex:1;font-size:0.8rem;text-align:center;justify-content:center;padding:0.75rem 1rem" onclick="this.closest(\'.modal-overlay\').remove()">' + t("Cancel","Cancel") + '</button>' +
-        '</div></div>';
-      document.body.appendChild(overlay);
-    }
     async function sendResetLink(){
       var email = document.getElementById('resetEmail').value;
       var btn = document.getElementById('resetSendBtn');

@@ -1,6 +1,6 @@
 """GlbTOKEN — Auth Routes (register, login, OAuth, Auth0, OTP, SMS, password, profile)"""
 
-from fastapi import APIRouter, Depends, Query, Body, Request, HTTPException
+from fastapi import APIRouter, Depends, Query, Request, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
@@ -30,7 +30,7 @@ from schemas import (
     TwoFactorCodeRequest, TwoFactorConfirmRequest,
     Auth0SignupRequest, OptionalEmailRequest, VerifyEmailRequest,
     ForgotPasswordRequest, ChangePasswordRequest, ResetPasswordRequest,
-    ProfileUpdateRequest,
+    ProfileUpdateRequest, RefreshRequest, LogoutRequest,
 )
 
 router = APIRouter()
@@ -373,6 +373,12 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
     except Exception as e:
         print(f"❌ Email verify error: {e}")
         _400(str(e))
+    
+    # CRITICAL: cross-check the email claim in the verified id_token against the
+    # client-supplied email. Never trust body.email alone for account lookup.
+    claimed_email = (user_info.get("email") or "").lower().strip()
+    if not claimed_email or claimed_email != email:
+        _400("Email mismatch with verified token")
     
     # Find or create user
     user = db.query(User).filter(User.email == email).first()
@@ -1024,10 +1030,10 @@ def update_profile(req: ProfileUpdateRequest, user: User = Depends(get_current_u
 @limiter.limit("60/minute")
 async def refresh_access_token(
     request: Request,
-    body: dict = Body(...),
+    body: RefreshRequest,
     db: Session = Depends(get_db)
 ):
-    raw = body.get("refresh_token")
+    raw = body.refresh_token
     if not raw:
         _400("refresh_token is required")
     try:
@@ -1041,9 +1047,9 @@ async def refresh_access_token(
 
 @router.post("/auth/logout")
 @limiter.limit("60/minute")
-async def logout(request: Request, body: dict = Body(...), db: Session = Depends(get_db)):
+async def logout(request: Request, body: LogoutRequest, db: Session = Depends(get_db)):
     """Revoke a refresh token server-side (industry-standard logout)."""
-    raw = body.get("refresh_token")
+    raw = body.refresh_token
     if raw:
         revoke_refresh_token(raw, db)
     return {"status": "success"}

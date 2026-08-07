@@ -67,7 +67,7 @@
       const cards=ordered.map(key=>`
         <div class="key-swipe" data-swipe-id="${escapeHtml(String(key.id))}">
           <div class="key-swipe-actions">
-            <button class="swipe-action swipe-edit" data-key-id="${escapeHtml(String(key.id))}" onclick="openEditKeyModal(${key.id})">Edit</button>
+            <button class="swipe-action swipe-edit" data-key-id="${escapeHtml(String(key.id))}" onclick="openEditKeyModal(${safeJsId(key.id)})">Edit</button>
             <button class="swipe-action ${key.is_active?'swipe-pause':'swipe-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
             <button class="swipe-action swipe-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
           </div>

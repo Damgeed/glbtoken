@@ -1,6 +1,6 @@
 """GlbTOKEN — Payments Routes (topup, Paystack, Stripe, Crypto, transactions, billing)"""
 
-from fastapi import APIRouter, Depends, Body, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
@@ -15,7 +15,7 @@ from auth import get_current_user
 from newapi_integration import add_user_quota
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, \
     PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES
-from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest
+from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest, PaystackVerifyRequest
 
 router = APIRouter()
 
@@ -195,10 +195,11 @@ def paystack_initialize(req: InitiatePaymentRequest, request: Request, user: Use
 
 @router.post("/api/payments/paystack/verify")
 @limiter.limit("10/minute")
-def paystack_verify(reference: str = Body(...), request: Request = None, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def paystack_verify(body: PaystackVerifyRequest, request: Request = None, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not PAYSTACK_SECRET_KEY:
         _not_configured("Paystack")
     import re
+    reference = body.reference
     if not re.match(r'^[a-zA-Z0-9_-]+$', reference):
         _400("Invalid reference format")
     import httpx

@@ -439,11 +439,20 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       refreshPromise = (async () => {
         const rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
         if(!rt) throw new Error('No refresh token');
-        const refreshResp = await fetch(API_URL+'/auth/refresh', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({refresh_token: rt})
-        });
+        // 10s timeout so a hung refresh endpoint can't block all api() calls
+        const rc = new AbortController();
+        const rtimer = setTimeout(()=>rc.abort(), 10000);
+        let refreshResp;
+        try {
+          refreshResp = await fetch(API_URL+'/auth/refresh', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({refresh_token: rt}),
+            signal: rc.signal
+          });
+        } finally {
+          clearTimeout(rtimer);
+        }
         if(!refreshResp.ok) throw new Error('Refresh failed');
         const refreshData = await refreshResp.json();
         // Store new tokens — access token caches per-tab (sessionStorage), never localStorage
@@ -514,11 +523,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
             if(isDashPage){
               showSessionExpired();
             } else {
-              (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
-              (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
-              sessionStorage.removeItem('gt_token');
-              localStorage.removeItem('gt_refresh_token');
-              localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
+              clearSession();
               window.location.href = 'login.html';
             }
             throw new Error('Session expired');
@@ -663,6 +668,21 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       });
     })();
 
+// ── Shared session teardown ──
+// Single source of truth for clearing ALL auth-related storage keys.
+// Used by logoutUser(), the 401 handler, and the session-expired modal.
+function clearSession(){
+  token=''; userData={};
+  try{ sessionStorage.removeItem('gt_token'); }catch(e){}
+  try{ (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token'); }catch(e){}
+  try{ (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user'); }catch(e){}
+  try{ localStorage.removeItem('gt_refresh_token'); }catch(e){}
+  try{ localStorage.removeItem('gt_newapi_token'); }catch(e){}
+  try{ localStorage.removeItem('gt_newapi_endpoint'); }catch(e){}
+  try{ localStorage.removeItem('gt_keys'); }catch(e){}
+  try{ if(window.__secure && window.__secure.clear) window.__secure.clear(); }catch(e){}
+}
+
 function logoutUser(){
       // Show confirmation dialog instead of immediate logout
       showConfirm('Sign out?','Are you sure you want to sign out?',function(){
@@ -671,12 +691,7 @@ function logoutUser(){
       var rt=(window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
       if(rt){fetch(API_URL+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})}).catch(function(){});}
     }catch(e){}
-    token='';userData={};
-    sessionStorage.removeItem('gt_token');
-    window.__secure.removeItem('gt_token');window.__secure.removeItem('gt_user');
-    localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');
-    localStorage.removeItem('gt_keys');localStorage.removeItem('gt_refresh_token');
-    window.__secure.clear();
+    clearSession();
     applyAuth();
         window.location.href='/';
       });

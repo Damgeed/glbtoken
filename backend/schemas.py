@@ -102,6 +102,18 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class LogoutRequest(BaseModel):
+    refresh_token: str = ""
+
+
+class PaystackVerifyRequest(BaseModel):
+    reference: str
+
+
 # ── API Key Schemas ──
 
 class ApiKeyCreate(BaseModel):

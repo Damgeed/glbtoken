@@ -8,8 +8,11 @@ daemon thread with a 10s timeout so API latency is never affected.
 """
 import hashlib
 import hmac
+import ipaddress
 import json
+import socket
 import threading
+import urllib.parse
 import urllib.request
 import urllib.error
 
@@ -36,10 +39,32 @@ def _sign(body: bytes, secret: str) -> str:
     return hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
 
 
+def _is_private_url(url: str) -> bool:
+    """Block SSRF targets: private/reserved IPs, localhost, cloud metadata."""
+    try:
+        host = urllib.parse.urlparse(url).hostname
+        if not host:
+            return True
+        # Resolve DNS; if it fails or resolves to private/reserved ranges → block
+        infos = socket.getaddrinfo(host, None)
+        for info in infos:
+            ip = ipaddress.ip_address(info[4][0])
+            if (ip.is_private or ip.is_loopback or ip.is_link_local
+                    or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+                return True
+        return False
+    except Exception:
+        return True  # fail closed
+
+
 def send_webhook(user, event: str, payload: dict):
     """Queue a signed webhook POST for the given event (fire-and-forget)."""
     url = get_webhook_url(user)
     if not url or not (url.startswith("https://") or url.startswith("http://")):
+        return
+    # SSRF guard: reject private-network / metadata endpoints before delivery.
+    if _is_private_url(url):
+        print(f"⚠️ Webhook URL blocked (private/reserved address): {url}")
         return
     body = json.dumps({
         "event": event,

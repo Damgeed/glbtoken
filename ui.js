@@ -104,13 +104,6 @@
     if(dc) dc.addEventListener('scroll', onScroll);
   }
   // ── Page Loading Progress ──
-  function showPageLoader(){
-    var el = document.querySelector('.page-loader');
-    if(!el){el=document.createElement('div');el.className='page-loader';el.innerHTML='<div class="loader-bar"></div>';document.body.appendChild(el)}
-    el.classList.add('active');
-    var bar = el.querySelector('.loader-bar');
-    if(bar){bar.style.width='30%';setTimeout(function(){bar.style.width='70%'},200);setTimeout(function(){bar.style.width='95%'},800)}
-  }
   function hidePageLoader(){
     var el = document.querySelector('.page-loader');
     if(!el) return;
@@ -124,12 +117,6 @@
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">' + escapeHtml(icon || '📄') + '</div><div class="empty-title">' + escapeHtml(title) + '</div><div class="empty-desc">' + escapeHtml(desc) + '</div></div>';
   }
   // ── Skeleton Loading ──
-  function showSkeleton(container, count){
-    if(!container) return;
-    var html = '';
-    for(var i=0;i<count;i++) html += '<div class="skeleton skeleton-card"></div>';
-    container.innerHTML = html;
-  }
   // ── Price Calculator ──
   function initPriceCalculator(){
     var container = document.getElementById('priceCalculator');
@@ -142,20 +129,26 @@
       '<span style="font-size:0.85rem;color:var(--text-muted);white-space:nowrap">= <span id="calcTokenResult" style="font-weight:700;color:var(--primary)">—</span> tokens</span></div>' +
       '<div class="calc-result" id="calcResult"></div>' +
       '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;text-align:center" id="calcRateSource">Loading live rates...</div></div>';
-    // Fetch live exchange rates
+    // Fetch live exchange rates with timeout; fall back to hardcoded rates on any failure
     window.calcRates = JSON.parse(JSON.stringify(fallbackRates));
     var sourceEl = document.getElementById('calcRateSource');
-    fetch('https://api.frankfurter.app/latest?from=USD')
-      .then(function(r){return r.json()})
+    function fetchWithTimeout(url, ms){
+      var ctrl = new AbortController();
+      var t = setTimeout(function(){ ctrl.abort(); }, ms || 8000);
+      return fetch(url, {signal: ctrl.signal}).then(function(r){
+        clearTimeout(t); return r;
+      }, function(e){ clearTimeout(t); throw e; });
+    }
+    fetchWithTimeout('https://api.frankfurter.app/latest?from=USD')
+      .then(function(r){ return r.json(); })
       .then(function(data){
         if(data && data.rates){
           window.calcRates.GBP = data.rates.GBP || fallbackRates.GBP;
           window.calcRates.USD = 1;
           // Fetch NGN from a free source
-          return fetch('https://open.er-api.com/v6/latest/USD');
+          return fetchWithTimeout('https://open.er-api.com/v6/latest/USD').then(function(r){ return r.json(); });
         }
-      }).then(function(r){
-        if(r) return r.json();
+        return null;
       }).then(function(data){
         if(data && data.rates){
           window.calcRates.NGN = data.rates.NGN || fallbackRates.NGN;
@@ -165,7 +158,7 @@
         if(sourceEl) sourceEl.textContent = '💰 Live rates • 1 GT = $0.001 USD';
         window.calcUpdate();
       }).catch(function(){
-        // Fallback to hardcoded rates
+        // Fallback to hardcoded rates (timeout, abort, or any fetch error)
         window.calcRates = fallbackRates;
         if(sourceEl) sourceEl.textContent = '💰 Rates updated periodically • 1 GT = $0.001 USD';
         window.calcUpdate();
@@ -954,11 +947,7 @@ function showSessionExpired(){
     m.remove();
     document.body.style.overflow = '';
     _sessionExpiredShown=false;
-    token='';userData={};
-    sessionStorage.removeItem('gt_token');
-    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
-    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
-    localStorage.removeItem('gt_refresh_token');localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
+    clearSession();
     window.location.href='login.html';
   };
   function _onPopState(){ window.location.href='login.html'; }
@@ -971,13 +960,7 @@ function showSessionExpired(){
   document.getElementById('sessionDismissBtn').onclick=function(e){
     e.preventDefault();
     window.removeEventListener('popstate',_onPopState);
-    token='';userData={};
-    sessionStorage.removeItem('gt_token');
-    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_token');
-    (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user');
-    localStorage.removeItem('gt_refresh_token');
-    localStorage.removeItem('gt_newapi_token');localStorage.removeItem('gt_newapi_endpoint');localStorage.removeItem('gt_keys');
-    window.__secure.clear();
+    clearSession();
     applyAuth();
     m.remove();
     document.body.style.overflow = '';
