@@ -98,7 +98,6 @@
       if(moreBtn) moreBtn.style.display = 'none';
       initKeySwipe();
       initKeyDrag();
-      refreshKeyMoreBtn();
       loadSparklines();
     }
 
@@ -134,17 +133,6 @@
           .catch(function(){});
       });
     }
-    function refreshKeyMoreBtn(){
-      const collapse=document.getElementById('keyCollapse');
-      const btn=document.getElementById('keyMoreBtn');
-      if(!collapse||!btn)return;
-      const count=collapse.querySelectorAll('.key-swipe').length;
-      collapse.setAttribute('data-count',count);
-      if(!count){btn.style.display='none';return;}
-      btn.style.display='';
-      btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
-    }
-
     // ── Swipe-left to reveal Pause/Delete (mobile, iOS-mail style) ──
     let openSwipe=null;
     function closeSwipe(){

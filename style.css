@@ -459,23 +459,6 @@ html.dark .nav-logo-img {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.dropdown .dd-bal {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.65rem 1rem;
-  margin: 0.25rem 0.5rem;
-  background: hsla(44 96% 52% / 0.15);
-  border: 1px solid hsla(44 96% 52% / 0.35);
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-}
-.dropdown .dd-bal span:last-child {
-  font-weight: 700;
-  color: var(--primary);
-  font-size: 1rem;
-  letter-spacing: 0.01em;
-}
 .dropdown .dd-items {
   padding: 0.25rem 0.5rem;
 }
@@ -493,12 +476,6 @@ html.dark .nav-logo-img {
 .dropdown .dd-items a:hover {
   background: var(--primary-subtle);
   color: var(--text);
-}
-.dropdown .dd-items a .dd-icon {
-  font-size: 1.05rem;
-  width: 24px;
-  text-align: center;
-  flex-shrink: 0;
 }
 .dropdown .dd-items a svg {
   width: 18px;
@@ -1273,10 +1250,6 @@ input[type="range"]::-moz-range-thumb {
 .auth-field select:focus {
   outline: none;
   border-color: var(--primary);
-}
-.auth-field input.field-error {
-  border-color: #ff4444;
-  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.15);
 }
 /* ── Country Code Picker (inline inside input) ── */
 .phone-wrap {
@@ -2477,109 +2450,6 @@ body.compact-cards .billing-stat-card {
   font-weight: 600;
   box-shadow: 0 0 12px
     color-mix(in srgb, var(--pill-color, var(--primary)) 30%, transparent);
-}
-.payment-opt:hover {
-  border-color: hsla(44 96% 52% / 0.3);
-  background: var(--primary-subtle);
-}
-.payment-opt.selected {
-  border-color: var(--primary);
-  background: var(--primary-subtle);
-  box-shadow:
-    0 0 0 4px hsla(44 96% 52% / 0.08),
-    var(--shadow-hover);
-}
-.payment-opt .pm-radio {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s;
-}
-.payment-opt.selected .pm-radio {
-  border-color: var(--primary);
-  background: var(--primary);
-  box-shadow: 0 0 0 3px hsla(44 96% 52% / 0.2);
-}
-.payment-opt.selected .pm-radio::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #0a0b14;
-}
-.payment-opt .pm-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.35rem;
-  flex-shrink: 0;
-  background: var(--bg-alt);
-  border: 1px solid var(--border-light);
-  transition: all 0.2s;
-}
-.payment-opt.selected .pm-icon {
-  background: hsl(44 96% 52% / 0.12);
-  border-color: hsla(44 96% 52% / 0.25);
-}
-.payment-opt .pm-brand {
-  font-size: 0.7rem;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 4px;
-  display: inline-block;
-  margin-top: 2px;
-}
-.payment-opt .pm-brand.stripe {
-  background: #635bff;
-  color: #fff;
-}
-.payment-opt .pm-brand.paystack {
-  background: #0ba37f;
-  color: #fff;
-}
-.payment-opt .pm-brand.crypto {
-  background: var(--primary);
-  color: #0a0b14;
-}
-.payment-opt .pm-check {
-  display: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #0a0b14;
-  font-size: 0.7rem;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  box-shadow: 0 2px 6px hsla(44 96% 52% / 0.4);
-}
-.payment-opt.selected .pm-check {
-  display: flex;
-}
-.payment-opt .pm-info {
-  flex: 1;
-}
-.payment-opt .pm-info h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
-.payment-opt .pm-info p {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin: 0;
 }
 .payment-grid {
   display: grid;
@@ -4389,88 +4259,7 @@ html.light .star.white {
   min-height: 0;
   background: var(--bg);
 }
-.playground-main .pg-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--card);
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.playground-main .pg-header .pg-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.playground-main .pg-header .model-selector {
-  flex: 0 1 auto;
-  min-width: 160px;
-  padding: 0.45rem 2rem 0.45rem 0.75rem;
-  border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.85rem;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F4B400' d='M6 8.5L1 3.5h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.625rem center;
-}
-.playground-main .pg-header .model-selector:focus {
-  outline: none;
-  border-color: var(--primary);
-}/* 📱 how-it-works grid */
-.step-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  text-align: center;
-}
 /* ── Team / Org Page ── */
-.member-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--border-light);
-  transition: background 0.15s;
-}
-.member-row:hover {
-  background: var(--primary-subtle);
-}
-.member-row .member-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), hsl(44 96% 40%));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #0a0b14;
-  flex-shrink: 0;
-}
-.member-row .member-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .pending-invite {
   display: flex;
   align-items: center;
@@ -4984,12 +4773,6 @@ body {
   background: rgba(244, 180, 0, 0.05);
   border-color: rgba(244, 180, 0, 0.45);
 }
-.dash-activity .activity-item .act-time {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-left: auto;
-  white-space: nowrap;
-}
 /* Activity card right-side amount */
 .activity-amt {
   margin-left: auto;
@@ -5186,7 +4969,6 @@ body {
   .blog-listing-page .container,
   .blog-article-page .container,
   .apikey-page .container,
-  .history-page .container,
   .models-page .container,
   .topup-page .container {
     max-width: 100%;
@@ -5196,7 +4978,6 @@ body {
   .blog-listing-page .container,
   .blog-article-page .container,
   .apikey-page .container,
-  .history-page .container,
   .models-page .container,
   .topup-page .container {
     padding: 0 0.75rem;
@@ -5561,7 +5342,6 @@ body {
   .dash-page,
   .topup-page,
   .models-page,
-  .history-page,
   .apikey-page,
   .auth-page {
     overflow-wrap: break-word;
@@ -5606,8 +5386,7 @@ body {
   .dash-page .dash-card {
     padding: 1rem;
   }
-  .apikey-page .dash-card,
-  .history-page .dash-card {
+  .apikey-page .dash-card {
     padding: 1rem;
   }
   .dash-stats {
@@ -5758,8 +5537,6 @@ body {
   }
   .blog-article-page .dash-card p,
   .blog-article-page .dash-card li,
-  .blog-article-page .article-content p,
-  .blog-article-page .article-content li,
   .blog-article-page .blog-article p,
   .blog-article-page .blog-article li {
     font-size: 0.9rem !important;
@@ -5842,10 +5619,6 @@ body {
   }
   .payment-card {
     padding: 0.75rem;
-  }
-  .playground-main .pg-header .model-selector {
-    min-width: 100%;
-    width: 100%;
   }
 }
 /* ── max-width: 360px ── */
@@ -6169,14 +5942,12 @@ body {
   }
   .models-page,
   .topup-page,
-  .apikey-page,
-  .history-page {
+  .apikey-page {
     padding: 0.75rem 0 1.25rem;
   }
   .models-page .container,
   .topup-page .container,
   .apikey-page .container,
-  .history-page .container,
   .hero .container,
   section > .container {
     padding: 0 0.75rem;
@@ -6449,22 +6220,6 @@ body {
   .blog-article-page .blog-article {
     max-width: 100%;
   }
-  .playground-sidebar.open {
-    display: flex;
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    width: 100%;
-    max-width: 100%;
-  }
-  .playground-main .pg-header {
-    flex-wrap: wrap;
-    padding: 0.5rem 0.75rem;
-  }
-  .playground-main .pg-header .model-selector {
-    min-width: 120px;
-    font-size: 0.8rem;
-  }
   section:not(.dash-page):not(.hero) {
     padding: 0.75rem 0 !important;
   }
@@ -6626,10 +6381,6 @@ body {
     max-width: 100%;
     box-sizing: border-box;
     overflow: hidden;
-  }
-  .dash-grid.grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
   }
   .dash-section-title {
     font-size: 0.82rem;
@@ -6796,17 +6547,10 @@ body {
 /* ── Shared show-more collapse (mobile): keys, activity, etc. ── */
 /* Expanded collapse inside a flex/grid activity container must keep card gaps
    (dashboard / any page using .dash-activity without usage.css grid rules) */
-.dash-activity .activity-collapse.open,
-.dash-activity .key-collapse.open {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
 /* Show More toggles: hidden until JS populates them (JS controls via inline display) */
 #keyMoreBtn, #activityMoreBtn { display: none; }
 #keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
 @media (max-width: 767px) {
-  .key-collapse.open, .activity-collapse.open { display: flex; flex-direction: column; gap: 0.5rem; }
   #keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
 }
 /* ── Table show-more collapse (logs/usage/billing/referrals): second tbody ── */
@@ -6814,10 +6558,7 @@ body {
 /* presets (card grid variant) */
 #presetsMoreBtn { display: none; }
 @media (max-width: 767px) {
-  .tx-collapse.open { display: table-row-group; }
   #loginMoreBtn, #invoicesMoreBtn, #refMoreBtn, #refRewardsMoreBtn { display: block; }
-  .presets-grid.presets-collapse { display: none; }
-  .presets-grid.presets-collapse.open { display: grid; }
   #presetsMoreBtn { display: block; }
 }
 /* ── Logs v2: Request Logs, Cost Projection, Key Usage, Detail Drawer ── */
