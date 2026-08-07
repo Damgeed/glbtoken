@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=1227" />
+<link rel="stylesheet" href="style.css?v=1228" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>GlbTOKEN API Integration</title>
@@ -34,8 +34,8 @@
     padding: 40px 20px;
   }
   .container {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: var(--card-hover);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 40px;
     max-width: 960px;
@@ -48,7 +48,7 @@
     gap: 14px;
     margin-bottom: 32px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #21262d;
+    border-bottom: 1px solid var(--border);
   }
   .logo {
     width: 42px;
@@ -70,7 +70,7 @@
     letter-spacing: -0.3px;
   }
   .header-text p {
-    color: #8b949e;
+    color: var(--text-secondary);
     font-size: 13px;
     margin-top: 2px;
   }
@@ -84,9 +84,9 @@
     padding: 8px 18px;
     font-size: 12px;
     font-weight: 600;
-    color: #8b949e;
-    background: #0d1117;
-    border: 1px solid #21262d;
+    color: var(--text-secondary);
+    background: var(--card);
+    border: 1px solid var(--border);
     border-bottom: none;
     border-radius: 8px 8px 0 0;
     cursor: default;
@@ -96,12 +96,12 @@
   }
   .tab.active {
     color: #F4B400;
-    background: #161b22;
-    border-color: #30363d;
+    background: var(--card-hover);
+    border-color: var(--border);
   }
   .code-window {
-    background: #0d1117;
-    border: 1px solid #30363d;
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 0 12px 12px 12px;
     overflow: hidden;
   }
@@ -109,8 +109,8 @@
     display: flex;
     align-items: center;
     padding: 12px 16px;
-    background: #161b22;
-    border-bottom: 1px solid #21262d;
+    background: var(--card-hover);
+    border-bottom: 1px solid var(--border);
     gap: 10px;
   }
   .window-dots {
@@ -122,7 +122,7 @@
   .dot-y { background: #ffbd2e; }
   .dot-g { background: #27c93f; }
   .window-title {
-    color: #8b949e;
+    color: var(--text-secondary);
     font-size: 12px;
     font-weight: 500;
     flex: 1;
@@ -155,10 +155,10 @@
     align-items: center;
     margin-top: 24px;
     padding-top: 16px;
-    border-top: 1px solid #21262d;
+    border-top: 1px solid var(--border);
   }
   .footer-info {
-    color: #8b949e;
+    color: var(--text-secondary);
     font-size: 12px;
   }
   .footer-info strong {
@@ -169,8 +169,8 @@
     align-items: center;
     gap: 6px;
     padding: 4px 12px;
-    background: #1a2332;
-    border: 1px solid #30363d;
+    background: var(--card-hover);
+    border: 1px solid var(--border);
     border-radius: 20px;
     color: #58a6ff;
     font-size: 11px;
@@ -186,8 +186,8 @@
   #tab-js:checked ~ .tabs label[for="tab-js"],
   #tab-resp:checked ~ .tabs label[for="tab-resp"] {
     color: #F4B400 !important;
-    background: #161b22 !important;
-    border-color: #30363d !important;
+    background: var(--card-hover) !important;
+    border-color: var(--border) !important;
   }
   #tab-curl:checked ~ .code-window .panel-curl { display: block; }
   #tab-py:checked ~ .code-window .panel-py { display: block; }
@@ -196,13 +196,13 @@
   .kw { color: #F4B400; font-weight: 600; }
   .str { color: #00D68F; }
   .fn { color: #58a6ff; }
-  .cm { color: #8b949e; font-style: italic; }
+  .cm { color: var(--text-secondary); font-style: italic; }
   .op { color: #c9d1d9; }
   .num { color: #f97583; }
   .var { color: #79c0ff; }
   .pl { color: #d2a8ff; }
   .base { color: #c9d1d9; }
-  .bg-line { fill: #0d1117; }
+  .bg-line { fill: var(--card); }
   .line-num { fill: #484f58; text-anchor: end; font-size: 12px; }
 
 /* ── Site topology: center under navbar (injected) ── */
@@ -216,11 +216,25 @@ html.light .code-window { background: #f6f8fa; border-color: var(--border); }
 html.light .window-header { background: #eef1f4; border-color: var(--border); }
 html.light .code-body { background: #f6f8fa; color: var(--text); }
 html.light .footer { color: var(--text-secondary); }
+/* Code syntax colors — GitHub light palette (dark colors invisible on light bg) */
+html.light .kw { color: #9a6700; }
+html.light .str { color: #1a7f37; }
+html.light .fn { color: #0969da; }
+html.light .op, html.light .base { color: #57606a; }
+html.light .num { color: #cf222e; }
+html.light .var { color: #0550ae; }
+html.light .pl { color: #8250df; }
 
 
 
   /* Visual content sits directly on site template background */
   body > .container { background: transparent !important; }
+
+  /* Mobile: wide diagram scrolls horizontally at readable size */
+  @media (max-width: 768px){
+    body > .container.visual-wide { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    body > .container.visual-wide svg { min-width: 860px; }
+  }
 </style>
 </head>
 <body>
@@ -230,7 +244,7 @@ html.light .footer { color: var(--text-secondary); }
 
 
 <!-- ─── BANNER / HERO SVG ─── -->
-<div class="container">
+<div class="container visual-wide">
   <div class="header">
     <div class="logo">G</div>
     <div class="header-text">
@@ -481,7 +495,7 @@ response <span class="op">=</span> client.chat.completions.create(
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1143"></script>
+<script data-cfasync="false" src="shared.js?v=1144"></script>
 <script data-cfasync="false" src="ui.js?v=1227"></script>
 
 </body>

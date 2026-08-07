@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=1227" />
+<link rel="stylesheet" href="style.css?v=1228" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>Dashboard Analytics — GlbTOKEN</title>
@@ -42,7 +42,7 @@ body { background: var(--bg);color:var(--text);font-family:var(--font);min-heigh
 .btn-primary{background:#F4B400;color:#0A0B14}.btn-primary:hover{background:#e0a800;transform:translateY(-1px)}
 .btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7)}.btn-outline:hover{border-color:#F4B400;color:#F4B400}
 .grid-main{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1.5rem 2rem}
-.card{background:rgba(15,17,32,0.8);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:1.25rem;transition:all 0.3s}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;transition:all 0.3s}
 .card:hover{border-color:rgba(244,180,0,0.15)}
 .card-full{grid-column:1/-1}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
@@ -457,7 +457,7 @@ html.light .activity-item { border-bottom-color: var(--border-light); }
       <span>* at current usage rate</span>
     </div>
     <div style="display:flex;gap:0.75rem;font-size:0.72rem">
-      <button style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,0.12);background:rgba(15,17,32,0.8);color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s" title="Export CSV" aria-label="Export CSV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+      <button style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,0.12);background:var(--card);color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s" title="Export CSV" aria-label="Export CSV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
       <span style="color:rgba(255,255,255,0.3);cursor:pointer">View All Stats</span>
     </div>
   </div>
@@ -479,7 +479,7 @@ html.light .activity-item { border-bottom-color: var(--border-light); }
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1143"></script>
+<script data-cfasync="false" src="shared.js?v=1144"></script>
 <script data-cfasync="false" src="ui.js?v=1227"></script>
 
 </body>

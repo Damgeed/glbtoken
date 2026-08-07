@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=1227" />
+<link rel="stylesheet" href="style.css?v=1228" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>GlbTOKEN — Architecture Diagram</title>
@@ -59,6 +59,12 @@ html.light text { fill: var(--text); }
   /* Visual content sits directly on site template background */
   body > .container { background: transparent !important; }
   svg rect[fill="url(#bgGrad)"] { fill: none; }
+
+  /* Mobile: wide diagram scrolls horizontally at readable size */
+  @media (max-width: 768px){
+    body > .container.visual-wide { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    body > .container.visual-wide svg { min-width: 1340px; }
+  }
 </style>
 </head>
 <body>
@@ -66,7 +72,7 @@ html.light text { fill: var(--text); }
 <!-- NAV: Injected by nav.js -->
 <div id="nav-container" data-active-page="how"></div>
 
-<div class="container">
+<div class="container visual-wide">
 <svg viewBox="0 0 1340 900" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     <!-- Gradients -->
@@ -476,7 +482,7 @@ html.light text { fill: var(--text); }
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1108"></script>
-<script data-cfasync="false" src="shared.js?v=1143"></script>
+<script data-cfasync="false" src="shared.js?v=1144"></script>
 <script data-cfasync="false" src="ui.js?v=1227"></script>
 
 </body>

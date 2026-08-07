@@ -950,3 +950,98 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
   btn.style.display='';
   btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
 };
+
+
+// ── Mobile UX (2026-08): no Show More/Less — expand all + vertical scroll hint ──
+(function(){
+  if(!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
+
+  // 1) Force-open every collapse container & hide all show-more buttons.
+  //    MutationObserver catches content rendered after async API responses.
+  function expandCollapses(){
+    var sels = '.key-collapse, .activity-collapse, .tx-collapse, .notif-collapse, .cat-more, .presets-collapse, .usage-collapse';
+    var els = document.querySelectorAll(sels);
+    for(var i=0;i<els.length;i++){
+      if(!els[i].classList.contains('open')) els[i].classList.add('open');
+    }
+    var btns = document.querySelectorAll('.list-more-btn, .cat-more-btn, .notif-more-btn');
+    for(var j=0;j<btns.length;j++){ btns[j].style.display='none'; }
+  }
+  expandCollapses();
+  if(window.MutationObserver){
+    var mo = new MutationObserver(function(){ expandCollapses(); });
+    mo.observe(document.documentElement, {childList:true, subtree:true});
+  }
+
+  // 2) Vertical scroll-down hint — flashing chevrons, hides on first scroll.
+  //    Only when the page actually overflows, and only on mobile.
+  var hintShown = false;
+  function showVHint(){
+    if(hintShown) return;
+    var doc = document.documentElement;
+    if(doc.scrollHeight <= window.innerHeight + 60) return; // nothing to scroll
+    if(document.getElementById('vScrollHint')) return;
+    hintShown = true;
+    var h = document.createElement('div');
+    h.id = 'vScrollHint';
+    h.className = 'v-scroll-hint';
+    h.setAttribute('aria-hidden','true');
+    h.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
+      + '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    document.body.appendChild(h);
+    var gone = false;
+    function hide(){
+      if(gone) return;
+      gone = true;
+      h.classList.add('v-hide');
+      setTimeout(function(){ if(h.parentNode) h.parentNode.removeChild(h); }, 500);
+      window.removeEventListener('scroll', hide);
+      window.removeEventListener('touchmove', hide);
+    }
+    window.addEventListener('scroll', hide, {passive:true});
+    window.addEventListener('touchmove', hide, {passive:true});
+    setTimeout(hide, 6000); // never linger longer than 6s
+  }
+  // Retry a few times: async content changes scrollHeight after load
+  var tries = 0;
+  var timer = setInterval(function(){
+    showVHint();
+    if(++tries > 10) clearInterval(timer);
+  }, 500);
+  window.addEventListener('load', showVHint);
+
+  // 3) Horizontal swipe hint for wide visual diagrams (.visual-wide) —
+  //    flashing right chevron at the container's right edge, hides on scroll.
+  var hHints = [];
+  function initHScrollHints(){
+    var wides = document.querySelectorAll('.visual-wide');
+    for(var i=0;i<wides.length;i++){
+      var w = wides[i];
+      if(hHints.indexOf(w) !== -1) continue;
+      if(w.scrollWidth <= w.clientWidth + 20) continue; // not overflowing
+      hHints.push(w);
+      var hh = document.createElement('div');
+      hh.className = 'v-scroll-hint h-scroll-hint';
+      hh.setAttribute('aria-hidden','true');
+      hh.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+      w.style.position = 'relative';
+      w.appendChild(hh);
+      var gone = false;
+      function hideH(){
+        if(gone) return;
+        gone = true;
+        hh.classList.add('v-hide');
+        setTimeout(function(){ if(hh.parentNode) hh.parentNode.removeChild(hh); }, 500);
+        w.removeEventListener('scroll', hideH);
+      }
+      w.addEventListener('scroll', hideH, {passive:true});
+      setTimeout(hideH, 5000);
+    }
+  }
+  var htries = 0;
+  var htimer = setInterval(function(){
+    initHScrollHints();
+    if(++htries > 10) clearInterval(htimer);
+  }, 600);
+  window.addEventListener('load', initHScrollHints);
+})();
