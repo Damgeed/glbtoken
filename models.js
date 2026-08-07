@@ -67,7 +67,7 @@
       const grid=document.getElementById('modelGrid');
       if(!grid)return;
       const isMobile = window.innerWidth < 768;
-      const showCount = isMobile ? 6 : 15; // 3 rows × cols
+      const showCount = isMobile ? 5 : 15; // mobile: exactly 5 per category; desktop: 3 rows × 5 cols
       // Group by category
       const groups = {};
       models.forEach(m => {

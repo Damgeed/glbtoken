@@ -951,30 +951,12 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
   btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
 };
 
-
-// ── Mobile UX (2026-08): no Show More/Less — expand all + vertical scroll hint ──
+// ── Mobile UX (2026-08): scroll-down + swipe hint arrows ──
 (function(){
   if(!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
 
-  // 1) Force-open every collapse container & hide all show-more buttons.
-  //    MutationObserver catches content rendered after async API responses.
-  function expandCollapses(){
-    var sels = '.key-collapse, .activity-collapse, .tx-collapse, .notif-collapse, .cat-more, .presets-collapse, .usage-collapse';
-    var els = document.querySelectorAll(sels);
-    for(var i=0;i<els.length;i++){
-      if(!els[i].classList.contains('open')) els[i].classList.add('open');
-    }
-    var btns = document.querySelectorAll('.list-more-btn, .cat-more-btn, .notif-more-btn');
-    for(var j=0;j<btns.length;j++){ btns[j].style.display='none'; }
-  }
-  expandCollapses();
-  if(window.MutationObserver){
-    var mo = new MutationObserver(function(){ expandCollapses(); });
-    mo.observe(document.documentElement, {childList:true, subtree:true});
-  }
-
-  // 2) Vertical scroll-down hint — persistent flashing chevrons, center bottom.
-  //    Shows on ANY overflowing page (mobile). Stays flashing while at/near the
+  // 1) Vertical scroll-down hint — persistent flashing chevrons, center bottom.
+  //    Shows on any overflowing page (mobile). Stays flashing while at/near the
   //    top; hides while scrolling; reappears when back near the top.
   var vHintEl = null;
   var vHintHidden = false;
@@ -1018,7 +1000,7 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
   window.addEventListener('orientationchange', function(){ setTimeout(ensureVHint, 300); });
   window.addEventListener('resize', function(){ setTimeout(ensureVHint, 300); });
 
-  // 3) Horizontal swipe hint for wide visual diagrams (.visual-wide) —
+  // 2) Horizontal swipe hint for wide visual diagrams (.visual-wide) —
   //    flashing right chevron at the container's right edge, hides on scroll.
   var hHints = [];
   function initHScrollHints(){
