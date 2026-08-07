@@ -8231,7 +8231,9 @@ body {
 .ann-state-off{background:rgba(148,163,184,0.15);color:#94A3B8}
 .btn-sm{padding:0.35rem 0.75rem;font-size:0.8125rem;border-radius:8px}
 
-/* ── Mobile: Show More/Less buttons hidden (2026-08) — exactly 5 cards shown ── */
+/* ── Mobile: Show More/Less buttons hidden (2026-08) — exactly 5 cards shown.
+   EXCEPT .cat-more-btn (models page category fold) which Bud explicitly
+   restored on 2026-08 — models keeps its Show More/Less fold. ── */
 @media (max-width: 768px){
-  .list-more-btn, .cat-more-btn, .notif-more-btn { display: none !important; }
+  .list-more-btn, .notif-more-btn { display: none !important; }
 }
