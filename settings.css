@@ -164,14 +164,21 @@
 /* Activity-style template: keep header fixed, let the cards scroll (slide up/down).
    Same pattern as usage page .activity-scroll. */
 .settings-card .notif-grid {
-  max-height: 340px;
+  max-height: 380px;
   overflow-y: auto;
   padding-right: 0.25rem;
   scrollbar-width: thin;
 }
 @media (min-width: 768px) {
   .settings-card .notif-grid {
-    max-height: 380px;
+    max-height: 420px;
+  }
+}
+@media (max-width: 767px) {
+  /* Mobile: show all 5 notification cards — no clipping (5 × ~76px > 340px would cut the 5th) */
+  .settings-card .notif-grid {
+    max-height: none;
+    overflow-y: visible;
   }
 }
 .settings-card + .settings-card {
