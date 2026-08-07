@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1238" />
+  <link rel="stylesheet" href="style.css?v=1239" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="settings.css?v=1048" />
   </head>
@@ -300,6 +300,9 @@
         </div>
         <div class="notif-grid" id="notifList">
           <!-- Rendered from real data (transactions / balance / API keys) -->
+        </div>
+        <div id="notifMoreWrap" style="display:none">
+          <button class="notif-more-btn" id="notifMoreBtn" onclick="toggleNotifMore(this)">Show More <span class="notif-more-caret">▾</span></button>
         </div>
         <div id="notifEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No notifications yet</div></div>
       </div>
@@ -1134,29 +1137,40 @@ function loadNotifications(){
     return '$'+Number(t.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
   function render(items){
-    // Render ALL notifications — no 5-card limit, no Show More button (Bud's
-    // rule: only vertical hints; the container scrolls to reach every item).
     var visible = items.filter(function(n){ return dismissed.indexOf(normalizeNotifId(n.id)) === -1; });
     var empty = document.getElementById('notifEmpty');
+    var moreWrap = document.getElementById('notifMoreWrap');
+    var moreBtn = document.getElementById('notifMoreBtn');
     if(!visible.length){
       list.innerHTML = '';
       if(empty) empty.style.display = 'block';
-      var moreWrap = document.getElementById('notifMoreWrap');
       if(moreWrap) moreWrap.style.display = 'none';
       return;
     }
     if(empty) empty.style.display = 'none';
-    list.innerHTML = visible.map(function(n){
+    // 5 visible + Show More fold (Bud: notifications must hide after 5 cards)
+    var LIMIT = 5;
+    var cards = visible.map(function(n){
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
-      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
-        + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'">'+(ICONS[n.kind]||'')+'</div>'
+      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'" style="margin-bottom:0.5rem">'
+        + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'" style="margin-right:1rem">'+(ICONS[n.kind]||'')+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'
         + '</div>';
-    }).join('');
-    var moreWrap = document.getElementById('notifMoreWrap');
-    if(moreWrap) moreWrap.style.display = 'none';
+    });
+    list.innerHTML = cards.slice(0, LIMIT).join('');
+    var hidden = visible.slice(LIMIT);
+    if(moreWrap && moreBtn){
+      if(hidden.length){
+        moreBtn.setAttribute('data-hidden', JSON.stringify(hidden));
+        moreBtn.removeAttribute('data-open');
+        moreBtn.innerHTML = 'Show More (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
+        moreWrap.style.display = 'block';
+      } else {
+        moreWrap.style.display = 'none';
+      }
+    }
   }
   Promise.all([
     safeApi('GET','/api/activity',null,null,true),

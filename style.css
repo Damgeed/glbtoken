@@ -8231,8 +8231,8 @@ body {
 .btn-sm{padding:0.35rem 0.75rem;font-size:0.8125rem;border-radius:8px}
 
 /* ── Mobile: Show More/Less buttons hidden (2026-08) — exactly 5 cards shown.
-   EXCEPT .cat-more-btn (models page category fold) which Bud explicitly
-   restored on 2026-08 — models keeps its Show More/Less fold. ── */
+   EXCEPT .cat-more-btn (models category fold) and .notif-more-btn (settings
+   Recent Notifications fold, restored per Bud 2026-09) which stay visible. ── */
 @media (max-width: 768px){
-  .list-more-btn, .notif-more-btn { display: none !important; }
+  .list-more-btn { display: none !important; }
 }
