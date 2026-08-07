@@ -71,6 +71,14 @@
 body { padding-top: 0 !important; }
 .wrap, body > .container, body > .dashboard { margin-left: auto !important; margin-right: auto !important; margin-top: 1.5rem !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
+
+/* ── Light mode adaptation ── */
+html.light .container { background: radial-gradient(ellipse at top, #ffffff 0%, #f4f6fa 55%, #eef1f6 100%); border-color: var(--border); }
+html.light #bg-card stop:nth-child(1) { stop-color: #ffffff; }
+html.light #bg-card stop:nth-child(2) { stop-color: #f0f2f7; }
+html.light #grid { stroke: #d8dee8; }
+html.light text { fill: var(--text); }
+
 </style>
 </head>
 <body>
