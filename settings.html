@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1245" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1050" />
+<link rel="stylesheet" href="settings.css?v=1051" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -588,19 +588,26 @@ window.saveWebhookSettings = function(){
   if(document.getElementById('whKeyCreated').checked) events.push('key.created');
   if(document.getElementById('whKeyDeleted').checked) events.push('key.deleted');
   if(document.getElementById('whTopup').checked) events.push('topup.success');
+  var payload = {
+    webhook_url: url,
+    webhook_events: events
+  };
+  // Only send the secret when the user typed a new one — an empty field
+  // means "keep the existing secret" (it is never echoed back into the DOM).
+  var sec = document.getElementById('webhookSecret').value.trim();
+  if(sec) payload.webhook_secret = sec;
   fetch(API_URL + '/api/user/settings', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
-    body: JSON.stringify({
-      webhook_url: url,
-      webhook_secret: document.getElementById('webhookSecret').value,
-      webhook_events: events
-    })
+    body: JSON.stringify(payload)
   })
   .then(function(r){ return r.json(); })
   .then(function(d){
     if(d && d.status === 'updated'){
       showToast('Webhook saved!','success');
+      // Reset the secret field to the "saved" placeholder state
+      var secEl = document.getElementById('webhookSecret');
+      if(secEl){ secEl.value = ''; secEl.placeholder = '•••••••• (saved — leave blank to keep)'; }
     } else {
       showToast((d && d.detail) || 'Failed to save webhook','error');
     }
@@ -630,7 +637,13 @@ function loadWebhookSettings(){
   .then(function(d){
     if(!d) return;
     if(document.getElementById('webhookUrl')) document.getElementById('webhookUrl').value = d.webhook_url || '';
-    if(document.getElementById('webhookSecret')) document.getElementById('webhookSecret').value = d.webhook_secret || '';
+    // Security: never echo the stored signing secret back into the DOM.
+    // Show a placeholder instead so the field reads as "already saved".
+    var secEl = document.getElementById('webhookSecret');
+    if(secEl){
+      secEl.value = '';
+      secEl.placeholder = d.webhook_secret ? '•••••••• (saved — leave blank to keep)' : 'Shared secret';
+    }
     var ev = d.webhook_events || null;
     if(ev && ev.length){
       if(document.getElementById('whLowBalance')) document.getElementById('whLowBalance').checked = ev.indexOf('low_balance') > -1;
@@ -725,7 +738,7 @@ window.saveApiDefaults = function(){
   if(isNaN(temp) || temp < 0 || temp > 2){ showToast('Temperature must be between 0 and 2','error'); return; }
   if(isNaN(maxTok) || maxTok < 1){ showToast('Max tokens must be at least 1','error'); return; }
   localStorage.setItem('gt_def_model', model);
-  localStorage.setItem('gt_def_temp', String(temp));
+  localStorage.setItem('gt_def_temp', String(Math.round(temp * 10) / 10));
   localStorage.setItem('gt_def_max_tokens', String(maxTok));
   localStorage.setItem('gt_def_stream', stream ? '1' : '0');
   showToast('API defaults saved!','success');
@@ -808,7 +821,11 @@ function loadSettingsExtras(){
       if(saved) defModel.value = saved;
     }).catch(function(){});
     var tempEl = document.getElementById('setDefaultTemp');
-    if(tempEl && localStorage.getItem('gt_def_temp')) tempEl.value = localStorage.getItem('gt_def_temp');
+    if(tempEl && localStorage.getItem('gt_def_temp')){
+      // Round float artifacts (e.g. 0.699999988079071) to 1 decimal on load
+      var t = parseFloat(localStorage.getItem('gt_def_temp'));
+      tempEl.value = isNaN(t) ? '0.7' : String(Math.round(t * 10) / 10);
+    }
     var maxEl = document.getElementById('setDefaultMaxTokens');
     if(maxEl && localStorage.getItem('gt_def_max_tokens')) maxEl.value = localStorage.getItem('gt_def_max_tokens');
     var streamEl = document.getElementById('setDefaultStream');
