@@ -66,8 +66,6 @@
     function renderModelCards(models){
       const grid=document.getElementById('modelGrid');
       if(!grid)return;
-      const isMobile = window.innerWidth < 768;
-      const showCount = isMobile ? 5 : 15; // mobile: exactly 5 per category; desktop: 3 rows × 5 cols
       // Group by category
       const groups = {};
       models.forEach(m => {
@@ -122,13 +120,9 @@
           ${meta.desc ? `<span class="cat-desc">${escapeHtml(meta.desc)}</span>` : ''}
         </div>`;
         html += '<div class="cat-body">';
-        if (items.length > showCount) {
-          html += items.slice(0, showCount).map(m => buildCard(m, getCatMeta(m.category))).join('');
-          html += `<div class="cat-more-wrap" style="display:none">${items.slice(showCount).map(m => buildCard(m, getCatMeta(m.category))).join('')}</div>`;
-          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show More (${items.length - showCount}) ▾</button>`;
-        } else {
-          html += items.map(m => buildCard(m, getCatMeta(m.category))).join('');
-        }
+        // Render ALL models — no show-count cutoff, no Show More button
+        // (Bud's rule: only vertical hints; the grid scrolls with the page).
+        html += items.map(m => buildCard(m, getCatMeta(m.category))).join('');
         html += '</div>';
         delete groups[key];
       });
@@ -142,13 +136,8 @@
         </div>`;
         html += '<div class="cat-body">';
         const items = groups[c];
-        if (items.length > showCount) {
-          html += items.slice(0, showCount).map(m => buildCard(m, null)).join('');
-          html += `<div class="cat-more-wrap" style="display:none">${items.slice(showCount).map(m => buildCard(m, null)).join('')}</div>`;
-          html += `<button class="cat-more-btn" onclick="toggleCatMore(this)" data-expanded="false">Show More (${items.length - showCount}) ▾</button>`;
-        } else {
-          html += items.map(m => buildCard(m, null)).join('');
-        }
+        // Render ALL models — no show-count cutoff, no Show More button.
+        html += items.map(m => buildCard(m, null)).join('');
         html += '</div>';
       });
       grid.innerHTML = html;

@@ -310,4 +310,23 @@
   transition: background 0.15s ease, transform 0.1s ease;
 }
 .pm-recharge:hover { background: rgba(244, 180, 0, 0.22); }
+
+/* ── Invoices table: fixed layout so every header sits at equal spacing ── */
+#invoicesTable {
+  table-layout: fixed;
+  width: 100%;
+}
+#invoicesTable th {
+  white-space: normal;
+  word-wrap: break-word;
+}
+#invoicesTable th:nth-child(1) { width: 16%; }  /* Date */
+#invoicesTable th:nth-child(2) { width: 14%; }  /* Amount */
+#invoicesTable th:nth-child(3) { width: 20%; }  /* Payment Method */
+#invoicesTable th:nth-child(4) { width: 18%; }  /* Tokens Added */
+#invoicesTable th:nth-child(5) { width: 14%; }  /* Status */
+#invoicesTable th:nth-child(6) { width: 18%; }  /* Receipt */
+@media (max-width: 767px) {
+  #invoicesTable { min-width: 600px; }
+}
 .pm-recharge:active { transform: scale(0.96); }

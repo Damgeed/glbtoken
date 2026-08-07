@@ -914,30 +914,14 @@ window.fmtUSD = function fmtUSD(n, dp){
 window.renderTableWithCollapse = function renderTableWithCollapse(bodyId, rows, collapseId, btnId){
   var body=document.getElementById(bodyId);
   if(!body)return;
-  var first=rows.slice(0,5).join('');
-  var rest=rows.slice(5);
-  body.innerHTML=first;
+  // Render ALL rows — no 5-row cutoff, no Show More/Less button (Bud's rule:
+  // only vertical hints; the page/container scrolls to reach every row).
+  body.innerHTML=rows.join('');
+  // Clean up any stale collapse/button from a previous render.
   var oldC=document.getElementById(collapseId);
   if(oldC)oldC.remove();
   var oldB=document.getElementById(btnId);
   if(oldB)oldB.remove();
-  if(!rest.length)return;
-  var table=body.closest('table');
-  var tb=document.createElement('tbody');
-  tb.id=collapseId;
-  tb.className='tx-collapse';
-  tb.setAttribute('data-count',rest.length);
-  tb.innerHTML=rest.join('');
-  table.appendChild(tb);
-  var btn=document.createElement('button');
-  btn.id=btnId;
-  btn.type='button';
-  btn.className='list-more-btn';
-  btn.innerHTML='Show More ('+rest.length+') ▾';
-  btn.onclick=function(){toggleTableMore(collapseId,btnId);};
-  var wrap=table.parentNode;
-  wrap.parentNode.insertBefore(btn,wrap.nextSibling);
-  refreshTableMoreBtn(collapseId,btnId);
 };
 window.clearTableCollapse = function clearTableCollapse(collapseId,btnId){
   var c=document.getElementById(collapseId);if(c)c.remove();

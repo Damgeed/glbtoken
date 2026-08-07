@@ -454,14 +454,12 @@ async function loadActivityFeed(){
     else if(type==='consumption'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
     return itemHtml(type, desc, time, amtHtml);
   });
-  // Mobile: first 3 visible, rest behind a Show-More toggle (desktop shows all 8)
-  var actFirst = activityCards.slice(0,5).join('');
-  var actRest = activityCards.slice(5);
-  container.innerHTML = actFirst
-    + (actRest.length
-        ? '<div id="activityCollapse" class="activity-collapse" data-count="'+actRest.length+'">'+actRest.join('')+'</div>'
-        : '');
-  refreshActivityMoreBtn();
+  // Render ALL cards — the container's max-height + overflow-y handles
+  // scrolling, so users can always reach every event (no 5-card cutoff, no
+  // Show More/Less button — only vertical hints).
+  container.innerHTML = activityCards.join('');
+  var moreBtn = document.getElementById('activityMoreBtn');
+  if(moreBtn) moreBtn.style.display = 'none';
 }
 function toggleActivityMore(){
   var collapse = document.getElementById('activityCollapse');

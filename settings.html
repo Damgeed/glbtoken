@@ -302,9 +302,6 @@
           <!-- Rendered from real data (transactions / balance / API keys) -->
         </div>
         <div id="notifEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No notifications yet</div></div>
-        <div id="notifMoreWrap" style="display:none" class="settings-center-mt">
-          <button class="notif-more-btn" id="notifMoreBtn" onclick="toggleNotifMore(this)"></button>
-        </div>
       </div>
 
       <!-- Data & Privacy + Danger Zone (2x grid on desktop) -->
@@ -368,7 +365,7 @@
 <script src="nav.js?v=19"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1152"></script>
+<script data-cfasync="false" src="shared.js?v=1153"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1231"></script>
 
@@ -1137,10 +1134,9 @@ function loadNotifications(){
     return '$'+Number(t.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
   function render(items){
-    var limit = 5; // uniform show-more: 5 cards max everywhere
+    // Render ALL notifications — no 5-card limit, no Show More button (Bud's
+    // rule: only vertical hints; the container scrolls to reach every item).
     var visible = items.filter(function(n){ return dismissed.indexOf(normalizeNotifId(n.id)) === -1; });
-    var hidden = visible.slice(limit);
-    visible = visible.slice(0, limit);
     var empty = document.getElementById('notifEmpty');
     if(!visible.length){
       list.innerHTML = '';
@@ -1160,15 +1156,7 @@ function loadNotifications(){
         + '</div>';
     }).join('');
     var moreWrap = document.getElementById('notifMoreWrap');
-    if(moreWrap){
-      if(hidden.length){
-        moreWrap.style.display = 'block';
-        document.getElementById('notifMoreBtn').innerHTML = 'Show More (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
-        document.getElementById('notifMoreBtn').dataset.hidden = JSON.stringify(hidden.map(function(n){ return n; }));
-      } else {
-        moreWrap.style.display = 'none';
-      }
-    }
+    if(moreWrap) moreWrap.style.display = 'none';
   }
   Promise.all([
     safeApi('GET','/api/activity',null,null,true),

@@ -332,7 +332,8 @@
     function txConsumptionRow(t){
       return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="amount red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
     }
-    // Render first 5 rows, hide the rest behind a yellow Show More toggle (like Activity)
+    // Render ALL rows — no 5-row cutoff, no Show More/Less button (Bud's rule:
+    // only vertical hints; the table container scrolls to reach every row).
     function renderTxRows(firstBodyId, collapseBodyId, btnId, rows, rowFn, emptyHtml){
       var firstBody=document.getElementById(firstBodyId);
       var collapseBody=document.getElementById(collapseBodyId);
@@ -343,20 +344,9 @@
         if(btn)btn.style.display='none';
         return;
       }
-      var first=rows.slice(0,5);
-      var rest=rows.slice(5);
-      if(firstBody)firstBody.innerHTML=first.map(rowFn).join('');
-      if(collapseBody)collapseBody.innerHTML=rest.map(rowFn).join('');
-      if(btn){
-        if(rest.length){
-          btn.style.display='';
-          btn.textContent='Show More ('+rest.length+') ▾';
-          btn.setAttribute('data-count',rest.length);
-          btn.classList.remove('open');
-        }else{
-          btn.style.display='none';
-        }
-      }
+      if(firstBody)firstBody.innerHTML=rows.map(rowFn).join('');
+      if(collapseBody)collapseBody.innerHTML='';
+      if(btn)btn.style.display='none';
     }
     async function loadTx(){
       const d=await safeApi('GET','/api/transactions?limit=50',null,null,true); if(!d)return;

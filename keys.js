@@ -91,14 +91,11 @@
           </div>
         </div>
       `);
-      // Mobile: first 5 visible, rest behind a Show-More toggle (desktop shows all)
-      const first=cards.slice(0,5).join('');
-      const rest=cards.slice(5);
-      list.innerHTML=first
-        + (rest.length
-            ? '<div id="keyCollapse" class="key-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
-              + '<button id="keyMoreBtn" class="list-more-btn" onclick="toggleKeyMore()">Show More ('+rest.length+') ▾</button>'
-            : '');
+      // Render ALL cards — the list container scrolls (no 5-card cutoff, no
+      // Show More/Less button — only vertical hints).
+      list.innerHTML = cards.join('');
+      var moreBtn = document.getElementById('keyMoreBtn');
+      if(moreBtn) moreBtn.style.display = 'none';
       initKeySwipe();
       initKeyDrag();
       refreshKeyMoreBtn();

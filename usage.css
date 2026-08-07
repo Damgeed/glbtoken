@@ -63,11 +63,6 @@
   color: var(--text-muted);
   margin-left: 0.5rem;
 }
-/* Transaction History show-more buttons (yellow arrow, like Activity) */
-#txDepositMoreBtn, #txConsumptionMoreBtn { display: none; }
-@media (max-width: 767px) {
-  #txDepositMoreBtn, #txConsumptionMoreBtn { display: block; }
-}
 /* Tab button row */
 .tx-tab-row {
   display: flex;
@@ -232,9 +227,6 @@
   .dash-activity.activity-scroll {
     grid-template-columns: 1fr 1fr 1fr;
   }
-}
-@media (max-width: 767px) {
-  #usageActivityMoreBtn:not([style*="display: none"]) { display: block; }
 }
 
 /* ── Login History (shared login-history.js — same styling as settings) ── */

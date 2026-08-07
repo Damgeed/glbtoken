@@ -230,7 +230,7 @@
 <script src="nav.js?v=19"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1152"></script>
+<script data-cfasync="false" src="shared.js?v=1153"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1231"></script>
 
@@ -272,15 +272,11 @@ async function loadPresets(){
       card += '</div></div>';
       cards.push(card);
     }
-    var first = cards.slice(0,5).join('');
-    var rest = cards.slice(5);
-    var out = '<div class="presets-grid">' + first + '</div>';
-    if(rest.length){
-      out += '<div id="presetsCollapse" class="presets-grid presets-collapse" data-count="'+rest.length+'">' + rest.join('') + '</div>';
-      out += '<button id="presetsMoreBtn" class="list-more-btn" onclick="togglePresetsMore()">Show More ('+rest.length+') ▾</button>';
-    }
-    list.innerHTML = out;
-    refreshPresetsMoreBtn();
+    // Render ALL cards — the grid scrolls with the page (no 5-card cutoff, no
+    // Show More/Less button — only vertical hints).
+    list.innerHTML = '<div class="presets-grid">' + cards.join('') + '</div>';
+    var moreBtn = document.getElementById('presetsMoreBtn');
+    if(moreBtn) moreBtn.style.display = 'none';
   } catch(e){
     count.textContent = '0 saved';
     list.innerHTML = '<div class="presets-empty"><div class="pe-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>Could not load presets</h3><p>' + escapeHtml(e.message || 'Unknown error') + '</p></div>';
