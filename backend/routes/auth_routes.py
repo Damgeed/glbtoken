@@ -353,7 +353,7 @@ async def send_code(request: Request, body: SendCodeRequest, db: Session = Depen
         return {"sent": True, "email": email}
     except ValueError as e:
         print(f"❌ Send code error: {e}")
-        _400(str(e))
+        _400("Failed to send code. Please try again.")
 
 
 @router.post("/api/auth/verify-code")
@@ -372,7 +372,7 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
         user_info = get_user_info(payload)
     except Exception as e:
         print(f"❌ Email verify error: {e}")
-        _400(str(e))
+        _400("Verification failed. Please try again.")
     
     # CRITICAL: cross-check the email claim in the verified id_token against the
     # client-supplied email. Never trust body.email alone for account lookup.
