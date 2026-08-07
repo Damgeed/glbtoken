@@ -47,8 +47,8 @@ def generate_refresh_token(user_id: int, db: Session) -> str:
             RefreshToken.user_id == user_id,
             RefreshToken.expires_at < datetime.now(timezone.utc)
         ).delete(synchronize_session=False)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ Refresh-token cleanup failed (non-critical): {e}")
     raw = secrets.token_hex(32)  # 64-char hex string
     token_hash = hashlib.sha256(raw.encode()).hexdigest()
     expires = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)

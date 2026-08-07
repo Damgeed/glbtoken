@@ -5072,21 +5072,6 @@ body {
     transition: all 0.2s;
     word-break: break-word;
   }
-  .mobile-auth-btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-  .mobile-auth-btn-primary {
-    background: var(--primary);
-    border: 1px solid var(--primary);
-    color: #0a0b14;
-    box-shadow: var(--primary-glow);
-  }
-  .mobile-auth-btn-primary:hover {
-    box-shadow: var(--primary-glow-strong);
-    transform: translateY(-1px);
-  }
   /* Hide floating support chat on auth pages (mobile) */
   .auth-page ~ .chat-fab,
   .auth-page ~ .chat-window {
@@ -5219,9 +5204,6 @@ body {
   .pricing-card .plan-name {
     font-size: 0.95rem;
   }
-  .cat-body {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .billing-grid {
     grid-template-columns: 1fr;
   }
@@ -5265,13 +5247,6 @@ body {
     text-align: center;
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
-  }
-  .btn-primary,
-  .btn-secondary,
-  .nav-btn,
-  .nav-btn-outline {
-    white-space: normal;
-    word-break: break-word;
   }
   .model-card {
     padding: 1rem;
@@ -5440,9 +5415,6 @@ body {
     align-items: flex-start;
     min-height: auto;
   }
-  .auth-page.auth-hero-wrapper {
-    min-height: auto;
-  }
   .auth-field input,
   .auth-field select {
     font-size: 1rem;
@@ -5466,17 +5438,8 @@ body {
     bottom: 4.5rem;
     right: 0.75rem;
   }
-  .chat-window .chat-msgs {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    touch-action: manipulation;
-  }
   .chat-window .chat-input {
     padding: 0.5rem 0.625rem;
-  }
-  .chat-window .chat-input input {
-    font-size: 1rem;
-    padding: 0.625rem 0.75rem;
   }
   .chat-window .chat-input button {
     font-size: 1rem;
@@ -5484,11 +5447,6 @@ body {
     flex-shrink: 0;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-  }
-  .ai-chat-inner {
-    min-height: auto;
-    max-height: calc(100dvh - 8rem);
-    height: 55dvh;
   }
   [style*="grid-template-columns:repeat(4,1fr)"] {
     grid-template-columns: 1fr !important;
@@ -5499,13 +5457,6 @@ body {
   }
   .calc-result .big {
     font-size: 1.35rem;
-  }
-  section {
-    padding: 1rem 0;
-  }
-  .nowrap {
-    white-space: normal;
-    overflow-wrap: break-word;
   }
   .cta-section {
     padding: 1.5rem 1.25rem;
@@ -5589,9 +5540,6 @@ body {
 }
 /* ── max-width: 400px ── */
 @media (max-width: 400px) {
-  .cat-body {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .hero h1 {
     font-size: 1.65rem;
     text-align: center;
@@ -6290,9 +6238,6 @@ body {
   .dash-sidebar.open {
     left: 0;
   }
-  .dash-sidebar.open + .dash-sidebar-backdrop {
-    display: block;
-  }
   .dash-sidebar-backdrop {
     display: none;
     position: fixed;
@@ -6414,9 +6359,6 @@ body {
   }
   .chart-container canvas {
     height: 120px !important;
-  }
-  .chart-container.chart-sm canvas {
-    height: 40px !important;
   }
   .dash-header .btn-primary,
   .dash-header .btn-secondary {
@@ -6550,9 +6492,6 @@ body {
 /* Show More toggles: hidden until JS populates them (JS controls via inline display) */
 #keyMoreBtn, #activityMoreBtn { display: none; }
 #keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
-@media (max-width: 767px) {
-  #keyMoreBtn:not([style*="display: none"]), #activityMoreBtn:not([style*="display: none"]) { display: block; }
-}
 /* ── Table show-more collapse (logs/usage/billing/referrals): second tbody ── */
 #loginMoreBtn, #invoicesMoreBtn, #refMoreBtn, #refRewardsMoreBtn { display: none; }
 /* presets (card grid variant) */

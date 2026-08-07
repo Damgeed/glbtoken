@@ -572,9 +572,6 @@ button.settings-save-btn:hover {
   .settings-grid-2 {
     grid-template-columns: 1fr;
   }
-  .settings-grid-2 > .settings-card {
-    margin-top: 0;
-  }
 }
 
 /* ── Login History filters (inline row) ── */
