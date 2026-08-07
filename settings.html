@@ -370,7 +370,7 @@
 <script src="translations.js?v=1109"></script>
 <script data-cfasync="false" src="shared.js?v=1151"></script>
 <script>requireAuth()</script>
-<script data-cfasync="false" src="ui.js?v=1228"></script>
+<script data-cfasync="false" src="ui.js?v=1229"></script>
 
 <!-- ── Settings Scripts ── -->
 <script>
@@ -712,8 +712,8 @@ function refreshNotifMore(){
   if(!btn || !wrap) return;
   var hidden = [];
   try{ hidden = JSON.parse(btn.getAttribute('data-hidden') || '[]'); }catch(e){}
-  var dismissed = getNotifArr(NOTIF_DISMISS_KEY);
-  var visible = hidden.filter(function(n){ return dismissed.indexOf(n.id) === -1; });
+  var dismissed = getNotifArr(NOTIF_DISMISS_KEY).map(normalizeNotifId);
+  var visible = hidden.filter(function(n){ return dismissed.indexOf(normalizeNotifId(n.id)) === -1; });
   if(visible.length){
     wrap.style.display = 'block';
     btn.innerHTML = 'Show More (' + visible.length + ') <span class="notif-more-caret">▾</span>';
@@ -730,16 +730,18 @@ window.toggleNotifMore = function(btn){
   var expanded = btn.getAttribute('data-open') === '1';
   var hidden = [];
   try{ hidden = JSON.parse(btn.getAttribute('data-hidden') || '[]'); }catch(e){}
-  var read = getNotifArr(NOTIF_READ_KEY);
+  var read = getNotifArr(NOTIF_READ_KEY).map(normalizeNotifId);
   var ICONS = {
     primary: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
     destructive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
     success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
   };
   if(!expanded){
-    // Expand: append hidden items to the list
+    // Expand: append hidden items to the list (skip any dismissed meanwhile)
+    var dismissedNow = getNotifArr(NOTIF_DISMISS_KEY).map(normalizeNotifId);
     hidden.forEach(function(n){
-      var unread = n.fresh && read.indexOf(n.id) === -1;
+      if(dismissedNow.indexOf(normalizeNotifId(n.id)) !== -1) return;
+      var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
       list.insertAdjacentHTML('beforeend',
         '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+n.id+'">'
         + '<div class="settings-icon settings-icon-'+n.kind+'">'+(ICONS[n.kind]||'')+'</div>'
@@ -1065,12 +1067,39 @@ var NOTIF_READ_KEY = 'gt_read_notifs';
 function getNotifArr(key){
   try{ return JSON.parse(localStorage.getItem(key))||[]; }catch(e){ return []; }
 }
-// Normalize a stored notification id the same way ids are generated on render
-// (strip microseconds / UTC marker / offset) so legacy dismissed/read entries
-// still match after the stable-id change.
+// Normalize a stored notification id the same way ids are generated on render.
+// Converts ANY timestamp representation (Z, +00:00, +08:00, microseconds, etc.)
+// to a single canonical UTC form so dismissed/read entries always match, even if
+// the backend returns the same event with different tz/format on different calls.
 function normalizeNotifId(id){
   if(!id) return id;
-  return String(id).replace(/\.\d+/, '').replace(/Z$/, '').replace(/\+00:00$/, '');
+  var s = String(id);
+  // Split off the kind prefix (topup-/consume-/key-/call-/lowbal-), keep it as-is
+  var m = s.match(/^([a-z]+-)([\s\S]*)$/);
+  var prefix = m ? m[1] : '';
+  var rest = m ? m[2] : s;
+  // Strip microseconds
+  rest = rest.replace(/\.\d+/, '');
+  // Canonicalize the timestamp to UTC (handles Z and any +HH:MM / -HH:MM offset).
+  // Keep pure date-only ids (YYYY-MM-DD, e.g. lowbal-2026-08-07) untouched —
+  // Date.parse on date-only strings is timezone-ambiguous across browsers.
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(rest)){
+    // No tz marker → treat as UTC (append Z). Date.parse would otherwise
+    // interpret it as LOCAL time, making the same event produce a different
+    // id depending on whether the backend returned an offset or not.
+    if(!/[zZ]$|[+-]\d{2}:?\d{2}$/.test(rest)) rest += 'Z';
+    var ms = Date.parse(rest);
+    if(!isNaN(ms)){
+      var d = new Date(ms);
+      function p(n){ return (n < 10 ? '0' : '') + n; }
+      rest = d.getUTCFullYear() + '-' + p(d.getUTCMonth()+1) + '-' + p(d.getUTCDate())
+           + 'T' + p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ':' + p(d.getUTCSeconds());
+    } else {
+      // Non-timestamp (e.g. lowbal-2026-08-07): just strip Z/+00:00 for safety
+      rest = rest.replace(/Z$/, '').replace(/\+00:00$/, '');
+    }
+  }
+  return prefix + rest;
 }
 function notifTime(iso){
   if(!iso) return '';
@@ -1143,11 +1172,10 @@ function loadNotifications(){
       // dismissed/read id still matches after refresh (New API timestamps may
       // include/exclude microseconds or vary in tz format between calls).
       function nid(prefix){
-        var s = String(t || '');
-        s = s.replace(/\.\d+/, '');           // strip microseconds
-        s = s.replace(/Z$/, '');              // strip UTC marker
-        s = s.replace(/\+00:00$/, '');        // strip +00:00 offset
-        return prefix + '-' + s;
+        // Canonical UTC id — same normalization as normalizeNotifId so a
+        // dismissed/read id still matches after refresh regardless of the
+        // tz/format New API returns (Z, +08:00, microseconds, …).
+        return normalizeNotifId(prefix + '-' + String(t || ''));
       }
       if(a.type === 'topup'){
         items.push({

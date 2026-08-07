@@ -1025,10 +1025,36 @@ document.addEventListener('click',function(e){
     function setNotifStore(key, arr){
       try{ localStorage.setItem(key, JSON.stringify(arr)); }catch(e){}
     }
+    function notifNormId(id){
+      if(!id) return id;
+      var s = String(id);
+      var m = s.match(/^([a-z]+-)([\s\S]*)$/);
+      var prefix = m ? m[1] : '';
+      var rest = m ? m[2] : s;
+      rest = rest.replace(/\.\d+/, '');
+      // Keep pure date-only ids (YYYY-MM-DD) untouched — Date.parse is
+      // timezone-ambiguous on date-only strings across browsers.
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(rest)){
+        // No tz marker → treat as UTC (append Z). Date.parse would otherwise
+        // interpret it as LOCAL time, making the same event produce a different
+        // id depending on whether the backend returned an offset or not.
+        if(!/[zZ]$|[+-]\d{2}:?\d{2}$/.test(rest)) rest += 'Z';
+        var ms = Date.parse(rest);
+        if(!isNaN(ms)){
+          var d = new Date(ms);
+          function p(n){ return (n < 10 ? '0' : '') + n; }
+          rest = d.getUTCFullYear() + '-' + p(d.getUTCMonth()+1) + '-' + p(d.getUTCDate())
+               + 'T' + p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ':' + p(d.getUTCSeconds());
+        } else {
+          rest = rest.replace(/Z$/, '').replace(/\+00:00$/, '');
+        }
+      }
+      return prefix + rest;
+    }
     function dismissNotif(el){
       var item=el.closest('.notif-item');
       if(item){
-        var id=item.getAttribute('data-nid');
+        var id=notifNormId(item.getAttribute('data-nid'));
         if(id){
           var arr=getNotifStore('gt_dismissed_notifs');
           if(arr.indexOf(id)===-1){ arr.push(id); setNotifStore('gt_dismissed_notifs', arr); }
@@ -1042,7 +1068,7 @@ document.addEventListener('click',function(e){
       // Persist read state so dots stay gone after refresh
       var read=getNotifStore('gt_read_notifs');
       document.querySelectorAll('.notif-item[data-nid]').forEach(function(n){
-        var id=n.getAttribute('data-nid');
+        var id=notifNormId(n.getAttribute('data-nid'));
         if(id && read.indexOf(id)===-1) read.push(id);
       });
       setNotifStore('gt_read_notifs', read);
