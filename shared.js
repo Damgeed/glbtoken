@@ -1000,11 +1000,14 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
   window.addEventListener('orientationchange', function(){ setTimeout(ensureVHint, 300); });
   window.addEventListener('resize', function(){ setTimeout(ensureVHint, 300); });
 
-  // 2) Horizontal swipe hint for wide visual diagrams (.visual-wide) —
-  //    flashing right chevron at the container's right edge, hides on scroll.
+  // 2) Horizontal swipe hint for ANY horizontally-scrollable container
+  //    (wide visual diagrams, .scroll-x tables like Referrals / Reward History /
+  //    Invoices / usage, card rows). Flashing › at the right edge; hides while
+  //    scrolled right; reappears when back at the left edge.
   var hHints = [];
   function initHScrollHints(){
-    var wides = document.querySelectorAll('.visual-wide');
+    var sels = '.visual-wide, .scroll-x, .overflow-auto, .tx-scroll, [class*="card-row"], [class*="scroll-row"], [class*="cards-scroll"]';
+    var wides = document.querySelectorAll(sels);
     for(var i=0;i<wides.length;i++){
       var w = wides[i];
       if(hHints.indexOf(w) !== -1) continue;
@@ -1014,23 +1017,27 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
       hh.className = 'v-scroll-hint h-scroll-hint';
       hh.setAttribute('aria-hidden','true');
       hh.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-      w.style.position = 'relative';
+      var pos = getComputedStyle(w).position;
+      if(pos === 'static') w.style.position = 'relative';
       w.appendChild(hh);
-      var gone = false;
-      function hideH(){
-        if(gone) return;
-        gone = true;
-        hh.classList.add('v-hide');
-        setTimeout(function(){ if(hh.parentNode) hh.parentNode.removeChild(hh); }, 500);
-        w.removeEventListener('scroll', hideH);
+      var hidden = false;
+      function onHScroll(){
+        if(!hh.parentNode) return;
+        if(w.scrollLeft > 30){
+          if(!hidden){ hidden = true; hh.classList.add('v-hide'); }
+        } else {
+          if(hidden){ hidden = false; hh.classList.remove('v-hide'); }
+        }
       }
-      w.addEventListener('scroll', hideH, {passive:true});
+      w.addEventListener('scroll', onHScroll, {passive:true});
     }
   }
   var htries = 0;
   var htimer = setInterval(function(){
     initHScrollHints();
-    if(++htries > 10) clearInterval(htimer);
-  }, 600);
+    if(++htries > 12) clearInterval(htimer);
+  }, 500);
   window.addEventListener('load', initHScrollHints);
+  window.addEventListener('orientationchange', function(){ setTimeout(initHScrollHints, 300); });
+  window.addEventListener('resize', function(){ setTimeout(initHScrollHints, 300); });
 })();

@@ -162,6 +162,7 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .activity-scroll { max-height: none; } /* exactly 5 activity items, no clipping */
   .dash-sidebar-toggle {
     display: flex;
     position: fixed;
@@ -569,7 +570,7 @@
 }
 /* Activity scroll list */
 .activity-scroll {
-  max-height: 240px;
+  max-height: 340px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
