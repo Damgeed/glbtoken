@@ -40,6 +40,14 @@
 }
 
 #section-referral{display:block}
+/* Section titles on referrals: keep icon + text together on the left
+   (global .dash-section-title uses space-between which pushes the text
+   to the far right when there is no right-side action button) */
+#section-referral .dash-section-title{
+  justify-content: flex-start;
+  gap: 0.5rem;
+  align-items: center;
+}
 /* chart scroll row — desktop: 2-column grid, mobile: horizontal scroll */
 .chart-scroll-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem}
 .chart-scroll-row>.dash-card{overflow:hidden}

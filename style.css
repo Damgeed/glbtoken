@@ -158,13 +158,15 @@ textarea {
   50%{ transform: translateX(-50%) translateY(7px); opacity: .3; }
 }
 
-/* Horizontal swipe hint for wide visual diagrams — right edge, vertically centered */
+/* Horizontal swipe hint for wide visual diagrams — right edge, vertically centered.
+   top uses max(50%, 48px) so a short container (e.g. a table with few rows or
+   still loading) never puts the arrow right under the card title. */
 .h-scroll-hint{
   position: absolute !important;
   left: auto !important;
   right: 10px;
   bottom: auto !important;
-  top: 50%;
+  top: max(50%, 48px);
   transform: translateY(-50%);
   animation: hHintPulse 2.4s ease-in-out infinite;
 }
