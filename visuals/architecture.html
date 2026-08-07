@@ -49,14 +49,16 @@ body { padding-top: 0 !important; }
 #nav-container .navbar-inner { max-width: 1400px !important; padding: 0 1.5rem !important; }
 
 /* ── Light mode adaptation ── */
-html.light #bgGrad stop:nth-child(1) { stop-color: #f2f4f8; }
-html.light #bgGrad stop:nth-child(2) { stop-color: #e8ecf4; }
-html.light #bgGrad stop:nth-child(3) { stop-color: #f2f4f8; }
 html.light #grid { stroke: #d8dee8; }
 html.light #nodeBg stop:nth-child(1) { stop-color: #ffffff; }
 html.light #nodeBg stop:nth-child(2) { stop-color: #f0f2f7; }
 html.light text { fill: var(--text); }
 
+
+
+  /* Visual content sits directly on site template background */
+  body > .container { background: transparent !important; }
+  svg rect[fill="url(#bgGrad)"] { fill: none; }
 </style>
 </head>
 <body>
