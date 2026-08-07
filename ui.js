@@ -1036,6 +1036,15 @@ document.addEventListener('click',function(e){
       // Keep pure date-only ids (YYYY-MM-DD) untouched — Date.parse is
       // timezone-ambiguous on date-only strings across browsers.
       if(!/^\d{4}-\d{2}-\d{2}$/.test(rest)){
+        // Unix timestamp (10-digit seconds / 13-digit ms) → canonical UTC ISO
+        if(/^\d{10}$/.test(rest)){
+          rest = new Date(parseInt(rest, 10) * 1000).toISOString().replace(/\.\d+Z$/, 'Z').replace(/Z$/, '');
+          return prefix + rest;
+        }
+        if(/^\d{13}$/.test(rest)){
+          rest = new Date(parseInt(rest, 10)).toISOString().replace(/\.\d+Z$/, 'Z').replace(/Z$/, '');
+          return prefix + rest;
+        }
         // No tz marker → treat as UTC (append Z). Date.parse would otherwise
         // interpret it as LOCAL time, making the same event produce a different
         // id depending on whether the backend returned an offset or not.
