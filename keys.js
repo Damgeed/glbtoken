@@ -101,12 +101,6 @@
       refreshKeyMoreBtn();
       loadSparklines();
     }
-    function toggleKeyMore(){
-      const collapse=document.getElementById('keyCollapse');
-      if(!collapse)return;
-      collapse.classList.toggle('open');
-      refreshKeyMoreBtn();
-    }
 
     // ── 7-day usage sparkline per key (inline SVG, no Chart.js needed) ──
     function sparklineSvg(series){

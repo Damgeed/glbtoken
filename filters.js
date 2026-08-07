@@ -93,20 +93,6 @@
       handleAuth0Callback();
     }
 
-    // ── Forgot Password ──
-    async function sendResetLink(){
-      var email = document.getElementById('resetEmail').value;
-      var btn = document.getElementById('resetSendBtn');
-      setBtnLoading(btn, true, 'Send Reset Link');
-      await safeApi('POST','/api/auth/forgot-password',{email:email});
-      showToast('Reset link sent! Check your email.','success');
-      setTimeout(function(){
-        var m = document.querySelector('.modal-overlay');
-        if(m)m.remove();
-      },2000);
-      if(btn){btn.disabled=false;btn.textContent='Send Reset Link'}
-    }
-
     // ── Hash-based routing (back/forward support) ──
     window.addEventListener('hashchange',function(){
       const page=location.hash.replace('#','')||'home';
@@ -354,13 +340,6 @@
         const con=d.items.filter(t=>t.type==='consumption');
         renderTxRows('txDepositBody','txDepositCollapse','txDepositMoreBtn',dep,txDepositRow,'<tr><td colspan="5" class="td-empty">No deposits</td></tr>');
         renderTxRows('txConsumptionBody','txConsumptionCollapse','txConsumptionMoreBtn',con,txConsumptionRow,'<tr><td colspan="4" class="td-empty">No consumption</td></tr>');
-    }
-    function toggleTxMore(btn, collapseId){
-      var c=document.getElementById(collapseId);
-      if(!c)return;
-      c.classList.toggle('open');
-      var open=c.classList.contains('open');
-      if(btn) btn.textContent = open ? 'Show Less ▴' : 'Show More (' + btn.getAttribute('data-count') + ') ▾';
     }
     function switchTxTab(el,tab){
       document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));

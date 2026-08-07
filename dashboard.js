@@ -461,24 +461,6 @@ async function loadActivityFeed(){
   var moreBtn = document.getElementById('activityMoreBtn');
   if(moreBtn) moreBtn.style.display = 'none';
 }
-function toggleActivityMore(){
-  var collapse = document.getElementById('activityCollapse');
-  if(!collapse) return;
-  collapse.classList.toggle('open');
-  refreshActivityMoreBtn();
-}
-function refreshActivityMoreBtn(){
-  var collapse = document.getElementById('activityCollapse');
-  var btn = document.getElementById('activityMoreBtn');
-  if(!collapse || !btn) return;
-  var count = collapse.querySelectorAll('.activity-item').length;
-  collapse.setAttribute('data-count', count);
-  if(!count){ btn.style.display = 'none'; return; }
-  btn.style.display = '';
-  btn.innerHTML = collapse.classList.contains('open')
-    ? 'Show Less ▴'
-    : 'Show More ('+count+') ▾';
-}
 
 // ── Recent Transactions (real, 5-col table) ──
 async function loadRecentTx(){

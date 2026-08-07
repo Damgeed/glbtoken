@@ -927,22 +927,6 @@ window.clearTableCollapse = function clearTableCollapse(collapseId,btnId){
   var c=document.getElementById(collapseId);if(c)c.remove();
   var b=document.getElementById(btnId);if(b)b.remove();
 };
-window.toggleTableMore = function toggleTableMore(collapseId,btnId){
-  var collapse=document.getElementById(collapseId);
-  if(!collapse)return;
-  collapse.classList.toggle('open');
-  refreshTableMoreBtn(collapseId,btnId);
-};
-window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
-  var collapse=document.getElementById(collapseId);
-  var btn=document.getElementById(btnId);
-  if(!collapse||!btn)return;
-  var count=collapse.querySelectorAll(':scope > tr').length;
-  collapse.setAttribute('data-count',count);
-  if(!count){btn.style.display='none';return;}
-  btn.style.display='';
-  btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
-};
 
 // ── Mobile UX (2026-08): swipe hint arrows (vertical double-down hint REMOVED
 //    per Bud 2026-08: "browse pages don't need the double down arrows.
