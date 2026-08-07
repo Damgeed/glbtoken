@@ -7361,8 +7361,7 @@ body {
     position: fixed;
     inset: 0;
     z-index: 300;
-    background: hsla(224 44% 5% / 0.5);
-    backdrop-filter: blur(6px);
+    background: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;

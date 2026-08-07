@@ -486,9 +486,15 @@ function lockBodyScroll(hide){
   if(hide){
     var fab = document.querySelector('.chat-fab');
     if(fab) fab.style.display = 'none';
+    // Lock page scroll while the chat overlay is open so the content behind
+    // can't scroll into view and create a "pushed down / big gap" look.
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
   } else {
     var fab = document.querySelector('.chat-fab');
     if(fab) fab.style.display = '';
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
   }
 }
 // ── Mobile AI Chat popup ──
