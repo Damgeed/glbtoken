@@ -16,11 +16,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1231" />
+  <link rel="stylesheet" href="style.css?v=1233" />
   <!-- dashboard.css provides the shared .dash-card / .filter-btn-row / .chart-axis-labels
        styles so the Usage chart card matches the Overview design exactly -->
 <link rel="stylesheet" href="dashboard.css?v=1043" />
-<link rel="stylesheet" href="more.css?v=6" />
+<link rel="stylesheet" href="more.css?v=8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="usage.css?v=1039" />
   </head>
@@ -238,10 +238,10 @@
       <!-- Login History (real — /api/auth/login-history) -->
       <div class="dash-card">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
+          <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
           </svg>
-          Login History
+          Login History</span>
         </div>
         <div class="login-hint">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -293,7 +293,7 @@
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1149"></script>
+<script data-cfasync="false" src="shared.js?v=1151"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1228"></script>
 <script data-cfasync="false" src="filters.js?v=1139"></script>

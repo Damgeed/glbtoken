@@ -974,8 +974,8 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
     h.id = 'vScrollHint';
     h.className = 'v-scroll-hint';
     h.setAttribute('aria-hidden','true');
-    h.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
-      + '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    h.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
+      + '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
     document.body.appendChild(h);
     vHintEl = h;
   }
@@ -1018,7 +1018,7 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
         var hh = document.createElement('div');
         hh.className = 'v-scroll-hint h-scroll-hint';
         hh.setAttribute('aria-hidden','true');
-        hh.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+        hh.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
         var pos = getComputedStyle(w).position;
         if(pos === 'static') w.style.position = 'relative';
         w.appendChild(hh);

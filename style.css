@@ -151,7 +151,7 @@ textarea {
   animation: vHintBounce 1.5s ease-in-out infinite;
 }
 .v-scroll-hint svg{ display: block; }
-.v-scroll-hint svg + svg{ margin-top: -14px; }
+.v-scroll-hint svg + svg{ margin-top: -11px; }
 .v-scroll-hint.v-hide{ animation: none; opacity: 0; transition: opacity .45s ease; }
 @keyframes vHintBounce{
   0%, 100%{ transform: translateX(-50%) translateY(0); opacity: 1; }
