@@ -1066,13 +1066,6 @@ section {
   gap: 1.25rem;
 }
 /* 📱 steps-grid mobile */
-.step-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  text-align: center;
-}
 .step-num {
   width: 48px;
   height: 48px;
@@ -4124,11 +4117,6 @@ html.light .star.white {
   margin-top: 0.1rem;
 }
 /* Notifications grid: 3 cols desktop, 1 col mobile */
-.notif-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
 /* ── Desktop Auth Split Layout ── */
 .auth-hero {
   display: none;
