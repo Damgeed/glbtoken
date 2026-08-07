@@ -301,6 +301,9 @@ button.settings-save-btn:hover {
   font-size: 1.05rem;
   line-height: 1;
 }
+.uid-copy-symbol svg {
+  display: block;
+}
 @media (max-width: 767px) {
   .uid-copy-btn {
     padding: 0.45rem 0.65rem;

@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1234" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1045" />
+<link rel="stylesheet" href="settings.css?v=1046" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -174,7 +174,7 @@
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">User ID</div><div class="settings-item-desc-sm" id="acctUserId" style="font-family:monospace;font-size:0.82rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
-              <button class="btn-secondary settings-btn-right uid-copy-btn" onclick="copyUserId()" title="Copy User ID" style="white-space:nowrap"><span class="uid-copy-symbol">⧉</span><span class="uid-copy-label">Copy</span></button>
+              <button class="btn-secondary settings-btn-right uid-copy-btn" onclick="copyUserId()" title="Copy User ID" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
           </div>
         </div>
@@ -672,15 +672,56 @@ window.saveNotificationSettings = function(){
 };
 
 window.dismissNotif = function(btn){
-  var item = btn.closest('.notif-item');
-  if(item) item.style.display = 'none';
+  var item = btn ? btn.closest('.notif-item') : null;
+  if(!item) return;
+  var nid = item.getAttribute('data-nid');
+  if(nid){
+    var arr = getNotifArr(NOTIF_DISMISS_KEY);
+    if(arr.indexOf(nid) === -1){
+      arr.push(nid);
+      try{ localStorage.setItem(NOTIF_DISMISS_KEY, JSON.stringify(arr)); }catch(e){}
+    }
+  }
+  item.style.display = 'none';
+  // Refresh the show-more button count
+  refreshNotifMore();
 };
 
 window.markAllRead = function(){
   var dots = document.querySelectorAll('.notif-dot');
   dots.forEach(function(d){ d.style.display = 'none'; });
+  var items = document.querySelectorAll('.notif-item');
+  var arr = getNotifArr(NOTIF_READ_KEY);
+  var changed = false;
+  items.forEach(function(it){
+    var nid = it.getAttribute('data-nid');
+    if(nid && arr.indexOf(nid) === -1){ arr.push(nid); changed = true; }
+    it.classList.add('faded');
+    var dot = it.querySelector('.notif-dot');
+    if(dot) dot.style.display = 'none';
+  });
+  if(changed){
+    try{ localStorage.setItem(NOTIF_READ_KEY, JSON.stringify(arr)); }catch(e){}
+  }
   showToast('All notifications marked as read','success');
 };
+
+function refreshNotifMore(){
+  var btn = document.getElementById('notifMoreBtn');
+  var wrap = document.getElementById('notifMoreWrap');
+  if(!btn || !wrap) return;
+  var hidden = [];
+  try{ hidden = JSON.parse(btn.getAttribute('data-hidden') || '[]'); }catch(e){}
+  var dismissed = getNotifArr(NOTIF_DISMISS_KEY);
+  var visible = hidden.filter(function(n){ return dismissed.indexOf(n.id) === -1; });
+  if(visible.length){
+    wrap.style.display = 'block';
+    btn.innerHTML = 'Show More (' + visible.length + ') <span class="notif-more-caret">▾</span>';
+    btn.setAttribute('data-hidden', JSON.stringify(visible));
+  } else {
+    wrap.style.display = 'none';
+  }
+}
 
 // ── Show more notifications (mobile: 5 visible, rest behind styled dropdown) ──
 window.toggleNotifMore = function(btn){
@@ -869,12 +910,25 @@ function loadAccountOverview(){
 }
 
 // ── User ID (OpenRouter-style u_xxx) ──
+function uidCopyFeedback(){
+  var btn = document.querySelector('.uid-copy-btn');
+  if(!btn) return;
+  var sym = btn.querySelector('.uid-copy-symbol');
+  if(!sym) return;
+  var original = sym.innerHTML;
+  sym.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#4CAF50"><polyline points="20 6 9 17 4 12"/></svg>';
+  clearTimeout(btn._uidCopyT);
+  btn._uidCopyT = setTimeout(function(){
+    sym.innerHTML = original;
+  }, 1600);
+}
 window.copyUserId = function(){
   var el = document.getElementById('acctUserId');
   if(!el || !el.textContent || el.textContent === '—') return;
   var id = el.textContent;
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(id).then(function(){
+      uidCopyFeedback();
       showToast('User ID copied', 'success');
     }).catch(function(){
       fallbackCopy(id);
@@ -890,7 +944,7 @@ function fallbackCopy(text){
   ta.style.opacity = '0';
   document.body.appendChild(ta);
   ta.select();
-  try { document.execCommand('copy'); showToast('User ID copied', 'success'); }
+  try { document.execCommand('copy'); uidCopyFeedback(); showToast('User ID copied', 'success'); }
   catch(e) { showToast('Copy failed', 'error'); }
   document.body.removeChild(ta);
 }
