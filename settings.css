@@ -175,10 +175,13 @@
   }
 }
 @media (max-width: 767px) {
-  /* Mobile: show all 5 notification cards — no clipping (5 × ~76px > 340px would cut the 5th) */
+  /* Mobile: keep ~5 notification cards visible (380px ≈ 5 × 76px), scroll
+     vertically INSIDE the container for the rest (Bud 2026-09: "showing
+     ONLY 5 and allowing users to scroll vertically" — NOT all on page). */
   .settings-card .notif-grid {
-    max-height: none;
-    overflow-y: visible;
+    max-height: 380px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 .settings-card + .settings-card {
