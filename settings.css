@@ -295,6 +295,23 @@ button.settings-save-btn:hover {
   padding: 0.4rem 1rem;
   font-size: 0.8rem;
 }
+/* User ID copy button: desktop shows "Copy" label, mobile shows larger ⧉ symbol */
+.uid-copy-symbol {
+  display: none;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+@media (max-width: 767px) {
+  .uid-copy-btn {
+    padding: 0.45rem 0.65rem;
+  }
+  .uid-copy-symbol {
+    display: inline-block;
+  }
+  .uid-copy-label {
+    display: none;
+  }
+}
 /* Settings row (active) */
 .settings-row {
   display: flex;
