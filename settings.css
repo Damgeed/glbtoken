@@ -536,36 +536,10 @@ button.settings-save-btn:hover {
   border-color: var(--primary);
 }
 
-/* ── Show more notifications button ── */
-.notif-more-btn {
-  display: block;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-sm);
-  background: rgba(244, 180, 0, 0.08);
-  border: 1px solid rgba(244, 180, 0, 0.35);
-  color: var(--primary);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.notif-more-btn:hover {
-  background: rgba(244, 180, 0, 0.15);
-  border-color: var(--primary);
-}
-.notif-more-caret {
-  font-size: 0.7rem;
-  opacity: 0.8;
-}
 @media (max-width: 768px) {
   .webhook-btn {
     padding: 0.6rem 0.9rem;
     font-size: 0.8rem;
-  }
-  .notif-more-btn {
-    width: 100%;
   }
 }
 

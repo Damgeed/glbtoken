@@ -24,10 +24,26 @@
   }
   .tx-scroll.tx-fit th,
   .tx-scroll.tx-fit td {
+    /* Force the mobile intent (0.7rem) — the base .tx-table td is 0.85rem
+       which overrides .tx-table{font-size:.7rem} and made cells wrap.
+       NO overflow-wrap:anywhere — it broke words mid-way ("Completed" →
+       "complete"/"d"). */
+    font-size: 0.7rem;
     white-space: normal;
     word-break: break-word;
-    overflow-wrap: anywhere;
   }
+  /* Status must never wrap to two lines */
+  .tx-scroll.tx-fit td.tx-td-center,
+  .tx-scroll.tx-fit td.amount {
+    white-space: nowrap;
+  }
+  /* Explicit column widths: Amount/Tokens/Status keep numbers on one line;
+     Date (18%) and Method (20%) wrap naturally at spaces. */
+  .tx-scroll.tx-fit #txDeposits th:nth-child(1) { width: 18%; }  /* Date */
+  .tx-scroll.tx-fit #txDeposits th:nth-child(2) { width: 20%; }  /* Amount */
+  .tx-scroll.tx-fit #txDeposits th:nth-child(3) { width: 20%; }  /* Method */
+  .tx-scroll.tx-fit #txDeposits th:nth-child(4) { width: 22%; }  /* Tokens */
+  .tx-scroll.tx-fit #txDeposits th:nth-child(5) { width: 20%; }  /* Status */
   .tx-scroll.tx-fit::after {
     display: none !important;
   }

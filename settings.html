@@ -301,9 +301,6 @@
         <div class="notif-grid" id="notifList">
           <!-- Rendered from real data (transactions / balance / API keys) -->
         </div>
-        <div id="notifMoreWrap" style="display:none">
-          <button class="notif-more-btn" id="notifMoreBtn" onclick="toggleNotifMore(this)">Show More <span class="notif-more-caret">▾</span></button>
-        </div>
         <div id="notifEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No notifications yet</div></div>
       </div>
 
@@ -683,8 +680,6 @@ window.dismissNotif = function(btn){
     }
   }
   item.style.display = 'none';
-  // Refresh the show-more button count
-  refreshNotifMore();
 };
 
 window.markAllRead = function(){
@@ -704,62 +699,6 @@ window.markAllRead = function(){
     try{ localStorage.setItem(NOTIF_READ_KEY, JSON.stringify(arr)); }catch(e){}
   }
   showToast('All notifications marked as read','success');
-};
-
-function refreshNotifMore(){
-  var btn = document.getElementById('notifMoreBtn');
-  var wrap = document.getElementById('notifMoreWrap');
-  if(!btn || !wrap) return;
-  var hidden = [];
-  try{ hidden = JSON.parse(btn.getAttribute('data-hidden') || '[]'); }catch(e){}
-  var dismissed = getNotifArr(NOTIF_DISMISS_KEY).map(normalizeNotifId);
-  var visible = hidden.filter(function(n){ return dismissed.indexOf(normalizeNotifId(n.id)) === -1; });
-  if(visible.length){
-    wrap.style.display = 'block';
-    btn.innerHTML = 'Show More (' + visible.length + ') <span class="notif-more-caret">▾</span>';
-    btn.setAttribute('data-hidden', JSON.stringify(visible));
-  } else {
-    wrap.style.display = 'none';
-  }
-}
-
-// ── Show more notifications (mobile: 5 visible, rest behind styled dropdown) ──
-window.toggleNotifMore = function(btn){
-  var list = document.getElementById('notifList');
-  if(!list || !btn) return;
-  var expanded = btn.getAttribute('data-open') === '1';
-  var hidden = [];
-  try{ hidden = JSON.parse(btn.getAttribute('data-hidden') || '[]'); }catch(e){}
-  var read = getNotifArr(NOTIF_READ_KEY).map(normalizeNotifId);
-  var ICONS = {
-    primary: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
-    destructive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-    success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
-  };
-  if(!expanded){
-    // Expand: append hidden items to the list (skip any dismissed meanwhile)
-    var dismissedNow = getNotifArr(NOTIF_DISMISS_KEY).map(normalizeNotifId);
-    hidden.forEach(function(n){
-      if(dismissedNow.indexOf(normalizeNotifId(n.id)) !== -1) return;
-      var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
-      list.insertAdjacentHTML('beforeend',
-        '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
-        + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'">'+(ICONS[n.kind]||'')+'</div>'
-        + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
-        + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
-        + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'
-        + '</div>');
-    });
-    btn.innerHTML = 'Show Less <span class="notif-more-caret">▴</span>';
-    btn.setAttribute('data-open','1');
-  } else {
-    // Collapse: remove the expanded items (keep first 5)
-    var keep = 5;
-    var rows = list.querySelectorAll('.notif-item');
-    for(var i = rows.length - 1; i >= keep; i--){ rows[i].remove(); }
-    btn.innerHTML = 'Show More (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
-    btn.removeAttribute('data-open');
-  }
 };
 
 // ── Appearance ──
@@ -1139,18 +1078,15 @@ function loadNotifications(){
   function render(items){
     var visible = items.filter(function(n){ return dismissed.indexOf(normalizeNotifId(n.id)) === -1; });
     var empty = document.getElementById('notifEmpty');
-    var moreWrap = document.getElementById('notifMoreWrap');
-    var moreBtn = document.getElementById('notifMoreBtn');
     if(!visible.length){
       list.innerHTML = '';
       if(empty) empty.style.display = 'block';
-      if(moreWrap) moreWrap.style.display = 'none';
       return;
     }
     if(empty) empty.style.display = 'none';
-    // 5 visible + Show More fold (Bud: notifications must hide after 5 cards)
-    var LIMIT = 5;
-    var cards = visible.map(function(n){
+    // Render ALL notifications — no Show More/Less button (Bud 2026-09: let
+    // users scroll; the .notif-grid container scrolls to reach every item).
+    list.innerHTML = visible.map(function(n){
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
       return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'" style="margin-bottom:0.5rem">'
         + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'" style="margin-right:1rem">'+(ICONS[n.kind]||'')+'</div>'
@@ -1158,19 +1094,7 @@ function loadNotifications(){
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'
         + '</div>';
-    });
-    list.innerHTML = cards.slice(0, LIMIT).join('');
-    var hidden = visible.slice(LIMIT);
-    if(moreWrap && moreBtn){
-      if(hidden.length){
-        moreBtn.setAttribute('data-hidden', JSON.stringify(hidden));
-        moreBtn.removeAttribute('data-open');
-        moreBtn.innerHTML = 'Show More (' + hidden.length + ') <span class="notif-more-caret">▾</span>';
-        moreWrap.style.display = 'block';
-      } else {
-        moreWrap.style.display = 'none';
-      }
-    }
+    }).join('');
   }
   Promise.all([
     safeApi('GET','/api/activity',null,null,true),
