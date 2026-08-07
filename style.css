@@ -2839,14 +2839,7 @@ body.compact-cards .billing-stat-card {
   .api-key-card { flex-wrap: nowrap; }
   .key-info { min-width: 0; flex: 1 1 auto; }
   .key-card-footer { flex-shrink: 0; }
-}
-.tx-tabs {
-  display: flex;
-  gap: 0;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-.tx-tab {
+}.tx-tab {
   padding: 0.75rem 1.25rem;
   font-size: 0.9rem;
   font-weight: 500;
@@ -4385,13 +4378,7 @@ html.light .star.white {
 .toggle-switch input:focus-visible + .toggle-slider {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
-}
-/* ── Monthly Compare Cards ── */
-.monthly-card.current {
-  border-color: hsla(44 96% 52% / 0.3);
-  background: var(--primary-subtle);
-}
-/* ── Loading Indicator ── */
+}/* ── Loading Indicator ── */
 .loading-indicator {
   display: flex;
   align-items: center;
@@ -4408,34 +4395,7 @@ html.light .star.white {
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: btnSpin 0.6s linear infinite;
-}
-/* ── Analytics Section Headers ── */
-/* ── Responsive Analytics Grid ── */
-/* 📱 analytics grid (dashboard) */
-/* ── Summary Stat Row ── */
-/* ── Section Filter Bar ── */
-.section-filter-bar .range-btn.active {
-  border-color: var(--primary);
-  background: var(--primary-subtle);
-  color: var(--primary);
-  font-weight: 600;
-}
-/* ── Chart Card Container ── */
-/* ── Playground Chat Layout ── */
-.playground-sidebar .conv-item.active {
-  background: var(--primary-subtle);
-  color: var(--text);
-  font-weight: 600;
-  border-left: 3px solid var(--primary);
-}
-.playground-sidebar .conv-item .conv-title {
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.playground-main {
+}.playground-main {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -4480,35 +4440,7 @@ html.light .star.white {
 .playground-main .pg-header .model-selector:focus {
   outline: none;
   border-color: var(--primary);
-}
-.params-panel.open {
-  display: flex;
-}
-.params-toggle-btn.active {
-  background: var(--primary-subtle);
-  border-color: var(--primary);
-  color: var(--primary);
-}
-/* ── Referral Page ── */
-.share-btns .share-btn {
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.share-btns .share-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-subtle);
-}
-/* 📱 how-it-works grid */
+}/* 📱 how-it-works grid */
 .step-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -4561,23 +4493,7 @@ html.light .star.white {
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   color: var(--text-secondary);
-}
-/* ── History Page (Login History) ── */
-.history-filters .filter-btn {
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-sm);
-  background: var(--primary);
-  color: #0a0b14;
-  font-weight: 600;
-  font-size: 0.8rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.history-filters .filter-btn:hover {
-  background: var(--primary-hover);
-}
-.history-row {
+}.history-row {
   transition: background 0.15s;
 }
 .device-icon {
@@ -4620,17 +4536,7 @@ html.light .star.white {
   font-weight: 500;
   background: var(--destructive-subtle);
   color: var(--destructive);
-}
-.status-dot.active {
-  background: var(--success);
-}
-.status-dot.inactive {
-  background: var(--text-muted);
-}
-.status-dot.error {
-  background: var(--destructive);
-}
-/* ── Copy Button ── */
+}/* ── Copy Button ── */
 .copy-btn {
   display: inline-flex;
   align-items: center;
@@ -5903,10 +5809,6 @@ body {
   }
   .calculator-card input {
     min-width: 100%;
-  }
-  .share-btns .share-btn {
-    width: 100%;
-    justify-content: center;
   }
   .pending-invite {
     flex-direction: column;
