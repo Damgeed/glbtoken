@@ -801,7 +801,8 @@ def _stripe_customer_for(user):
 
 
 @router.post("/api/payments/cards/setup")
-def cards_setup(user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def cards_setup(request: Request, user: User = Depends(get_current_user)):
     """Start a Stripe Setup session so the user can save a card (hosted page)."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
@@ -820,7 +821,8 @@ def cards_setup(user: User = Depends(get_current_user)):
 
 
 @router.get("/api/payments/cards")
-def list_cards(user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def list_cards(request: Request, user: User = Depends(get_current_user)):
     """List the user's saved cards from Stripe."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
@@ -845,7 +847,8 @@ def list_cards(user: User = Depends(get_current_user)):
 
 
 @router.post("/api/payments/cards/default")
-def set_default_card(req: CardDefaultRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def set_default_card(request: Request, req: CardDefaultRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Mark a saved card as the default for one-click recharge."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
@@ -866,7 +869,8 @@ def set_default_card(req: CardDefaultRequest, user: User = Depends(get_current_u
 
 
 @router.post("/api/payments/cards/confirm")
-def confirm_card(req: CardConfirmRequest, user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def confirm_card(request: Request, req: CardConfirmRequest, user: User = Depends(get_current_user)):
     """Confirm a card saved via the Stripe Setup session."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
@@ -886,7 +890,8 @@ def confirm_card(req: CardConfirmRequest, user: User = Depends(get_current_user)
 
 
 @router.delete("/api/payments/cards")
-def remove_card(req: CardRemoveRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def remove_card(request: Request, req: CardRemoveRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Remove a saved card from the user's Stripe customer."""
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")

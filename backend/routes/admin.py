@@ -75,9 +75,11 @@ def admin_list_users(request: Request, page: int = 1, per_page: int = 20, user: 
 def admin_adjust_balance(req: AdminBalanceRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
-    target = db.query(User).filter(User.id == req.user_id).first()
+    target = db.query(User).filter(User.id == req.user_id).with_for_update().first()
     if not target:
         _404("User not found")
+    # Row-locked read-modify-write (with_for_update) — prevents lost updates
+    # when a concurrent adjustment or spend touches the same user.
     target.token_balance = max(0, target.token_balance + req.tokens)
     tx = Transaction(
         user_id=target.id, type="deposit" if req.tokens > 0 else "consumption",

@@ -657,7 +657,8 @@ def _resolve_social_user(db, info, id_field="google_id"):
 
 
 @router.get("/api/auth/auth0/callback")
-async def auth0_callback_redirect(id_token: str = Query(...)):
+@limiter.limit("10/minute")
+async def auth0_callback_redirect(request: Request, id_token: str = Query(...)):
     """Callback redirect endpoint for social login. Validates Auth0 id_token and redirects to frontend dashboard with JWT."""
     from starlette.responses import RedirectResponse
     if not is_auth0_configured():
@@ -700,7 +701,8 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
 
 
 @router.get("/api/auth/auth0/pkce-callback")
-async def auth0_pkce_callback(code: str = Query(...), code_verifier: str = Query(...), state: str = Query(None)):
+@limiter.limit("10/minute")
+async def auth0_pkce_callback(request: Request, code: str = Query(...), code_verifier: str = Query(...), state: str = Query(None)):
     """Server-side PKCE callback: exchange Auth0 code for tokens, then redirect to dashboard with JWT."""
     from starlette.responses import RedirectResponse
     if not is_auth0_configured():

@@ -87,12 +87,14 @@ async def get_dashboard(
             )
             if newapi_usage and "error" not in newapi_usage:
                 newapi_connected = True
-            # Sync real remaining balance from New API quota → GlbTOKEN tokens
+            # Report New API quota as tokens for display (do NOT overwrite the
+            # authoritative local balance). This is a GET endpoint: writing
+            # user.token_balance here is a read-modify-write that races the
+            # atomic decrements in /v1 _bill and chat.py (resurrecting spent
+            # tokens) and wipes local-only credits (signup bonus, referral
+            # claims, admin adjustments) that are never pushed to New API.
             if quota is not None:
                 synced_balance = newapi_quota_to_tokens(quota)
-                if synced_balance != user.token_balance:
-                    user.token_balance = synced_balance
-                    db.commit()
     except Exception as e:
         print(f"⚠️ New API usage fetch failed: {e}")
     

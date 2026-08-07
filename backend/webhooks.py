@@ -92,6 +92,14 @@ def send_webhook(user, event: str, payload: dict):
     secret = get_webhook_secret(user)
 
     def _deliver():
+        # Re-check immediately before connect to narrow the DNS-rebinding
+        # window (the pre-queue check in send_webhook may be stale by seconds).
+        # Note: a true TOCTOU-free fix requires pinning the connection to the
+        # validated IP; this is defense-in-depth on top of the redirect
+        # re-validation in _ValidatingRedirectHandler.
+        if _is_private_url(url):
+            print(f"⚠️ Webhook URL became private/reserved before delivery: {url}")
+            return
         try:
             req = urllib.request.Request(
                 url, data=body, method="POST",

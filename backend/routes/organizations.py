@@ -214,7 +214,7 @@ def delete_org(org_id: int, request: Request,
 
 
 @router.post("/api/orgs/{org_id}/invite")
-@limiter.limit("60/minute")
+@limiter.limit("10/minute")
 def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
                   user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Invite a user by email to join the organization. Generates an invite token. Enterprise+ only."""
