@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1234" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1046" />
+<link rel="stylesheet" href="settings.css?v=1047" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -917,9 +917,11 @@ function uidCopyFeedback(){
   if(!sym) return;
   var original = sym.innerHTML;
   sym.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#4CAF50"><polyline points="20 6 9 17 4 12"/></svg>';
+  btn.classList.add('copied');
   clearTimeout(btn._uidCopyT);
   btn._uidCopyT = setTimeout(function(){
     sym.innerHTML = original;
+    btn.classList.remove('copied');
   }, 1600);
 }
 window.copyUserId = function(){
