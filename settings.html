@@ -674,7 +674,7 @@ window.saveNotificationSettings = function(){
 window.dismissNotif = function(btn){
   var item = btn ? btn.closest('.notif-item') : null;
   if(!item) return;
-  var nid = item.getAttribute('data-nid');
+  var nid = normalizeNotifId(item.getAttribute('data-nid'));
   if(nid){
     var arr = getNotifArr(NOTIF_DISMISS_KEY);
     if(arr.indexOf(nid) === -1){
@@ -694,7 +694,7 @@ window.markAllRead = function(){
   var arr = getNotifArr(NOTIF_READ_KEY);
   var changed = false;
   items.forEach(function(it){
-    var nid = it.getAttribute('data-nid');
+    var nid = normalizeNotifId(it.getAttribute('data-nid'));
     if(nid && arr.indexOf(nid) === -1){ arr.push(nid); changed = true; }
     it.classList.add('faded');
     var dot = it.querySelector('.notif-dot');
@@ -1065,6 +1065,13 @@ var NOTIF_READ_KEY = 'gt_read_notifs';
 function getNotifArr(key){
   try{ return JSON.parse(localStorage.getItem(key))||[]; }catch(e){ return []; }
 }
+// Normalize a stored notification id the same way ids are generated on render
+// (strip microseconds / UTC marker / offset) so legacy dismissed/read entries
+// still match after the stable-id change.
+function normalizeNotifId(id){
+  if(!id) return id;
+  return String(id).replace(/\.\d+/, '').replace(/Z$/, '').replace(/\+00:00$/, '');
+}
 function notifTime(iso){
   if(!iso) return '';
   var diff = (Date.now() - (typeof window.parseUTCDate === 'function' ? window.parseUTCDate(iso) : new Date(iso).getTime()))/1000;
@@ -1077,8 +1084,8 @@ function notifTime(iso){
 function loadNotifications(){
   var list = document.getElementById('notifList');
   if(!list) return;
-  var read = getNotifArr(NOTIF_READ_KEY);
-  var dismissed = getNotifArr(NOTIF_DISMISS_KEY);
+  var read = getNotifArr(NOTIF_READ_KEY).map(normalizeNotifId);
+  var dismissed = getNotifArr(NOTIF_DISMISS_KEY).map(normalizeNotifId);
   var ICONS = {
     primary: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
     destructive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
@@ -1090,7 +1097,7 @@ function loadNotifications(){
   }
   function render(items){
     var limit = 5; // uniform show-more: 5 cards max everywhere
-    var visible = items.filter(function(n){ return dismissed.indexOf(n.id) === -1; });
+    var visible = items.filter(function(n){ return dismissed.indexOf(normalizeNotifId(n.id)) === -1; });
     var hidden = visible.slice(limit);
     visible = visible.slice(0, limit);
     var empty = document.getElementById('notifEmpty');
@@ -1103,7 +1110,7 @@ function loadNotifications(){
     }
     if(empty) empty.style.display = 'none';
     list.innerHTML = visible.map(function(n){
-      var unread = n.fresh && read.indexOf(n.id) === -1;
+      var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
       return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+n.id+'">'
         + '<div class="settings-icon settings-icon-'+n.kind+'">'+ICONS[n.kind]+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
@@ -1132,35 +1139,48 @@ function loadNotifications(){
     var balance = dash.token_balance || 0;
     activity.forEach(function(a){
       var t = a.created_at;
+      // Stable notification id: normalize created_at to second precision so a
+      // dismissed/read id still matches after refresh (New API timestamps may
+      // include/exclude microseconds or vary in tz format between calls).
+      function nid(prefix){
+        var s = String(t || '');
+        s = s.replace(/\.\d+/, '');           // strip microseconds
+        s = s.replace(/Z$/, '');              // strip UTC marker
+        s = s.replace(/\+00:00$/, '');        // strip +00:00 offset
+        return prefix + '-' + s;
+      }
       if(a.type === 'topup'){
         items.push({
-          id: 'topup-'+t, kind: 'primary', fresh: true,
+          id: nid('topup'), kind: 'primary', fresh: true,
           title: 'Top-up Confirmed',
           desc: notifTime(t)+' · '+fmtAmount({amount:a.amount, currency:a.currency})+ (a.tokens ? ' · '+Number(a.tokens).toLocaleString()+' tokens credited' : '')
         });
       } else if(a.type === 'consumption'){
         items.push({
-          id: 'consume-'+t, kind: 'primary', fresh: false,
+          id: nid('consume'), kind: 'primary', fresh: false,
           title: 'Token Consumption',
           desc: notifTime(t)+' · '+(a.model || 'API usage') + (a.tokens ? ' · '+Number(a.tokens).toLocaleString()+' tokens' : '')
         });
       } else if(a.type === 'key_created'){
         items.push({
-          id: 'key-'+t, kind: 'success', fresh: false,
+          id: nid('key'), kind: 'success', fresh: false,
           title: 'API Key Created',
           desc: notifTime(t)+' · '+(a.description || 'New API key generated')
         });
       } else if(a.type === 'api_call'){
         items.push({
-          id: 'call-'+t, kind: 'success', fresh: false,
+          id: nid('call'), kind: 'success', fresh: false,
           title: 'API Call' + (a.model ? ' · '+a.model : ''),
           desc: notifTime(t) + (a.tokens ? ' · '+Number(a.tokens).toLocaleString()+' tokens' : '')
         });
       }
     });
     if(balance < 1000){
+      // Stable daily id — balance-relative ids (lowbal-<balance/100>) made a
+      // dismissed card resurrect whenever the balance crossed a 100-token step.
+      var day = new Date().toISOString().slice(0, 10);
       items.push({
-        id: 'lowbal-'+Math.max(1, Math.floor(balance/100)), kind: 'destructive', fresh: true,
+        id: 'lowbal-' + day, kind: 'destructive', fresh: true,
         title: 'Low Balance Warning',
         desc: 'Current balance: '+Number(balance).toLocaleString()+' tokens'
       });
