@@ -189,6 +189,8 @@
     padding: 1rem;
   }
 }
+/* Compact cards mode — global rules live in style.css (body.compact-cards …)
+   so the toggle works on every page. Settings-specific card kept here. */
 body.compact-cards .settings-card {
   padding: 0.9rem 1.1rem;
 }
@@ -494,16 +496,7 @@ button.settings-save-btn:hover {
   background: var(--primary);
   flex-shrink: 0;
 }
-/* Compact cards mode (Settings Appearance toggle) */
-body.compact-cards .dash-card {
-  padding: 0.9rem 1.1rem;
-}
-body.compact-cards .dash-card .settings-field-group {
-  gap: 0.5rem;
-}
-body.compact-cards .toggle-row {
-  padding: 0.45rem 0;
-}
+/* Compact cards mode (global rules in style.css) — remove per-page duplicates */
 
 /* ── Webhook branded buttons (Save / Test) ── */
 .webhook-btn {
