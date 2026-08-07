@@ -417,6 +417,15 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       return d.innerHTML;
     }
 
+    // For interpolating values into DOUBLE-QUOTED HTML attributes. escapeHtml()
+    // does not escape `"`, so it is NOT safe in attribute context (a `"` in
+    // the value breaks out of the attribute → attribute injection / XSS).
+    function escapeAttr(str){
+      return escapeHtml(str)
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
     // Whitelist for IDs interpolated into inline onclick handlers.
     // Server-assigned ids are numeric/alphanumeric — strip anything else so a
     // hostile value can never break out of the JS string/attribute context.
@@ -969,7 +978,17 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
     return sh > ch + 80;
   }
   function ensureVHint(){
-    if(vHintEl || !pageOverflows()) return;
+    if(!pageOverflows()){
+      // Page no longer overflows — remove the hint so it never flashes
+      // when there is nothing left to scroll to.
+      if(vHintEl){
+        vHintEl.remove();
+        vHintEl = null;
+        vHintHidden = false;
+      }
+      return;
+    }
+    if(vHintEl) return;
     var h = document.createElement('div');
     h.id = 'vScrollHint';
     h.className = 'v-scroll-hint';

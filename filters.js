@@ -236,13 +236,13 @@
       list.innerHTML=k.map(key=>`
         <div class="api-key-card" style="padding:0.75rem 1rem">
           <div class="key-info">
-            <div class="key-name">'+escapeHtml(key.name)+'</div>
-            <div class="key-val">'+escapeHtml(key.key_prefix)+'••••••••</div>
-            <div class="meta">'+escapeHtml(key.permissions)+' · '+key.request_count+' requests · '+(key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>')+'</div>
+            <div class="key-name">${escapeHtml(key.name)}</div>
+            <div class="key-val">${escapeHtml(key.key_prefix)}••••••••</div>
+            <div class="meta">${escapeHtml(key.permissions)} · ${key.request_count} requests · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
           </div>
           <div class="key-actions">
-            <button class="sort-btn" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
-            <button class="sort-btn" style="color:var(--destructive)" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
+            <button class="sort-btn" data-key-id="${escapeAttr(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
+            <button class="sort-btn" style="color:var(--destructive)" data-key-id="${escapeAttr(String(key.id))}" data-action="delete">Delete</button>
           </div>
         </div>
       `).join('');
@@ -281,7 +281,7 @@
           }
           var dt=a.created_at?new Date((typeof window.parseUTCDate==='function')?window.parseUTCDate(a.created_at):new Date(a.created_at).getTime()).toLocaleString():'';
           var expandId='act-expand-'+i;
-          var hasLog=a.type==='api_call'&&a.log_id?' data-log-id="'+escapeHtml(String(a.log_id))+'" data-model="'+escapeHtml(a.model||'')+'" data-tokens="'+(a.tokens||0)+'" data-cost="'+(a.cost||0)+'"':'';
+          var hasLog=a.type==='api_call'&&a.log_id?' data-log-id="'+escapeAttr(String(a.log_id))+'" data-model="'+escapeAttr(a.model||'')+'" data-tokens="'+(a.tokens||0)+'" data-cost="'+(a.cost||0)+'"':'';
           return '<div class="dash-activity-item" style="cursor:'+(hasLog?'pointer':'default')+'"'+(hasLog?' onclick="toggleLogContent(this,'+"'"+expandId+"'"+')"':'')+'>'+
             '<div class="icon" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:'+colorCls+'">'+icon+'</div>'+
             '<div class="info" style="flex:1;min-width:0"><div class="title" style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+desc+'</div><div class="time" style="font-size:0.75rem;color:var(--text-muted)">'+escapeHtml(dt)+'</div></div>'+

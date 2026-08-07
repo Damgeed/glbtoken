@@ -10,7 +10,7 @@ import secrets, json, random, re, hashlib
 from database import get_db, User, LoginEvent, Referral
 from auth import (
     hash_password, verify_password, create_access_token, decode_token,
-    get_current_user, get_optional_user, generate_api_key,
+    get_current_user,
     verify_google_token, verify_github_code, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID,
     generate_refresh_token, validate_refresh_token, revoke_refresh_token
 )
@@ -22,7 +22,7 @@ from auth0 import (
     get_social_login_url, send_passwordless_code, verify_passwordless_code,
     send_sms_code, verify_sms_code
 )
-from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email, SIGNUP_BONUS_TOKENS
+from common import _400, _401, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email, SIGNUP_BONUS_TOKENS
 from schemas import (
     RegisterRequest, LoginRequest, GoogleAuthRequest, GithubAuthRequest,
     Auth0LoginRequest, SendCodeRequest, VerifyCodeRequest,
@@ -536,9 +536,7 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
         print(f"❌ Auth0 token login error: {e}")
         _401("Auth0 login failed. Invalid token.")
     # Find or create user by Auth0 sub
-    user = db.query(User).filter(
-        (User.email == info["email"]) | (User.email == "" and 1 == 0)
-    ).first()
+    user = db.query(User).filter(User.email == info["email"]).first()
 
     if not user and info.get("sub"):
         user = db.query(User).filter(User.google_id == info["sub"]).first()
@@ -664,7 +662,6 @@ async def auth0_callback_redirect(id_token: str = Query(...)):
     from starlette.responses import RedirectResponse
     if not is_auth0_configured():
         return RedirectResponse(url="https://glbtoken.com/login.html?error=Auth0+not+configured")
-    from urllib.parse import quote
     try:
         payload = verify_auth0_token(id_token)
         info = get_user_info(payload)
@@ -924,7 +921,8 @@ def verify_email(req: VerifyEmailRequest, request: Request, user: User = Depends
 # ── Password Management ──
 
 @router.put("/api/user/password")
-def change_password(req: ChangePasswordRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def change_password(request: Request, req: ChangePasswordRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.password_hash or not verify_password(req.current_password, user.password_hash):
         _400("Current password is incorrect")
     if len(req.new_password) < 8:

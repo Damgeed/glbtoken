@@ -253,7 +253,7 @@
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1151"></script>
+<script data-cfasync="false" src="shared.js?v=1152"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1230"></script>
 
@@ -353,7 +353,7 @@
 
           var receiptHtml = '—';
           if(invItem.pdf_url){
-            receiptHtml = '<a href="javascript:void(0)" data-invoice-id="' + escapeHtml(invItem.id) + '" onclick="downloadInvoicePdf(this.dataset.invoiceId)" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> PDF</a>';
+            receiptHtml = '<a href="javascript:void(0)" data-invoice-id="' + escapeAttr(invItem.id) + '" onclick="downloadInvoicePdf(this.dataset.invoiceId)" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> PDF</a>';
           } else if(invItem.receipt_url || invItem.receipt){
             var rUrl = escapeHtml(invItem.receipt_url || invItem.receipt);
             receiptHtml = '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>';

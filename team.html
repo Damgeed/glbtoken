@@ -393,7 +393,7 @@
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1151"></script>
+<script data-cfasync="false" src="shared.js?v=1152"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1230"></script>
 
@@ -895,23 +895,23 @@ async function loadOrgDetails(orgId){
 // the mobile show-more collapse alike, so both stay structurally identical.
 function inviteRowHtml(iv, orgId, canManage){
   var link = iv.join_link || ('Token: '+(iv.invite_token||'').slice(0,12)+'…');
-  var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(iv.expires_at)+'">'+fmtCountdown(iv.expires_at)+'</span></span>' : '';
+  var exp = iv.expires_at ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeAttr(iv.expires_at)+'">'+fmtCountdown(iv.expires_at)+'</span></span>' : '';
   var sent = iv.created_at ? '<span class="invite-sent">sent '+timeAgo(iv.created_at)+'</span>' : '';
   var actions = '';
   var swipeActions = '';
   if(canManage){
     actions = '<div class="invite-actions">'
-      + '<button class="btn-secondary btn-copy" onclick="resendInvite('+safeJsId(orgId)+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
-      + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+safeJsId(orgId)+','+safeJsId(iv.id)+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
+      + '<button class="btn-secondary btn-copy" onclick="resendInvite('+safeJsId(orgId)+',\''+encodeURIComponent(iv.email)+'\',\''+encodeURIComponent(iv.role||'member')+'\')">↻ Resend</button>'
+      + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+safeJsId(orgId)+','+safeJsId(iv.id)+',\''+encodeURIComponent(iv.email)+'\')">✕ Revoke</button>'
       + '</div>';
     swipeActions = '<div class="invite-swipe-actions">'
-      + '<button class="swipe-action swipe-resend" onclick="resendInvite('+safeJsId(orgId)+',\''+escapeHtml(iv.email)+'\',\''+escapeHtml(iv.role||'member')+'\')">↻ Resend</button>'
-      + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+safeJsId(orgId)+','+safeJsId(iv.id)+',\''+escapeHtml(iv.email)+'\')">✕ Revoke</button>'
+      + '<button class="swipe-action swipe-resend" onclick="resendInvite('+safeJsId(orgId)+',\''+encodeURIComponent(iv.email)+'\',\''+encodeURIComponent(iv.role||'member')+'\')">↻ Resend</button>'
+      + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+safeJsId(orgId)+','+safeJsId(iv.id)+',\''+encodeURIComponent(iv.email)+'\')">✕ Revoke</button>'
       + '</div>';
   }
   return '<div class="invite-swipe">'
     + swipeActions
-    + '<div class="invite-item" data-email="'+escapeHtml(iv.email)+'">'
+    + '<div class="invite-item" data-email="'+escapeAttr(iv.email)+'">'
     + '<div class="invite-main">'
     + '<div class="invite-top">'
     + '<span class="invite-email">'+escapeHtml(iv.email)+'</span>'
@@ -1028,7 +1028,7 @@ function renderMembers(myRole, orgId){
         : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>';
       // Transfer ownership: owner only, to a non-owner member
       var transferBtn = (role === 'owner' && !isOwner)
-        ? '<button class="btn-secondary btn-copy" onclick="event.stopPropagation();transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
+        ? '<button class="btn-secondary btn-copy" onclick="event.stopPropagation();transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+encodeURIComponent(m.name||'User')+'\')">Transfer</button>'
         : '';
       var hasActions = transferBtn || showRemove;
       var actionsCell = hasActions
@@ -1085,7 +1085,7 @@ function mobileMemberCardHtml(m, role, orgId){
   if(isOwner){
     roleCell = '<span class="badge-role-owner">Owner</span>';
   } else if(role === 'owner'){
-    roleCell = '<select class="role-select tag-filter" onclick="event.stopPropagation()" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+    roleCell = '<select class="role-select tag-filter" onclick="event.stopPropagation()" onchange="updateRole(this,'+safeJsId(m.user_id)+','+safeJsId(orgId)+')">'
       + ['admin','member'].map(function(r){
           return '<option value="'+r+'"'+(m.role===r?' selected':'')+'>'+capRole(r)+'</option>';
         }).join('')
@@ -1095,7 +1095,7 @@ function mobileMemberCardHtml(m, role, orgId){
   }
   var showRemove = (role === 'owner' || role === 'admin') && !isOwner && !(role === 'admin' && m.role === 'admin');
   var transferBtn = (role === 'owner' && !isOwner)
-    ? '<button class="swipe-action swipe-transfer" onclick="transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+escapeHtml(m.name||'User')+'\')">Transfer</button>'
+    ? '<button class="swipe-action swipe-transfer" onclick="transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+encodeURIComponent(m.name||'User')+'\')">Transfer</button>'
     : '';
   var removeBtn = showRemove
     ? '<button class="swipe-action swipe-remove" onclick="removeMember('+safeJsId(orgId)+','+safeJsId(m.user_id)+')">Remove</button>'
@@ -1259,22 +1259,22 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
   list.querySelectorAll(':scope > p').forEach(function(p){ p.remove(); });
   var div = document.createElement('div');
   div.className = 'invite-swipe';
-  var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeHtml(expiresAt)+'">'+fmtCountdown(expiresAt)+'</span></span>' : '';
+  var exp = expiresAt ? '<span class="invite-exp"><b>Expires:</b> <span class="invite-countdown" data-exp="'+escapeAttr(expiresAt)+'">'+fmtCountdown(expiresAt)+'</span></span>' : '';
   var sent = createdAt ? '<span class="invite-sent">sent '+timeAgo(createdAt)+'</span>' : '';
   var actions = '';
   var swipeActions = '';
   if(currentMyRole === 'owner' || currentMyRole === 'admin'){
     actions = '<div class="invite-actions">'
-      + '<button class="btn-secondary btn-copy" onclick="resendInvite('+safeJsId(currentOrgId)+',\''+escapeHtml(email)+'\',\''+escapeHtml(role)+'\')">↻ Resend</button>'
-      + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+safeJsId(currentOrgId)+','+safeJsId(inviteId||0)+',\''+escapeHtml(email)+'\')">✕ Revoke</button>'
+      + '<button class="btn-secondary btn-copy" onclick="resendInvite('+safeJsId(currentOrgId)+',\''+encodeURIComponent(email)+'\',\''+encodeURIComponent(role)+'\')">↻ Resend</button>'
+      + '<button class="btn-secondary btn-copy invite-revoke" onclick="revokeInvite('+safeJsId(currentOrgId)+','+safeJsId(inviteId||0)+',\''+encodeURIComponent(email)+'\')">✕ Revoke</button>'
       + '</div>';
     swipeActions = '<div class="invite-swipe-actions">'
-      + '<button class="swipe-action swipe-resend" onclick="resendInvite('+safeJsId(currentOrgId)+',\''+escapeHtml(email)+'\',\''+escapeHtml(role)+'\')">↻ Resend</button>'
-      + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+safeJsId(currentOrgId)+','+safeJsId(inviteId||0)+',\''+escapeHtml(email)+'\')">✕ Revoke</button>'
+      + '<button class="swipe-action swipe-resend" onclick="resendInvite('+safeJsId(currentOrgId)+',\''+encodeURIComponent(email)+'\',\''+encodeURIComponent(role)+'\')">↻ Resend</button>'
+      + '<button class="swipe-action swipe-revoke" onclick="revokeInvite('+safeJsId(currentOrgId)+','+safeJsId(inviteId||0)+',\''+encodeURIComponent(email)+'\')">✕ Revoke</button>'
       + '</div>';
   }
   div.innerHTML = swipeActions
-    + '<div class="invite-item" data-email="'+escapeHtml(email)+'">'
+    + '<div class="invite-item" data-email="'+escapeAttr(email)+'">'
     + '<div class="invite-main">'
     + '<div class="invite-top">'
     + '<span class="invite-email">'+escapeHtml(email)+'</span>'
@@ -1293,6 +1293,7 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
 }
 // Resend an invite (owner/admin) — same token/link, refreshed expiry
 async function resendInvite(orgId, email, role){
+  email = decodeURIComponent(email||''); role = decodeURIComponent(role||'');
   var d = await safeApi('POST','/api/orgs/'+orgId+'/invite',{email:email, role:role, resend:true});
   if(d && (d.status === 'resent' || d.invite_token)){
     showToast(d.email_sent ? 'Invite email resent to '+email : 'Invite link already active — share it','success');
@@ -1301,6 +1302,7 @@ async function resendInvite(orgId, email, role){
 }
 // Revoke an invite (owner/admin) — token dies immediately
 async function revokeInvite(orgId, inviteId, email){
+  email = decodeURIComponent(email||'');
   if(!inviteId){ showToast('Invite not loaded yet — refresh the page','error'); return; }
   showConfirm('Revoke invite?','The invite link for '+email+' will stop working immediately.', async function(){
     var d = await safeApi('DELETE','/api/orgs/'+orgId+'/invites/'+inviteId);
@@ -1315,6 +1317,7 @@ async function revokeInvite(orgId, inviteId, email){
 }
 // Transfer ownership (owner only) — target member becomes the new owner; current owner becomes admin
 async function transferOwnership(orgId, userId, name){
+  name = decodeURIComponent(name||'');
   showConfirm('Transfer ownership?', name+' will become the new owner. You will become an admin and can no longer delete or transfer the organization.', async function(){
     var d = await safeApi('PUT','/api/orgs/'+orgId+'/owner',{user_id:userId});
     if(d && d.status === 'transferred'){
@@ -1574,7 +1577,7 @@ function openMemberDrawer(userId){
   var btns = '';
   if(canManage && !isOwner){
     if(currentMyRole === 'owner'){
-      btns += '<select class="role-select tag-filter" onchange="updateRole(this,'+m.user_id+','+orgId+')">'
+      btns += '<select class="role-select tag-filter" onchange="updateRole(this,'+safeJsId(m.user_id)+','+safeJsId(orgId)+')">'
         + '<option value="admin"'+(m.role==='admin'?' selected':'')+'>Admin</option>'
         + '<option value="member"'+(m.role==='member'?' selected':'')+'>Member</option>'
         + '</select>';

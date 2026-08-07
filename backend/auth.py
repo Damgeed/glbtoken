@@ -2,7 +2,7 @@ import secrets, hashlib
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from database import get_db, User, RefreshToken
@@ -103,6 +103,13 @@ async def get_current_user(
     if not credentials:
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = decode_token(credentials.credentials)
+    # SECURITY: a 2FA pre_token (scope="2fa") is a short-lived step-up token
+    # meant ONLY for the /api/auth/2fa/confirm exchange. It must never be
+    # accepted as a full access token on protected endpoints — otherwise anyone
+    # with the password (but not the TOTP code) could replay it as a Bearer
+    # token and get full account access.
+    if payload.get("scope") == "2fa":
+        raise HTTPException(status_code=401, detail="Invalid token scope")
     user_id = payload.get("sub")
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token payload")
@@ -123,6 +130,10 @@ async def get_optional_user(
         return None
     try:
         payload = decode_token(credentials.credentials)
+        # Same 2FA pre_token guard as get_current_user: a step-up token must
+        # not resolve to a user on any authenticated path.
+        if payload.get("scope") == "2fa":
+            return None
         user_id = payload.get("sub")
         if user_id:
             return db.query(User).filter(User.id == int(user_id)).first()

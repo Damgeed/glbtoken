@@ -11,7 +11,7 @@ import re
 
 from database import get_db, User, Organization, OrgMember, OrgInvite, Transaction
 from auth import get_current_user
-from common import _400, _403, _404, _500, limiter, require_tier, user_tier
+from common import _400, _403, _404, limiter, require_tier
 from schemas import CreateOrgRequest, UpdateOrgRequest, InviteMemberRequest, JoinOrgRequest, ChangeRoleRequest, TransferOwnerRequest
 from routes.auth_routes import send_email
 

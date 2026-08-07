@@ -227,16 +227,6 @@
     row-gap: 0.5rem;
     max-height: 480px;
   }
-  /* Collapse wrapper joins the grid so its rows flow in 2 columns too,
-     but stays hidden until Show More is clicked (show 5, hide the rest) */
-  .dash-activity.activity-scroll .activity-collapse {
-    display: none;
-  }
-  .dash-activity.activity-scroll .activity-collapse.open {
-    display: contents;
-  }
-  /* Show More toggle visible on desktop too (JS controls visibility via inline display) */
-  #usageActivityMoreBtn:not([style*="display: none"]) { display: block; }
 }
 @media (min-width: 1100px) {
   .dash-activity.activity-scroll {

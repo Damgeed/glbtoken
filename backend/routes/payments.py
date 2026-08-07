@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func, update
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from typing import Optional
 import json
 import secrets
@@ -14,7 +14,7 @@ from database import get_db, User, Transaction
 from auth import get_current_user
 from newapi_integration import add_user_quota
 from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, \
-    PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES
+    PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES, GHS_TO_USD_RATE
 from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest, PaystackVerifyRequest
 
 router = APIRouter()
@@ -137,7 +137,11 @@ async def topup(req: TopupRequest, request: Request, user: User = Depends(get_cu
         _400("Crypto payments require manual on-chain verification — contact support")
     else:
         _400("Unsupported payment method")
-    tokens = int(amount * 1000)
+    # SECURITY: tokens are priced in USD (1000/USD). Paystack charges in the
+    # local currency (GHS), so convert before minting — otherwise a small GHS
+    # payment mints far more tokens than its USD value.
+    usd_amount = amount / GHS_TO_USD_RATE if (tx.currency or "").upper() == "GHS" else amount
+    tokens = int(usd_amount * 1000)
     # Atomic credit: conditional UPDATE on the pending tx prevents double-credit
     # from concurrent requests (same ref), and SQL-side balance increment
     # prevents lost updates from concurrent payments on the same user.
@@ -235,7 +239,12 @@ def paystack_verify(body: PaystackVerifyRequest, request: Request = None, user: 
     if tx.status == "completed":
         return {"status": "already_processed", "tokens_added": tx.tokens}
     amount = data["data"]["amount"] / 100  # Convert from kobo
-    tokens = int(amount * 1000)
+    # SECURITY: tokens are priced in USD (1000/USD). Paystack reports the
+    # charged currency — convert non-USD (GHS) to USD before minting, otherwise
+    # a small local-currency payment mints far more tokens than its USD value.
+    charged_currency = (data["data"].get("currency") or "").upper()
+    usd_amount = amount / GHS_TO_USD_RATE if charged_currency == "GHS" else amount
+    tokens = int(usd_amount * 1000)
     # Atomic credit: conditional UPDATE prevents double-credit when this endpoint
     # and a concurrent retry/duplicate request race on the same reference.
     res = db.execute(
@@ -279,7 +288,10 @@ def stripe_create_checkout(req: InitiatePaymentRequest, request: Request, user: 
             mode="payment",
             line_items=[{
                 "price_data": {
-                    "currency": req.currency.lower(),
+                    # SECURITY: tokens are priced in USD — force USD so a
+                    # client-supplied cheap currency (e.g. JPY) can't mint
+                    # tokens at a fraction of their USD value.
+                    "currency": "usd",
                     "product_data": {"name": f"{tokens:,} GlbTOKEN"},
                     "unit_amount": int(req.amount * 100),
                 },
@@ -296,7 +308,7 @@ def stripe_create_checkout(req: InitiatePaymentRequest, request: Request, user: 
             cancel_url="https://glbtoken.com/topup.html?payment=cancelled",
         )
     except stripe_lib.error.StripeError as e:
-        _400(f"Checkout failed: {getattr(e, 'user_message', None) or str(e)}")
+        _400(f"Checkout failed: {getattr(e, 'user_message', None) or 'Payment provider error'}")
     tx = Transaction(
         user_id=user.id, type="deposit", amount=req.amount, currency=req.currency,
         payment_method="stripe", payment_ref=session.id,
@@ -323,7 +335,9 @@ def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: U
     try:
         pi = stripe_lib.PaymentIntent.create(
             amount=int(req.amount * 100),
-            currency=req.currency.lower(),
+            # SECURITY: tokens are priced in USD — force USD (same reasoning
+            # as stripe_create_checkout).
+            currency="usd",
             customer=cus.id,
             payment_method=req.payment_method_id,
             off_session=True,
@@ -333,7 +347,7 @@ def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: U
     except stripe_lib.error.CardError as e:
         _400(f"Card declined: {e.error.message}")
     except stripe_lib.error.StripeError as e:
-        _400(f"Payment failed: {getattr(e, 'user_message', None) or str(e)}")
+        _400(f"Payment failed: {getattr(e, 'user_message', None) or 'Payment provider error'}")
 
     if pi.status == "requires_action":
         return {"status": "requires_action", "client_secret": pi.client_secret,
@@ -843,7 +857,7 @@ def set_default_card(req: CardDefaultRequest, user: User = Depends(get_current_u
     try:
         pm = stripe_lib.PaymentMethod.retrieve(req.payment_method_id)
     except stripe_lib.error.StripeError as e:
-        _400(f"Invalid payment method: {getattr(e, 'user_message', None) or str(e)}")
+        _400(f"Invalid payment method: {getattr(e, 'user_message', None) or 'Payment provider error'}")
     if pm.customer != cus.id:
         _400("Payment method does not belong to this account")
     user.default_payment_method_id = req.payment_method_id
@@ -884,7 +898,7 @@ def remove_card(req: CardRemoveRequest, user: User = Depends(get_current_user), 
     try:
         pm = stripe_lib.PaymentMethod.retrieve(req.payment_method_id)
     except stripe_lib.error.StripeError as e:
-        _400(f"Invalid payment method: {getattr(e, 'user_message', None) or str(e)}")
+        _400(f"Invalid payment method: {getattr(e, 'user_message', None) or 'Payment provider error'}")
     if pm.customer != cus.id:
         _400("Payment method does not belong to this account")
     stripe_lib.PaymentMethod.detach(req.payment_method_id)

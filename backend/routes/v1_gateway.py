@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import update
 
 from common import (
-    _400, _401, _402, _403, _404, _429, _502, limiter,
+    _400, _401, _402, _403, _429, _502, limiter,
     NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL,
 )
 from routes.referrals import grant_referral_reward

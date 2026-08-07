@@ -4,7 +4,7 @@ All request/response models extracted from the main.py monolith.
 Do NOT modify — these are auto-generated from the original main.py.
 """
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from typing import Optional
 
 

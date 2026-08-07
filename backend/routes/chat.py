@@ -7,7 +7,6 @@ import json
 
 from database import get_db, User, AIModel, Conversation, Transaction
 from auth import get_current_user
-from newapi_integration import get_user_models
 from common import _400, _402, _404, _502, limiter, NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL, _user_setting, send_alert_email
 from routes.referrals import grant_referral_reward
 from schemas import ProxyChatRequest, PlaygroundChatRequest, SaveConversationRequest

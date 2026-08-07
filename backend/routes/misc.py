@@ -1,6 +1,6 @@
 """GlbTOKEN — Misc Routes (contact, health, user settings)"""
 
-from fastapi import APIRouter, Depends, Body, Request
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 import json, re
@@ -8,8 +8,8 @@ import json, re
 from database import get_db, User, AIModel, Announcement
 from auth import get_current_user
 from newapi_integration import health_check
-from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter
-from schemas import ContactRequest, UserSettingsUpdate, AnnouncementCreate
+from common import _400, limiter
+from schemas import ContactRequest, UserSettingsUpdate
 
 # Re-import send_email from auth_routes since it's a shared helper
 from routes.auth_routes import send_email
@@ -113,7 +113,8 @@ def get_user_settings(user: User = Depends(get_current_user)):
 
 
 @router.post("/api/user/webhook/test")
-def test_webhook(user: User = Depends(get_current_user)):
+@limiter.limit("5/minute")
+def test_webhook(request: Request, user: User = Depends(get_current_user)):
     """Send a test webhook to the user's configured URL (if any)."""
     from webhooks import get_webhook_url, send_webhook
     url = get_webhook_url(user)

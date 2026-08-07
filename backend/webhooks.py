@@ -11,6 +11,7 @@ import hmac
 import ipaddress
 import json
 import socket
+import ssl
 import threading
 import urllib.parse
 import urllib.request
@@ -57,6 +58,23 @@ def _is_private_url(url: str) -> bool:
         return True  # fail closed
 
 
+class _ValidatingRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Re-validate every redirect hop against the SSRF guard.
+
+    urllib follows 301/302/303/307 redirects by default WITHOUT re-checking
+    the target host, so a public URL could redirect to 169.254.169.254
+    (cloud metadata) or another private address. Every hop is re-checked and
+    non-http(s) schemes (file://, gopher://, ...) are rejected outright.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not (newurl.startswith("https://") or newurl.startswith("http://")):
+            raise urllib.error.HTTPError(req.full_url, code, "Blocked non-HTTP redirect", headers, fp)
+        if _is_private_url(newurl):
+            raise urllib.error.HTTPError(req.full_url, code, "Blocked redirect to private address", headers, fp)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def send_webhook(user, event: str, payload: dict):
     """Queue a signed webhook POST for the given event (fire-and-forget)."""
     url = get_webhook_url(user)
@@ -84,7 +102,10 @@ def send_webhook(user, event: str, payload: dict):
                     "X-GlbTOKEN-Signature": _sign(body, secret) if secret else "",
                 },
             )
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            # Opener with the validating redirect handler: every redirect hop is
+            # re-checked against the SSRF guard (no silent hop to private IPs).
+            _opener = urllib.request.build_opener(_ValidatingRedirectHandler())
+            with _opener.open(req, timeout=10) as resp:
                 resp.read()
         except Exception as e:
             print(f"⚠️ Webhook delivery failed ({event} → {url}): {e}")

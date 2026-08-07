@@ -59,7 +59,11 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
   // that gets appended to the redirect URL below.
   var rawNext = params.get('next') || '/dashboard.html';
   var next = '/dashboard.html';
-  if(rawNext && rawNext.charAt(0) === '/' && rawNext.charAt(1) !== '/' && !/^\/\//.test(rawNext) && !/^\/[a-z]+:/i.test(rawNext)){
+  // Whitelist `next`: only allow same-site relative paths (e.g. /dashboard.html).
+  // Block absolute URLs (http/https), protocol-relative (//), backslashes
+  // (browsers normalize "/\evil.com" → "//evil.com" — the old regex missed
+  // this and let the JWT leak to an attacker-controlled host), and javascript:.
+  if(rawNext && rawNext.charAt(0) === '/' && rawNext.indexOf('\\') === -1 && !/^\/\//.test(rawNext) && !/^\/[a-z]+:/i.test(rawNext) && !/[\s\x00-\x1f]/.test(rawNext)){
     next = rawNext;
   }
 
@@ -82,13 +86,17 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
     if(code.length < 6){ showErr('Enter the 6-digit code from your authenticator app.'); return; }
     btn.disabled = true; btn.classList.add('loading');
     errBox.style.display = 'none';
+    var ctrl = new AbortController();
+    var t = setTimeout(function(){ ctrl.abort(); }, 25000);
     fetch(API_URL + '/api/auth/2fa/confirm', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({pre_token: preToken, code: code})
+      body: JSON.stringify({pre_token: preToken, code: code}),
+      signal: ctrl.signal
     })
-    .then(function(r){ return r.json(); })
+    .then(function(r){ clearTimeout(t); return r.json(); })
     .then(function(d){
+      clearTimeout(t);
       if(d && d.token){
         try{
           sessionStorage.setItem('gt_token', d.token);

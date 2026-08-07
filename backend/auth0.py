@@ -3,7 +3,7 @@ Handles password grant login, signup, social login, and JWT verification.
 All existing frontend buttons route through Auth0 behind the scenes.
 Gracefully disabled — falls back to custom auth if Auth0 not configured."""
 
-import os, json, requests, time
+import os, json, requests, time, secrets
 from jose import jwt, JWTError
 from datetime import datetime, timezone
 
@@ -187,7 +187,7 @@ def get_social_login_url(provider: str, redirect_uri: str, state: str = "") -> s
         "response_type": "token id_token",
         "scope": "openid email profile",
         "connection": connection,
-        "nonce": str(int(datetime.now(timezone.utc).timestamp())),
+        "nonce": secrets.token_urlsafe(16),
         # Force Auth0 to re-authenticate instead of silently reusing an existing
         # session. Without this, a browser that already logged in via Apple would
         # silently return that SAME user when the user clicks "Google" — every

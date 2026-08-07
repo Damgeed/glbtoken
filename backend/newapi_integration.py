@@ -6,7 +6,6 @@ against a New API gateway instance.
 
 import httpx
 import os
-from typing import Optional, Dict, Any
 
 NEW_API_BASE = os.getenv("NEW_API_BASE_URL", "")
 ADMIN_TOKEN = os.getenv("NEW_API_ADMIN_TOKEN", "")

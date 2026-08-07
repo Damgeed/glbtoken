@@ -5,14 +5,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from datetime import datetime, timezone, timedelta
 from typing import Optional
-import random
 import asyncio
 import time as _time
 
-from database import get_db, User, ApiKey, Transaction, AIModel, LoginEvent
+from database import get_db, User, ApiKey, Transaction, AIModel
 from auth import get_current_user
 from newapi_integration import get_usage_today, get_user_logs, get_log_content as _get_log_content, get_user_quota, newapi_quota_to_tokens
-from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter
+from common import limiter
 
 router = APIRouter()
 

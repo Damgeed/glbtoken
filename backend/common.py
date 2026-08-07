@@ -45,6 +45,11 @@ FALLBACK_API_URL = os.getenv("FALLBACK_API_URL", "")
 # Payments: Paystack
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY", "")
+# Paystack non-USD currencies are billed in the local currency (e.g. GHS).
+# Tokens are priced in USD (1 USD = 1000 tokens), so local amounts must be
+# converted before minting tokens — otherwise 2 GHS (~$0.15) would mint
+# 2,000 tokens ($2.00). Override via env if the rate drifts.
+GHS_TO_USD_RATE = float(os.getenv("GHS_TO_USD_RATE", "14.5"))
 
 # Referral program — GT granted to a referrer when a referred user makes their
 # first real (paid) consumption. 0 disables rewards.

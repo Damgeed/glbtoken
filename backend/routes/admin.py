@@ -209,6 +209,14 @@ async def admin_sync_users(
     thread.start()
     thread.join(timeout=120)  # 2 min timeout
 
+    if thread.is_alive():
+        _audit(
+            db, user if (user and user.is_admin) else None, "sync_users",
+            detail='{"synced": 0, "failed": 0, "note": "timed out after 120s"}',
+            ip=_client_ip(request),
+        )
+        return {"status": "running", "message": "Sync is still running in the background (over 120s). Check /api/admin/audit shortly."}
+
     if "error" in result_container:
         _500("Sync failed. Please try again.")
 
@@ -294,6 +302,14 @@ def admin_delete_user(
     db.query(LoginEvent).filter(LoginEvent.user_id == uid).delete(synchronize_session=False)
     db.query(Conversation).filter(Conversation.user_id == uid).delete(synchronize_session=False)
     db.query(OrgMember).filter(OrgMember.user_id == uid).delete(synchronize_session=False)
+    # Also drop the OTHER members of orgs this user owns — bulk .delete() skips
+    # ORM cascade, so without this the org_members rows would orphan (FK
+    # violation on Postgres / dangling rows on SQLite).
+    owned_org_ids = [
+        oid for (oid,) in db.query(Organization.id).filter(Organization.owner_id == uid).all()
+    ]
+    if owned_org_ids:
+        db.query(OrgMember).filter(OrgMember.org_id.in_(owned_org_ids)).delete(synchronize_session=False)
     db.query(Organization).filter(Organization.owner_id == uid).delete(synchronize_session=False)
     db.query(Preset).filter(Preset.user_id == uid).delete(synchronize_session=False)
     db.query(Transaction).filter(Transaction.user_id == uid).delete(synchronize_session=False)

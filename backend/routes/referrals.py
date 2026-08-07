@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, update
 import secrets, string
 from datetime import datetime, timezone, timedelta
 
@@ -109,10 +109,18 @@ def grant_referral_reward(db: Session, user: User):
             referrer_code=code,
             amount=REFERRAL_REWARD_GT,
         ))
-        referrer.referral_earnings = (referrer.referral_earnings or 0.0) + REFERRAL_REWARD_GT
-        ref_row = db.query(Referral).filter(Referral.code == code).first()
-        if ref_row:
-            ref_row.total_earned = (ref_row.total_earned or 0.0) + REFERRAL_REWARD_GT
+        # SQL-side increments avoid the read-modify-write lost-update race when
+        # two different referred users claim for the same referrer in parallel.
+        db.execute(
+            update(User).where(User.id == referrer.id).values(
+                referral_earnings=User.referral_earnings + REFERRAL_REWARD_GT
+            )
+        )
+        db.execute(
+            update(Referral).where(Referral.code == code).values(
+                total_earned=Referral.total_earned + REFERRAL_REWARD_GT
+            )
+        )
         db.commit()
         print(f"🎁 Referral reward: {REFERRAL_REWARD_GT} GT → user {referrer.id} (referred user {user.id})")
     except Exception as e:

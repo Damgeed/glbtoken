@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="dashboard.css?v=1043" />
 <link rel="stylesheet" href="more.css?v=8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1039" />
+<link rel="stylesheet" href="usage.css?v=1040" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -293,7 +293,7 @@
 <script src="nav.js?v=18"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1151"></script>
+<script data-cfasync="false" src="shared.js?v=1152"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1230"></script>
 <script data-cfasync="false" src="filters.js?v=1140"></script>
@@ -358,21 +358,11 @@ function renderUsageActivity(){
     else if(type==='consumption' || type==='api_call'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
     return usageActItemHtml(type, desc, time, amtHtml);
   });
-  var first = cards.slice(0,5).join('');
-  var rest = cards.slice(5);
-  list.innerHTML = first
-    + (rest.length
-        ? '<div id="usageActivityCollapse" class="activity-collapse" data-count="'+rest.length+'">'+rest.join('')+'</div>'
-        : '');
+  // Render ALL cards — the container's max-height + overflow-y handles
+  // scrolling, so users can always reach every event (no 5-card cutoff).
+  list.innerHTML = cards.join('');
   var moreBtn = document.getElementById('usageActivityMoreBtn');
-  if(moreBtn){
-    if(rest.length){
-      moreBtn.style.display = '';
-      moreBtn.textContent = 'Show More ('+rest.length+') ▾';
-    } else {
-      moreBtn.style.display = 'none';
-    }
-  }
+  if(moreBtn) moreBtn.style.display = 'none';
 }
 window.setUsageActFilter = function(btn){
   _usageActFilter = btn.getAttribute('data-type') || 'all';

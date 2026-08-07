@@ -23,7 +23,7 @@
         const provs=[...new Set(m.map(x=>x.provider))].sort();
         filter.innerHTML='<option value="">All Providers</option>'+provs.map(p=>{
           var cnt=provCounts[p]||0;
-          return `<option value="${escapeHtml(p)}">${escapeHtml(p)}${cnt?' ('+cnt+')':''}</option>`;
+          return `<option value="${escapeAttr(p)}">${escapeHtml(p)}${cnt?' ('+cnt+')':''}</option>`;
         }).join('');
         // Populate category pills
         const cats = [...new Set(m.map(x => x.category).filter(Boolean))];
