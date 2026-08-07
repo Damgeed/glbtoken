@@ -135,28 +135,6 @@ textarea {
    ══════════════════════════════════════════ */
 /* ── Utility Classes ── */
 .d-none { display: none !important; }
-/* Vertical scroll-down hint: flashing chevrons, hides on scroll */
-.v-scroll-hint{
-  position: fixed;
-  left: 50%;
-  bottom: 20px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--primary);
-  pointer-events: none;
-  z-index: 9990;
-  filter: drop-shadow(0 0 8px hsla(44 96% 52% / 0.45));
-  animation: vHintBounce 2.5s ease-in-out infinite;
-}
-.v-scroll-hint svg{ display: block; }
-.v-scroll-hint svg + svg{ margin-top: -11px; }
-.v-scroll-hint.v-hide{ animation: none; opacity: 0; transition: opacity .45s ease; }
-@keyframes vHintBounce{
-  0%, 100%{ transform: translateX(-50%) translateY(0); opacity: 1; }
-  50%{ transform: translateX(-50%) translateY(7px); opacity: .3; }
-}
 
 /* Horizontal swipe hint for wide visual diagrams — right edge, vertically centered.
    top uses max(50%, 48px) so a short container (e.g. a table with few rows or
@@ -168,8 +146,15 @@ textarea {
   bottom: auto !important;
   top: max(50%, 48px);
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+  pointer-events: none;
+  z-index: 9990;
+  filter: drop-shadow(0 0 8px hsla(44 96% 52% / 0.45));
   animation: hHintPulse 2.4s ease-in-out infinite;
 }
+.h-scroll-hint svg{ display: block; }
 @keyframes hHintPulse{
   0%, 100%{ transform: translateY(-50%) translateX(0); opacity: 1; }
   50%{ transform: translateY(-50%) translateX(6px); opacity: .3; }

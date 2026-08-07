@@ -317,8 +317,13 @@
   width: 100%;
 }
 #invoicesTable th {
-  white-space: normal;
-  word-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.45rem 0.5rem;
+}
+#invoicesTable td {
+  padding: 0.5rem 0.6rem;
 }
 #invoicesTable th:nth-child(1) { width: 16%; }  /* Date */
 #invoicesTable th:nth-child(2) { width: 14%; }  /* Amount */

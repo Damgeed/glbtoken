@@ -944,66 +944,13 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
   btn.innerHTML=collapse.classList.contains('open')?'Show Less ▴':'Show More ('+count+') ▾';
 };
 
-// ── Mobile UX (2026-08): scroll-down + swipe hint arrows ──
+// ── Mobile UX (2026-08): swipe hint arrows (vertical double-down hint REMOVED
+//    per Bud 2026-08: "browse pages don't need the double down arrows.
+//    No need for that double down arrows anywhere") ──
 (function(){
   if(!window.matchMedia || !window.matchMedia('(max-width: 768px)').matches) return;
 
-  // 1) Vertical scroll-down hint — persistent flashing chevrons, center bottom.
-  //    Shows on any overflowing page (mobile). Stays flashing while at/near the
-  //    top; hides while scrolling; reappears when back near the top.
-  var vHintEl = null;
-  var vHintHidden = false;
-  function pageOverflows(){
-    var doc = document.documentElement;
-    var body = document.body;
-    var sh = Math.max(doc.scrollHeight, body ? body.scrollHeight : 0);
-    var ch = window.innerHeight || doc.clientHeight || 0;
-    // +80 tolerance absorbs mobile URL-bar height jitter
-    return sh > ch + 80;
-  }
-  function ensureVHint(){
-    if(!pageOverflows()){
-      // Page no longer overflows — remove the hint so it never flashes
-      // when there is nothing left to scroll to.
-      if(vHintEl){
-        vHintEl.remove();
-        vHintEl = null;
-        vHintHidden = false;
-      }
-      return;
-    }
-    if(vHintEl) return;
-    var h = document.createElement('div');
-    h.id = 'vScrollHint';
-    h.className = 'v-scroll-hint';
-    h.setAttribute('aria-hidden','true');
-    h.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>'
-      + '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
-    document.body.appendChild(h);
-    vHintEl = h;
-  }
-  function onVScroll(){
-    if(!vHintEl) return;
-    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-    if(y > 90){
-      if(!vHintHidden){ vHintHidden = true; vHintEl.classList.add('v-hide'); }
-    } else {
-      if(vHintHidden){ vHintHidden = false; vHintEl.classList.remove('v-hide'); }
-    }
-  }
-  // capture:true catches scrolls from inner containers too (dash lists etc.)
-  document.addEventListener('scroll', onVScroll, {capture:true, passive:true});
-  // Create the hint once content settles (async loads change scrollHeight)
-  var tries = 0;
-  var timer = setInterval(function(){
-    ensureVHint();
-    if(++tries > 14) clearInterval(timer);
-  }, 400);
-  window.addEventListener('load', ensureVHint);
-  window.addEventListener('orientationchange', function(){ setTimeout(ensureVHint, 300); });
-  window.addEventListener('resize', function(){ setTimeout(ensureVHint, 300); });
-
-  // 2) Horizontal swipe hint for ANY horizontally-scrollable container
+  // Horizontal swipe hint for ANY horizontally-scrollable container
   //    (wide visual diagrams, .scroll-x tables like Referrals / Reward History /
   //    Invoices / usage, card rows). Flashing › at the right edge; hides while
   //    scrolled right; reappears when back at the left edge.
@@ -1019,7 +966,7 @@ window.refreshTableMoreBtn = function refreshTableMoreBtn(collapseId,btnId){
         if(w.scrollWidth <= w.clientWidth + 20) return; // not overflowing
         hHints.push(w);
         var hh = document.createElement('div');
-        hh.className = 'v-scroll-hint h-scroll-hint';
+        hh.className = 'h-scroll-hint';
         hh.setAttribute('aria-hidden','true');
         hh.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
         var pos = getComputedStyle(w).position;
