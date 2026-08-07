@@ -325,12 +325,12 @@
 #invoicesTable td {
   padding: 0.5rem 0.6rem;
 }
-#invoicesTable th:nth-child(1) { width: 16%; }  /* Date */
-#invoicesTable th:nth-child(2) { width: 14%; }  /* Amount */
-#invoicesTable th:nth-child(3) { width: 20%; }  /* Payment Method */
-#invoicesTable th:nth-child(4) { width: 18%; }  /* Tokens Added */
-#invoicesTable th:nth-child(5) { width: 14%; }  /* Status */
-#invoicesTable th:nth-child(6) { width: 18%; }  /* Receipt */
+#invoicesTable th:nth-child(1) { width: 17%; }  /* Date */
+#invoicesTable th:nth-child(2) { width: 16%; }  /* Amount */
+#invoicesTable th:nth-child(3) { width: 17%; }  /* Method */
+#invoicesTable th:nth-child(4) { width: 17%; }  /* Tokens */
+#invoicesTable th:nth-child(5) { width: 16%; }  /* Status */
+#invoicesTable th:nth-child(6) { width: 17%; }  /* Receipt */
 @media (max-width: 767px) {
   #invoicesTable { min-width: 600px; }
 }

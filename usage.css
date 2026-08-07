@@ -19,11 +19,14 @@
      table fits the 390px viewport and cells wrap instead of scrolling. */
   .tx-scroll.tx-fit table {
     min-width: 0;
+    width: 100%;
+    table-layout: fixed;
   }
   .tx-scroll.tx-fit th,
   .tx-scroll.tx-fit td {
     white-space: normal;
     word-break: break-word;
+    overflow-wrap: anywhere;
   }
   .tx-scroll.tx-fit::after {
     display: none !important;

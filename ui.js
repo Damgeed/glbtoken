@@ -392,8 +392,12 @@ document.addEventListener('click', function(e) {
       if(cw){
         if(chatBottomDefault === null) chatBottomDefault = cw.style.bottom || '';
         cw.style.bottom = (diff + 10) + 'px';
-        cw.style.height = 'calc(100dvh - ' + (diff + 80) + 'px)';
-        cw.style.maxHeight = 'calc(100dvh - ' + (diff + 80) + 'px)';
+        // Use measured visual height (layout - keyboard), NOT 100dvh: dvh already
+        // shrinks with the keyboard on mobile → calc(100dvh - diff) double-shrinks
+        // and makes the chat box tiny with a huge gap below it.
+        var cwH = Math.max(160, (window.innerHeight - diff) - 80);
+        cw.style.height = cwH + 'px';
+        cw.style.maxHeight = cwH + 'px';
         var msgs = cw.querySelector('.chat-msgs');
         if(msgs) setTimeout(function(){ msgs.scrollTop = msgs.scrollHeight; }, 100);
       }
@@ -402,8 +406,13 @@ document.addEventListener('click', function(e) {
         focused.style.bottom = (diff + 10) + 'px';
         var inner = focused.querySelector('.ai-chat-inner');
         if(inner){
-          inner.style.maxHeight = 'calc(100dvh - ' + (diff + 40) + 'px)';
-          inner.style.height = 'calc(100dvh - ' + (diff + 40) + 'px)';
+          // Pixel-based, same reason as above: 100dvh already excludes the
+          // keyboard on mobile so subtracting diff again leaves a wide gap
+          // below the input (was ~170px on a 390px phone).
+          var visH = window.innerHeight - diff;
+          var h = Math.max(200, visH - 40);
+          inner.style.maxHeight = h + 'px';
+          inner.style.height = h + 'px';
         }
         var chatMsgs = focused.querySelector('.chat-msgs');
         if(chatMsgs) setTimeout(function(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }, 100);
