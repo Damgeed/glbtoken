@@ -172,7 +172,7 @@ async def get_available_models(user: User = Depends(get_current_user)):
         return {"models": models, "count": len(models)}
     except Exception as e:
         print(f"⚠️ Failed to fetch available models: {e}")
-        return {"models": [], "message": str(e)}
+        return {"models": [], "message": "Failed to load models"}
 
 
 # ── Auto-Pull Models (manual trigger) ──

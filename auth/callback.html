@@ -48,8 +48,9 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
     return;
   }
 
-  // Verify CSRF state for both flows
-  if (storedState && returnedState && returnedState !== storedState) {
+  // Verify CSRF state for both flows — fail CLOSED: a missing state on either
+  // side is a mismatch (prevents login CSRF via crafted callback URLs).
+  if (!returnedState || !storedState || returnedState !== storedState) {
     window.location.replace('/login.html?error=state_mismatch');
     return;
   }

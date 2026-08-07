@@ -226,7 +226,7 @@ async def get_logs(
         return {"total": total, "items": standardized}
     except Exception as e:
         print(f"⚠️ Failed to fetch request logs: {e}")
-        return {"total": 0, "items": [], "message": str(e)}
+        return {"total": 0, "items": [], "message": "Failed to load logs"}
 
 
 # ── Log Content (Prompt + Completion) ──

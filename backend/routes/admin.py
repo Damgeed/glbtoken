@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import Optional
+import json
 import secrets
 
 from database import get_db, User, Transaction, AIModel, AdminLog, Announcement
@@ -87,8 +88,8 @@ def admin_adjust_balance(req: AdminBalanceRequest, request: Request, user: User 
     db.commit()
     _audit(
         db, user, "adjust_balance", target=target,
-        detail=f'{{"tokens": {req.tokens}, "reason": "{req.reason}", '
-               f'"new_balance": {target.token_balance}}}',
+        detail=json.dumps({"tokens": req.tokens, "reason": req.reason or "",
+                           "new_balance": target.token_balance}),
         ip=_client_ip(request),
     )
     return {"status": "adjusted", "new_balance": target.token_balance}
@@ -305,7 +306,7 @@ def admin_delete_user(
     db.commit()
     _audit(
         db, user if (user and user.is_admin) else None, "delete_user",
-        detail=f'{{"deleted_user_id": {uid}, "deleted_email": "{email}"}}',
+        detail=json.dumps({"deleted_user_id": uid, "deleted_email": email}),
         ip=_client_ip(request),
     )
     return {"status": "deleted", "user_id": uid, "email": email}
@@ -367,7 +368,7 @@ def admin_create_announcement(req: AnnouncementCreate, request: Request, user: U
     db.add(a)
     db.commit()
     db.refresh(a)
-    _audit(db, user, "create_announcement", detail=f'{{"announcement_id": {a.id}, "title": "{a.title[:50]}"}}', ip=_client_ip(request))
+    _audit(db, user, "create_announcement", detail=json.dumps({"announcement_id": a.id, "title": (a.title or "")[:50]}), ip=_client_ip(request))
     return {"status": "created", "announcement": _announcement_dict(a)}
 
 

@@ -74,15 +74,15 @@
           <div class="api-key-card">
             <input type="checkbox" class="key-check" data-key-id="${escapeHtml(String(key.id))}" onchange="updateBulkCount()" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select key" />
             <div class="key-info">
-              <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${key.id})" title="Edit key" aria-label="Edit key">✎</button></div>
+              <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${safeJsId(key.id)})" title="Edit key" aria-label="Edit key">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeHtml(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
               <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?fmtDT(key.created_at):'—'} · ${key.request_count} requests · ${key.last_used?'Last used '+fmtDT(key.last_used):'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+key.rate_limit_rpm+' req/min':''}${key.ip_allowlist?' · <span class="ip-allow" title="Allowed IPs">IPs: '+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
-              <div class="key-spark" id="spark-${key.id}" data-key-id="${key.id}" title="Token usage — last 7 days"><span class="spark-empty">—</span></div>
+              <div class="key-spark" id="spark-${safeJsId(key.id)}" data-key-id="${escapeHtml(String(key.id))}" title="Token usage — last 7 days"><span class="spark-empty">—</span></div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">
                 <a class="sort-btn btn-usage" href="logs.html">Usage</a>
-                <button class="sort-btn btn-edit" onclick="openEditKeyModal(${key.id})">Edit</button>
+                <button class="sort-btn btn-edit" onclick="openEditKeyModal(${safeJsId(key.id)})">Edit</button>
                 <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeHtml(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
                 <button class="sort-btn btn-delete" data-key-id="${escapeHtml(String(key.id))}" data-action="delete">Delete</button>
               </div>

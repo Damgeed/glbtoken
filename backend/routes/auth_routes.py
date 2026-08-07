@@ -1102,8 +1102,9 @@ def send_email(to: str, subject: str, body: str, html_body: str = None) -> bool:
     msg["From"] = from_addr
     msg["To"] = to
     try:
+        import ssl
         with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as s:
-            s.starttls()
+            s.starttls(context=ssl.create_default_context())
             s.login(smtp_user, smtp_pass)
             s.send_message(msg)
         print(f"📧 Email sent to {to}: {subject}")
@@ -1157,7 +1158,8 @@ def twofa_status(user: User = Depends(get_current_user)):
 
 
 @router.post("/api/auth/2fa/setup")
-def twofa_setup(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def twofa_setup(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Generate a TOTP secret (staged, not enabled until verified)."""
     if _totp_enabled(user):
         _400("Two-factor auth is already enabled")
@@ -1174,7 +1176,8 @@ def twofa_setup(user: User = Depends(get_current_user), db: Session = Depends(ge
 
 
 @router.post("/api/auth/2fa/enable")
-def twofa_enable(req: TwoFactorCodeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def twofa_enable(request: Request, req: TwoFactorCodeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Verify a code from the staged secret, then enable 2FA."""
     from totp import verify
     s = _totp_settings(user)
@@ -1192,7 +1195,8 @@ def twofa_enable(req: TwoFactorCodeRequest, user: User = Depends(get_current_use
 
 
 @router.post("/api/auth/2fa/disable")
-def twofa_disable(req: TwoFactorCodeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def twofa_disable(request: Request, req: TwoFactorCodeRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Verify a current code, then disable 2FA."""
     from totp import verify
     secret = _totp_secret(user)

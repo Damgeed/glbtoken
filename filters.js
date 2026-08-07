@@ -65,11 +65,11 @@
       const params = new URLSearchParams(hash);
       const idToken = params.get('id_token');
       if(!idToken) return;
-      // Verify CSRF state token
+      // Verify CSRF state token — fail CLOSED (missing state = mismatch)
       const returnedState = params.get('state');
       const storedState = sessionStorage.getItem('gt_oauth_state');
       sessionStorage.removeItem('gt_oauth_state');
-      if (returnedState && storedState && returnedState !== storedState) {
+      if (!returnedState || !storedState || returnedState !== storedState) {
         window.location.href = '/login.html?error=Security+check+failed:+invalid+state';
         return;
       }

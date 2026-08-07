@@ -370,7 +370,7 @@
 <script src="translations.js?v=1109"></script>
 <script data-cfasync="false" src="shared.js?v=1151"></script>
 <script>requireAuth()</script>
-<script data-cfasync="false" src="ui.js?v=1229"></script>
+<script data-cfasync="false" src="ui.js?v=1230"></script>
 
 <!-- ── Settings Scripts ── -->
 <script>
@@ -743,8 +743,8 @@ window.toggleNotifMore = function(btn){
       if(dismissedNow.indexOf(normalizeNotifId(n.id)) !== -1) return;
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
       list.insertAdjacentHTML('beforeend',
-        '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+n.id+'">'
-        + '<div class="settings-icon settings-icon-'+n.kind+'">'+(ICONS[n.kind]||'')+'</div>'
+        '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
+        + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'">'+(ICONS[n.kind]||'')+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'
@@ -1140,8 +1140,8 @@ function loadNotifications(){
     if(empty) empty.style.display = 'none';
     list.innerHTML = visible.map(function(n){
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
-      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+n.id+'">'
-        + '<div class="settings-icon settings-icon-'+n.kind+'">'+ICONS[n.kind]+'</div>'
+      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
+        + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'">'+(ICONS[n.kind]||'')+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'

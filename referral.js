@@ -166,8 +166,8 @@ async function loadReferralStats() {
       if(refs.length){
         renderTableWithCollapse('refTableBody', refs.map(function(r){
           var st=r.status||'pending';
-          var stLabel=st.charAt(0).toUpperCase()+st.slice(1);
-          var stCls='refs-st-'+st;
+          var stLabel=escapeHtml(st.charAt(0).toUpperCase()+st.slice(1));
+          var stCls='refs-st-'+String(st).replace(/[^a-z0-9_-]/gi,'');
           return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td class="td-date">'+(r.joined_at?fmtDTStack(r.joined_at):'<div class="td-date-strong">—</div>')+'</td><td class="tx-td-center"><span class="refs-status-badge '+stCls+'">'+stLabel+'</span></td><td class="tx-td-right">'+(r.reward>0?(r.reward+' GT'):'—')+'</td></tr>';
         }), 'refCollapse', 'refMoreBtn');
       }else{

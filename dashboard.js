@@ -529,7 +529,8 @@ async function loadAnnouncements(){
   var icons = {info:'ℹ️', warning:'⚠️', success:'✅'};
   container.innerHTML = visible.map(function(a){
     var icon = icons[a.priority] || 'ℹ️';
-    var cls = 'announcement-banner announcement-'+ (a.priority||'info');
+    var prioCls = /^(info|warning|success)$/.test(a.priority||'') ? a.priority : 'info';
+    var cls = 'announcement-banner announcement-'+ prioCls;
     var titleHtml = a.title ? '<strong>'+escapeHtml(a.title)+'</strong> ' : '';
     return '<div class="'+cls+'" id="annBanner_'+safeJsId(a.id)+'">'
       + '<span class="ann-icon">'+icon+'</span>'
@@ -555,11 +556,11 @@ async function refreshAnnouncements(force){
   list.innerHTML = data.announcements.map(function(a){
     var stateCls = a.is_active ? 'ann-state-on' : 'ann-state-off';
     var stateTxt = a.is_active ? 'Live' : 'Off';
-    var prio = a.priority || 'info';
+    var prio = /^(info|warning|success)$/.test(a.priority||'') ? a.priority : 'info';
     return '<div class="ann-admin-row">'
       + '<div class="ann-admin-main"><div class="ann-admin-title">'+escapeHtml(a.title||'(no title)')+'</div>'
       + '<div class="ann-admin-msg">'+escapeHtml(a.message)+'</div>'
-      + '<div class="ann-admin-meta">'+prio+' · '+escapeHtml((a.created_at||'').replace('T',' ').slice(0,16))+'</div></div>'
+      + '<div class="ann-admin-meta">'+escapeHtml(prio)+' · '+escapeHtml((a.created_at||'').replace('T',' ').slice(0,16))+'</div></div>'
       + '<div class="ann-admin-actions">'
       + '<span class="ann-state '+stateCls+'" onclick="toggleAnnouncement('+safeJsId(a.id)+','+(a.is_active?'false':'true')+')">'+stateTxt+'</span>'
       + '<button type="button" class="btn-ghost btn-sm" onclick="deleteAnnouncement('+safeJsId(a.id)+')">Delete</button>'

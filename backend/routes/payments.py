@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, update
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import json
@@ -138,12 +138,25 @@ async def topup(req: TopupRequest, request: Request, user: User = Depends(get_cu
     else:
         _400("Unsupported payment method")
     tokens = int(amount * 1000)
-    tx.status = "completed"
-    tx.tokens = tokens
-    tx.amount = amount
-    user.token_balance += tokens
-    user.total_spent += amount
+    # Atomic credit: conditional UPDATE on the pending tx prevents double-credit
+    # from concurrent requests (same ref), and SQL-side balance increment
+    # prevents lost updates from concurrent payments on the same user.
+    db.execute(
+        update(User).where(User.id == user.id).values(
+            token_balance=User.token_balance + tokens,
+            total_spent=User.total_spent + amount,
+        )
+    )
+    res = db.execute(
+        update(Transaction)
+        .where(Transaction.payment_ref == ref, Transaction.status == "pending")
+        .values(status="completed", tokens=tokens, amount=amount)
+    )
+    if res.rowcount == 0:
+        db.rollback()
+        _400("Payment already processed")
     db.commit()
+    db.refresh(user)
     _emit_topup_webhook(user, tokens, "topup")
 
     # ── Sync quota to New API ──
@@ -167,8 +180,11 @@ async def topup(req: TopupRequest, request: Request, user: User = Depends(get_cu
 def paystack_initialize(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not PAYSTACK_SECRET_KEY:
         _not_configured("Paystack")
+    import math
+    if req.amount is None or not math.isfinite(float(req.amount)) or float(req.amount) < 2.0 or float(req.amount) > 2000.0:
+        _400("Amount must be between $2 and $2000")
     import httpx
-    amount_kobo = int(req.amount * 100)  # Paystack uses kobo (cents)
+    amount_kobo = int(float(req.amount) * 100)  # Paystack uses kobo (cents)
     resp = httpx.post(
         "https://api.paystack.co/transaction/initialize",
         json={
@@ -220,12 +236,27 @@ def paystack_verify(body: PaystackVerifyRequest, request: Request = None, user: 
         return {"status": "already_processed", "tokens_added": tx.tokens}
     amount = data["data"]["amount"] / 100  # Convert from kobo
     tokens = int(amount * 1000)
-    tx.status = "completed"
-    tx.tokens = tokens
-    tx.amount = amount
-    user.token_balance += tokens
-    user.total_spent += amount
+    # Atomic credit: conditional UPDATE prevents double-credit when this endpoint
+    # and a concurrent retry/duplicate request race on the same reference.
+    res = db.execute(
+        update(Transaction)
+        .where(Transaction.payment_ref == reference, Transaction.status == "pending")
+        .values(status="completed", tokens=tokens, amount=amount)
+    )
+    if res.rowcount == 0:
+        db.rollback()
+        db.refresh(tx)
+        if tx.status == "completed":
+            return {"status": "already_processed", "tokens_added": tx.tokens}
+        _400("Payment already processed")
+    db.execute(
+        update(User).where(User.id == user.id).values(
+            token_balance=User.token_balance + tokens,
+            total_spent=User.total_spent + amount,
+        )
+    )
     db.commit()
+    db.refresh(user)
     _emit_topup_webhook(user, tokens, "paystack")
     return {"status": "success", "tokens_added": tokens, "new_balance": user.token_balance}
 
@@ -320,9 +351,15 @@ def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: U
         tokens=tokens, status="completed",
     )
     db.add(tx)
-    user.token_balance += tokens
-    user.total_spent += req.amount
+    # SQL-side increment avoids lost updates from concurrent recharges.
+    db.execute(
+        update(User).where(User.id == user.id).values(
+            token_balance=User.token_balance + tokens,
+            total_spent=User.total_spent + req.amount,
+        )
+    )
     db.commit()
+    db.refresh(user)
     _emit_topup_webhook(user, tokens, "stripe")
     return {"status": "success", "tokens_added": tokens, "new_balance": user.token_balance}
 
@@ -360,14 +397,27 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         # Derive tokens from the REAL charged amount, not client-supplied metadata.
         amount = session["amount_total"] / 100
         tokens = int(amount * 1000)
+        # Atomic credit: conditional UPDATE on the pending tx makes webhook
+        # retries / concurrent deliveries idempotent (no double-credit).
+        res = db.execute(
+            update(Transaction)
+            .where(Transaction.payment_ref == session["id"], Transaction.status == "pending")
+            .values(status="completed", tokens=tokens, amount=amount)
+        )
+        if res.rowcount == 0:
+            db.rollback()
+            return {"status": "ok"}
         user = db.query(User).filter(User.id == user_id).first()
         if user:
-            user.token_balance += tokens
-            user.total_spent += amount
-        tx.status = "completed"
-        tx.tokens = tokens
-        tx.amount = amount
+            db.execute(
+                update(User).where(User.id == user_id).values(
+                    token_balance=User.token_balance + tokens,
+                    total_spent=User.total_spent + amount,
+                )
+            )
         db.commit()
+        if user:
+            db.refresh(user)
         _emit_topup_webhook(user, tokens, "stripe_webhook")
     if event["type"] == "payment_intent.succeeded":
         # Safety net for one-click recharge — endpoint already credits, so skip if present.
@@ -377,14 +427,26 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             user_id = int(pi["metadata"]["user_id"])
             amount = pi["amount"] / 100
             tokens = int(amount * 1000)
+            # Conditional UPDATE guards against racing the quick-recharge endpoint.
+            res = db.execute(
+                update(Transaction)
+                .where(Transaction.payment_ref == pi["id"], Transaction.status == "pending")
+                .values(status="completed", tokens=tokens, amount=amount)
+            )
+            if res.rowcount == 0:
+                db.rollback()
+                return {"status": "ok"}
             user = db.query(User).filter(User.id == user_id).first()
             if user:
-                user.token_balance += tokens
-                user.total_spent += amount
-            tx.status = "completed"
-            tx.tokens = tokens
-            tx.amount = amount
+                db.execute(
+                    update(User).where(User.id == user_id).values(
+                        token_balance=User.token_balance + tokens,
+                        total_spent=User.total_spent + amount,
+                    )
+                )
             db.commit()
+            if user:
+                db.refresh(user)
             _emit_topup_webhook(user, tokens, "stripe_webhook")
     return {"status": "ok"}
 
@@ -797,10 +859,14 @@ def confirm_card(req: CardConfirmRequest, user: User = Depends(get_current_user)
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     session = stripe_lib.checkout.Session.retrieve(req.session_id)
+    # Ownership check: the Setup session must belong to THIS user's Stripe customer.
+    meta_user = session.get("metadata", {}).get("user_id")
+    cus = _stripe_customer_for(user)
+    if str(meta_user or "") != str(user.id):
+        _400("Session does not belong to this account")
     pm = session.get("payment_method")
     if not pm:
         _400("No payment method on session")
-    cus = _stripe_customer_for(user)
     stripe_lib.PaymentMethod.attach(pm, customer=cus.id)
     return {"status": "card_saved"}
 
@@ -812,6 +878,15 @@ def remove_card(req: CardRemoveRequest, user: User = Depends(get_current_user), 
         _not_configured("Stripe")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
+    cus = _stripe_customer_for(user)
+    # Ownership check (mirrors set_default_card): never detach a payment method
+    # that belongs to another user's Stripe customer (IDOR / billing DoS).
+    try:
+        pm = stripe_lib.PaymentMethod.retrieve(req.payment_method_id)
+    except stripe_lib.error.StripeError as e:
+        _400(f"Invalid payment method: {getattr(e, 'user_message', None) or str(e)}")
+    if pm.customer != cus.id:
+        _400("Payment method does not belong to this account")
     stripe_lib.PaymentMethod.detach(req.payment_method_id)
     if user.default_payment_method_id == req.payment_method_id:
         user.default_payment_method_id = None

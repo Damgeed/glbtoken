@@ -42,6 +42,7 @@
             +'<div style="font-size:0.75rem;color:var(--text-secondary);overflow-wrap:break-word;word-break:break-word">'+ctx+' ctx · '+price+'</div>'
             +'</div>';
         });
+        container.innerHTML = html;
     }
     function slideTopView(dir){
       var track=document.getElementById('tmTrack');
