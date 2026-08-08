@@ -64,23 +64,36 @@ def _issue_auth_response(user, db, ua: str = ""):
 def _client_ip(request: Request) -> str:
     """Get the REAL client IP.
 
-    uvicorn runs with proxy_headers=True behind the Railway proxy, so
-    request.client.host is already the validated real client IP. We must NOT
-    trust a client-supplied X-Forwarded-For directly — an attacker can spoof
-    it (the audit found signup_ip / login-history IPs were spoofable this way,
-    which bypassed the same-IP referral-farming gate).
+    uvicorn runs with proxy_headers=True. When FORWARDED_ALLOW_IPS lists
+    Railway's ingress proxy IPs, request.client.host is already the validated
+    real client IP. By default (FORWARDED_ALLOW_IPS unset) uvicorn trusts NO
+    proxy headers, so request.client.host is the ingress proxy's PRIVATE IP —
+    which GeoIP can never resolve (hence 'Unknown location' forever).
+
+    So: if the direct peer is a public IP we use it directly; if it is
+    private/reserved (we are behind a proxy uvicorn doesn't trust) we fall back
+    to the RIGHTMOST X-Forwarded-For entry. The ingress proxy APPENDS the real
+    client IP itself, and any client-supplied values sit to its LEFT, so the
+    rightmost value is not spoofable (same-IP referral gate stays intact).
     """
-    if request.client and request.client.host:
-        return request.client.host
-    # Fallback (shouldn't happen with a real connection): rightmost XFF entry
-    # is the one appended closest to us.
+    direct = (request.client.host if request.client else "") or ""
+    if direct:
+        try:
+            import ipaddress
+            a = ipaddress.ip_address(direct.split("%")[0])
+            if not (a.is_private or a.is_loopback or a.is_link_local
+                    or a.is_reserved or a.is_multicast or a.is_unspecified):
+                return direct  # real public client IP — use it
+        except Exception:
+            return direct
+    # Direct peer is private/reserved → behind a proxy uvicorn doesn't trust.
     try:
         fwd = request.headers.get("x-forwarded-for", "")
         if fwd:
             return fwd.split(",")[-1].strip()
     except Exception as e:
         print(f"⚠️ x-forwarded-for parse failed: {e}")
-    return ""
+    return direct
 
 
 # ── Login location detection (IP → city/country, free GeoIP providers) ──
