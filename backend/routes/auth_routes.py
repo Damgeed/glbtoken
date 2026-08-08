@@ -1190,9 +1190,9 @@ def get_me(user: User = Depends(get_current_user)):
 # In-memory OTP guess limiter per account (resets when a new code is sent)
 _email_otp_attempts = {}
 
-# In-memory login failure lockout per email+IP: 10 failures → 429 for 15 min.
+# In-memory login failure lockout per email+IP: 5 failures → 429 for 15 min.
 _login_failures = {}
-_LOGIN_LOCKOUT_MAX = 10
+_LOGIN_LOCKOUT_MAX = 5
 _LOGIN_LOCKOUT_TTL = 900  # seconds
 
 def _login_locked(email: str, ip: str) -> bool:

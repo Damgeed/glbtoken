@@ -134,9 +134,9 @@ def test_forgot_password_uniform_response(client, make_user):
 
 # ── Finding 5: login lockout ──
 
-def test_login_lockout_after_10_failures(client, make_user):
+def test_login_lockout_after_5_failures(client, make_user):
     u = make_user(email="lock@example.com", password="rightpass1")
-    for i in range(10):
+    for i in range(5):
         r = client.post("/api/auth/login", json={"email": u.email, "password": "wrongpass"})
         assert r.status_code == 401, (i, r.status_code)
     r = client.post("/api/auth/login", json={"email": u.email, "password": "wrongpass"})
@@ -172,3 +172,14 @@ def test_openapi_disabled(client):
     assert client.get("/openapi.json").status_code == 404
     assert client.get("/docs").status_code == 404
     assert client.get("/redoc").status_code == 404
+
+
+# ── Finding 10: payment rails config — frontend hides unconfigured rails ──
+
+def test_payment_methods_config(client):
+    r = client.get("/api/config/payments")
+    assert r.status_code == 200
+    body = r.json()
+    assert set(body.keys()) == {"stripe", "paystack", "crypto"}
+    for k, v in body.items():
+        assert isinstance(v, bool)

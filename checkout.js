@@ -148,3 +148,30 @@
       if(!token){showPage('register');return}
       selectedAmount=amount;showPage('topup');
     }
+
+    // ── Hide unavailable payment rails (e.g. Paystack when unconfigured) ──
+    // Backend /api/config/payments reports which rails are wired; hide any
+    // card whose rail is missing so users never get stuck on a 400.
+    async function applyPaymentAvailability(){
+      try{
+        var cfg = await safeApi('GET','/api/config/payments',null,null,true);
+        if(!cfg) return;
+        var rails = ['stripe','paystack','crypto'];
+        for(var i=0;i<rails.length;i++){
+          if(cfg[rails[i]] === false){
+            document.querySelectorAll('[onclick*="\''+rails[i]+'\'"]').forEach(function(el){
+              var card = el.closest('.payment-card, .payment-opt');
+              if(card) card.style.display='none';
+            });
+            if((typeof selectedPayment!=='undefined' && selectedPayment===rails[i]) || !selectedPayment){
+              var first = document.querySelector('[onclick*="\'stripe\'"],[onclick*="\'crypto\'"]:not([style*="display: none"])');
+              var alt = document.querySelector('.payment-card:not([style*="display: none"]), .payment-opt:not([style*="display: none"])');
+              var fallback = first || alt;
+              if(fallback && typeof selectPayment==='function') selectPayment(fallback, fallback.getAttribute('onclick').match(/'([a-z]+)'/)[1]);
+            }
+          }
+        }
+      }catch(e){ /* non-fatal */ }
+    }
+    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', applyPaymentAvailability); }
+    else { applyPaymentAvailability(); }

@@ -20,6 +20,20 @@ from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, Ca
 router = APIRouter()
 
 
+@router.get("/api/config/payments")
+def payment_methods_config():
+    """Which payment rails are actually wired (public — no auth needed).
+
+    Lets the frontend hide e.g. the Paystack card when the secret key is
+    missing, so users never get stuck on a 'not configured' rail.
+    """
+    return {
+        "stripe": bool(STRIPE_SECRET_KEY),
+        "paystack": bool(PAYSTACK_SECRET_KEY),
+        "crypto": bool(CRYPTO_WALLET_ADDRESSES),
+    }
+
+
 def _emit_topup_webhook(user, tokens: int, method: str):
     """Fire-and-forget topup.success webhook (no-op when unconfigured)."""
     try:
