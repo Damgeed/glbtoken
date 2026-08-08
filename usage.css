@@ -13,41 +13,8 @@
   z-index: 1;
 }
 @media (max-width: 768px) {
-  /* Transaction History — compact to fit screen without horizontal scroll
-     (like Recent Transactions on overview). .tx-fit marks the container.
-     Override the shared .scroll-x.tx-scroll 500px min-width + nowrap so the
-     table fits the 390px viewport and cells wrap instead of scrolling. */
-  .tx-scroll.tx-fit table {
-    min-width: 0;
-    width: 100%;
-  }
-  .tx-scroll.tx-fit th,
-  .tx-scroll.tx-fit td {
-    /* Force the mobile intent (0.7rem) — the base .tx-table td is 0.85rem
-       which overrides .tx-table{font-size:.7rem} and made cells wrap.
-       word-break/overflow-wrap are INHERITED (some ancestor sets break-word)
-       and collapse wrapping columns to per-char fragments ("Mobile Money" →
-       9 lines) — reset them here. */
-    font-size: 0.7rem;
-    white-space: normal;
-    word-break: normal;
-    overflow-wrap: normal;
-  }
-  /* One-line cells: amount, tokens, status must never wrap */
-  .tx-scroll.tx-fit td.tx-td-center,
-  .tx-scroll.tx-fit td.amount {
-    white-space: nowrap;
-  }
-  /* Timestamp cell: date on top, time below (stacked — fmtDTStack default).
-     Bud 2026-11: mobile Transaction History uses the same stacked layout as
-     desktop / login attempts — no inline override. */
-  .tx-scroll.tx-fit td.td-date {
-    white-space: nowrap;
-    line-height: 1.35;
-  }
-  .tx-scroll.tx-fit::after {
-    display: none !important;
-  }
+  /* tx-fit rules moved to style.css (shared with billing Invoices) — see
+     .tx-scroll.tx-fit block. Keep usage-specific table rules below. */
   #historyBody {
     min-width: 550px;
   }

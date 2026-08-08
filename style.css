@@ -30,7 +30,6 @@ html {
   --success-subtle: hsla(145 62% 42% / 0.12);
   --destructive: hsl(0 68% 52%);
   --destructive-subtle: hsla(0 68% 52% / 0.12);
-  --info: hsl(211 82% 57%);
   --radius: 14px;
   --radius-sm: 10px;
   --radius-lg: 20px;
@@ -4367,6 +4366,34 @@ html.light .star.white {
 .scroll-x table th,
 .scroll-x table td { white-space:nowrap; }
 .scroll-x table td button { white-space:nowrap; }
+/* .tx-fit — compact table cards (Transaction History / Invoices): fit the
+   mobile viewport without horizontal scroll; cells wrap instead. Shared
+   globally (moved from usage.css 2026-11 so billing Invoices uses the same
+   standard card design as usage Transaction History). */
+@media (max-width: 768px) {
+  .tx-scroll.tx-fit table {
+    min-width: 0;
+    width: 100%;
+  }
+  .tx-scroll.tx-fit th,
+  .tx-scroll.tx-fit td {
+    font-size: 0.7rem;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+  .tx-scroll.tx-fit td.tx-td-center,
+  .tx-scroll.tx-fit td.amount {
+    white-space: nowrap;
+  }
+  .tx-scroll.tx-fit td.td-date {
+    white-space: nowrap;
+    line-height: 1.35;
+  }
+  .tx-scroll.tx-fit::after {
+    display: none !important;
+  }
+}
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .flex-row-wrap { display:flex;gap:0.5rem;flex-wrap:wrap; }
 .scroll-hint { display:none; }
@@ -4753,6 +4780,13 @@ body {
 .tx-th-center { text-align: center !important; }
 .tx-td-right { text-align: right !important; }
 .tx-td-center { text-align: center !important; }
+/* Table empty cell (standard card design — shared across table cards) */
+.td-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1.5rem;
+  font-size: 0.8rem;
+}
 .dash-activity {
   display: flex;
   flex-direction: column;

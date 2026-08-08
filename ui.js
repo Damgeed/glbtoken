@@ -913,28 +913,6 @@ function showConfirm(title, msg, onConfirm, confirmText){
   document.getElementById('confirmOkBtn').onclick=function(){m.remove();if(onConfirm)onConfirm()};
   m.onclick=function(e){if(e.target===m)m.remove()};
 }
-function showAlert(title, msg){
-  var existing=document.getElementById('alertModal');
-  if(existing)existing.remove();
-  var m=document.createElement('div');
-  m.id='alertModal';
-  m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);animation:fadeIn 0.15s ease';
-  var theme=document.documentElement.className;
-  var isDark=theme==='dark';
-  var cardBg=isDark?'#1e1f29':'#ffffff';
-  var textClr=isDark?'#f8f8f2':'#1a1a2e';
-  var muted=isDark?'#6272a4':'#666';
-  var border=isDark?'#3a3a4e':'#ddd';
-  m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
-    +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
-    +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
-    +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.25rem;line-height:1.5">'+escapeHtml(msg)+'</p>'
-    +'<button id="alertOkBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">OK</button>'
-    +'</div></div>';
-  document.body.appendChild(m);
-  document.getElementById('alertOkBtn').onclick=function(){m.remove()};
-  m.onclick=function(e){if(e.target===m)m.remove()};
-}
 var _sessionExpiredShown = false;
 function showSessionExpired(){
   if(_sessionExpiredShown) return;
