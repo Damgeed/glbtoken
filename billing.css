@@ -282,45 +282,21 @@
 }
 .pm-recharge:hover { background: rgba(244, 180, 0, 0.22); }
 
-/* ── Invoices table: fixed layout so every header sits at equal spacing ── */
-#invoicesTable {
-  table-layout: fixed;
-  width: 100%;
-}
-#invoicesTable th {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0.45rem 0.5rem;
-}
-#invoicesTable td {
-  padding: 0.5rem 0.6rem;
-}
-#invoicesTable th:nth-child(1) { width: 17%; }  /* Date */
-#invoicesTable th:nth-child(2) { width: 16%; }  /* Amount */
-#invoicesTable th:nth-child(3) { width: 17%; }  /* Method */
-#invoicesTable th:nth-child(4) { width: 17%; }  /* Tokens */
-#invoicesTable th:nth-child(5) { width: 16%; }  /* Status */
-#invoicesTable th:nth-child(6) { width: 17%; }  /* Receipt */
+/* ── Invoices table: inherits the shared .tx-table card design — same fonts,
+   colors, spacing as Transaction History (usage.html). No fixed layout or
+   custom padding here; keep only the mobile fit rules. ── */
 @media (max-width: 767px) {
   #invoicesTable { min-width: 0; }
 }
 /* Mobile: match Transaction History (usage.html) — 5 columns fit the phone
    viewport. Receipt/PDF stays available via the "All PDF" button below. */
 @media (max-width: 560px) {
-  #invoicesTable { table-layout: auto; }
   #invoicesTable th:nth-child(6),
   #invoicesTable td:nth-child(6) { display: none; }
   /* Keep Amount/Tokens on ONE line so "25,000 GT" doesn't wrap number / GT.
-     ID beats the shared tx-fit white-space:normal, so these stay nowrap and
-     the auto layout gives Tokens enough room while Amount hugs Date. */
+     ID beats the shared tx-fit white-space:normal, so these stay nowrap. */
   #invoicesTable td.text-nowrap,
   #invoicesTable td.tx-td-right { white-space: nowrap; }
-  /* Reclaim the width the nowrap cells need: tighten cell + badge padding so
-     the 5 columns still fit the phone viewport without horizontal scroll. */
-  #invoicesTable th,
-  #invoicesTable td { padding-left: 0.15rem; padding-right: 0.15rem; }
-  #invoicesTable .status-badge { padding: 0.15rem 0.3rem; }
   /* Amount hugs DATE (left-aligned) instead of right-aligning against METHOD.
      tx-th-right/tx-td-right use !important, so override with !important too. */
   #invoicesTable th:nth-child(2),
