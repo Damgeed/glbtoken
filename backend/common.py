@@ -13,7 +13,6 @@ __all__ = [
     'PAYSTACK_SECRET_KEY', 'PAYSTACK_PUBLIC_KEY',
     'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET',
     'CRYPTO_USDT_TRC20', 'CRYPTO_USDT_ERC20', 'CRYPTO_BTC', 'CRYPTO_ETH',
-    'TRON_USDT_ADDRESS', 'ETH_USDT_ADDRESS', 'BTC_ADDRESS',
     'GLBTOKEN_SECRET', 'PORT', 'CRYPTO_WALLET_ADDRESSES',
     '_400', '_401', '_402', '_403', '_404', '_500', '_502', '_503', '_not_configured',
     'limiter', '_safe_error', '_url_quote',
@@ -82,9 +81,6 @@ CRYPTO_USDT_TRC20 = os.getenv("CRYPTO_USDT_TRC20", "")
 CRYPTO_USDT_ERC20 = os.getenv("CRYPTO_USDT_ERC20", "")
 CRYPTO_BTC = os.getenv("CRYPTO_BTC", "")
 CRYPTO_ETH = os.getenv("CRYPTO_ETH", "")
-TRON_USDT_ADDRESS = os.getenv("TRON_USDT_ADDRESS", "")
-ETH_USDT_ADDRESS = os.getenv("ETH_USDT_ADDRESS", "")
-BTC_ADDRESS = os.getenv("BTC_ADDRESS", "")
 
 # Security
 GLBTOKEN_SECRET = os.environ.get("GLBTOKEN_SECRET")
