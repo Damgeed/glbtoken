@@ -2337,6 +2337,40 @@ I18N["🇳🇱 Netherlands"] = {"zh-CN": "🇳🇱 荷兰", ru: "🇳🇱 Нид
 I18N["🇳🇴 Norway"] = {"zh-CN": "🇳🇴 挪威", ru: "🇳🇴 Норвегия", ja: "🇳🇴 ノルウェー", de: "🇳🇴 Norwegen"};
 I18N["🇳🇵 Nepal"] = {"zh-CN": "🇳🇵 尼泊尔", ru: "🇳🇵 Непал", ja: "🇳🇵 ネパール", de: "🇳🇵 Nepal"};
 
+I18N["🇳🇿 New Zealand"] = {"zh-CN": "🇳🇿 新西兰", ru: "🇳🇿 Новая Зеландия", ja: "🇳🇿 ニュージーランド", de: "🇳🇿 Neuseeland"};
+I18N["🇴🇲 Oman"] = {"zh-CN": "🇴🇲 阿曼", ru: "🇴🇲 Оман", ja: "🇴🇲 オマーン", de: "🇴🇲 Oman"};
+I18N["🇵🇪 Peru"] = {"zh-CN": "🇵🇪 秘鲁", ru: "🇵🇪 Перу", ja: "🇵🇪 ペルー", de: "🇵🇪 Peru"};
+I18N["🇵🇭 Philippines"] = {"zh-CN": "🇵🇭 菲律宾", ru: "🇵🇭 Филиппины", ja: "🇵🇭 フィリピン", de: "🇵🇭 Philippinen"};
+I18N["🇵🇰 Pakistan"] = {"zh-CN": "🇵🇰 巴基斯坦", ru: "🇵🇰 Пакистан", ja: "🇵🇰 パキスタン", de: "🇵🇰 Pakistan"};
+I18N["🇵🇱 Poland"] = {"zh-CN": "🇵🇱 波兰", ru: "🇵🇱 Польша", ja: "🇵🇱 ポーランド", de: "🇵🇱 Polen"};
+I18N["🇵🇹 Portugal"] = {"zh-CN": "🇵🇹 葡萄牙", ru: "🇵🇹 Португалия", ja: "🇵🇹 ポルトガル", de: "🇵🇹 Portugal"};
+I18N["🇶🇦 Qatar"] = {"zh-CN": "🇶🇦 卡塔尔", ru: "🇶🇦 Катар", ja: "🇶🇦 カタール", de: "🇶🇦 Katar"};
+I18N["🇷🇴 Romania"] = {"zh-CN": "🇷🇴 罗马尼亚", ru: "🇷🇴 Румыния", ja: "🇷🇴 ルーマニア", de: "🇷🇴 Rumänien"};
+I18N["🇷🇼 Rwanda"] = {"zh-CN": "🇷🇼 卢旺达", ru: "🇷🇼 Руанда", ja: "🇷🇼 ルワンダ", de: "🇷🇼 Ruanda"};
+I18N["🇸🇦 Saudi Arabia"] = {"zh-CN": "🇸🇦 沙特阿拉伯", ru: "🇸🇦 Саудовская Аравия", ja: "🇸🇦 サウジアラビア", de: "🇸🇦 Saudi-Arabien"};
+I18N["🇸🇩 Sudan"] = {"zh-CN": "🇸🇩 苏丹", ru: "🇸🇩 Судан", ja: "🇸🇩 スーダン", de: "🇸🇩 Sudan"};
+I18N["🇸🇪 Sweden"] = {"zh-CN": "🇸🇪 瑞典", ru: "🇸🇪 Швеция", ja: "🇸🇪 スウェーデン", de: "🇸🇪 Schweden"};
+I18N["🇸🇬 Singapore"] = {"zh-CN": "🇸🇬 新加坡", ru: "🇸🇬 Сингапур", ja: "🇸🇬 シンガポール", de: "🇸🇬 Singapur"};
+I18N["🇸🇳 Senegal"] = {"zh-CN": "🇸🇳 塞内加尔", ru: "🇸🇳 Сенегал", ja: "🇸🇳 セネガル", de: "🇸🇳 Senegal"};
+I18N["🇸🇴 Somalia"] = {"zh-CN": "🇸🇴 索马里", ru: "🇸🇴 Сомали", ja: "🇸🇴 ソマリア", de: "🇸🇴 Somalia"};
+I18N["🇹🇩 Chad"] = {"zh-CN": "🇹🇩 乍得", ru: "🇹🇩 Чад", ja: "🇹🇩 チャド", de: "🇹🇩 Tschad"};
+I18N["🇹🇭 Thailand"] = {"zh-CN": "🇹🇭 泰国", ru: "🇹🇭 Таиланд", ja: "🇹🇭 タイ", de: "🇹🇭 Thailand"};
+I18N["🇹🇳 Tunisia"] = {"zh-CN": "🇹🇳 突尼斯", ru: "🇹🇳 Тунис", ja: "🇹🇳 チュニジア", de: "🇹🇳 Tunesien"};
+I18N["🇹🇷 Turkey"] = {"zh-CN": "🇹🇷 土耳其", ru: "🇹🇷 Турция", ja: "🇹🇷 トルコ", de: "🇹🇷 Türkei"};
+I18N["🇹🇼 Taiwan"] = {"zh-CN": "🇹🇼 台湾", ru: "🇹🇼 Тайвань", ja: "🇹🇼 台湾", de: "🇹🇼 Taiwan"};
+I18N["🇹🇿 Tanzania"] = {"zh-CN": "🇹🇿 坦桑尼亚", ru: "🇹🇿 Танзания", ja: "🇹🇿 タンザニア", de: "🇹🇿 Tansania"};
+I18N["🇺🇦 Ukraine"] = {"zh-CN": "🇺🇦 乌克兰", ru: "🇺🇦 Украина", ja: "🇺🇦 ウクライナ", de: "🇺🇦 Ukraine"};
+I18N["🇺🇬 Uganda"] = {"zh-CN": "🇺🇬 乌干达", ru: "🇺🇬 Уганда", ja: "🇺🇬 ウガンダ", de: "🇺🇬 Uganda"};
+I18N["🇺🇸 United States"] = {"zh-CN": "🇺🇸 美国", ru: "🇺🇸 США", ja: "🇺🇸 アメリカ", de: "🇺🇸 Vereinigte Staaten"};
+I18N["🇺🇿 Uzbekistan"] = {"zh-CN": "🇺🇿 乌兹别克斯坦", ru: "🇺🇿 Узбекистан", ja: "🇺🇿 ウズベキスタン", de: "🇺🇿 Usbekistan"};
+I18N["🇻🇳 Vietnam"] = {"zh-CN": "🇻🇳 越南", ru: "🇻🇳 Вьетнам", ja: "🇻🇳 ベトナム", de: "🇻🇳 Vietnam"};
+I18N["🇿🇦 South Africa"] = {"zh-CN": "🇿🇦 南非", ru: "🇿🇦 ЮАР", ja: "🇿🇦 南アフリカ", de: "🇿🇦 Südafrika"};
+I18N["🇿🇲 Zambia"] = {"zh-CN": "🇿🇲 赞比亚", ru: "🇿🇲 Замбия", ja: "🇿🇲 ザンビア", de: "🇿🇲 Sambia"};
+I18N["🇿🇼 Zimbabwe"] = {"zh-CN": "🇿🇼 津巴布韦", ru: "🇿🇼 Зимбабве", ja: "🇿🇼 ジンバブエ", de: "🇿🇼 Simbabwe"};
+I18N["🌍 Other"] = {"zh-CN": "🌍 其他", ru: "🌍 Другое", ja: "🌍 その他", de: "🌍 Sonstiges"};
+I18N["📅 Select Range"] = {"zh-CN": "📅 选择范围", ru: "📅 Выбрать диапазон", ja: "📅 期間を選択", de: "📅 Zeitraum auswählen"};
+I18N["🤖 Model"] = {"zh-CN": "🤖 模型", ru: "🤖 Модель", ja: "🤖 モデル", de: "🤖 Modell"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
