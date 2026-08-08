@@ -451,6 +451,40 @@ button.settings-save-btn:hover {
   color: #0a0b14;
   line-height: 1;
 }
+/* Camera hint on the avatar — subtle, bottom-right, only visible on hover/focus.
+   Tells users the avatar is clickable to upload, without the old obtrusive badge. */
+.settings-avatar-cam {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(10, 11, 20, 0.72);
+  color: #F4B400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(244, 180, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.settings-avatar-preview:hover .settings-avatar-cam,
+.settings-avatar-preview:focus-within .settings-avatar-cam {
+  opacity: 1;
+}
+.settings-avatar-preview .settings-avatar-cam svg {
+  display: block;
+}
+@media (hover: none) {
+  /* Touch devices: no hover — always show a faint camera hint so users know
+     the avatar is tappable to upload. */
+  .settings-avatar-cam {
+    opacity: 0.85;
+  }
+}
 .settings-avatar-actions {
   display: flex;
   flex-direction: column;

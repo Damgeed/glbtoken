@@ -156,6 +156,7 @@
           <div class="settings-field-group">
             <div class="settings-avatar-row">
               <div class="settings-avatar-preview clickable" id="avatarPreview" onclick="openAvatarMenu()" title="Change avatar"><span class="settings-avatar-initial" id="avatarInitial">U</span>
+                <span class="settings-avatar-cam" id="avatarCam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
               </div>
               <div class="settings-avatar-actions">
                 <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/heic,image/heif" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden">
@@ -1026,7 +1027,7 @@ document.addEventListener('change', function(e){
         renderAvatarPreview(dataUrl);
         saveAvatar(dataUrl);
       };
-      img.onerror = function(){ showToast('Could not read that image','error'); };
+      img.onerror = function(){ showToast('Could not read that image — try JPG, PNG or WebP','error'); };
       img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
@@ -1035,7 +1036,10 @@ document.addEventListener('change', function(e){
 
 function renderAvatarPreview(dataUrl){
   var p = document.getElementById('avatarPreview');
-  if(p) p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  if(p){
+    p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+      + '<span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+  }
   // Keep the open avatar menu's preview in sync so the user sees the new
   // photo immediately instead of the old/default one.
   var mp = document.getElementById('avatarMenuPreview');
@@ -1060,7 +1064,7 @@ window.clearAvatar = function(){
     if(d && d.status === 'updated'){
       if(typeof window.setUserAvatar === 'function') window.setUserAvatar(null);
       var p = document.getElementById('avatarPreview');
-      if(p) p.innerHTML = '<span class="settings-avatar-initial" id="avatarInitial">'+(window._userInitial || 'U')+'</span>';
+      if(p) p.innerHTML = '<span class="settings-avatar-initial" id="avatarInitial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
       showToast('Avatar removed','success');
       closeAvatarMenu();
     } else { showToast((d && d.detail) || 'Failed to remove avatar','error'); }
@@ -1620,10 +1624,10 @@ document.addEventListener('DOMContentLoaded', function(){
     if(p && p.name){ window._userInitial = (p.name||'U').trim()[0] ? (p.name.trim()[0].toUpperCase()) : 'U'; }
     if(p && p.avatar){
       var av = document.getElementById('avatarPreview');
-      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
     } else {
       var av2 = document.getElementById('avatarPreview');
-      if(av2) av2.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span>';
+      if(av2) av2.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
     }
     if(p && p.name){
       var nameEl2 = document.getElementById('avatarName');

@@ -1053,6 +1053,21 @@ async def refresh_access_token(
         revoke_refresh_token(raw, db)
     except Exception as e:
         print(f"⚠️ Refresh-token rotation: failed to revoke old token: {e}")
+    # If this refresh comes from a DIFFERENT browser/device than the last
+    # recorded login event, log it — so a new browser that restores a saved
+    # session (refresh token) still shows up in Login History instead of
+    # silently appearing only in Active Sessions. Normal page-load refreshes
+    # from the same browser keep the same UA and stay quiet.
+    try:
+        ua = request.headers.get("user-agent", "")
+        last = db.query(LoginEvent).filter(
+            LoginEvent.user_id == user_id,
+            LoginEvent.success == True
+        ).order_by(desc(LoginEvent.created_at)).first()
+        if not last or (last.user_agent or "") != ua:
+            record_login_event(user_id, request, True, db)
+    except Exception as e:
+        print(f"⚠️ Refresh UA-change login event failed: {e}")
     # Generate new access + refresh tokens
     new_access = create_access_token({"sub": str(user_id)})
     new_refresh = generate_refresh_token(user_id, db)
