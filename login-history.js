@@ -48,6 +48,14 @@ function getFlag(location) {
 function getBrowserShort(ua) {
   if (!ua) return '—';
   var u = ua.toLowerCase();
+  // iOS browsers carry AppleWebKit + Safari tokens but NOT their own engine
+  // name (e.g. Firefox iOS = "FxiOS/… Safari/…") — detect them BEFORE Safari.
+  if (u.indexOf('fxios/') !== -1) return 'Firefox';
+  if (u.indexOf('crios/') !== -1) return 'Chrome';
+  if (u.indexOf('edgios/') !== -1) return 'Edge';
+  if (u.indexOf('opios/') !== -1) return 'Opera';
+  if (u.indexOf('samsungbrowser') !== -1) return 'Samsung';
+  if (u.indexOf('ucbrowser') !== -1) return 'UC';
   if (u.indexOf('edg/') !== -1 || u.indexOf('edge/') !== -1) return 'Edge';
   if (u.indexOf('opr/') !== -1 || u.indexOf('opera') !== -1) return 'Opera';
   if (u.indexOf('chrome/') !== -1 && u.indexOf('chromium') === -1) return 'Chrome';

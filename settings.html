@@ -1152,11 +1152,20 @@ function listEl(){
 function lhBrowser(ua){
   if(!ua) return 'Unknown device';
   var u = ua.toLowerCase();
+  // iOS browsers carry AppleWebKit + Safari tokens but NOT their own engine
+  // name (e.g. Firefox iOS = "FxiOS/… Safari/…") — detect them BEFORE Safari.
+  if(u.indexOf('fxios/') !== -1) return 'Firefox';
+  if(u.indexOf('crios/') !== -1) return 'Chrome';
+  if(u.indexOf('edgios/') !== -1) return 'Edge';
+  if(u.indexOf('opios/') !== -1) return 'Opera';
+  if(u.indexOf('samsungbrowser') !== -1) return 'Samsung Internet';
+  if(u.indexOf('ucbrowser') !== -1) return 'UC Browser';
+  // Edge/Opera UAs also contain "Chrome/" — check them BEFORE Chrome.
+  if(u.indexOf('edg/') !== -1 || u.indexOf('edge/') !== -1) return 'Edge';
+  if(u.indexOf('opr/') !== -1 || u.indexOf('opera') !== -1) return 'Opera';
   if(u.indexOf('chrome/') !== -1 && u.indexOf('chromium') === -1) return 'Chrome';
   if(u.indexOf('firefox/') !== -1) return 'Firefox';
   if(u.indexOf('safari/') !== -1 && u.indexOf('chrome') === -1) return 'Safari';
-  if(u.indexOf('edg/') !== -1 || u.indexOf('edge/') !== -1) return 'Edge';
-  if(u.indexOf('opr/') !== -1) return 'Opera';
   if(u.indexOf('python') !== -1 || u.indexOf('okhttp') !== -1 || u.indexOf('axios') !== -1 || u.indexOf('postman') !== -1 || u.indexOf('http-client') !== -1) return 'API client';
   if(u.indexOf('curl') !== -1) return 'curl';
   return 'Browser';

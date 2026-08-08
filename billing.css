@@ -313,6 +313,13 @@
 #invoicesTable th:nth-child(5) { width: 16%; }  /* Status */
 #invoicesTable th:nth-child(6) { width: 17%; }  /* Receipt */
 @media (max-width: 767px) {
-  #invoicesTable { min-width: 600px; }
+  #invoicesTable { min-width: 0; }
+}
+/* Mobile: match Transaction History (usage.html) — 5 columns fit the phone
+   viewport. Receipt/PDF stays available via the "All PDF" button below. */
+@media (max-width: 560px) {
+  #invoicesTable { table-layout: auto; }
+  #invoicesTable th:nth-child(6),
+  #invoicesTable td:nth-child(6) { display: none; }
 }
 .pm-recharge:active { transform: scale(0.96); }

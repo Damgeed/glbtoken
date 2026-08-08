@@ -114,6 +114,21 @@ def _ua_family(ua: str) -> str:
     if not ua:
         return ""
     u = ua.lower()
+    # iOS browsers carry AppleWebKit + Safari tokens but NOT their own engine
+    # name (e.g. Firefox iOS = "FxiOS/… Safari/…") — detect them BEFORE Safari
+    # so Firefox iOS doesn't collapse into the Safari session family.
+    if "fxios/" in u:
+        return "firefox"
+    if "crios/" in u:
+        return "chrome"
+    if "edgios/" in u:
+        return "edge"
+    if "opios/" in u:
+        return "opera"
+    if "samsungbrowser" in u:
+        return "samsung"
+    if "ucbrowser" in u:
+        return "uc"
     if "edg/" in u or "edge/" in u:
         return "edge"
     if "opr/" in u or "opera" in u:
