@@ -1879,6 +1879,17 @@ I18N["Grok 4.20 — xAI"] = {"zh-CN": "Grok 4.20 — xAI", ru: "Grok 4.20 — xA
 I18N["Guatemala"] = {"zh-CN": "危地马拉", ru: "Гватемала", ja: "グアテマラ", de: "Guatemala"};
 I18N["Guinea"] = {"zh-CN": "几内亚", ru: "Гвинея", ja: "ギニア", de: "Guinea"};
 
+I18N["Guinea-Bissau"] = {"zh-CN": "几内亚比绍", ru: "Гвинея-Бисау", ja: "ギニアビサウ", de: "Guinea-Bissau"};
+I18N["Haiti"] = {"zh-CN": "海地", ru: "Гаити", ja: "ハイチ", de: "Haiti"};
+I18N["Head-to-Head: Which Model Should You Choose?"] = {"zh-CN": "正面较量：你应该选择哪款模型？", ru: "Сравнение: какую модель выбрать?", ja: "徹底比較：どのモデルを選ぶべき？", de: "Kopf-an-Kopf: Welches Modell sollten Sie wählen?"};
+I18N["Here's a quick example using Python and the OpenAI SDK:"] = {"zh-CN": "下面是一个使用 Python 和 OpenAI SDK 的快速示例：", ru: "Вот быстрый пример на Python с использованием OpenAI SDK:", ja: "Python と OpenAI SDK を使った簡単な例は次のとおりです：", de: "Hier ist ein kurzes Beispiel mit Python und dem OpenAI SDK:"};
+I18N["Here's how to start building with the GlbTOKEN API:"] = {"zh-CN": "下面介绍如何开始使用 GlbTOKEN API 进行开发：", ru: "Вот как начать разработку с API GlbTOKEN:", ja: "GlbTOKEN API での開発を始める手順は次のとおりです：", de: "So starten Sie die Entwicklung mit der GlbTOKEN-API:"};
+I18N["Honduras"] = {"zh-CN": "洪都拉斯", ru: "Гондурас", ja: "ホンジュラス", de: "Honduras"};
+I18N["Hong Kong"] = {"zh-CN": "香港", ru: "Гонконг", ja: "香港", de: "Hongkong"};
+I18N["How It Works — GlbTOKEN"] = {"zh-CN": "工作原理 — GlbTOKEN", ru: "Как это работает — GlbTOKEN", ja: "仕組み — GlbTOKEN", de: "So funktioniert es — GlbTOKEN"};
+I18N["HumanEval"] = {"zh-CN": "HumanEval", ru: "HumanEval", ja: "HumanEval", de: "HumanEval"};
+I18N["Hungary"] = {"zh-CN": "匈牙利", ru: "Венгрия", ja: "ハンガリー", de: "Ungarn"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
