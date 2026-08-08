@@ -785,6 +785,12 @@ async def auth0_callback_redirect(request: Request, id_token: str = Query(...)):
     except Exception as e:
         print(f"⚠️ Same-device session cleanup failed: {e}")
     refresh_token = generate_refresh_token(user.id, db, ua=ua, device_type=_ua_device_type(ua))
+    # Record this social login so Login History shows the browser (e.g. Firefox
+    # signing in via Google) — was missing, so social logins never appeared.
+    try:
+        record_login_event(user.id, request, True, db)
+    except Exception as e:
+        print(f"⚠️ Auth0 callback login event failed: {e}")
     user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
@@ -839,6 +845,11 @@ async def auth0_pkce_callback(request: Request, code: str = Query(...), code_ver
     except Exception as e:
         print(f"⚠️ Same-device session cleanup failed: {e}")
     refresh_token = generate_refresh_token(user.id, db, ua=ua, device_type=_ua_device_type(ua))
+    # Record this social login so Login History shows the browser.
+    try:
+        record_login_event(user.id, request, True, db)
+    except Exception as e:
+        print(f"⚠️ Auth0 PKCE login event failed: {e}")
     user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),

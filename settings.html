@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1249" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1065" />
+<link rel="stylesheet" href="settings.css?v=1066" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -1304,6 +1304,18 @@ function loadAccountOverview(){
     if(!p) return;
     var spentEl = document.getElementById('acctSpent');
     if(spentEl) spentEl.textContent = '$' + Number(p.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    var verEl = document.getElementById('acctEmailVerified');
+    var verBtn = document.getElementById('verifyEmailBtn');
+    if(verEl){
+      var verified = !!p.email_verified;
+      var acctEmail = p.email || '';
+      // Synthetic addresses (phone signup / Apple hide-my-email / GitHub fallback)
+      // are not real mailboxes — they can never be email-verified, so show "—"
+      // instead of a misleading "Not verified" + Verify button.
+      var synthetic = /@(phone\.glbtoken\.io|privaterelay\.local|github\.com)$/i.test(acctEmail);
+      verEl.textContent = synthetic ? '—' : (verified ? '✅ Verified' : '⚠️ Not verified');
+      if(verBtn) verBtn.style.display = (verified || synthetic) ? 'none' : '';
+    }
     var uidEl = document.getElementById('acctUserId');
     if(uidEl && p.public_id) uidEl.textContent = p.public_id;
   });
