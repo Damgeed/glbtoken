@@ -1042,6 +1042,15 @@ async def refresh_access_token(
         user_id = validate_refresh_token(raw, db)
     except HTTPException:
         _401("Session expired. Please log in again.")
+    # ROTATE: revoke the old refresh token before minting the new one so each
+    # active device holds exactly one valid token (prevents the table from
+    # accumulating one row per silent page-load refresh). The frontend
+    # shared.js handles the multi-tab race by retrying once with the token
+    # that ended up in storage after this refresh.
+    try:
+        revoke_refresh_token(raw, db)
+    except Exception:
+        pass
     # Generate new access + refresh tokens
     new_access = create_access_token({"sub": str(user_id)})
     new_refresh = generate_refresh_token(user_id, db)
