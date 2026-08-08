@@ -2102,6 +2102,47 @@ I18N["Security Whitepaper"] = {"zh-CN": "安全白皮书", ru: "Техничес
 I18N["Select"] = {"zh-CN": "选择", ru: "Выбрать", ja: "選択", de: "Auswählen"};
 I18N["Select all"] = {"zh-CN": "全选", ru: "Выбрать все", ja: "すべて選択", de: "Alle auswählen"};
 
+I18N["Select an organization to view members"] = {"zh-CN": "选择一个组织以查看成员", ru: "Выберите организацию, чтобы просмотреть участников", ja: "メンバーを表示する組織を選択してください", de: "Wählen Sie eine Organisation aus, um Mitglieder anzuzeigen"};
+I18N["Select country…"] = {"zh-CN": "选择国家…", ru: "Выберите страну…", ja: "国を選択…", de: "Land auswählen…"};
+I18N["Select your country"] = {"zh-CN": "选择您的国家", ru: "Выберите вашу страну", ja: "お住まいの国を選択", de: "Wählen Sie Ihr Land"};
+I18N["Send Invites"] = {"zh-CN": "发送邀请", ru: "Отправить приглашения", ja: "招待を送信", de: "Einladungen senden"};
+I18N["Send Test"] = {"zh-CN": "发送测试", ru: "Отправить тест", ja: "テスト送信", de: "Test senden"};
+I18N["Sending"] = {"zh-CN": "发送中", ru: "Отправка…", ja: "送信中", de: "Senden…"};
+I18N["Senegal"] = {"zh-CN": "塞内加尔", ru: "Сенегал", ja: "セネガル", de: "Senegal"};
+I18N["Serbia"] = {"zh-CN": "塞尔维亚", ru: "Сербия", ja: "セルビア", de: "Serbien"};
+I18N["Session expired"] = {"zh-CN": "会话已过期", ru: "Сессия истекла", ja: "セッションの有効期限が切れました", de: "Sitzung abgelaufen"};
+I18N["Set role…"] = {"zh-CN": "设置角色…", ru: "Установить роль…", ja: "役割を設定…", de: "Rolle festlegen…"};
+I18N["Settings — GlbTOKEN"] = {"zh-CN": "设置 — GlbTOKEN", ru: "Настройки — GlbTOKEN", ja: "設定 — GlbTOKEN", de: "Einstellungen — GlbTOKEN"};
+I18N["Seychelles"] = {"zh-CN": "塞舌尔", ru: "Сейшелы", ja: "セーシェル", de: "Seychellen"};
+I18N["Share via the buttons above to start tracking which channel brings the most referrals."] = {"zh-CN": "通过上方的按钮分享，即可开始追踪哪个渠道带来最多的推荐。", ru: "Поделитесь с помощью кнопок выше, чтобы отслеживать, какой канал приносит больше всего рефералов.", ja: "上のボタンから共有すると、どのチャネルが最も多くの紹介をもたらすかを追跡できます。", de: "Teilen Sie über die Schaltflächen oben, um zu verfolgen, welcher Kanal die meisten Empfehlungen bringt."};
+I18N["Sierra Leone"] = {"zh-CN": "塞拉利昂", ru: "Сьерра-Леоне", ja: "シエラレオネ", de: "Sierra Leone"};
+I18N["Sign Out All"] = {"zh-CN": "全部退出登录", ru: "Выйти из всех сеансов", ja: "すべてのセッションからログアウト", de: "Überall abmelden"};
+I18N["Signing Secret"] = {"zh-CN": "签名密钥", ru: "Секрет подписи", ja: "署名シークレット", de: "Signatur-Geheimnis"};
+I18N["Singapore"] = {"zh-CN": "新加坡", ru: "Сингапур", ja: "シンガポール", de: "Singapur"};
+I18N["Slovakia"] = {"zh-CN": "斯洛伐克", ru: "Словакия", ja: "スロバキア", de: "Slowakei"};
+I18N["Slovenia"] = {"zh-CN": "斯洛文尼亚", ru: "Словения", ja: "スロベニア", de: "Slowenien"};
+I18N["Solomon Islands"] = {"zh-CN": "所罗门群岛", ru: "Соломоновы Острова", ja: "ソロモン諸島", de: "Salomonen"};
+I18N["Somalia"] = {"zh-CN": "索马里", ru: "Сомали", ja: "ソマリア", de: "Somalia"};
+I18N["South Korea"] = {"zh-CN": "韩国", ru: "Южная Корея", ja: "韓国", de: "Südkorea"};
+I18N["South Sudan"] = {"zh-CN": "南苏丹", ru: "Южный Судан", ja: "南スーダン", de: "Südsudan"};
+I18N["Spain"] = {"zh-CN": "西班牙", ru: "Испания", ja: "スペイン", de: "Spanien"};
+I18N["Spend (selected period)"] = {"zh-CN": "支出（所选期间）", ru: "Расходы (за выбранный период)", ja: "支出（選択期間）", de: "Ausgaben (gewählter Zeitraum)"};
+I18N["Sri Lanka"] = {"zh-CN": "斯里兰卡", ru: "Шри-Ланка", ja: "スリランカ", de: "Sri Lanka"};
+I18N["Stream Responses"] = {"zh-CN": "流式响应", ru: "Потоковые ответы", ja: "ストリーミング応答", de: "Streaming-Antworten"};
+I18N["Stripe (cards, USD) ·"] = {"zh-CN": "Stripe（银行卡，USD）·", ru: "Stripe (карты, USD) ·", ja: "Stripe（カード、USD）·", de: "Stripe (Karten, USD) ·"};
+I18N["Sudan"] = {"zh-CN": "苏丹", ru: "Судан", ja: "スーダン", de: "Sudan"};
+I18N["Support Hours & Response Times"] = {"zh-CN": "支持时段与响应时间", ru: "Часы поддержки и время ответа", ja: "サポート時間と応答時間", de: "Supportzeiten & Antwortzeiten"};
+I18N["Supported Endpoints"] = {"zh-CN": "支持的端点", ru: "Поддерживаемые конечные точки", ja: "対応エンドポイント", de: "Unterstützte Endpunkte"};
+I18N["Sweden"] = {"zh-CN": "瑞典", ru: "Швеция", ja: "スウェーデン", de: "Schweden"};
+I18N["Switzerland"] = {"zh-CN": "瑞士", ru: "Швейцария", ja: "スイス", de: "Schweiz"};
+I18N["Syria"] = {"zh-CN": "叙利亚", ru: "Сирия", ja: "シリア", de: "Syrien"};
+I18N["System Status — GlbTOKEN"] = {"zh-CN": "系统状态 — GlbTOKEN", ru: "Статус системы — GlbTOKEN", ja: "システムステータス — GlbTOKEN", de: "Systemstatus — GlbTOKEN"};
+I18N["TOKEN"] = {"zh-CN": "TOKEN", ru: "ТОКЕН", ja: "トークン", de: "TOKEN"};
+I18N["TPM"] = {"zh-CN": "TPM", ru: "TPM", ja: "TPM", de: "TPM"};
+I18N["Taiwan"] = {"zh-CN": "台湾", ru: "Тайвань", ja: "台湾", de: "Taiwan"};
+I18N["Tajikistan"] = {"zh-CN": "塔吉克斯坦", ru: "Таджикистан", ja: "タジキスタン", de: "Tadschikistan"};
+I18N["Tanzania"] = {"zh-CN": "坦桑尼亚", ru: "Танзания", ja: "タンザニア", de: "Tansania"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
