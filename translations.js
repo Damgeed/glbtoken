@@ -1840,6 +1840,21 @@ I18N["Flagship"] = {"zh-CN": "旗舰", ru: "Флагман", ja: "フラッグ�
 I18N["Flash"] = {"zh-CN": "Flash", ru: "Flash", ja: "Flash", de: "Flash"};
 I18N["France"] = {"zh-CN": "法国", ru: "Франция", ja: "フランス", de: "Frankreich"};
 
+I18N["From"] = {"zh-CN": "从", ru: "От", ja: "から", de: "Von"};
+I18N["Full API reference with request/response schemas"] = {"zh-CN": "包含请求/响应模式的完整 API 参考文档", ru: "Полная справочная документация API со схемами запросов и ответов", ja: "リクエスト／レスポンスのスキーマを含む完全な API リファレンス", de: "Vollständige API-Referenz mit Request-/Response-Schemas"};
+I18N["Full Dashboard."] = {"zh-CN": "完整仪表盘。", ru: "Полная панель управления.", ja: "フルダッシュボード。", de: "Vollständiges Dashboard."};
+I18N["GHS (Ghanaian Cedi)"] = {"zh-CN": "GHS（加纳塞地）", ru: "GHS (ганский седи)", ja: "GHS（ガーナ・セディ）", de: "GHS (Ghanaischer Cedi)"};
+I18N["GHS (₵)"] = {"zh-CN": "GHS (₵)", ru: "GHS (₵)", ja: "GHS (₵)", de: "GHS (₵)"};
+I18N["GPT-4 Turbo — OpenAI"] = {"zh-CN": "GPT-4 Turbo — OpenAI", ru: "GPT-4 Turbo — OpenAI", ja: "GPT-4 Turbo — OpenAI", de: "GPT-4 Turbo — OpenAI"};
+I18N["GPT-4o"] = {"zh-CN": "GPT-4o", ru: "GPT-4o", ja: "GPT-4o", de: "GPT-4o"};
+I18N["GPT-4o Mini"] = {"zh-CN": "GPT-4o Mini", ru: "GPT-4o Mini", ja: "GPT-4o Mini", de: "GPT-4o Mini"};
+I18N["GPT-4o Mini — OpenAI"] = {"zh-CN": "GPT-4o Mini — OpenAI", ru: "GPT-4o Mini — OpenAI", ja: "GPT-4o Mini — OpenAI", de: "GPT-4o Mini — OpenAI"};
+I18N["GPT-4o — OpenAI"] = {"zh-CN": "GPT-4o — OpenAI", ru: "GPT-4o — OpenAI", ja: "GPT-4o — OpenAI", de: "GPT-4o — OpenAI"};
+I18N["GPT-5.5 Pro"] = {"zh-CN": "GPT-5.5 Pro", ru: "GPT-5.5 Pro", ja: "GPT-5.5 Pro", de: "GPT-5.5 Pro"};
+I18N["GPT-5.5 Pro: OpenAI's New Flagship"] = {"zh-CN": "GPT-5.5 Pro：OpenAI 全新旗舰模型", ru: "GPT-5.5 Pro: новый флагман OpenAI", ja: "GPT-5.5 Pro：OpenAI の新フラッグシップ", de: "GPT-5.5 Pro: OpenAIs neues Flaggschiff"};
+I18N["GSM-8K"] = {"zh-CN": "GSM-8K", ru: "GSM-8K", ja: "GSM-8K", de: "GSM-8K"};
+I18N["Gabon"] = {"zh-CN": "加蓬", ru: "Габон", ja: "ガボン", de: "Gabun"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
