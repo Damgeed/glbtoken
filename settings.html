@@ -152,6 +152,24 @@
       </div>
       <div class="settings-grid">
         <div class="dash-card">
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
+          <div class="settings-field-group">
+            <div class="settings-avatar-row">
+              <div class="settings-avatar-preview" id="avatarPreview"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div class="settings-avatar-actions">
+                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+                <button class="btn-secondary settings-btn-avatar" onclick="document.getElementById('avatarFileInput').click()">Upload Photo</button>
+                <button class="btn-secondary settings-btn-avatar" id="avatarClearBtn" onclick="clearAvatar()" style="display:none">Remove</button>
+                <div class="settings-item-desc-sm" style="margin-top:0.35rem">PNG / JPG / WebP, max 300 KB</div>
+              </div>
+            </div>
+            <div><label class="settings-field-label">Full Name</label><input type="text" id="settingsName" value="User" class="settings-input"></div>
+            <div><label class="settings-field-label">Email</label><input type="email" id="settingsEmail" value="admin@glbtoken.com" disabled class="settings-input"></div>
+            <div><label class="settings-field-label">Country</label><input type="text" id="settingsCountry" placeholder="e.g. Ghana, Kenya, Singapore" class="settings-input" autocomplete="country-name"></div>
+            <button class="settings-save-btn" onclick="saveProfile()">Save Changes</button>
+          </div>
+        </div>
+        <div class="dash-card">
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</h3>
           <div class="settings-field-group">
             <div class="settings-badge-card">
@@ -176,24 +194,6 @@
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">User ID</div><div class="settings-item-desc-sm" id="acctUserId" style="font-family:monospace;font-size:0.82rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
               <button class="btn-secondary settings-btn-right uid-copy-btn" onclick="copyUserId()" title="Copy User ID" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
-          </div>
-        </div>
-        <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
-          <div class="settings-field-group">
-            <div class="settings-avatar-row">
-              <div class="settings-avatar-preview" id="avatarPreview"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-              <div class="settings-avatar-actions">
-                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
-                <button class="btn-secondary settings-btn-avatar" onclick="document.getElementById('avatarFileInput').click()">Upload Photo</button>
-                <button class="btn-secondary settings-btn-avatar" id="avatarClearBtn" onclick="clearAvatar()" style="display:none">Remove</button>
-                <div class="settings-item-desc-sm" style="margin-top:0.35rem">PNG / JPG / WebP, max 300 KB</div>
-              </div>
-            </div>
-            <div><label class="settings-field-label">Full Name</label><input type="text" id="settingsName" value="User" class="settings-input"></div>
-            <div><label class="settings-field-label">Email</label><input type="email" id="settingsEmail" value="admin@glbtoken.com" disabled class="settings-input"></div>
-            <div><label class="settings-field-label">Country</label><input type="text" id="settingsCountry" placeholder="e.g. Ghana, Kenya, Singapore" class="settings-input" autocomplete="country-name"></div>
-            <button class="settings-save-btn" onclick="saveProfile()">Save Changes</button>
           </div>
         </div>
         <div class="dash-card">
