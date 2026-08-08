@@ -267,6 +267,12 @@ app.add_middleware(V1CORSMiddleware)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# SlowAPIMiddleware is what ACTUALLY enforces the @limiter.limit(...)
+# decorators — without it they only register limit metadata and no request is
+# ever rate limited (register 5/hour, login 10/min etc. silently no-oped).
+# Added last so it is the outermost middleware and rejects before anything else.
+from slowapi.middleware import SlowAPIMiddleware
+app.add_middleware(SlowAPIMiddleware)
 
 
 # ── Root Health ──

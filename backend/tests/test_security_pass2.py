@@ -183,3 +183,26 @@ def test_payment_methods_config(client):
     assert set(body.keys()) == {"stripe", "paystack", "crypto"}
     for k, v in body.items():
         assert isinstance(v, bool)
+
+
+# ── Rate limiting actually enforces (SlowAPIMiddleware mounted) ──
+
+def test_register_rate_limit_5_per_hour(client):
+    from common import limiter
+    # conftest disables the limiter globally; enable just for this test and
+    # restore afterwards. XFF override → dedicated fake client IP bucket,
+    # isolated from other tests (must be a real global IP — TEST-NET/doc
+    # ranges are not global).
+    limiter.enabled = True
+    try:
+        h = {"X-Forwarded-For": "8.8.8.77"}
+        codes = []
+        for i in range(6):
+            r = client.post("/api/auth/register", json={
+                "name": f"RL{i}", "email": f"rl-{i}@example.com", "password": "strongpass1"},
+                headers=h)
+            codes.append(r.status_code)
+        assert codes[:5] == [200] * 5, f"前5个应200: {codes}"
+        assert codes[5] == 429, f"第6个应429: {codes}"
+    finally:
+        limiter.enabled = False

@@ -23,7 +23,7 @@ from auth0 import (
     get_social_login_url, send_passwordless_code, verify_passwordless_code,
     send_sms_code, verify_sms_code
 )
-from common import _400, _401, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email, SIGNUP_BONUS_TOKENS
+from common import _400, _401, _500, _not_configured, limiter, _safe_error, _url_quote, NEW_API_BASE_URL, _user_setting, send_alert_email, SIGNUP_BONUS_TOKENS
 from schemas import (
     RegisterRequest, LoginRequest, GoogleAuthRequest, GithubAuthRequest,
     Auth0LoginRequest, SendCodeRequest, VerifyCodeRequest,
