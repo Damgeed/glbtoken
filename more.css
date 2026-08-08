@@ -42,12 +42,12 @@
 
 @media (max-width:768px){
   /* Cost Projection stats → Billing Summary look: stacked, centered, icon on top */
-  .cp-stats{grid-template-columns:1fr;gap:0.75rem}
-  .cp-stat{display:flex;flex-direction:column;align-items:center;text-align:center;padding:1rem}
-  .cp-stat .icon{display:flex;align-items:center;justify-content:center;height:2rem;margin-bottom:0.35rem}
-  .cp-stat-value{order:1;font-size:1.25rem;font-weight:700;color:var(--primary);margin-top:0}
-  .cp-stat-label{order:2;font-size:0.75rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--text-muted);margin-top:0.2rem}
-  .cp-stat-sub{order:3;font-size:0.72rem;margin-top:0.2rem}
+  .cp-stats{grid-template-columns:1fr;gap:0.6rem}
+  .cp-stat{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0.65rem 0.9rem}
+  .cp-stat .icon{display:flex;align-items:center;justify-content:center;height:1.5rem;margin-bottom:0.2rem}
+  .cp-stat-value{order:1;font-size:1.15rem;font-weight:700;color:var(--primary);margin-top:0}
+  .cp-stat-label{order:2;font-size:0.72rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--text-muted);margin-top:0.15rem}
+  .cp-stat-sub{order:3;font-size:0.68rem;margin-top:0.12rem}
   .ann-item{padding:1rem}
 }
 @media (min-width:480px) and (max-width:768px){

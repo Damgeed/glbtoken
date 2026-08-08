@@ -83,45 +83,136 @@ def _client_ip(request: Request) -> str:
     return ""
 
 
-# ── Login location detection (IP → city/country, free ipwho.is GeoIP) ──
+# ── Login location detection (IP → city/country, free GeoIP providers) ──
 _geo_cache = {}          # ip -> location string
 _geo_cache_ts = {}       # ip -> epoch seconds
-_GEO_CACHE_TTL = 86400   # 24h
+_GEO_CACHE_TTL = 86400   # 24h for successful lookups
+_GEO_FAIL_TTL = 900      # 15 min for failed lookups (retry sooner, don't lock out 24h)
 _geo_lock = threading.Lock()
+
+# Free no-key GeoIP providers, tried in order until one succeeds.
+_GEO_PROVIDERS = (
+    # 1. ipwho.is — primary (HTTPS, no key)
+    ("ipwho.is", lambda ip: f"https://ipwho.is/{ip}"),
+    # 2. ip-api.com — free tier is HTTP-only (HTTPS is paid); returns status/city/countryCode
+    ("ip-api.com", lambda ip: f"http://ip-api.com/json/{ip}?fields=status,message,city,countryCode"),
+    # 3. freeipapi.com — HTTPS fallback, no key
+    ("freeipapi", lambda ip: f"https://freeipapi.com/api/json/{ip}"),
+)
+
+def _is_private_ip(ip: str) -> bool:
+    """True for loopback/private/reserved ranges — GeoIP providers can't resolve them."""
+    if not ip:
+        return True
+    try:
+        import ipaddress
+        a = ipaddress.ip_address(ip.split("%")[0])
+        return (a.is_private or a.is_loopback or a.is_link_local
+                or a.is_reserved or a.is_multicast or a.is_unspecified)
+    except Exception:
+        # Unparseable → treat as unknown but let providers try
+        return False
+
+def _geo_parse(payload: dict) -> str:
+    """Extract 'City, CC' from any provider's JSON (normalized)."""
+    try:
+        city = (payload.get("city") or "").strip()
+        cc = (payload.get("country_code") or payload.get("countryCode") or "").strip().upper()
+        if cc == "SUCCESS":
+            cc = ""
+        parts = [p for p in (city, cc) if p]
+        return ", ".join(parts)
+    except Exception:
+        return ""
 
 def _geo_lookup(ip: str) -> str:
     """Resolve an IP to a short 'City, Country' label (or '' if unknown).
 
-    Uses the free ipwho.is GeoIP API (no key, HTTPS). Results are cached in
-    memory for 24h so login doesn't hammer the API. Failures return '' and the
-    event keeps its NULL location (frontend shows 'Unknown location').
+    Tries multiple free GeoIP providers with per-provider short timeouts so a
+    single outage doesn't leave every login as 'Unknown location'. Results are
+    cached in memory (24h success / 15 min failure) so login doesn't hammer APIs.
     """
-    if not ip or ip in ("127.0.0.1", "::1", "localhost"):
+    if not ip or _is_private_ip(ip):
         return ""
     now = time.time()
     with _geo_lock:
-        if ip in _geo_cache and now - _geo_cache_ts.get(ip, 0) < _GEO_CACHE_TTL:
-            return _geo_cache[ip]
-    try:
-        r = httpx.get(f"https://ipwho.is/{ip}", timeout=2.5)
-        if r.status_code == 200:
-            d = r.json()
-            if d.get("success"):
-                city = (d.get("city") or "").strip()
-                # Use the 2-letter country code (frontend getFlag() maps CC → flag)
-                cc = (d.get("country_code") or "").strip().upper()
-                parts = [p for p in (city, cc) if p]
-                loc = ", ".join(parts)
-                with _geo_lock:
-                    _geo_cache[ip] = loc
-                    _geo_cache_ts[ip] = now
-                return loc
-    except Exception as e:
-        print(f"⚠️ GeoIP lookup failed for {ip}: {e}")
+        if ip in _geo_cache:
+            ttl = _GEO_CACHE_TTL if _geo_cache[ip] else _GEO_FAIL_TTL
+            if now - _geo_cache_ts.get(ip, 0) < ttl:
+                return _geo_cache[ip]
+    last_err = ""
+    for name, url_builder in _GEO_PROVIDERS:
+        try:
+            r = httpx.get(url_builder(ip), timeout=2.0)
+            if r.status_code == 200:
+                d = r.json()
+                if name == "ip-api.com":
+                    if d.get("status") != "success":
+                        last_err = f"{name}: {d.get('message', 'fail')}"
+                        continue
+                elif not d.get("success", True):  # ipwho.is / freeipapi
+                    last_err = f"{name}: success=false"
+                    continue
+                loc = _geo_parse(d)
+                if loc:
+                    with _geo_lock:
+                        _geo_cache[ip] = loc
+                        _geo_cache_ts[ip] = now
+                    return loc
+        except Exception as e:
+            last_err = f"{name}: {e}"
+            continue
+    # All providers failed → cache a short negative so we retry soon, not in 24h
     with _geo_lock:
         _geo_cache[ip] = ""
         _geo_cache_ts[ip] = now
+    if last_err:
+        print(f"⚠️ GeoIP lookup failed for {ip}: {last_err}")
     return ""
+
+# Backfill throttle: run at most once per 60s, one thread at a time.
+_backfill_lock = threading.Lock()
+_backfill_last_run = 0.0
+
+def _backfill_login_locations():
+    """Fill NULL locations for recent login events (fire-and-forget).
+
+    Existing events recorded before location resolution (or whose background
+    fill failed) stay NULL forever — this sweeps the last 14 days and resolves
+    any missing IPs so the UI stops showing 'Unknown location'.
+    """
+    global _backfill_last_run
+    now = time.time()
+    with _backfill_lock:
+        if now - _backfill_last_run < 60:
+            return
+        _backfill_last_run = now
+    try:
+        from database import SessionLocal
+        s = SessionLocal()
+        try:
+            cutoff = datetime.now(timezone.utc) - timedelta(days=14)
+            rows = (
+                s.query(LoginEvent.ip_address)
+                .filter(LoginEvent.location.is_(None), LoginEvent.ip_address.isnot(None),
+                        LoginEvent.created_at >= cutoff)
+                .distinct()
+                .limit(25)
+                .all()
+            )
+            for (ip,) in rows:
+                loc = _geo_lookup(ip)
+                if not loc:
+                    continue
+                s.query(LoginEvent).filter(
+                    LoginEvent.ip_address == ip,
+                    LoginEvent.location.is_(None),
+                ).update({LoginEvent.location: loc}, synchronize_session=False)
+            s.commit()
+        finally:
+            s.close()
+    except Exception as e:
+        print(f"⚠️ Login location backfill failed: {e}")
 
 def record_login_event(user_id: int, request: Request, success: bool, db: Session):
     """Record a login event for audit/history purposes."""
@@ -1166,7 +1257,15 @@ def get_login_history(request: Request, user: User = Depends(get_current_user), 
     events = db.query(LoginEvent).filter(
         LoginEvent.user_id == user.id
     ).order_by(desc(LoginEvent.created_at)).offset(offset).limit(limit).all()
-    
+
+    # Lazy backfill: if any returned events still have NULL location, kick a
+    # throttled background sweep so 'Unknown location' gets resolved on refresh.
+    if any(e.location is None for e in events):
+        try:
+            threading.Thread(target=_backfill_login_locations, daemon=True).start()
+        except Exception:
+            pass
+
     return {
         "total": total,
         "offset": offset,
