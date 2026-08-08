@@ -1935,6 +1935,15 @@ I18N["Kazakhstan"] = {"zh-CN": "哈萨克斯坦", ru: "Казахстан", ja: 
 I18N["Kiribati"] = {"zh-CN": "基里巴斯", ru: "Кирибати", ja: "キリバス", de: "Kiribati"};
 I18N["Kuwait"] = {"zh-CN": "科威特", ru: "Кувейт", ja: "クウェート", de: "Kuwait"};
 
+I18N["Kyrgyzstan"] = {"zh-CN": "吉尔吉斯斯坦", ru: "Кыргызстан", ja: "キルギス", de: "Kirgisistan"};
+I18N["Last"] = {"zh-CN": "最近", ru: "Последние", ja: "最新", de: "Letzte"};
+I18N["Latest"] = {"zh-CN": "最新", ru: "Новинка", ja: "最新", de: "Neueste"};
+I18N["Latvia"] = {"zh-CN": "拉脱维亚", ru: "Латвия", ja: "ラトビア", de: "Lettland"};
+I18N["Least tokens"] = {"zh-CN": "代币最少", ru: "Меньше всего токенов", ja: "トークンが少ない順", de: "Wenigste Token"};
+I18N["Lebanon"] = {"zh-CN": "黎巴嫩", ru: "Ливан", ja: "レバノン", de: "Libanon"};
+I18N["Lesotho"] = {"zh-CN": "莱索托", ru: "Лесото", ja: "レソト", de: "Lesotho"};
+I18N["Liberia"] = {"zh-CN": "利比里亚", ru: "Либерия", ja: "リベリア", de: "Liberia"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
