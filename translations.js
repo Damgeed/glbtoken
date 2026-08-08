@@ -1771,6 +1771,24 @@ I18N["Contact Support — GlbTOKEN"] = {"zh-CN": "联系支持团队 — GlbTOKE
 I18N["Continuous Compliance"] = {"zh-CN": "持续合规", ru: "Постоянное соответствие требованиям", ja: "継続的なコンプライアンス", de: "Kontinuierliche Compliance"};
 I18N["Conversion Funnel"] = {"zh-CN": "转化漏斗", ru: "Воронка конверсии", ja: "コンバージョンファネル", de: "Conversion-Funnel"};
 
+I18N["Copy"] = {"zh-CN": "复制", ru: "Копировать", ja: "コピー", de: "Kopieren"};
+I18N["Copy Key"] = {"zh-CN": "复制密钥", ru: "Копировать ключ", ja: "キーをコピー", de: "Schlüssel kopieren"};
+I18N["Copy it now — you won't see it again."] = {"zh-CN": "立即复制——之后将不再显示。", ru: "Скопируйте сейчас — больше вы его не увидите.", ja: "今すぐコピーしてください。再度表示されることはありません。", de: "Jetzt kopieren — Sie sehen ihn nicht noch einmal."};
+I18N["Cost Projection — GlbTOKEN"] = {"zh-CN": "成本预估 — GlbTOKEN", ru: "Прогноз затрат — GlbTOKEN", ja: "コスト予測 — GlbTOKEN", de: "Kostenprognose — GlbTOKEN"};
+I18N["Costa Rica"] = {"zh-CN": "哥斯达黎加", ru: "Коста-Рика", ja: "コスタリカ", de: "Costa Rica"};
+I18N["Create API Key"] = {"zh-CN": "创建 API 密钥", ru: "Создать API-ключ", ja: "APIキーを作成", de: "API-Schlüssel erstellen"};
+I18N["Create Account — GlbTOKEN"] = {"zh-CN": "创建账户 — GlbTOKEN", ru: "Создание аккаунта — GlbTOKEN", ja: "アカウント作成 — GlbTOKEN", de: "Konto erstellen — GlbTOKEN"};
+I18N["Create Free Account →"] = {"zh-CN": "免费创建账户 →", ru: "Создать бесплатный аккаунт →", ja: "無料アカウントを作成 →", de: "Kostenloses Konto erstellen →"};
+I18N["Create an account"] = {"zh-CN": "创建一个账户", ru: "Создать аккаунт", ja: "アカウントを作成", de: "Konto erstellen"};
+I18N["Create your first organization to invite team members and manage access together."] = {"zh-CN": "创建你的第一个组织，邀请团队成员并共同管理访问权限。", ru: "Создайте свою первую организацию, чтобы приглашать участников команды и совместно управлять доступом.", ja: "最初の組織を作成して、チームメンバーを招待し、アクセス権限をまとめて管理しましょう。", de: "Erstellen Sie Ihre erste Organisation, um Teammitglieder einzuladen und Zugriffe gemeinsam zu verwalten."};
+I18N["Created API key:"] = {"zh-CN": "已创建 API 密钥：", ru: "Создан API-ключ:", ja: "APIキーを作成しました：", de: "API-Schlüssel erstellt:"};
+I18N["Croatia"] = {"zh-CN": "克罗地亚", ru: "Хорватия", ja: "クロアチア", de: "Kroatien"};
+I18N["Current Balance"] = {"zh-CN": "当前余额", ru: "Текущий баланс", ja: "現在の残高", de: "Aktueller Kontostand"};
+I18N["Current pace (daily avg × 30)"] = {"zh-CN": "当前进度（日均 × 30）", ru: "Текущий темп (среднесуточно × 30)", ja: "現在のペース（1日平均 × 30）", de: "Aktuelles Tempo (Tagesdurchschnitt × 30)"};
+I18N["Cyprus"] = {"zh-CN": "塞浦路斯", ru: "Кипр", ja: "キプロス", de: "Zypern"};
+I18N["Czech Republic"] = {"zh-CN": "捷克共和国", ru: "Чехия", ja: "チェコ共和国", de: "Tschechische Republik"};
+I18N["DR Congo"] = {"zh-CN": "刚果民主共和国", ru: "ДР Конго", ja: "コンゴ民主共和国", de: "DR Kongo"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
