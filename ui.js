@@ -977,7 +977,7 @@ function showPrompt(title, placeholder, onSubmit, initialValue){
   m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:380px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
     +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
     +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">'+escapeHtml(title)+'</h3>'
-    +'<input id="promptInput" type="text" placeholder="'+escapeHtml(placeholder||'')+'" style="width:100%;padding:0.65rem 0.75rem;border-radius:10px;border:1px solid '+border+';background:'+cardBg+';color:'+textClr+';font-size:0.9rem;margin:.75rem 0 1rem;box-sizing:border-box;outline:none" />'
+    +'<input id="promptInput" type="text" placeholder="'+escapeAttr(placeholder||'')+'" style="width:100%;padding:0.65rem 0.75rem;border-radius:10px;border:1px solid '+border+';background:'+cardBg+';color:'+textClr+';font-size:0.9rem;margin:.75rem 0 1rem;box-sizing:border-box;outline:none" />'
     +'<div style="display:flex;gap:0.75rem">'
     +'<button id="promptCancelBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.85rem;font-weight:500;cursor:pointer">Cancel</button>'
     +'<button id="promptOkBtn" style="flex:1;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Create</button>'

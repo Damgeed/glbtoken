@@ -166,10 +166,6 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     }
     let userData = {};
     try{ userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ userData = {}; }
-    let keys = [];
-    try{ keys = JSON.parse((window.__secure ? window.__secure.getItem('gt_keys') : localStorage.getItem('gt_keys')) || '[]'); }catch(e){ keys = []; }
-    let newapiToken = (window.__secure ? window.__secure.getItem('gt_newapi_token') : localStorage.getItem('gt_newapi_token')) || '';
-    let newapiEndpoint = (window.__secure ? window.__secure.getItem('gt_newapi_endpoint') : localStorage.getItem('gt_newapi_endpoint')) || '';
 
     // ── Usage Analytics State ──
     let usageDays = 7;
@@ -438,7 +434,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
 
     // ── API Helper ──
     let models = [], selectedAmount = 5, selectedPayment = 'stripe';
-    let chartInst = null, sparkInst = null, sortDir = 'price_asc';
+    let chartInst = null, sortDir = 'price_asc';
 
     // Single-flight token refresh: when several API calls 401 at once (common on
     // dashboard load / chat send), they must share ONE /auth/refresh call.
@@ -710,6 +706,7 @@ function clearSession(){
   try{ localStorage.removeItem('gt_newapi_endpoint'); }catch(e){}
   try{ localStorage.removeItem('gt_keys'); }catch(e){}
   try{ if(window.__secure && window.__secure.clear) window.__secure.clear(); }catch(e){}
+  try{ if(window._dashPoll){ clearInterval(window._dashPoll); window._dashPoll=null; } }catch(e){}
 }
 
 function logoutUser(){
@@ -718,7 +715,11 @@ function logoutUser(){
     // Best-effort server-side revoke of refresh token (industry standard)
     try{
       var rt=(window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
-      if(rt){fetch(API_URL+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})}).catch(function(){});}
+      if(rt){
+        var ac=new AbortController();
+        var t=setTimeout(function(){try{ac.abort();}catch(e){}},5000);
+        fetch(API_URL+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt}),signal:ac.signal}).catch(function(){}).then(function(){clearTimeout(t);});
+      }
     }catch(e){}
     clearSession();
     applyAuth();
@@ -826,7 +827,7 @@ window.applyAuth = function applyAuth(){
     if(da){
       da.textContent = '';
       if(userData && userData.avatar){
-        da.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+initial+'\')">';
+        da.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+escapeAttr(initial)+'\')">';
       } else {
         da.textContent = initial;
       }
@@ -838,7 +839,7 @@ window.applyAuth = function applyAuth(){
     if(ma){
       ma.textContent = '';
       if(userData && userData.avatar){
-        ma.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+initial+'\')">';
+        ma.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+escapeAttr(initial)+'\')">';
       } else {
         ma.textContent = initial;
       }

@@ -568,23 +568,14 @@ async function toggleAnnouncement(id, isActive){
   loadAnnouncements();
 }
 async function deleteAnnouncement(id){
-  if(typeof confirmModal === 'function'){
-    confirmModal('Delete this announcement?', function(){
-      safeApi('DELETE','/api/admin/announcements/'+id).then(function(res){
-        if(!res) return;
-        showToast('Announcement deleted','success');
-        refreshAnnouncements(true);
-        loadAnnouncements();
-      });
+  showConfirm('Delete this announcement?','This cannot be undone.',function(){
+    safeApi('DELETE','/api/admin/announcements/'+id).then(function(res){
+      if(!res) return;
+      showToast('Announcement deleted','success');
+      refreshAnnouncements(true);
+      loadAnnouncements();
     });
-  } else {
-    if(!window.confirm('Delete this announcement?')) return;
-    var res = await safeApi('DELETE','/api/admin/announcements/'+id);
-    if(!res) return;
-    showToast('Announcement deleted','success');
-    refreshAnnouncements(true);
-    loadAnnouncements();
-  }
+  });
 }
 function initAnnouncements(){
   loadAnnouncements();

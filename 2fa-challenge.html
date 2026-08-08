@@ -53,10 +53,6 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
   var API_URL = 'https://glbtoken-backend-production.up.railway.app';
   var params = new URLSearchParams(window.location.search);
   var preToken = params.get('pre') || '';
-  // Whitelist `next`: only allow same-site relative paths (e.g. /dashboard.html).
-  // Block absolute URLs (http/https), protocol-relative (//), and javascript: —
-  // otherwise an attacker can craft ?next=https://evil.com and steal the JWT
-  // that gets appended to the redirect URL below.
   var rawNext = params.get('next') || '/dashboard.html';
   var next = '/dashboard.html';
   // Whitelist `next`: only allow same-site relative paths (e.g. /dashboard.html).

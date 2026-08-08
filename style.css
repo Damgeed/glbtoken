@@ -148,7 +148,7 @@ textarea {
   align-items: center;
   color: var(--primary);
   pointer-events: none;
-  z-index: 9990;
+  z-index: 3;
   filter: drop-shadow(0 0 8px hsla(44 96% 52% / 0.45));
   animation: hHintPulse 2.4s ease-in-out infinite;
 }
@@ -1778,7 +1778,6 @@ input[type="range"]::-moz-range-thumb {
 .pad-sm { padding: 0.6rem; }
 .overflow-auto { overflow-x: auto; }
 .btn-xs { padding: 0.4rem 1rem; font-size: 0.8rem; }
-.btn-sm { padding: 0.5rem 1.25rem; font-size: 0.85rem; }
 .btn-action {
   display: inline-flex;
   align-items: center;
@@ -1844,13 +1843,15 @@ input[type="range"]::-moz-range-thumb {
 }
 .modal-close {
   position: absolute;
-  top: 12px;
-  right: 14px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
-  font-size: 1.3rem;
   color: var(--text-muted);
+  font-size: 1.2rem;
   cursor: pointer;
+  padding: 4px;
+  line-height: 1;
 }
 /* ── Spinner ── */
 .spinner-btn {
@@ -3393,7 +3394,7 @@ footer {
        199 : Chat window, mobile backdrop (appear above content)
        200 : Modal overlays, mobile slide-out overlay
        201-202 : Hamburger toggle buttons
-       299-300 : Toast notifications, phone dropdowns, focused overlays
+       9998-10001 : Member drawers, log detail overlays, toasts, page loader
     */
 .modal-overlay {
   position: fixed;
@@ -6426,13 +6427,6 @@ body {
     grid-template-columns: 1fr 1fr !important;
     gap: 0.75rem;
     overflow-x: auto;
-  }
-  #referral-share-charts {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.75rem;
-  }
-  #referral-share-charts > .dash-card:first-child {
-    grid-column: 1/-1;
   }
 }
 /* ── Mobile support chat: faint + auto-hide on scroll ── */

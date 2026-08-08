@@ -208,20 +208,10 @@
     grid-template-columns: 1fr !important;
     gap: 0.75rem !important;
   }
-  #section-playground.active {
-    height: calc(100dvh - 60px);
-  }
   #section-referral .dash-grid {
     grid-template-columns: 1fr 1fr !important;
     gap: 0.4rem;
     overflow-x: auto;
-  }
-  #referral-share-charts {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 1rem;
-  }
-  #referral-share-charts > .dash-card:first-child {
-    grid-column: 1/-1;
   }
   #section-referral .dash-stat-card {
     padding: 0.5rem 0.35rem;
@@ -251,17 +241,8 @@
 #section-overview.active {
   display: block;
 }
-#section-playground {
-  display: none;
-}
 .dash-section.active {
   display: block !important;
-}
-#section-playground.active {
-  display: flex !important;
-  flex-direction: column;
-  height: calc(100vh - 110px);
-  min-height: 0;
 }
 #section-overview:not(.active) {
   display: none !important;

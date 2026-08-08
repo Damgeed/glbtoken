@@ -45,7 +45,7 @@
         _cryptoAssetsLoaded=true;
         sel.innerHTML=assets.map(function(a){
           var label=String(a.asset||'').replace(/_/g,' ');
-          return '<option value="'+escapeHtml(a.asset)+'">'+escapeHtml(label)+'</option>';
+          return '<option value="'+escapeAttr(a.asset)+'">'+escapeHtml(label)+'</option>';
         }).join('');
         var hint=document.getElementById('cryptoAssetHint');
         if(hint&&assets.length>1) hint.textContent='Select the network you want to pay with.';

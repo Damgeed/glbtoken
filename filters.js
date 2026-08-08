@@ -224,7 +224,7 @@
           <div class="key-info">
             <div class="key-name">${escapeHtml(key.name)}</div>
             <div class="key-val">${escapeHtml(key.key_prefix)}••••••••</div>
-            <div class="meta">${escapeHtml(key.permissions)} · ${key.request_count} requests · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
+            <div class="meta">${escapeHtml(key.permissions)} · ${escapeHtml(key.request_count)} requests · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
           </div>
           <div class="key-actions">
             <button class="sort-btn" data-key-id="${escapeAttr(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>

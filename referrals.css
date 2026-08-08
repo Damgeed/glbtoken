@@ -16,10 +16,7 @@
 .receipt-link{color:var(--primary);text-decoration:none;font-size:0.8rem;font-weight:500}
 .receipt-link:hover{text-decoration:underline}
 @media(max-width:767px){
-  .billing-page-header h2{font-size:1.4rem}
   .payment-card{-ms-flex-wrap:wrap;flex-wrap:wrap}
-  .tx-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tx-table-wrap table{min-width:600px}
   .billing-grid .dash-card{width:100%;max-width:100%;box-sizing:border-box;overflow:hidden}
   .billing-stat-card{padding:0.75rem 0.5rem}
   .billing-stat-card .num{font-size:1rem}
