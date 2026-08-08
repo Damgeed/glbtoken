@@ -425,6 +425,9 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
         .replace(/"/g,'&quot;')
         .replace(/'/g,'&#39;');
     }
+    // Export for page scripts that interpolate API values into HTML (e.g. settings.html avatar render)
+    window.escapeHtml = escapeHtml;
+    window.escapeAttr = escapeAttr;
 
     // Whitelist for IDs interpolated into inline onclick handlers.
     // Server-assigned ids are numeric/alphanumeric — strip anything else so a
@@ -805,22 +808,55 @@ window.applyAuth = function applyAuth(){
     if(goBtn) goBtn.style.display = loggedIn ? 'inline-flex' : 'none';
     var av = document.querySelector('.nav-avatar');
     if(av){
-      var textNode = document.createTextNode(initial);
       var dropdown = av.querySelector('.dropdown');
       av.textContent = '';
-      av.appendChild(textNode);
+      if(userData && userData.avatar){
+        var avImg = document.createElement('img');
+        avImg.src = userData.avatar;
+        avImg.alt = '';
+        avImg.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;display:block';
+        av.appendChild(avImg);
+      } else {
+        av.appendChild(document.createTextNode(initial));
+      }
       if(dropdown) av.appendChild(dropdown);
     }
-    var da = document.getElementById('ddAvatar'); if(da) da.textContent = initial;
+    var da = document.getElementById('ddAvatar');
+    if(da){
+      da.textContent = '';
+      if(userData && userData.avatar){
+        da.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block">';
+      } else {
+        da.textContent = initial;
+      }
+    }
     var dn = document.getElementById('dropName'); if(dn) dn.textContent = displayName;
     var de = document.getElementById('dropEmail'); if(de) de.textContent = (userData && userData.email) || '';
     // Mobile sync
-    var ma = document.getElementById('mAvatar'); if(ma) ma.textContent = initial;
+    var ma = document.getElementById('mAvatar');
+    if(ma){
+      ma.textContent = '';
+      if(userData && userData.avatar){
+        ma.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block">';
+      } else {
+        ma.textContent = initial;
+      }
+    }
     var mn = document.getElementById('mName'); if(mn) mn.textContent = displayName;
     var me = document.getElementById('mEmail'); if(me) me.textContent = (userData && userData.email) || '';
   }
   if(typeof updateBalance === 'function') updateBalance();
   applyTeamNavGate();
+};
+
+// ── Avatar sync (called after upload/remove so the nav avatar updates everywhere) ──
+window.setUserAvatar = function setUserAvatar(avatar){
+  if(avatar){ userData.avatar = avatar; }
+  else { try{ delete userData.avatar; }catch(e){ userData.avatar = ''; } }
+  try{
+    (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user', JSON.stringify(userData));
+  }catch(e){}
+  applyAuth();
 };
 
 // ── Customer Tier (Enterprise+ gates Team features) ──

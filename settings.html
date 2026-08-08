@@ -159,7 +159,7 @@
                 <span class="settings-avatar-hint">✎</span>
               </div>
               <div class="settings-avatar-actions">
-                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden">
                 <div class="settings-avatar-name" id="avatarName">User</div>
                 <div class="settings-item-desc-sm">PNG / JPG / WebP, max 300 KB · click avatar to change</div>
               </div>
@@ -385,7 +385,7 @@
 <script src="nav.js?v=19"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1155"></script>
+<script data-cfasync="false" src="shared.js?v=1156"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1233"></script>
 
@@ -1052,6 +1052,8 @@ function renderAvatarPreview(dataUrl){
 function saveAvatar(dataUrl){
   safeApi('PUT','/api/user/avatar',{avatar: dataUrl},null,true).then(function(d){
     if(d && d.status === 'updated'){
+      // Persist into cached user so the nav/dropdown/mobile avatar updates everywhere
+      if(typeof window.setUserAvatar === 'function') window.setUserAvatar(dataUrl);
       showToast('Avatar updated','success');
       closeAvatarMenu();
     } else { showToast((d && d.detail) || 'Failed to update avatar','error'); }
@@ -1061,6 +1063,7 @@ function saveAvatar(dataUrl){
 window.clearAvatar = function(){
   safeApi('PUT','/api/user/avatar',{avatar: ''},null,true).then(function(d){
     if(d && d.status === 'updated'){
+      if(typeof window.setUserAvatar === 'function') window.setUserAvatar(null);
       var p = document.getElementById('avatarPreview');
       if(p) p.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="settings-avatar-hint">✎</span>';
       showToast('Avatar removed','success');
