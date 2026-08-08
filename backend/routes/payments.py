@@ -80,6 +80,12 @@ def list_transactions(
     }
     try:
         _TXN_CACHE[cache_key] = (_time.time(), result)
+        # Bound the cache: evict stale entries once it grows large so a
+        # long-running process with many users can't leak memory unboundedly.
+        if len(_TXN_CACHE) > 2000:
+            _now = _time.time()
+            for _k in [k for k, (_ts, _v) in _TXN_CACHE.items() if _now - _ts > 10]:
+                del _TXN_CACHE[_k]
     except Exception as e:
         print(f"⚠️ TXN cache write failed: {e}")
     return result

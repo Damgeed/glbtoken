@@ -30,6 +30,12 @@ def _cache_get(key: str, ttl: int = None):
 
 def _cache_set(key: str, value):
     _ANALYTICS_CACHE[key] = (_time.time(), value)
+    # Bound the cache: evict stale entries past the TTL once it grows large,
+    # so a long-running process with many users can't leak memory unboundedly.
+    if len(_ANALYTICS_CACHE) > 2000:
+        _now = _time.time()
+        for _k in [k for k, (_ts, _v) in _ANALYTICS_CACHE.items() if _now - _ts > _ANALYTICS_TTL]:
+            del _ANALYTICS_CACHE[_k]
 
 async def _fetch_newapi(coro, default=None):
     """Run a New API call with a hard 4s budget so a slow/down New API
