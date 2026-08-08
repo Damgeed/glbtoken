@@ -309,6 +309,10 @@
      ID beats the shared tx-fit white-space:normal, so these stay nowrap. */
   #invoicesTable td.text-nowrap,
   #invoicesTable td.tx-td-right { white-space: nowrap; }
+  /* Amount hugs DATE (left-aligned) instead of right-aligning against METHOD.
+     tx-th-right/tx-td-right use !important, so override with !important too. */
+  #invoicesTable th:nth-child(2),
+  #invoicesTable td:nth-child(2) { text-align: left !important; }
   /* Match Transaction History width: TH Tokens shows bare "+25,000" (no
      unit) so it fits the 348px viewport; hiding the " GT" suffix on mobile
      keeps the Invoices table the same width as TH (no left/right scroll).
