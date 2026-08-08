@@ -1650,8 +1650,9 @@ document.addEventListener('DOMContentLoaded', function(){
         for(var ci=0; ci<cSel.options.length; ci++){
           if(cSel.options[ci].value === p.country){
             var optText = cSel.options[ci].textContent || '';
-            var emojiMatch = optText.match(/^\s*(\p{Extended_Pictographic})/u);
-            if(emojiMatch) cFlag = emojiMatch[1];
+            // Flag emojis are regional-indicator pairs (U+1F1E6–U+1F1FF ×2)
+            var m = optText.trim().match(/^(\uD83C[\uDDE6-\uDDFF]\uD83C[\uDDE6-\uDDFF])/);
+            if(m) cFlag = m[1];
             break;
           }
         }
