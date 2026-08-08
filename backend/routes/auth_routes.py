@@ -1,6 +1,6 @@
 """GlbTOKEN — Auth Routes (register, login, OAuth, Auth0, OTP, SMS, password, profile)"""
 
-from fastapi import APIRouter, Depends, Query, Request, HTTPException
+from fastapi import APIRouter, Depends, Query, Request, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
@@ -32,7 +32,7 @@ from schemas import (
     Auth0SignupRequest, OptionalEmailRequest, VerifyEmailRequest,
     ForgotPasswordRequest, ChangePasswordRequest, ResetPasswordRequest,
     ProfileUpdateRequest, RefreshRequest, LogoutRequest,
-    DeleteAccountRequest, AvatarUpdateRequest,
+    DeleteAccountRequest,
 )
 
 router = APIRouter()
@@ -1633,31 +1633,74 @@ def revoke_all_sessions(request: Request, user: User = Depends(get_current_user)
     return {"status": "revoked", "revoked": n}
 
 
-# ── Avatar Upload (stored as a small data-URL in settings JSON) ──
-@router.put("/api/user/avatar")
-@limiter.limit("10/minute")
-def update_avatar(req: AvatarUpdateRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Set (or clear) the user's avatar.
+# ── Avatar Upload (industry standard: multipart file → Pillow → small WebP data URL) ──
+MAX_AVATAR_BYTES = 5 * 1024 * 1024   # 5 MB raw upload cap
+MAX_AVATAR_DATA_URL = 200 * 1024     # ~200 KB stored data URL cap
 
-    Accepts a data: URL (image/*, ≤ 300 KB) or an https:// URL. Stored in the
-    user's settings JSON — no DB migration, no external storage dependency.
+@router.post("/api/user/avatar")
+@limiter.limit("10/minute")
+async def upload_avatar(
+    request: Request,
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Upload (or replace) the user's avatar image.
+
+    Standard multipart/form-data upload. The server decodes the image with
+    Pillow, center-crops to a square, resizes to ≤256×256 and re-encodes as
+    WebP (quality 82), then stores the small data URL in the user's settings
+    JSON. Client-side canvas/HEIC hacks are no longer needed.
     """
-    avatar = (req.avatar or "").strip()
-    if avatar:
-        if avatar.startswith("data:image/"):
-            # Validate size to stop the settings blob from ballooning.
-            if len(avatar) > 300 * 1024:
-                _400("Avatar image is too large (max 300 KB)")
-        elif avatar.startswith("https://"):
-            if len(avatar) > 2048:
-                _400("Avatar URL is too long")
-        else:
-            _400("Avatar must be a data:image URL or an https:// URL")
+    if not file or not file.filename:
+        _400("No file uploaded")
+    ctype = (file.content_type or "").lower()
+    if not ctype.startswith("image/"):
+        _400("Upload must be an image file (JPG, PNG, WebP, GIF…)")
+    raw = await file.read()
+    if not raw:
+        _400("Empty file")
+    if len(raw) > MAX_AVATAR_BYTES:
+        _400(f"Image too large (max {MAX_AVATAR_BYTES // (1024 * 1024)} MB)")
+    try:
+        from io import BytesIO
+        from PIL import Image, UnidentifiedImageError
+        img = Image.open(BytesIO(raw))
+        img.load()
+    except UnidentifiedImageError:
+        _400("Could not read that image — try JPG, PNG or WebP")
+    except Exception as e:
+        print(f"⚠️ Avatar decode failed: {e}")
+        _400("Could not read that image — try JPG, PNG or WebP")
+    # Center-crop to square, then resize to ≤256 (small, crisp, uniform).
+    w, h = img.size
+    side = min(w, h)
+    left = (w - side) // 2
+    top = (h - side) // 2
+    img = img.crop((left, top, left + side, top + side))
+    img = img.convert("RGB")
+    img = img.resize((256, 256), Image.LANCZOS)
+    buf = BytesIO()
+    img.save(buf, "WEBP", quality=82)
+    b64 = buf.getvalue()
+    if len(b64) > MAX_AVATAR_DATA_URL:
+        # Extremely unlikely at 256px q82, but keep the stored blob bounded.
+        _400("Avatar image is too large after processing")
+    import base64
+    data_url = "data:image/webp;base64," + base64.b64encode(b64).decode()
     s = _totp_settings(user)
-    if avatar:
-        s["avatar"] = avatar
-    else:
-        s.pop("avatar", None)
+    s["avatar"] = data_url
     user.settings = json.dumps(s)
     db.commit()
-    return {"status": "updated", "avatar": avatar}
+    return {"status": "updated", "avatar": data_url}
+
+
+@router.delete("/api/user/avatar")
+@limiter.limit("10/minute")
+def clear_avatar(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Remove the user's avatar (falls back to the username initial)."""
+    s = _totp_settings(user)
+    s.pop("avatar", None)
+    user.settings = json.dumps(s)
+    db.commit()
+    return {"status": "updated", "avatar": ""}

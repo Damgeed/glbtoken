@@ -220,10 +220,6 @@ class ProfileUpdateRequest(BaseModel):
     country: Optional[str] = None
 
 
-class AvatarUpdateRequest(BaseModel):
-    avatar: str = ""   # data:image/* URL (≤300KB) or https:// URL; empty = clear
-
-
 # ── Analytics / Response Models ──
 
 class CostByModelItem(BaseModel):

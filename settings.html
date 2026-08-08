@@ -155,12 +155,11 @@
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
           <div class="settings-field-group">
             <div class="settings-avatar-row">
-              <div class="settings-avatar-preview clickable" id="avatarPreview" onclick="openAvatarMenu()" title="Change avatar"><span class="settings-avatar-initial" id="avatarInitial">U</span>
+              <div class="settings-avatar-preview clickable" id="avatarPreview" onclick="pickAvatar()" title="Change avatar"><span class="settings-avatar-initial" id="avatarInitial">U</span>
                 <span class="settings-avatar-cam" id="avatarCam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
               </div>
               <div class="settings-avatar-actions">
                 <input type="file" id="avatarFileInput" accept="image/*" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none">
-                <input type="file" id="avatarCameraInput" accept="image/*" capture="user" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none">
                 <div class="settings-avatar-name-line">
                   <span class="settings-avatar-name" id="avatarName">User</span>
                   <span class="settings-avatar-flag" id="avatarFlag"></span>
@@ -938,137 +937,69 @@ window.confirmDeleteAccount = function(){
   });
 };
 
-// ── Avatar ──
+// ── Avatar (industry standard: file input → preview → multipart upload) ──
 window._avatarDataUrl = '';
-window.openAvatarMenu = function(){
-  var hasAvatar = !!(document.getElementById('avatarPreview') && document.getElementById('avatarPreview').querySelector('img'));
-  var existing = document.getElementById('avatarMenu');
-  if(existing) existing.remove();
-  var m = document.createElement('div');
-  m.id = 'avatarMenu';
-  m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,14,0.65);backdrop-filter:blur(4px);animation:twofaFadeIn 0.15s ease;padding:1rem';
-  var theme = document.documentElement.className;
-  var isDark = theme === 'dark';
-  var cardBg = isDark ? '#171923' : '#ffffff';
-  var textClr = isDark ? '#f3f5f7' : '#1a1a2e';
-  var muted = isDark ? '#8b93a7' : '#666';
-  var border = isDark ? '#2c2f3d' : '#e2e2ea';
-  var pvEl = document.getElementById('avatarPreview');
-  var imgEl = pvEl ? pvEl.querySelector('img') : null;
-  m.innerHTML =
-    '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.5rem;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.2s ease">'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">'
-    +   '<h3 style="margin:0;font-size:0.95rem;font-weight:700;color:'+textClr+'">Change avatar</h3>'
-    +   '<button onclick="closeAvatarMenu()" style="background:none;border:none;color:'+muted+';font-size:1.05rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
-    + '</div>'
-    + '<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1rem">'
-    +   '<div id="avatarMenuPreview" onclick="document.getElementById(\'avatarFileInput\').click();" title="Click to upload a new photo" style="cursor:pointer;border-radius:50%;position:relative;transition:transform 0.15s,box-shadow 0.15s" onmouseover="this.style.transform=\'scale(1.05)\';this.style.boxShadow=\'0 0 0 4px rgba(244,180,0,0.25)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'none\'">'
-    +     (imgEl
-        ? '<img src="'+imgEl.src+'" alt="Profile picture" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,180,0,0.45);box-shadow:0 4px 16px rgba(244,180,0,0.18);display:block">'
-        : '<div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--primary),hsl(44 96% 40%));display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700;color:#0a0b14">'+escapeHtml((window._userInitial || 'U')[0].toUpperCase())+'</div>')
-    +   '</div>'
-    +   '<div style="font-size:0.7rem;color:'+muted+';margin-top:0.45rem">Take a photo or upload one</div>'
-    +   '<div style="font-size:0.68rem;color:'+muted+';margin-top:0.15rem">JPG · PNG · WebP (iPhone HEIC works in Safari)</div>'
-    + '</div>'
-    + '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">'
-    +   '<label for="avatarCameraInput" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;min-width:130px;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
-    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
-    +     'Take photo'
-    +   '</label>'
-    +   '<label for="avatarFileInput" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;min-width:130px;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
-    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-    +     'Upload photo'
-    +   '</label>'
-    +   (hasAvatar ? '<button onclick="clearAvatar(); closeAvatarMenu();" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.06);color:#ff4d4f;font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
-    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'
-    +     'Remove photo'
-    +   '</button>' : '')
-    + '</div>'
-    + '</div>';
-  document.body.appendChild(m);
-  if(!document.getElementById('avatarMenuStyle')){
-    var s = document.createElement('style'); s.id = 'avatarMenuStyle';
-    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}';
-    document.head.appendChild(s);
-  }
-  m.onclick = function(e){ if(e.target === m) closeAvatarMenu(); };
+window.pickAvatar = function(){
+  var inp = document.getElementById('avatarFileInput');
+  if(inp) inp.click();
 };
 
-window.closeAvatarMenu = function(){
-  var m = document.getElementById('avatarMenu');
-  if(m) m.remove();
-};
-
+// One change listener handles both gallery + camera (camera input removed —
+// accept="image/*" on mobile already offers Take Photo / Photo Library).
 document.addEventListener('change', function(e){
-  if(e.target && (e.target.id === 'avatarFileInput' || e.target.id === 'avatarCameraInput')){
+  if(e.target && e.target.id === 'avatarFileInput'){
     var file = e.target.files && e.target.files[0];
     if(!file) return;
-    // Source files can be large (phone photos 2-10MB) — we downscale to 128px
-    // before storing, so only guard against absurd sizes to protect memory.
-    if(file.size > 20 * 1024 * 1024){ showToast('Image too large (max 20 MB)','error'); return; }
-    // Accept any browser-decodable image (PNG/JPG/WebP); HEIC/HEIF from iPhones
-    // is decoded in Safari only, so on other browsers we convert it first.
-    // NOTE: Chrome/Android report HEIC files with an EMPTY file.type — check
-    // the filename extension BEFORE the MIME gate or real iPhone photos never
-    // get past this line (the classic "gold circle forever" bug).
-    var isHeic = /image\/(heic|heif)/.test(file.type) || /\.(heic|heif)$/i.test(file.name);
-    if(!isHeic && !/^image\//.test(file.type)){ showToast('Please choose an image file','error'); return; }
-    if(isHeic && !window.heic2any){
-      showToast('Converting HEIC…');
-      var s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
-      s.onload = function(){ processAvatarFile(file); };
-      s.onerror = function(){ showToast('This browser can\u2019t read HEIC — try JPG or PNG','error'); };
-      document.head.appendChild(s);
-      return;
-    }
-    processAvatarFile(file);
+    if(!/^image\//.test(file.type)){ showToast('Please choose an image file','error'); return; }
+    if(file.size > 5 * 1024 * 1024){ showToast('Image too large (max 5 MB)','error'); return; }
+    // Instant local preview (full-res), then server normalizes to 256px WebP.
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      window._avatarDataUrl = ev.target.result;
+      renderAvatarPreview(ev.target.result);
+    };
+    reader.readAsDataURL(file);
+    // Upload as multipart/form-data (industry standard).
+    var fd = new FormData();
+    fd.append('file', file);
+    var tok = sessionStorage.getItem('gt_token') || (window.__secure ? window.__secure.getItem('gt_token') : '') || '';
+    fetch(API_URL + '/api/user/avatar', {
+      method: 'POST',
+      headers: {'Authorization': 'Bearer ' + tok},
+      body: fd
+    }).then(function(r){
+      return r.json().then(function(d){ return {ok: r.ok, d: d}; });
+    }).then(function(res){
+      if(res.ok && res.d && res.d.status === 'updated'){
+        if(typeof window.setUserAvatar === 'function') window.setUserAvatar(res.d.avatar);
+        showToast('Avatar updated','success');
+      } else {
+        showToast((res.d && res.d.detail) || 'Failed to update avatar','error');
+      }
+    }).catch(function(){ showToast('Failed to update avatar','error'); });
   }
 });
 
-function processAvatarFile(file){
-  var reader = new FileReader();
-  reader.onload = function(ev){
-    var blobOrUrl = ev.target.result;
-    var isHeic = /image\/(heic|heif)/.test(file.type) || /\.(heic|heif)$/i.test(file.name);
-    var done = function(src){
-      // Downscale to 128x128 before storing (keeps the settings blob small)
-      var img = new Image();
-      img.onload = function(){
-        var canvas = document.createElement('canvas');
-        var size = Math.min(img.width, img.height, 128);
-        canvas.width = size; canvas.height = size;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size);
-        var dataUrl = canvas.toDataURL('image/webp', 0.82);
-        window._avatarDataUrl = dataUrl;
-        renderAvatarPreview(dataUrl);
-        saveAvatar(dataUrl);
-      };
-      img.onerror = function(){ showToast('Could not read that image — try JPG, PNG or WebP','error'); };
-      img.src = src;
-    };
-    if(isHeic && window.heic2any){
-      // Convert HEIC → JPEG blob, then read as data URL
-      window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 })
-        .then(function(out){
-          var b = Array.isArray(out) ? out[0] : out;
-          var r2 = new FileReader();
-          r2.onload = function(){ done(r2.result); };
-          r2.readAsDataURL(b);
-        })
-        .catch(function(){ showToast('Could not convert HEIC — try JPG or PNG','error'); });
-      return;
-    }
-    done(blobOrUrl);
-  };
-  reader.readAsDataURL(file);
-}
+window.clearAvatar = function(){
+  var tok = sessionStorage.getItem('gt_token') || (window.__secure ? window.__secure.getItem('gt_token') : '') || '';
+  fetch(API_URL + '/api/user/avatar', {
+    method: 'DELETE',
+    headers: {'Authorization': 'Bearer ' + tok}
+  }).then(function(r){
+    return r.json().then(function(d){ return {ok: r.ok, d: d}; });
+  }).then(function(res){
+    if(res.ok && res.d && res.d.status === 'updated'){
+      if(typeof window.setUserAvatar === 'function') window.setUserAvatar(null);
+      var p = document.getElementById('avatarPreview');
+      if(p) p.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+      showToast('Avatar removed','success');
+    } else { showToast((res.d && res.d.detail) || 'Failed to remove avatar','error'); }
+  }).catch(function(){ showToast('Failed to remove avatar','error'); });
+};
 
 window.avatarImgFallback = function avatarImgFallback(img){
-  // Avatar image failed to decode (e.g. HEIC on non-Safari, corrupt data URL) —
-  // fall back to the username initial on the gold gradient instead of leaving
-  // a broken image / gold circle with nothing in it.
+  // Avatar image failed to decode — fall back to the username initial on the
+  // gold gradient instead of leaving a broken image.
   if(!img) return;
   var initial = (window._userInitial || (document.getElementById('avatarName') ? document.getElementById('avatarName').textContent : '') || 'U').trim()[0] || 'U';
   var holder = document.createElement('span');
@@ -1086,36 +1017,7 @@ window.renderAvatarPreview = function renderAvatarPreview(dataUrl){
     p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="avatarImgFallback(this)">'
       + '<span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
   }
-  // Keep the open avatar menu's preview in sync so the user sees the new
-  // photo immediately instead of the old/default one.
-  var mp = document.getElementById('avatarMenuPreview');
-  if(mp){
-    mp.innerHTML = '<img src="'+dataUrl+'" alt="Profile picture" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,180,0,0.45);box-shadow:0 4px 16px rgba(244,180,0,0.18);display:block">';
-  }
 }
-
-function saveAvatar(dataUrl){
-  safeApi('PUT','/api/user/avatar',{avatar: dataUrl},null,true).then(function(d){
-    if(d && d.status === 'updated'){
-      // Persist into cached user so the nav/dropdown/mobile avatar updates everywhere
-      if(typeof window.setUserAvatar === 'function') window.setUserAvatar(dataUrl);
-      showToast('Avatar updated','success');
-      closeAvatarMenu();
-    } else { showToast((d && d.detail) || 'Failed to update avatar','error'); }
-  }).catch(function(){ showToast('Failed to update avatar','error'); });
-}
-
-window.clearAvatar = function(){
-  safeApi('PUT','/api/user/avatar',{avatar: ''},null,true).then(function(d){
-    if(d && d.status === 'updated'){
-      if(typeof window.setUserAvatar === 'function') window.setUserAvatar(null);
-      var p = document.getElementById('avatarPreview');
-      if(p) p.innerHTML = '<span class="settings-avatar-initial" id="avatarInitial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
-      showToast('Avatar removed','success');
-      closeAvatarMenu();
-    } else { showToast((d && d.detail) || 'Failed to remove avatar','error'); }
-  }).catch(function(){ showToast('Failed to remove avatar','error'); });
-};
 
 // ── Login History (modal) ──
 window.openLoginHistoryModal = function(){
