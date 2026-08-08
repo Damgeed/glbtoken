@@ -33,20 +33,17 @@
     word-break: normal;
     overflow-wrap: normal;
   }
-  /* One-line cells: date, amount, tokens, status must never wrap */
+  /* One-line cells: amount, tokens, status must never wrap */
   .tx-scroll.tx-fit td.tx-td-center,
-  .tx-scroll.tx-fit td.amount,
-  .tx-scroll.tx-fit td.td-date {
+  .tx-scroll.tx-fit td.amount {
     white-space: nowrap;
   }
-  /* Date + time inline (fmtDTStack outputs two stacked divs — Bud 2026-09:
-     date must NOT be top-and-down; a slight horizontal scroll is fine) */
-  .tx-scroll.tx-fit td.td-date .td-date-strong,
-  .tx-scroll.tx-fit td.td-date .td-time {
-    display: inline;
-  }
-  .tx-scroll.tx-fit td.td-date .td-time {
-    margin-left: 0.35rem;
+  /* Timestamp cell: date on top, time below (stacked — fmtDTStack default).
+     Bud 2026-11: mobile Transaction History uses the same stacked layout as
+     desktop / login attempts — no inline override. */
+  .tx-scroll.tx-fit td.td-date {
+    white-space: nowrap;
+    line-height: 1.35;
   }
   .tx-scroll.tx-fit::after {
     display: none !important;
