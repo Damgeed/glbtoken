@@ -331,5 +331,9 @@
   #invoicesTable th,
   #invoicesTable td { padding-left: 0.15rem; padding-right: 0.15rem; }
   #invoicesTable .status-badge { padding: 0.15rem 0.3rem; }
+  /* Amount hugs DATE (left-aligned) instead of right-aligning against METHOD.
+     tx-th-right/tx-td-right use !important, so override with !important too. */
+  #invoicesTable th:nth-child(2),
+  #invoicesTable td:nth-child(2) { text-align: left !important; }
 }
 .pm-recharge:active { transform: scale(0.96); }
