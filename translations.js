@@ -1751,6 +1751,26 @@ I18N["Claude 3 Opus — Anthropic"] = {"zh-CN": "Claude 3 Opus — Anthropic", r
 I18N["Claude 3.5 Sonnet"] = {"zh-CN": "Claude 3.5 Sonnet", ru: "Claude 3.5 Sonnet", ja: "Claude 3.5 Sonnet", de: "Claude 3.5 Sonnet"};
 I18N["Claude 3.5 Sonnet — Anthropic"] = {"zh-CN": "Claude 3.5 Sonnet — Anthropic", ru: "Claude 3.5 Sonnet — Anthropic", ja: "Claude 3.5 Sonnet — Anthropic", de: "Claude 3.5 Sonnet — Anthropic"};
 
+I18N["Chrome"] = {"zh-CN": "Chrome", ru: "Chrome", ja: "Chrome", de: "Chrome"};
+I18N["Claude Sonnet 5"] = {"zh-CN": "Claude Sonnet 5", ru: "Claude Sonnet 5", ja: "Claude Sonnet 5", de: "Claude Sonnet 5"};
+I18N["Claude Sonnet 5: Anthropic's Balanced Powerhouse"] = {"zh-CN": "Claude Sonnet 5：Anthropic 的均衡实力派", ru: "Claude Sonnet 5: сбалансированная мощь Anthropic", ja: "Claude Sonnet 5：Anthropic のバランスに優れた実力派", de: "Claude Sonnet 5: Anthropics ausgewogenes Kraftpaket"};
+I18N["Clear"] = {"zh-CN": "清除", ru: "Очистить", ja: "クリア", de: "Löschen"};
+I18N["Clear Local Cache"] = {"zh-CN": "清除本地缓存", ru: "Очистить локальный кэш", ja: "ローカルキャッシュをクリア", de: "Lokalen Cache leeren"};
+I18N["Click a row for details"] = {"zh-CN": "点击行可查看详情", ru: "Нажмите на строку, чтобы увидеть подробности", ja: "行をクリックすると詳細が表示されます", de: "Klicken Sie auf eine Zeile, um Details anzuzeigen"};
+I18N["Code review quality"] = {"zh-CN": "代码审查质量", ru: "Качество ревью кода", ja: "コードレビューの品質", de: "Qualität der Code-Reviews"};
+I18N["Colombia"] = {"zh-CN": "哥伦比亚", ru: "Колумбия", ja: "コロンビア", de: "Kolumbien"};
+I18N["Command A — Cohere"] = {"zh-CN": "Command A — Cohere", ru: "Command A — Cohere", ja: "Command A — Cohere", de: "Command A — Cohere"};
+I18N["Comoros"] = {"zh-CN": "科摩罗", ru: "Коморские Острова", ja: "コモロ", de: "Komoren"};
+I18N["Compact Cards"] = {"zh-CN": "紧凑卡片", ru: "Компактные карточки", ja: "コンパクトカード", de: "Kompakte Karten"};
+I18N["Complete the payment"] = {"zh-CN": "完成付款", ru: "Завершите оплату", ja: "お支払いを完了する", de: "Zahlung abschließen"};
+I18N["Confirm"] = {"zh-CN": "确认", ru: "Подтвердить", ja: "確認", de: "Bestätigen"};
+I18N["Congo"] = {"zh-CN": "刚果", ru: "Конго", ja: "コンゴ", de: "Kongo"};
+I18N["Connection error. Please try again."] = {"zh-CN": "连接错误，请重试。", ru: "Ошибка соединения. Попробуйте ещё раз.", ja: "接続エラーです。もう一度お試しください。", de: "Verbindungsfehler. Bitte versuchen Sie es erneut."};
+I18N["Contact GlbTOKEN"] = {"zh-CN": "联系 GlbTOKEN", ru: "Связаться с GlbTOKEN", ja: "GlbTOKEN に連絡", de: "GlbTOKEN kontaktieren"};
+I18N["Contact Support — GlbTOKEN"] = {"zh-CN": "联系支持团队 — GlbTOKEN", ru: "Служба поддержки — GlbTOKEN", ja: "サポート窓口 — GlbTOKEN", de: "Support kontaktieren — GlbTOKEN"};
+I18N["Continuous Compliance"] = {"zh-CN": "持续合规", ru: "Постоянное соответствие требованиям", ja: "継続的なコンプライアンス", de: "Kontinuierliche Compliance"};
+I18N["Conversion Funnel"] = {"zh-CN": "转化漏斗", ru: "Воронка конверсии", ja: "コンバージョンファネル", de: "Conversion-Funnel"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
