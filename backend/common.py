@@ -187,30 +187,53 @@ def _not_configured(service: str):
 def real_client_ip(request) -> str:
     """Resolve the REAL client IP for rate limiting / audit.
 
-    uvicorn runs with proxy_headers=True. When FORWARDED_ALLOW_IPS lists
-    Railway's ingress proxy IPs, request.client.host is already the validated
-    real client IP. By default (FORWARDED_ALLOW_IPS unset) uvicorn trusts NO
-    proxy headers, so request.client.host is the ingress proxy's PRIVATE IP —
-    every user then shares one rate-limit bucket. To fix that: if the direct
-    peer is a public IP use it; if it is private/reserved (behind a proxy
-    uvicorn doesn't trust) fall back to the RIGHTMOST X-Forwarded-For entry,
-    which the ingress proxy appends itself (client-supplied values sit to its
-    LEFT, so the rightmost value is not spoofable).
+    Empirical production finding (Railway + Cloudflare): Railway's internal
+    proxy terminates TLS and the app sees a PRIVATE/CGNAT peer (100.64.0.0/10)
+    that VARIES per request (edge load balancing). The old logic fell back to
+    the RIGHTMOST X-Forwarded-For entry — but Railway's proxy APPENDS its own
+    private IP to XFF, so the rightmost entry was a varying 100.64.0.x and the
+    rate limiter / login lockout / GeoIP all saw a different IP every request
+    (lockout never fired, "5/hour" never triggered, locations stayed Unknown).
+
+    Correct sources, in order of trust:
+      1. CF-Connecting-IP — Cloudflare sets this to the real client IP at the
+         edge; unspoofable for requests that actually came through Cloudflare.
+      2. FIRST public entry in X-Forwarded-For — the edge proxy (Cloudflare or
+         Railway's public edge) prepends the real client IP; Railway's own
+         private proxy entries (100.64.0.x, 10.x…) are skipped. Client-supplied
+         values sit to the LEFT of what the trusted edge appended, so the first
+         public entry is the edge-validated client IP for normal traffic.
+      3. Direct peer — only when it is a public IP (local dev, no proxy).
     """
     direct = (getattr(getattr(request, "client", None), "host", None)) or ""
-    if direct:
+
+    def _public(ipstr: str) -> bool:
         try:
             import ipaddress
-            a = ipaddress.ip_address(direct.split("%")[0])
-            if not (a.is_private or a.is_loopback or a.is_link_local
-                    or a.is_reserved or a.is_multicast or a.is_unspecified):
-                return direct  # real public client IP — use it
+            a = ipaddress.ip_address(ipstr.split("%")[0].strip())
+            # is_global is the authoritative "real public IP" check: it is
+            # False for private (10/8, 172.16/12, 192.168/16), CGNAT
+            # (100.64.0.0/10 — NOT flagged is_private on Python 3.11!),
+            # loopback, link-local, documentation/TEST-NET, reserved, etc.
+            return bool(a.is_global)
         except Exception:
-            return direct
+            return False
+
     try:
+        # 1) Cloudflare edge header (production path via api.glbtoken.com)
+        cf = (request.headers.get("cf-connecting-ip", "") or "").strip()
+        if cf and _public(cf):
+            return cf
+        # 2) X-Forwarded-For — first public entry (edge-appended client IP)
         fwd = request.headers.get("x-forwarded-for", "")
         if fwd:
-            return fwd.split(",")[-1].strip()
+            for part in fwd.split(","):
+                p = part.strip()
+                if p and _public(p):
+                    return p
+        # 3) Direct peer if public (no proxy / local dev)
+        if direct and _public(direct):
+            return direct
     except Exception:
         pass
     return direct or "unknown"
