@@ -1694,7 +1694,17 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('settingsName').value = storedUser;
     }
   }
+  // shared.js may still be loading when DOMContentLoaded fires (slow network /
+  // CDN), so safeApi can be undefined here. Wait for it (up to ~10s) before any
+  // API-dependent render — otherwise profile/avatar/country never populate.
+  var _apiTries = 0;
+  function _whenApiReady(fn){
+    if(typeof safeApi === 'function'){ fn(); return; }
+    if(_apiTries++ > 100){ return; } // give up after ~10s
+    setTimeout(function(){ _whenApiReady(fn); }, 100);
+  }
   // Load country from profile API (real field)
+  _whenApiReady(function(){
   safeApi('GET','/api/user/profile',null,null,true).then(function(p){
     if(p && p.country){
       var cEl = document.getElementById('settingsCountry');
@@ -1816,6 +1826,7 @@ document.addEventListener('DOMContentLoaded', function(){
   loadNotifSettings();
   loadSettingsExtras();
   loadAccountOverview();
+  }); // end _whenApiReady
 });
 </script>
 
