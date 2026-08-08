@@ -162,7 +162,11 @@ def update_user_settings(
         from webhooks import encrypt_secret
         settings["webhook_secret"] = encrypt_secret((req.webhook_secret or "").strip())
     if req.webhook_events is not None:
-        settings["webhook_events"] = req.webhook_events
+        from webhooks import DEFAULT_EVENTS
+        # Validate against known event names (unknown events could never be
+        # delivered anyway) and cap the list length.
+        known = [e for e in req.webhook_events if isinstance(e, str) and e in DEFAULT_EVENTS]
+        settings["webhook_events"] = known[:len(DEFAULT_EVENTS)]
 
     user.settings = json.dumps(settings)
     db.commit()

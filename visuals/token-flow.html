@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=1256" />
+<link rel="stylesheet" href="style.css?v=1257" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>GlbTOKEN Flow — Token Lifecycle</title>
@@ -185,17 +185,17 @@ html.light text { fill: var(--text); }
 
       <!-- Animated coin marker template -->
       <g id="coin-gold-svg">
-        <circle r="18" fill="url(#coin-gold)" stroke="#F4B400" stroke-width="1.5" filter="url(#glow-gold)"/>
+        <circle r="18" fill="url(visuals/token-flow.html#coin-gold)" stroke="#F4B400" stroke-width="1.5" filter="url(visuals/token-flow.html#glow-gold)"/>
         <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="700" fill="#0A0B14">$</text>
       </g>
 
       <g id="coin-teal-svg">
-        <circle r="18" fill="url(#coin-teal)" stroke="#00D68F" stroke-width="1.5" filter="url(#glow-teal)"/>
+        <circle r="18" fill="url(visuals/token-flow.html#coin-teal)" stroke="#00D68F" stroke-width="1.5" filter="url(visuals/token-flow.html#glow-teal)"/>
         <text x="0" y="5" text-anchor="middle" font-size="10" font-weight="700" fill="#0A0B14">T</text>
       </g>
 
       <g id="coin-burn-svg">
-        <circle r="18" fill="url(#coin-gold)" stroke="#F4B400" stroke-width="1.5" filter="url(#glow-intense)"/>
+        <circle r="18" fill="url(visuals/token-flow.html#coin-gold)" stroke="#F4B400" stroke-width="1.5" filter="url(visuals/token-flow.html#glow-intense)"/>
         <text x="0" y="5" text-anchor="middle" font-size="11" font-weight="700" fill="#0A0B14">&#x1F525;</text>
       </g>
 
@@ -211,7 +211,7 @@ html.light text { fill: var(--text); }
       <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
         <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#F4B400" stroke-width="0.5"/>
       </pattern>
-      <rect width="1160" height="620" fill="url(#grid)"/>
+      <rect width="1160" height="620" fill="url(visuals/token-flow.html#grid)"/>
     </g>
 
     <!-- ===== CONNECTION ARROWS (flow lines) ===== -->
@@ -254,29 +254,29 @@ html.light text { fill: var(--text); }
 
     <!-- ===== ANIMATED COINS FLOWING ALONG PATHS ===== -->
     <!-- Coin 1&#8594;2 -->
-    <g filter="url(#glow-gold)">
-      <use href="#coin-gold-svg" x="0" y="0">
+    <g filter="url(visuals/token-flow.html#glow-gold)">
+      <use href="visuals/token-flow.html#coin-gold-svg" x="0" y="0">
         <animateMotion dur="2.4s" repeatCount="indefinite" path="M 170,295 C 260,295 300,295 390,295"/>
       </use>
     </g>
 
     <!-- Coin 2&#8594;3 -->
-    <g filter="url(#glow-teal)">
-      <use href="#coin-teal-svg" x="0" y="0">
+    <g filter="url(visuals/token-flow.html#glow-teal)">
+      <use href="visuals/token-flow.html#coin-teal-svg" x="0" y="0">
         <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.8s" path="M 510,295 C 560,295 580,295 630,295"/>
       </use>
     </g>
 
     <!-- Coin 3&#8594;4 -->
-    <g filter="url(#glow-gold)">
-      <use href="#coin-gold-svg" x="0" y="0">
+    <g filter="url(visuals/token-flow.html#glow-gold)">
+      <use href="visuals/token-flow.html#coin-gold-svg" x="0" y="0">
         <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.6s" path="M 750,295 C 800,295 830,295 880,295"/>
       </use>
     </g>
 
     <!-- Coin 4&#8594;5 -->
-    <g filter="url(#glow-teal)">
-      <use href="#coin-teal-svg" x="0" y="0">
+    <g filter="url(visuals/token-flow.html#glow-teal)">
+      <use href="visuals/token-flow.html#coin-teal-svg" x="0" y="0">
         <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.4s" path="M 1005,350 C 1005,400 1005,430 1005,490"/>
       </use>
     </g>
@@ -286,16 +286,16 @@ html.light text { fill: var(--text); }
     <!-- ==================================================== -->
     <g transform="translate(80,180)">
       <!-- Card BG -->
-      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(#shadow)"/>
+      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(visuals/token-flow.html#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(visuals/token-flow.html#shadow)"/>
       <!-- Glow accent top -->
-      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(#glow-gold)"/>
+      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(visuals/token-flow.html#glow-gold)"/>
 
       <text x="80" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#F4B400" letter-spacing="1">STEP 1</text>
       <text x="80" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F4B0; Purchase</text>
 
       <!-- Coin icon -->
-      <g transform="translate(80,80)" filter="url(#glow-gold)">
-        <circle r="22" fill="url(#coin-gold)" stroke="#F4B400" stroke-width="1.5"/>
+      <g transform="translate(80,80)" filter="url(visuals/token-flow.html#glow-gold)">
+        <circle r="22" fill="url(visuals/token-flow.html#coin-gold)" stroke="#F4B400" stroke-width="1.5"/>
         <text x="0" y="6" text-anchor="middle" font-size="13" font-weight="700" fill="#0A0B14">$</text>
       </g>
 
@@ -317,8 +317,8 @@ html.light text { fill: var(--text); }
     <!-- STEP 2: TOKEN CREDIT                                  -->
     <!-- ==================================================== -->
     <g transform="translate(330,180)">
-      <rect x="0" y="0" width="170" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(0,214,143,0.2)" stroke-width="1" filter="url(#shadow)"/>
-      <rect x="0" y="0" width="170" height="3" rx="1.5" fill="#00D68F" filter="url(#glow-teal)"/>
+      <rect x="0" y="0" width="170" height="200" rx="16" fill="url(visuals/token-flow.html#bg-card)" stroke="rgba(0,214,143,0.2)" stroke-width="1" filter="url(visuals/token-flow.html#shadow)"/>
+      <rect x="0" y="0" width="170" height="3" rx="1.5" fill="#00D68F" filter="url(visuals/token-flow.html#glow-teal)"/>
 
       <text x="85" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#00D68F" letter-spacing="1">STEP 2</text>
       <text x="85" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F4E6; Token Credit</text>
@@ -346,8 +346,8 @@ html.light text { fill: var(--text); }
     <!-- STEP 3: API CALL                                     -->
     <!-- ==================================================== -->
     <g transform="translate(580,180)">
-      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(#shadow)"/>
-      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(#glow-gold)"/>
+      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(visuals/token-flow.html#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(visuals/token-flow.html#shadow)"/>
+      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(visuals/token-flow.html#glow-gold)"/>
 
       <text x="80" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#F4B400" letter-spacing="1">STEP 3</text>
       <text x="80" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F511; API Call</text>
@@ -374,15 +374,15 @@ html.light text { fill: var(--text); }
     <!-- STEP 4: TOKEN BURN / CONSUMPTION                     -->
     <!-- ==================================================== -->
     <g transform="translate(830,180)">
-      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(#shadow)"/>
-      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(#glow-gold)"/>
+      <rect x="0" y="0" width="160" height="200" rx="16" fill="url(visuals/token-flow.html#bg-card)" stroke="rgba(244,180,0,0.2)" stroke-width="1" filter="url(visuals/token-flow.html#shadow)"/>
+      <rect x="0" y="0" width="160" height="3" rx="1.5" fill="#F4B400" filter="url(visuals/token-flow.html#glow-gold)"/>
 
       <text x="80" y="30" text-anchor="middle" font-size="11" font-weight="700" fill="#F4B400" letter-spacing="1">STEP 4</text>
       <text x="80" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F525; Token Burn</text>
 
       <!-- Flame animation -->
       <g transform="translate(80,80)">
-        <g filter="url(#glow-intense)">
+        <g filter="url(visuals/token-flow.html#glow-intense)">
           <path d="M0,-22 C6,-14 10,-6 8,0 C6,6 0,10 -4,6 C-8,2 -6,-4 0,-8 C4,-10 2,-16 0,-22 Z" fill="#F4B400" opacity="0.9">
             <animate attributeName="d" dur="0.8s" repeatCount="indefinite"
               values="M0,-22 C6,-14 10,-6 8,0 C6,6 0,10 -4,6 C-8,2 -6,-4 0,-8 C4,-10 2,-16 0,-22 Z;
@@ -412,8 +412,8 @@ html.light text { fill: var(--text); }
     <!-- STEP 5: DASHBOARD                                    -->
     <!-- ==================================================== -->
     <g transform="translate(900,440)">
-      <rect x="0" y="0" width="180" height="130" rx="16" fill="url(#bg-card)" stroke="rgba(0,214,143,0.25)" stroke-width="1.5" filter="url(#shadow)"/>
-      <rect x="0" y="0" width="180" height="3" rx="1.5" fill="#00D68F" filter="url(#glow-teal)"/>
+      <rect x="0" y="0" width="180" height="130" rx="16" fill="url(visuals/token-flow.html#bg-card)" stroke="rgba(0,214,143,0.25)" stroke-width="1.5" filter="url(visuals/token-flow.html#shadow)"/>
+      <rect x="0" y="0" width="180" height="3" rx="1.5" fill="#00D68F" filter="url(visuals/token-flow.html#glow-teal)"/>
 
       <text x="90" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#00D68F" letter-spacing="1">STEP 5</text>
       <text x="90" y="46" text-anchor="middle" font-size="13" font-weight="700" fill="white">&#x1F4CA; Dashboard</text>
@@ -432,23 +432,23 @@ html.light text { fill: var(--text); }
 
     <!-- ===== SPARKLES / AMBIENT ===== -->
     <g opacity="0.6">
-      <use href="#sparkle" x="120" y="170">
+      <use href="visuals/token-flow.html#sparkle" x="120" y="170">
         <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0s"/>
         <animateTransform attributeName="transform" type="scale" values="0.8;1.2;0.8" dur="2s" repeatCount="indefinite" begin="0s"/>
       </use>
-      <use href="#sparkle" x="380" y="175">
+      <use href="visuals/token-flow.html#sparkle" x="380" y="175">
         <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
         <animateTransform attributeName="transform" type="scale" values="0.6;1.1;0.6" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
       </use>
-      <use href="#sparkle" x="630" y="170">
+      <use href="visuals/token-flow.html#sparkle" x="630" y="170">
         <animate attributeName="opacity" values="0;1;0" dur="1.8s" repeatCount="indefinite" begin="1s"/>
         <animateTransform attributeName="transform" type="scale" values="0.7;1.3;0.7" dur="1.8s" repeatCount="indefinite" begin="1s"/>
       </use>
-      <use href="#sparkle" x="880" y="175">
+      <use href="visuals/token-flow.html#sparkle" x="880" y="175">
         <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite" begin="1.5s"/>
         <animateTransform attributeName="transform" type="scale" values="0.5;1.2;0.5" dur="2.2s" repeatCount="indefinite" begin="1.5s"/>
       </use>
-      <use href="#sparkle" x="1005" y="430">
+      <use href="visuals/token-flow.html#sparkle" x="1005" y="430">
         <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="0.8s"/>
         <animateTransform attributeName="transform" type="scale" values="0.6;1.4;0.6" dur="2s" repeatCount="indefinite" begin="0.8s"/>
       </use>
@@ -499,7 +499,7 @@ html.light text { fill: var(--text); }
 <script src="nav.js?v=19"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1160"></script>
+<script data-cfasync="false" src="shared.js?v=1161"></script>
 <script data-cfasync="false" src="ui.js?v=1235"></script>
 
 </body>

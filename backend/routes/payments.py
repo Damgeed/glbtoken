@@ -1,6 +1,6 @@
 """GlbTOKEN — Payments Routes (topup, Paystack, Stripe, Crypto, transactions, billing)"""
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func, update
@@ -56,8 +56,8 @@ _TXN_CACHE: dict = {}
 @router.get("/api/transactions")
 def list_transactions(
     type: Optional[str] = None,
-    limit: int = 20,
-    offset: int = 0,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -112,6 +112,9 @@ async def topup(req: TopupRequest, request: Request, user: User = Depends(get_cu
     # allowed against a PENDING deposit transaction created by a real payment
     # provider (Stripe/Paystack/crypto). This closes the free-token-mint hole.
     amount = float(req.amount or 0)
+    import math
+    if not math.isfinite(amount):
+        _400("Amount must be a valid number")
     if amount < 2.0 or amount > 2000.0:
         _400("Amount must be between $2 and $2000")
     ref = (req.payment_ref or "").strip()
@@ -509,6 +512,9 @@ def create_crypto_payment(req: InitiatePaymentRequest, request: Request, user: U
     if not address:
         _400(f"Unsupported crypto: {asset}")
     ref = f"crypto_{user.id}_{secrets.token_hex(8)}"
+    import math
+    if req.amount is None or not math.isfinite(float(req.amount)) or float(req.amount) < 2.0 or float(req.amount) > 2000.0:
+        _400("Amount must be between $2 and $2000")
     tokens = int(req.amount * 1000)
     tx = Transaction(
         user_id=user.id, type="deposit", amount=req.amount, currency=asset,

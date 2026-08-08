@@ -225,7 +225,7 @@
         var c = COUNTRY_CODES[i];
         var sel = c.dial === selectedDial[prefix] ? ' class="country-opt active"' : ' class="country-opt"';
         var safePrefix = prefix.replace(/[^a-zA-Z0-9_-]/g, '');
-        html += '<div' + sel + ' onclick="selectCountry(\'' + safePrefix + '\',\'' + escapeHtml(c.dial) + '\',\'' + escapeHtml(c.flag) + '\')"><span>' + c.flag + ' ' + escapeHtml(c.name) + '</span> <span class="country-dial">' + escapeHtml(c.dial) + '</span></div>';
+        html += '<div' + sel + ' onclick="selectCountry(\'' + safePrefix + '\',\'' + escapeAttr(c.dial) + '\',\'' + escapeAttr(c.flag) + '\')"><span>' + c.flag + ' ' + escapeHtml(c.name) + '</span> <span class="country-dial">' + escapeHtml(c.dial) + '</span></div>';
       }
       list.innerHTML = html;
     }

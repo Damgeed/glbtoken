@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Query, Request, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, update
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone, timedelta
 import secrets, json, random, re, hashlib, time, threading
@@ -378,11 +378,19 @@ def _grant_pending_bonus(user, db) -> bool:
     pending = s.get("pending_bonus", 0)
     if not pending:
         return False
-    user.token_balance = (user.token_balance or 0) + float(pending)
+    # SECURITY: SQL-side atomic increment — a Python read-modify-write can
+    # double-credit when two grant paths race (email verify vs verified social
+    # login both releasing the same held bonus).
+    db.execute(
+        update(User).where(User.id == user.id).values(
+            token_balance=User.token_balance + float(pending)
+        )
+    )
     s.pop("pending_bonus", None)
     s["bonus_granted"] = True
     user.settings = json.dumps(s)
     db.commit()
+    db.refresh(user)
     return True
 
 
@@ -1272,6 +1280,9 @@ def change_password(request: Request, req: ChangePasswordRequest, user: User = D
         _400("New password must be at least 8 characters")
     user.password_hash = hash_password(req.new_password)
     db.commit()
+    # SECURITY: revoke all refresh tokens so a stolen token can't outlive a password change
+    db.query(RefreshToken).filter(RefreshToken.user_id == user.id).delete(synchronize_session=False)
+    db.commit()
     return {"status": "password_updated"}
 
 
@@ -1312,6 +1323,10 @@ def reset_password(request: Request, req: ResetPasswordRequest, db: Session = De
     user.password_hash = hash_password(req.new_password)
     user.reset_token = None
     user.reset_token_expiry = None
+    db.commit()
+    # SECURITY: revoke all refresh tokens after a password reset — a stolen
+    # refresh token must not stay valid after credentials rotate.
+    db.query(RefreshToken).filter(RefreshToken.user_id == user.id).delete(synchronize_session=False)
     db.commit()
     return {"status": "password_reset"}
 

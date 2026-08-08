@@ -55,44 +55,6 @@
       }
     }
 
-
-
-    // ── Auth0 Social Login Callback ──
-    async function handleAuth0Callback(){
-      // Called on /auth/callback page — no nav/toast DOM elements here
-      const hash = window.location.hash.substring(1);
-      if(!hash) return;
-      const params = new URLSearchParams(hash);
-      const idToken = params.get('id_token');
-      if(!idToken) return;
-      // Verify CSRF state token — fail CLOSED (missing state = mismatch)
-      const returnedState = params.get('state');
-      const storedState = sessionStorage.getItem('gt_oauth_state');
-      sessionStorage.removeItem('gt_oauth_state');
-      if (!returnedState || !storedState || returnedState !== storedState) {
-        window.location.href = '/login.html?error=Security+check+failed:+invalid+state';
-        return;
-      }
-      // Clear the hash from URL — removes id_token from browser history
-      if (window.history && window.history.replaceState) {
-        var cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
-      const data = await safeApi('POST','/api/auth/auth0/login', {token: idToken},null,true);
-      if(!data) { window.location.href = '/login.html?error=' + encodeURIComponent('Auth login failed'); return; }
-      token = data.token; // in-memory + per-tab cache (redirect to dashboard follows)
-      try{ sessionStorage.setItem('gt_token', data.token); }catch(e){}
-      if(data.refresh_token) (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token', data.refresh_token);
-      window.__secure.setItem('gt_user', JSON.stringify(data.user));
-      // Don't call applyAuth() — callback page has no nav DOM elements
-      // Don't call showToast() — callback page has no toast DOM elements
-      window.location.href = '/dashboard.html';
-    }
-    // Auto-run on callback page
-    if (window.location.pathname.indexOf('/auth/callback.html') !== -1) {
-      handleAuth0Callback();
-    }
-
     // ── Hash-based routing (back/forward support) ──
     window.addEventListener('hashchange',function(){
       const page=location.hash.replace('#','')||'home';

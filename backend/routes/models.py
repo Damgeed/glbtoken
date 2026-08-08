@@ -1,6 +1,6 @@
 """GlbTOKEN — Models Routes (list models, providers, available-models, auto-pull)"""
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional
@@ -9,7 +9,7 @@ import os, json, secrets
 from database import get_db, User, AIModel, SessionLocal
 from auth import get_current_user
 from newapi_integration import get_user_models
-from common import _403, GLBTOKEN_SECRET, NEW_API_BASE_URL, FALLBACK_API_URL, FALLBACK_API_KEY
+from common import _403, GLBTOKEN_SECRET, NEW_API_BASE_URL, FALLBACK_API_URL, FALLBACK_API_KEY, limiter
 
 router = APIRouter()
 
@@ -178,7 +178,8 @@ async def get_available_models(user: User = Depends(get_current_user)):
 # ── Auto-Pull Models (manual trigger) ──
 
 @router.post("/api/models/pull")
-def trigger_model_pull(authorization: str = Header(None)):
+@limiter.limit("1/minute")
+def trigger_model_pull(request: Request, authorization: str = Header(None)):
     # Extract API key from Authorization: Bearer <token>
     api_key = ""
     if authorization and authorization.startswith("Bearer "):

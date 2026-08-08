@@ -22,7 +22,7 @@ from sqlalchemy import update
 
 from common import (
     _400, _401, _402, _403, _429, _502, limiter,
-    NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL,
+    NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL, real_client_ip,
 )
 from routes.referrals import grant_referral_reward
 from database import get_db, User, ApiKey, Transaction, AIModel
@@ -129,7 +129,10 @@ def _auth_user(db: Session, authorization: str, request: Request = None, require
 
     # IP allowlist
     if api_key.ip_allowlist:
-        client_ip = request.client.host if (request and request.client) else ""
+        # Use the real client IP (validated proxy header) — request.client.host
+        # is the ingress proxy IP behind Railway/Cloudflare and would block
+        # every allowlisted key.
+        client_ip = real_client_ip(request) if request else ""
         if not _ip_allowed(client_ip, api_key.ip_allowlist):
             _403("IP not allowed for this API key")
 

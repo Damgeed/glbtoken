@@ -102,6 +102,17 @@
     },
     clear: function(){
       localStorage.removeItem(SALT_KEY);
+      // Purge any remaining encrypted blobs (values prefixed __e2:) so no
+      // ciphertext lingers after logout.
+      try{
+        var doomed = [];
+        for(var i=0;i<localStorage.length;i++){
+          var k = localStorage.key(i);
+          var v = k ? localStorage.getItem(k) : null;
+          if(v && v.indexOf('__e2:') === 0) doomed.push(k);
+        }
+        for(var j=0;j<doomed.length;j++) localStorage.removeItem(doomed[j]);
+      }catch(e){}
     }
   };
 })();
@@ -713,6 +724,8 @@ function clearSession(){
   try{ localStorage.removeItem('gt_newapi_token'); }catch(e){}
   try{ localStorage.removeItem('gt_newapi_endpoint'); }catch(e){}
   try{ localStorage.removeItem('gt_keys'); }catch(e){}
+  try{ sessionStorage.removeItem('gt_oauth_cancel'); }catch(e){}
+  try{ sessionStorage.removeItem('gt_code_verifier'); }catch(e){}
   try{ if(window.__secure && window.__secure.clear) window.__secure.clear(); }catch(e){}
   try{ if(window._dashPoll){ clearInterval(window._dashPoll); window._dashPoll=null; } }catch(e){}
 }

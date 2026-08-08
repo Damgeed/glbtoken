@@ -9,7 +9,7 @@ import secrets
 
 from database import get_db, User, Transaction, AIModel, AdminLog, Announcement
 from auth import get_current_user, get_optional_user
-from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET
+from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET, real_client_ip
 from schemas import AdminBalanceRequest, SyncUsersRequest, AnnouncementCreate, AnnouncementUpdate
 
 router = APIRouter()
@@ -19,15 +19,7 @@ MAX_ADMIN_PAGE_SIZE = 100
 
 def _client_ip(request) -> str:
     """Real client IP — trust the validated proxy header, not client-supplied XFF."""
-    try:
-        if request.client and request.client.host:
-            return request.client.host
-        fwd = request.headers.get("x-forwarded-for", "")
-        if fwd:
-            return fwd.split(",")[-1].strip()
-    except Exception as e:
-        print(f"⚠️ client ip parse failed: {e}")
-    return ""
+    return real_client_ip(request)
 
 
 def _audit(db: Session, admin, action: str, target=None, detail: str = "", ip: str = ""):
@@ -214,7 +206,7 @@ async def admin_sync_users(
     if thread.is_alive():
         _audit(
             db, user if (user and user.is_admin) else None, "sync_users",
-            detail='{"synced": 0, "failed": 0, "note": "timed out after 120s"}',
+            detail=json.dumps({"synced": 0, "failed": 0, "note": "timed out after 120s"}),
             ip=_client_ip(request),
         )
         return {"status": "running", "message": "Sync is still running in the background (over 120s). Check /api/admin/audit shortly."}
@@ -225,7 +217,7 @@ async def admin_sync_users(
     res = result_container.get("result")
     _audit(
         db, user if (user and user.is_admin) else None, "sync_users",
-        detail=f'{{"synced": {res.created if res else 0}, "failed": {res.failed if res else 0}}}',
+        detail=json.dumps({"synced": res.created if res else 0, "failed": res.failed if res else 0}),
         ip=_client_ip(request),
     )
     return {
@@ -412,7 +404,7 @@ def admin_update_announcement(announcement_id: int, req: AnnouncementUpdate, req
         a.expires_at = _parse_expiry(req.expires_at)
     db.commit()
     db.refresh(a)
-    _audit(db, user, "update_announcement", detail=f'{{"announcement_id": {a.id}}}', ip=_client_ip(request))
+    _audit(db, user, "update_announcement", detail=json.dumps({"announcement_id": a.id}), ip=_client_ip(request))
     return {"status": "updated", "announcement": _announcement_dict(a)}
 
 
@@ -426,5 +418,5 @@ def admin_delete_announcement(announcement_id: int, request: Request, user: User
         _404("Announcement not found")
     db.delete(a)
     db.commit()
-    _audit(db, user, "delete_announcement", detail=f'{{"announcement_id": {announcement_id}}}', ip=_client_ip(request))
+    _audit(db, user, "delete_announcement", detail=json.dumps({"announcement_id": announcement_id}), ip=_client_ip(request))
     return {"status": "deleted", "announcement_id": announcement_id}
