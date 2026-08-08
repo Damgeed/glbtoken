@@ -387,6 +387,7 @@
 <script data-cfasync="false" src="shared.js?v=1161"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1235"></script>
+<script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js"></script>
 
 <!-- ── Settings Scripts ── -->
 <script>
@@ -553,9 +554,24 @@ function openTwoFAModal(mode){
     .then(function(d){
       if(d && d.secret){
         document.getElementById('twofaSecret').textContent = d.secret;
-        // Render QR from otpauth_url (Google Charts-free: use api.qrserver.com)
-        var otpauth = encodeURIComponent(d.otpauth_url || ('otpauth://totp/GlbTOKEN:' + (document.getElementById('settingsEmail') ? document.getElementById('settingsEmail').value : '') + '?secret=' + d.secret + '&issuer=GlbTOKEN'));
-        document.getElementById('twofaQrBox').innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=' + otpauth + '" alt="2FA QR code" style="width:180px;height:180px;border-radius:6px">';
+        // Render QR locally (qrcodejs) — do NOT send the otpauth secret to a
+        // third-party QR service (api.qrserver.com would see every user's TOTP secret).
+        var otpauth = d.otpauth_url || ('otpauth://totp/GlbTOKEN:' + (document.getElementById('settingsEmail') ? document.getElementById('settingsEmail').value : '') + '?secret=' + d.secret + '&issuer=GlbTOKEN');
+        var qrBox = document.getElementById('twofaQrBox');
+        if(qrBox){
+          if(typeof QRCode === 'function'){
+            try{
+              qrBox.innerHTML = '';
+              new QRCode(qrBox, {text: otpauth, width: 180, height: 180, colorDark: '#0A0B14', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M});
+              var qc = qrBox.querySelector('canvas, img');
+              if(qc){ qc.style.width='180px'; qc.style.height='180px'; qc.style.borderRadius='6px'; }
+            }catch(e){
+              qrBox.innerHTML = '<p style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:0.5rem">Unable to render QR — enter the secret above manually.</p>';
+            }
+          } else {
+            qrBox.innerHTML = '<p style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:0.5rem">QR library not loaded — enter the secret above manually.</p>';
+          }
+        }
         // Show one-time recovery codes
         if(d.backup_codes && d.backup_codes.length){
           var wrap = document.getElementById('twofaRecoveryWrap');
