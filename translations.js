@@ -1671,6 +1671,36 @@ I18N["API Request"] = {"zh-CN": "API 请求", ru: "Запрос API", ja: "API �
 I18N["API Server"] = {"zh-CN": "API 服务器", ru: "Сервер API", ja: "API サーバー", de: "API-Server"};
 I18N["API error"] = {"zh-CN": "API 错误", ru: "Ошибка API", ja: "API エラー", de: "API-Fehler"};
 
+I18N["(HMAC-SHA256 hex of the body) and"] = {"zh-CN": "(请求体的 HMAC-SHA256 十六进制值) 以及", ru: "(HMAC-SHA256-хэш тела запроса в hex) и", ja: "(本文の HMAC-SHA256 16進数ハッシュ) と", de: "(HMAC-SHA256-Hexwert des Anfragetexts) und"};
+I18N["(optional — used for X-GlbTOKEN-Signature HMAC)"] = {"zh-CN": "(可选 — 用于 X-GlbTOKEN-Signature HMAC)", ru: "(необязательно — используется для X-GlbTOKEN-Signature HMAC)", ja: "(省略可 — X-GlbTOKEN-Signature HMAC に使用)", de: "(optional — für X-GlbTOKEN-Signature HMAC)"};
+I18N[") to switch between 100+ models."] = {"zh-CN": ") 即可在 100 多种模型之间切换。", ru: ") для переключения между 100+ моделями.", ja: ") で 100 以上のモデルを切り替えられます。", de: "), um zwischen 100+ Modellen zu wechseln."};
+I18N[", etc."] = {"zh-CN": "，等等。", ru: ", и т. д.", ja: "、など", de: ", usw."};
+I18N["1M ctx · $0.0004/1k"] = {"zh-CN": "1M 上下文 · $0.0004/1k", ru: "1M контекст · $0.0004/1k", ja: "1M コンテキスト · $0.0004/1k", de: "1M Kontext · $0.0004/1k"};
+I18N["1M ctx · $0.0015/1k"] = {"zh-CN": "1M 上下文 · $0.0015/1k", ru: "1M контекст · $0.0015/1k", ja: "1M コンテキスト · $0.0015/1k", de: "1M Kontext · $0.0015/1k"};
+I18N["1M ctx · $0.002/1k"] = {"zh-CN": "1M 上下文 · $0.002/1k", ru: "1M контекст · $0.002/1k", ja: "1M コンテキスト · $0.002/1k", de: "1M Kontext · $0.002/1k"};
+I18N["1M ctx · $0.03/1k"] = {"zh-CN": "1M 上下文 · $0.03/1k", ru: "1M контекст · $0.03/1k", ja: "1M コンテキスト · $0.03/1k", de: "1M Kontext · $0.03/1k"};
+I18N["24/7 — instant"] = {"zh-CN": "24/7 — 即时", ru: "24/7 — мгновенно", ja: "24/7 — 即時", de: "24/7 — sofort"};
+I18N["48 hours), we may issue token credits at our discretion."] = {"zh-CN": "48 小时），我们可自行决定发放代币额度。", ru: "48 часов), мы можем по своему усмотрению начислить токен-кредиты.", ja: "48 時間）、当社の裁量でトークンクレジットを付与する場合があります。", de: "48 Stunden) können wir nach eigenem Ermessen Token-Guthaben gutschreiben."};
+I18N["About — GlbTOKEN"] = {"zh-CN": "关于 — GlbTOKEN", ru: "О нас — GlbTOKEN", ja: "概要 — GlbTOKEN", de: "Über — GlbTOKEN"};
+I18N["Activate"] = {"zh-CN": "激活", ru: "Активировать", ja: "有効化", de: "Aktivieren"};
+I18N["Active Models"] = {"zh-CN": "活跃模型", ru: "Активные модели", ja: "アクティブなモデル", de: "Aktive Modelle"};
+I18N["Active Sessions"] = {"zh-CN": "活跃会话", ru: "Активные сеансы", ja: "アクティブなセッション", de: "Aktive Sitzungen"};
+I18N["Activity Feed has moved to"] = {"zh-CN": "活动动态已移至", ru: "Лента активности перемещена в", ja: "アクティビティフィードは次の場所に移動しました：", de: "Der Aktivitätsfeed wurde verschoben nach"};
+I18N["Activity Feed — GlbTOKEN"] = {"zh-CN": "活动动态 — GlbTOKEN", ru: "Лента активности — GlbTOKEN", ja: "アクティビティフィード — GlbTOKEN", de: "Aktivitätsfeed — GlbTOKEN"};
+I18N["Actual (7d)"] = {"zh-CN": "实际（7 天）", ru: "Фактически (7 дн.)", ja: "実績（7日間）", de: "Tatsächlich (7 T.)"};
+I18N["Afghanistan"] = {"zh-CN": "阿富汗", ru: "Афганистан", ja: "アフガニスタン", de: "Afghanistan"};
+I18N["Albania"] = {"zh-CN": "阿尔巴尼亚", ru: "Албания", ja: "アルバニア", de: "Albanien"};
+I18N["Algeria"] = {"zh-CN": "阿尔及利亚", ru: "Алжир", ja: "アルジェリア", de: "Algerien"};
+I18N["All PDF"] = {"zh-CN": "全部 PDF", ru: "Все PDF", ja: "すべての PDF", de: "Alle PDFs"};
+I18N["All parameters from the OpenAI API are supported:"] = {"zh-CN": "支持 OpenAI API 的所有参数：", ru: "Поддерживаются все параметры OpenAI API:", ja: "OpenAI API のすべてのパラメータに対応しています：", de: "Alle Parameter der OpenAI API werden unterstützt:"};
+I18N["Andorra"] = {"zh-CN": "安道尔", ru: "Андорра", ja: "アンドラ", de: "Andorra"};
+I18N["Angola"] = {"zh-CN": "安哥拉", ru: "Ангола", ja: "アンゴラ", de: "Angola"};
+I18N["Announcements — GlbTOKEN"] = {"zh-CN": "公告 — GlbTOKEN", ru: "Объявления — GlbTOKEN", ja: "お知らせ — GlbTOKEN", de: "Ankündigungen — GlbTOKEN"};
+I18N["Anthropic"] = {"zh-CN": "Anthropic", ru: "Anthropic", ja: "Anthropic", de: "Anthropic"};
+I18N["Anthropic's Claude Sonnet 5"] = {"zh-CN": "Anthropic 的 Claude Sonnet 5", ru: "Claude Sonnet 5 от Anthropic", ja: "Anthropic の Claude Sonnet 5", de: "Claude Sonnet 5 von Anthropic"};
+I18N["Appearance"] = {"zh-CN": "外观", ru: "Внешний вид", ja: "外観", de: "Darstellung"};
+I18N["Apple"] = {"zh-CN": "Apple", ru: "Apple", ja: "Apple", de: "Apple"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
