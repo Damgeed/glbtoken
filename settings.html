@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1248" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1061" />
+<link rel="stylesheet" href="settings.css?v=1062" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -1159,8 +1159,10 @@ function lhDevice(deviceType){
 }
 function lhTime(iso){
   if(!iso) return '';
-  var d = new Date(iso);
-  var diff = (Date.now() - d.getTime()) / 1000;
+  var ts = (typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime();
+  if(isNaN(ts)) return '';
+  var d = new Date(ts);
+  var diff = (Date.now() - ts) / 1000;
   if(diff < 60) return 'Just now';
   if(diff < 3600) return Math.floor(diff/60) + 'm ago';
   if(diff < 86400) return Math.floor(diff/3600) + 'h ago';
