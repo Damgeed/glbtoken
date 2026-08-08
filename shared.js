@@ -106,7 +106,7 @@
   };
 })();
 
-const API_URL = 'https://glbtoken-backend-production.up.railway.app';
+const API_URL = 'https://api.glbtoken.com';
 
 // ── Safe token recovery from URL (auth/payment redirect) ──
 // Validates JWT shape + expiry + freshness BEFORE persisting, so a crafted

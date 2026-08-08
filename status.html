@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://glbtoken-backend-production.up.railway.app https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>System Status — GlbTOKEN</title>
 <meta name="description" content="GlbTOKEN platform status — API availability, database, model routing." />
@@ -68,7 +68,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,sans
 </div>
 <script>
 (function(){
-  var API_URL = 'https://glbtoken-backend-production.up.railway.app';
+  var API_URL = 'https://api.glbtoken.com';
   function setVal(id, text, cls){ var el = document.getElementById(id); el.textContent = text; el.className = 'val ' + (cls || 'mut'); }
   function check(){
     fetch(API_URL + '/api/health', {cache:'no-store'})

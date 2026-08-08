@@ -62,38 +62,9 @@ def _issue_auth_response(user, db, ua: str = ""):
     return _auth_response(user, db, ua)
 
 def _client_ip(request: Request) -> str:
-    """Get the REAL client IP.
-
-    uvicorn runs with proxy_headers=True. When FORWARDED_ALLOW_IPS lists
-    Railway's ingress proxy IPs, request.client.host is already the validated
-    real client IP. By default (FORWARDED_ALLOW_IPS unset) uvicorn trusts NO
-    proxy headers, so request.client.host is the ingress proxy's PRIVATE IP —
-    which GeoIP can never resolve (hence 'Unknown location' forever).
-
-    So: if the direct peer is a public IP we use it directly; if it is
-    private/reserved (we are behind a proxy uvicorn doesn't trust) we fall back
-    to the RIGHTMOST X-Forwarded-For entry. The ingress proxy APPENDS the real
-    client IP itself, and any client-supplied values sit to its LEFT, so the
-    rightmost value is not spoofable (same-IP referral gate stays intact).
-    """
-    direct = (request.client.host if request.client else "") or ""
-    if direct:
-        try:
-            import ipaddress
-            a = ipaddress.ip_address(direct.split("%")[0])
-            if not (a.is_private or a.is_loopback or a.is_link_local
-                    or a.is_reserved or a.is_multicast or a.is_unspecified):
-                return direct  # real public client IP — use it
-        except Exception:
-            return direct
-    # Direct peer is private/reserved → behind a proxy uvicorn doesn't trust.
-    try:
-        fwd = request.headers.get("x-forwarded-for", "")
-        if fwd:
-            return fwd.split(",")[-1].strip()
-    except Exception as e:
-        print(f"⚠️ x-forwarded-for parse failed: {e}")
-    return direct
+    """Get the REAL client IP (single source of truth: common.real_client_ip)."""
+    from common import real_client_ip
+    return real_client_ip(request)
 
 
 # ── Login location detection (IP → city/country, free GeoIP providers) ──
@@ -383,8 +354,40 @@ def _resolve_ref(db, ref):
         return code
     return None
 
+def _aware(dt):
+    """Normalize a DB DateTime (naive UTC) to an aware datetime for comparison."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+def _grant_pending_bonus(user, db) -> bool:
+    """Credit the held signup bonus once the account's email is verified.
+
+    Anti-farming: new email/password accounts start with 0 tokens; the signup
+    bonus is parked in settings['pending_bonus'] and released only after the
+    email is verified (verify-email OTP or a verified social login). Returns
+    True if a bonus was granted.
+    """
+    try:
+        s = json.loads(user.settings) if user.settings else {}
+    except (json.JSONDecodeError, TypeError):
+        s = {}
+    pending = s.get("pending_bonus", 0)
+    if not pending:
+        return False
+    user.token_balance = (user.token_balance or 0) + float(pending)
+    s.pop("pending_bonus", None)
+    s["bonus_granted"] = True
+    user.settings = json.dumps(s)
+    db.commit()
+    return True
+
+
 @router.post("/api/auth/register")
-@limiter.limit("5/minute")
+@limiter.limit("5/hour")
 async def register(req: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     try:
         if db.query(User).filter(User.email == req.email).first():
@@ -393,12 +396,16 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             _400("Registration failed. Please check your details and try again.")
         if len(req.password) < 8:
             _400("Password must be at least 8 characters")
+        bonus = float(SIGNUP_BONUS_TOKENS or 0)
         user = User(
             name=req.name,
             email=req.email,
             password_hash=hash_password(req.password),
             country=req.country,
-            token_balance=SIGNUP_BONUS_TOKENS,
+            # Anti-farming: hold the bonus until the email is verified; the
+            # account starts with 0 spendable tokens (see _grant_pending_bonus).
+            token_balance=0,
+            settings=json.dumps({"pending_bonus": bonus}) if bonus > 0 else None,
             referred_by=_resolve_ref(db, req.ref),
             signup_ip=_client_ip(request),
             referral_source=_clean_src(req.src),
@@ -472,13 +479,20 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
 @router.post("/api/auth/login")
 @limiter.limit("10/minute")
 def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
+    ip = _client_ip(request)
+    # Lockout: 10 failed attempts per email+IP → 429 for 15 minutes.
+    if _login_locked(req.email, ip):
+        raise HTTPException(status_code=429, detail="Too many failed attempts. Try again in 15 minutes.")
     user = db.query(User).filter(User.email == req.email).first()
     if not user or not user.password_hash:
         record_login_event(0, request, False, db)
+        _login_fail(req.email, ip)
         _401("Invalid credentials")
     if not verify_password(req.password, user.password_hash):
         record_login_event(0, request, False, db)
+        _login_fail(req.email, ip)
         _401("Invalid credentials")
+    _login_success(req.email, ip)
     record_login_event(user.id, request, True, db)
     # ── 2FA gate: if TOTP is enabled, don't hand out the real token yet ──
     if _totp_enabled(user):
@@ -822,6 +836,8 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
             user.google_id = info["sub"]
         user.email_verified = user.email_verified or info["email_verified"]
         db.commit()
+        # Verified social login → release any held signup bonus.
+        _grant_pending_bonus(user, db)
     else:
         user = User(
             name=info["name"],
@@ -921,6 +937,8 @@ def _resolve_social_user(db, info, id_field="google_id"):
         user.email = email
     user.email_verified = user.email_verified or email_verified
     db.commit()
+    # Verified social login → release any held signup bonus.
+    _grant_pending_bonus(user, db)
     return user, False
 
 
@@ -1172,6 +1190,35 @@ def get_me(user: User = Depends(get_current_user)):
 # In-memory OTP guess limiter per account (resets when a new code is sent)
 _email_otp_attempts = {}
 
+# In-memory login failure lockout per email+IP: 10 failures → 429 for 15 min.
+_login_failures = {}
+_LOGIN_LOCKOUT_MAX = 10
+_LOGIN_LOCKOUT_TTL = 900  # seconds
+
+def _login_locked(email: str, ip: str) -> bool:
+    key = f"{(email or '').lower()}:{ip}"
+    now = time.time()
+    rec = _login_failures.get(key)
+    if not rec:
+        return False
+    if now - rec["ts"] > _LOGIN_LOCKOUT_TTL:
+        _login_failures.pop(key, None)
+        return False
+    return rec["count"] >= _LOGIN_LOCKOUT_MAX
+
+def _login_fail(email: str, ip: str):
+    key = f"{(email or '').lower()}:{ip}"
+    now = time.time()
+    rec = _login_failures.get(key)
+    if not rec or now - rec["ts"] > _LOGIN_LOCKOUT_TTL:
+        rec = {"count": 0, "ts": now}
+    rec["count"] += 1
+    rec["ts"] = now
+    _login_failures[key] = rec
+
+def _login_success(email: str, ip: str):
+    _login_failures.pop(f"{(email or '').lower()}:{ip}", None)
+
 @router.post("/api/auth/send-verification")
 @limiter.limit("5/minute")
 def send_verification(req: OptionalEmailRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -1202,13 +1249,15 @@ def verify_email(req: VerifyEmailRequest, request: Request, user: User = Depends
     if user.email_otp != req.otp:
         _email_otp_attempts[key] = attempts + 1
         _400("Invalid OTP")
-    if not user.email_otp_expiry or now > user.email_otp_expiry:
+    if not _aware(user.email_otp_expiry) or now > _aware(user.email_otp_expiry):
         _400("OTP expired")
     user.email_verified = True
     user.email_otp = None
     user.email_otp_expiry = None
     _email_otp_attempts.pop(key, None)
     db.commit()
+    # Release the held signup bonus now that the email is verified.
+    _grant_pending_bonus(user, db)
     return {"status": "verified"}
 
 
@@ -1229,16 +1278,24 @@ def change_password(request: Request, req: ChangePasswordRequest, user: User = D
 @router.post("/api/auth/forgot-password")
 @limiter.limit("3/minute")
 def forgot_password(request: Request, req: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    # Uniform response for every outcome — never reveal whether an email is
+    # registered (anti-enumeration). Distinctions are logged server-side only.
     user = db.query(User).filter(User.email == req.email).first()
     if not user:
-        return {"status": "sent"}  # Don't reveal if email exists
+        return {"status": "sent"}  # indistinguishable from a real reset
     token = secrets.token_urlsafe(32)
     user.reset_token = token
     user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
     db.commit()
-    sent = send_email(user.email, "Reset your GlbTOKEN password",
-        f"Reset token: {token}\n\nGo to: https://glbtoken.com/reset-password\nPaste the token above.\nIt expires in 1 hour.\n\n- GlbTOKEN Team")
-    return {"status": "sent" if sent else "email_unavailable"}
+    try:
+        sent = send_email(user.email, "Reset your GlbTOKEN password",
+            f"Reset token: {token}\n\nGo to: https://glbtoken.com/reset-password\nPaste the token above.\nIt expires in 1 hour.\n\n- GlbTOKEN Team")
+    except Exception as e:
+        print(f"⚠️ Forgot-password email send failed (logged, not shown): {e}")
+        sent = False
+    if not sent:
+        print(f"⚠️ Reset email could not be delivered to {user.email} (logged, not shown)")
+    return {"status": "sent"}
 
 
 @router.post("/api/auth/reset-password")
@@ -1248,7 +1305,7 @@ def reset_password(request: Request, req: ResetPasswordRequest, db: Session = De
     if not user:
         _400("Invalid or expired reset token")
     now = datetime.now(timezone.utc)
-    if not user.reset_token_expiry or now > user.reset_token_expiry:
+    if not _aware(user.reset_token_expiry) or now > _aware(user.reset_token_expiry):
         _400("Reset token expired")
     if len(req.new_password) < 8:
         _400("Password too short")

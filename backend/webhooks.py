@@ -32,7 +32,41 @@ def get_webhook_url(user) -> str:
 
 
 def get_webhook_secret(user) -> str:
-    return (_settings(user).get("webhook_secret") or "").strip()
+    return decrypt_secret((_settings(user).get("webhook_secret") or "").strip())
+
+
+def _fernet():
+    """Fernet instance keyed off the server secret (GLBTOKEN_SECRET)."""
+    import base64
+    from cryptography.fernet import Fernet
+    from common import GLBTOKEN_SECRET
+    material = (GLBTOKEN_SECRET or "dev-insecure-webhook-key").encode()
+    key = base64.urlsafe_b64encode(hashlib.sha256(material).digest())
+    return Fernet(key)
+
+
+def encrypt_secret(raw: str) -> str:
+    """Encrypt a webhook secret at rest (Fernet, AES-128-CBC+HMAC)."""
+    if not raw:
+        return ""
+    try:
+        return "enc:v1:" + _fernet().encrypt(raw.encode()).decode()
+    except Exception as e:
+        print(f"⚠️ Webhook secret encryption failed (storing raw): {e}")
+        return raw
+
+
+def decrypt_secret(stored: str) -> str:
+    """Decrypt a webhook secret for signing; legacy plaintext passes through."""
+    if not stored:
+        return ""
+    if stored.startswith("enc:v1:"):
+        try:
+            return _fernet().decrypt(stored[len("enc:v1:"):].encode()).decode()
+        except Exception as e:
+            print(f"⚠️ Webhook secret decryption failed: {e}")
+            return ""
+    return stored  # legacy plaintext value
 
 
 def _sign(body: bytes, secret: str) -> str:
@@ -50,12 +84,24 @@ def _is_private_url(url: str) -> bool:
         for info in infos:
             ip = ipaddress.ip_address(info[4][0])
             if (ip.is_private or ip.is_loopback or ip.is_link_local
-                    or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+                    or ip.is_reserved or ip.is_multicast or ip.is_unspecified
+                    or _is_cgnat(ip)):
                 return True
         return False
     except Exception as e:
         print(f"⚠️  Webhook URL SSRF check failed (fail-closed): {e}")
         return True  # fail closed
+
+
+def _is_cgnat(ip) -> bool:
+    """CGNAT 100.64.0.0/10 (RFC 6598) — ipaddress flags it is_private on 3.11+,
+    but check explicitly for older runtimes / clarity."""
+    try:
+        if ip.version == 4:
+            return int(ip) & 0xFFC00000 == 0x64400000  # 100.64.0.0/10
+        return ip.is_private  # IPv6 ULA fc00::/7 covered by is_private
+    except Exception:
+        return False
 
 
 class _ValidatingRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -78,7 +124,8 @@ class _ValidatingRedirectHandler(urllib.request.HTTPRedirectHandler):
 def send_webhook(user, event: str, payload: dict):
     """Queue a signed webhook POST for the given event (fire-and-forget)."""
     url = get_webhook_url(user)
-    if not url or not (url.startswith("https://") or url.startswith("http://")):
+    if not url or not url.startswith("https://"):
+        # https-only (plain http rejected at save time and here as defense).
         return
     # SSRF guard: reject private-network / metadata endpoints before delivery.
     if _is_private_url(url):

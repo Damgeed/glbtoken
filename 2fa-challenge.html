@@ -6,7 +6,7 @@
 <title>Two-Factor Verification — GlbTOKEN</title>
 <meta name="robots" content="noindex,nofollow" />
 <meta name="referrer" content="no-referrer" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://glbtoken-backend-production.up.railway.app https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
 <link rel="icon" type="image/x-icon" href="favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
@@ -50,7 +50,7 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
 </div>
 <script>
 (function(){
-  var API_URL = 'https://glbtoken-backend-production.up.railway.app';
+  var API_URL = 'https://api.glbtoken.com';
   var params = new URLSearchParams(window.location.search);
   var preToken = params.get('pre') || '';
   var rawNext = params.get('next') || '/dashboard.html';

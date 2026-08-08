@@ -184,7 +184,39 @@ def _not_configured(service: str):
 
 # ── Rate Limiter ──
 
-limiter = Limiter(key_func=get_remote_address)
+def real_client_ip(request) -> str:
+    """Resolve the REAL client IP for rate limiting / audit.
+
+    uvicorn runs with proxy_headers=True. When FORWARDED_ALLOW_IPS lists
+    Railway's ingress proxy IPs, request.client.host is already the validated
+    real client IP. By default (FORWARDED_ALLOW_IPS unset) uvicorn trusts NO
+    proxy headers, so request.client.host is the ingress proxy's PRIVATE IP —
+    every user then shares one rate-limit bucket. To fix that: if the direct
+    peer is a public IP use it; if it is private/reserved (behind a proxy
+    uvicorn doesn't trust) fall back to the RIGHTMOST X-Forwarded-For entry,
+    which the ingress proxy appends itself (client-supplied values sit to its
+    LEFT, so the rightmost value is not spoofable).
+    """
+    direct = (getattr(getattr(request, "client", None), "host", None)) or ""
+    if direct:
+        try:
+            import ipaddress
+            a = ipaddress.ip_address(direct.split("%")[0])
+            if not (a.is_private or a.is_loopback or a.is_link_local
+                    or a.is_reserved or a.is_multicast or a.is_unspecified):
+                return direct  # real public client IP — use it
+        except Exception:
+            return direct
+    try:
+        fwd = request.headers.get("x-forwarded-for", "")
+        if fwd:
+            return fwd.split(",")[-1].strip()
+    except Exception:
+        pass
+    return direct or "unknown"
+
+
+limiter = Limiter(key_func=lambda request: real_client_ip(request))
 
 
 # ── Safe Error Helper ──

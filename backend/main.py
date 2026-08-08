@@ -180,7 +180,7 @@ async def lifespan(app: FastAPI):
 
 # ── App Creation ──
 
-app = FastAPI(title="GlbTOKEN API", version="1.0.0", lifespan=lifespan, docs_url=None, redoc_url=None)
+app = FastAPI(title="GlbTOKEN API", version="1.0.0", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 
 app.add_middleware(
     CORSMiddleware,
@@ -228,7 +228,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://glbtoken-backend-production.up.railway.app; frame-src 'self' https://www.google.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.glbtoken.com; frame-src 'self' https://www.google.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), midi=(), sync-xhr=(), accelerometer=(), gyroscope=(), magnetometer=(), fullscreen=(self), interest-cohort=()"
         return response
 

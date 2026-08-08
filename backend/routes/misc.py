@@ -1,13 +1,11 @@
 """GlbTOKEN — Misc Routes (contact, health, user settings)"""
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 import json, re
 
-from database import get_db, User, AIModel, Announcement
+from database import get_db, User, Announcement
 from auth import get_current_user
-from newapi_integration import health_check
 from common import _400, limiter
 from schemas import ContactRequest, UserSettingsUpdate
 
@@ -71,29 +69,42 @@ async def contact_form(req: ContactRequest, request: Request):
 
 @router.get("/api/health")
 async def health(db: Session = Depends(get_db)):
-    # Check New API connectivity
-    newapi_ok = False
-    try:
-        newapi_ok = await health_check()
-    except Exception as e:
-        print(f"⚠️ Health check New API connectivity error: {e}")
-    import time as _time
-    db_ok = True
-    models_count = 0
-    try:
-        models_count = db.query(func.count(AIModel.id)).filter(AIModel.is_active == True).scalar() or 0
-    except Exception:
-        db_ok = False
-    return {
-        "status": "ok", "version": "1.0.0", "name": "GlbTOKEN API",
-        "newapi_connected": newapi_ok,
-        "database": db_ok,
-        "models_count": models_count,
-        "timestamp": int(_time.time()),
-    }
+    # Minimal liveness probe for the platform / Railway. Deliberately does NOT
+    # leak version, DB state, New API connectivity or model counts to the
+    # public (that detail was used for recon via the direct Railway origin).
+    return {"status": "ok"}
 
 
 # ── User Settings (Notification Prefs) ──
+
+def _mask_secret(val: str) -> str:
+    """Never echo secrets in cleartext — return a masked placeholder."""
+    return "••••••••" if val else ""
+
+
+def validate_webhook_url(url: str) -> str:
+    """Validate + normalize a webhook URL at save time.
+
+    HTTPS only (plain http is rejected) and the host must not resolve to a
+    private/reserved address (SSRF guard, fail-closed). Reuses the same
+    resolver the delivery path uses.
+    """
+    url = (url or "").strip()
+    if not url:
+        return ""
+    if not url.startswith("https://"):
+        _400("webhook_url must be https:// (plain http is not allowed)")
+    try:
+        from webhooks import _is_private_url
+        if _is_private_url(url):
+            _400("webhook_url resolves to a private/internal address and is not allowed")
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"⚠️ webhook_url validation error: {e}")
+        _400("webhook_url could not be validated")
+    return url
+
 
 @router.get("/api/user/settings")
 def get_user_settings(user: User = Depends(get_current_user)):
@@ -108,7 +119,7 @@ def get_user_settings(user: User = Depends(get_current_user)):
         "login_alerts": settings.get("login_alerts", True),
         "theme": settings.get("theme", "light"),
         "webhook_url": settings.get("webhook_url", ""),
-        "webhook_secret": settings.get("webhook_secret", ""),
+        "webhook_secret": _mask_secret(settings.get("webhook_secret", "")),
         "webhook_events": settings.get("webhook_events", None),
     }
 
@@ -146,12 +157,10 @@ def update_user_settings(
     if req.theme is not None:
         settings["theme"] = req.theme
     if req.webhook_url is not None:
-        url = (req.webhook_url or "").strip()
-        if url and not (url.startswith("https://") or url.startswith("http://")):
-            _400("webhook_url must start with http:// or https://")
-        settings["webhook_url"] = url
+        settings["webhook_url"] = validate_webhook_url(req.webhook_url)
     if req.webhook_secret is not None:
-        settings["webhook_secret"] = (req.webhook_secret or "").strip()
+        from webhooks import encrypt_secret
+        settings["webhook_secret"] = encrypt_secret((req.webhook_secret or "").strip())
     if req.webhook_events is not None:
         settings["webhook_events"] = req.webhook_events
 
@@ -165,7 +174,7 @@ def update_user_settings(
             "login_alerts": settings.get("login_alerts", True),
             "theme": settings.get("theme", "light"),
             "webhook_url": settings.get("webhook_url", ""),
-            "webhook_secret": settings.get("webhook_secret", ""),
+            "webhook_secret": _mask_secret(settings.get("webhook_secret", "")),
             "webhook_events": settings.get("webhook_events", None),
         },
     }
