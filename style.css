@@ -4313,9 +4313,8 @@ html.light .star.white {
      (titles & contents) left so the table fits without horizontal scroll.
      Only position changes — no font/color edits. Left columns
      (Date/Amount/Method/Receipt) untouched. !important needed to beat the
-     .tx-th-right/.tx-th-center/.tx-td-center helpers. No padding override here
-     — let the ≤380px tight rule keep its own padding so tiny phones stay at
-     zero horizontal overflow. */
+     .tx-th-right/.tx-th-center/.tx-td-center helpers. padding-left shrunk
+     slightly so TOKENS/STATUS sit closer to METHOD (col 3). */
   .tx-scroll.tx-fit #txDeposits th:nth-child(4),
   .tx-scroll.tx-fit #txDeposits td:nth-child(4),
   .tx-scroll.tx-fit #txDeposits th:nth-child(5),
@@ -4325,6 +4324,7 @@ html.light .star.white {
   .tx-scroll.tx-fit #invoicesTable th:nth-child(5),
   .tx-scroll.tx-fit #invoicesTable td:nth-child(5) {
     text-align: left !important;
+    padding-left: 0.1rem !important;
   }
   .tx-scroll.tx-fit::after {
     display: none !important;
