@@ -1505,6 +1505,17 @@ def list_sessions(request: Request, user: User = Depends(get_current_user), db: 
             stale.revoked = True
         db.commit()
         rows = rows[:MAX_ACTIVE_SESSIONS]
+    # Collapse by browser family so legacy tokens (minted before same-device
+    # rotation) don't inflate the count: 4×Safari shows as 1 session, but
+    # Safari + Firefox stays 2. Newest token per family wins.
+    seen_family = set()
+    collapsed = []
+    for r in rows:
+        fam = _ua_family(r.user_agent or "")
+        if fam in seen_family:
+            continue
+        seen_family.add(fam)
+        collapsed.append(r)
     return {
         "sessions": [
             {
@@ -1514,7 +1525,7 @@ def list_sessions(request: Request, user: User = Depends(get_current_user), db: 
                 "user_agent": r.user_agent or "",
                 "device_type": r.device_type or "",
             }
-            for r in rows
+            for r in collapsed
         ]
     }
 

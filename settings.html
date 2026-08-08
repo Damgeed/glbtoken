@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1249" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1064" />
+<link rel="stylesheet" href="settings.css?v=1065" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -183,6 +183,11 @@
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Total Spent</div><div class="settings-item-desc-sm" id="acctSpent">—</div></div>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div style="flex:1"><div class="settings-item-name-sm">Email Verified</div><div class="settings-item-desc-sm" id="acctEmailVerified">—</div></div>
+              <button class="btn-secondary settings-btn-right" id="verifyEmailBtn" onclick="openEmailVerifyModal()" style="display:none">Verify</button>
             </div>
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -379,7 +384,7 @@
 <script src="nav.js?v=19"></script>
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1109"></script>
-<script data-cfasync="false" src="shared.js?v=1156"></script>
+<script data-cfasync="false" src="shared.js?v=1157"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1234"></script>
 
@@ -1055,10 +1060,25 @@ function processAvatarFile(file){
   reader.readAsDataURL(file);
 }
 
-function renderAvatarPreview(dataUrl){
+window.avatarImgFallback = function avatarImgFallback(img){
+  // Avatar image failed to decode (e.g. HEIC on non-Safari, corrupt data URL) —
+  // fall back to the username initial on the gold gradient instead of leaving
+  // a broken image / gold circle with nothing in it.
+  if(!img) return;
+  var initial = (window._userInitial || (document.getElementById('avatarName') ? document.getElementById('avatarName').textContent : '') || 'U').trim()[0] || 'U';
+  var holder = document.createElement('span');
+  holder.className = 'settings-avatar-initial';
+  holder.textContent = initial.toUpperCase();
+  var cam = img.nextElementSibling && img.nextElementSibling.classList && img.nextElementSibling.classList.contains('settings-avatar-cam')
+    ? img.nextElementSibling : null;
+  if(cam){ img.parentNode.insertBefore(holder, cam); } else { img.parentNode.replaceChild(holder, img); }
+  img.remove();
+};
+
+window.renderAvatarPreview = function renderAvatarPreview(dataUrl){
   var p = document.getElementById('avatarPreview');
   if(p){
-    p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+    p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="avatarImgFallback(this)">'
       + '<span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
   }
   // Keep the open avatar menu's preview in sync so the user sees the new
@@ -1654,7 +1674,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(p && p.name){ window._userInitial = (p.name||'U').trim()[0] ? (p.name.trim()[0].toUpperCase()) : 'U'; }
     if(p && p.avatar){
       var av = document.getElementById('avatarPreview');
-      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="avatarImgFallback(this)"><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
     } else {
       var av2 = document.getElementById('avatarPreview');
       if(av2) av2.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';

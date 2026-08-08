@@ -815,6 +815,7 @@ window.applyAuth = function applyAuth(){
         avImg.src = userData.avatar;
         avImg.alt = '';
         avImg.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;display:block';
+        avImg.onerror = function(){ this.onerror = null; this.remove(); av.insertBefore(document.createTextNode(initial), dropdown); };
         av.appendChild(avImg);
       } else {
         av.appendChild(document.createTextNode(initial));
@@ -825,7 +826,7 @@ window.applyAuth = function applyAuth(){
     if(da){
       da.textContent = '';
       if(userData && userData.avatar){
-        da.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block">';
+        da.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+initial+'\')">';
       } else {
         da.textContent = initial;
       }
@@ -837,7 +838,7 @@ window.applyAuth = function applyAuth(){
     if(ma){
       ma.textContent = '';
       if(userData && userData.avatar){
-        ma.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block">';
+        ma.innerHTML = '<img src="'+escapeHtml(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+initial+'\')">';
       } else {
         ma.textContent = initial;
       }
@@ -850,6 +851,14 @@ window.applyAuth = function applyAuth(){
 };
 
 // ── Avatar sync (called after upload/remove so the nav avatar updates everywhere) ──
+window.navAvatarFallback = function navAvatarFallback(img, initial){
+  // Avatar image failed to decode — show the username initial instead of a
+  // broken image. Shared by nav-avatar / dropdown / mobile avatar.
+  if(!img) return;
+  img.onerror = null;
+  var holder = document.createTextNode((initial || 'U').trim()[0] || 'U');
+  img.parentNode.replaceChild(holder, img);
+};
 window.setUserAvatar = function setUserAvatar(avatar){
   if(avatar){ userData.avatar = avatar; }
   else { try{ delete userData.avatar; }catch(e){ userData.avatar = ''; } }
