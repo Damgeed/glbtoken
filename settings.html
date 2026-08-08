@@ -776,7 +776,7 @@ window.exportUserData = function(){
 
 window.clearLocalCache = function(){
   showConfirm('Clear local cache?', 'This removes locally stored preferences (theme, language, compact mode, dismissed notifications). Your account data on our servers is not affected.', function(){
-    ['gt_theme','gt_compact','gt_lang','gt_def_model','gt_def_temp','gt_def_max_tokens','gt_def_stream','gt_dismissed_notifs','gt_read_notifs'].forEach(function(k){ localStorage.removeItem(k); });
+    ['gt_theme','gt_compact','gt_lang','gt_def_model','gt_def_temp','gt_def_max_tokens','gt_def_stream','gt_dismissed_notifs','gt_read_notifs','gt_session_shown'].forEach(function(k){ localStorage.removeItem(k); });
     showToast('Local cache cleared','success');
     setTimeout(function(){ location.reload(); }, 600);
   }, 'Clear');
