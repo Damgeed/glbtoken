@@ -257,15 +257,6 @@ button.settings-save-btn:hover {
   justify-content: center;
   flex-shrink: 0;
 }
-.settings-icon-primary {
-  background: var(--primary-subtle);
-}
-.settings-icon-destructive {
-  background: var(--destructive-subtle);
-}
-.settings-icon-success {
-  background: var(--success-subtle);
-}
 /* Settings item name */
 .settings-item-name {
   font-weight: 600;

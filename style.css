@@ -4394,7 +4394,6 @@ html.light .star.white {
 }
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
 .flex-row-wrap { display:flex;gap:0.5rem;flex-wrap:wrap; }
-.scroll-hint { display:none; }
 /* ── Professional Dashboard Styling ── */
 body {
   background: var(--bg);

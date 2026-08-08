@@ -56,8 +56,11 @@ DEAD = {
         '.payment-card .card-info .meta',
         '.refs-status-success', '.refs-status-failed',
     ],
+    'settings.css': [
+        '.settings-icon-primary', '.settings-icon-destructive', '.settings-icon-success',
+    ],
     'style.css': [
-        '.opacity-4', '.inline-block',
+        '.opacity-4', '.inline-block', '.scroll-hint',
     ],
     'team.css': [
         '.text-xs-muted-2', '.badge-red-sm', '.team-row', '.btn-auto',
@@ -66,6 +69,8 @@ DEAD = {
         '.payment-card .card-info .name',
         '.payment-card .card-info .meta',
         '.member-collapse', '.member-collapse.open',
+        '.badge-role-admin', '.badge-role-member',
+        '.mix-owner', '.mix-admin', '.mix-member',
     ],
     'usage.css': [
         '.filter-row-wide', '.filter-label', '.date-range-row',
@@ -74,6 +79,7 @@ DEAD = {
         '.usage-empty-desc',
         '.load-more-wrap', '.load-more-btn', '.history-count-note',
         '.status-badge-success', '.status-badge-failed',
+        '#historyBody',
     ],
 }
 

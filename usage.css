@@ -13,11 +13,6 @@
   z-index: 1;
 }
 @media (max-width: 768px) {
-  /* tx-fit rules moved to style.css (shared with billing Invoices) — see
-     .tx-scroll.tx-fit block. Keep usage-specific table rules below. */
-  #historyBody {
-    min-width: 550px;
-  }
   #loginTable td:nth-child(3) {
     max-width: 140px;
     white-space: normal;
