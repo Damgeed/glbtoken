@@ -187,12 +187,12 @@
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Email</div><div class="settings-item-desc-sm" id="acctEmail" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
-              <button class="btn-secondary settings-btn-right acct-copy-btn" onclick="copyAcctEmail()" title="Copy email" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
+              <button class="btn-secondary settings-btn-right uid-copy-btn" id="acctCopyBtn" onclick="copyAcctEmail()" title="Copy email" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">User ID</div><div class="settings-item-desc-sm" id="acctUserId" style="font-family:monospace;font-size:0.82rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
-              <button class="btn-secondary settings-btn-right uid-copy-btn" onclick="copyUserId()" title="Copy User ID" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
+              <button class="btn-secondary settings-btn-right uid-copy-btn" id="uidCopyBtn" onclick="copyUserId()" title="Copy User ID" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
           </div>
         </div>
@@ -1224,20 +1224,7 @@ window.loadSessions = function(){
   safeApi('GET','/api/auth/sessions',null,null,true).then(function(d){
     if(!d || !d.sessions){ summary.textContent = '—'; return; }
     var n = d.sessions.length;
-    var label = n + (n === 1 ? ' active session' : ' active sessions');
-    // Show WHICH devices so the number is meaningful (e.g. "· Safari, Firefox")
-    var seen = [];
-    d.sessions.forEach(function(s){
-      var name = lhBrowser(s.user_agent || '');
-      if(name && name !== 'Unknown device' && seen.indexOf(name) === -1) seen.push(name);
-    });
-    if(seen.length){
-      var names = seen.slice(0,3).join(', ');
-      if(seen.length > 3) names += ', +' + (seen.length - 3);
-      summary.textContent = label + ' · ' + names;
-    } else {
-      summary.textContent = label;
-    }
+    summary.textContent = n + (n === 1 ? ' active session' : ' active sessions');
   }).catch(function(){ summary.textContent = '—'; });
 };
 
@@ -1322,7 +1309,7 @@ function loadAccountOverview(){
 
 // ── User ID (OpenRouter-style u_xxx) ──
 function uidCopyFeedback(){
-  var btn = document.querySelector('.uid-copy-btn');
+  var btn = document.getElementById('uidCopyBtn');
   if(!btn) return;
   var sym = btn.querySelector('.uid-copy-symbol');
   if(!sym) return;
@@ -1364,7 +1351,7 @@ function fallbackCopy(text){
 
 // ── Account card: Email + Copy ──
 function acctCopyFeedback(){
-  var btn = document.querySelector('.acct-copy-btn');
+  var btn = document.getElementById('acctCopyBtn');
   if(!btn) return;
   var sym = btn.querySelector('.uid-copy-symbol');
   if(!sym) return;
