@@ -4289,7 +4289,7 @@ html.light .star.white {
    mobile viewport without horizontal scroll; cells wrap instead. Shared
    globally (moved from usage.css 2026-11 so billing Invoices uses the same
    standard card design as usage Transaction History). */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .tx-scroll.tx-fit table {
     min-width: 0;
     width: 100%;
@@ -4311,6 +4311,22 @@ html.light .star.white {
   }
   .tx-scroll.tx-fit::after {
     display: none !important;
+  }
+}
+/* Extra-tight fit for very small phones (<=380px): the nowrap amount/date
+   columns can still overflow by a few px (e.g. +1,200,000 tokens at 360px).
+   Shave cell padding + amount font so the table never needs horizontal
+   scroll on small screens. */
+@media (max-width: 380px) {
+  .tx-scroll.tx-fit th,
+  .tx-scroll.tx-fit td {
+    padding: 0.28rem 0.18rem;
+  }
+  .tx-scroll.tx-fit td.amount {
+    font-size: 0.66rem;
+  }
+  .tx-scroll.tx-fit td.td-date {
+    font-size: 0.66rem;
   }
 }
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
