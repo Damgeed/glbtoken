@@ -313,5 +313,10 @@
      tx-th-right/tx-td-right use !important, so override with !important too. */
   #invoicesTable th:nth-child(2),
   #invoicesTable td:nth-child(2) { text-align: left !important; }
+  /* Match Transaction History width: TH Tokens shows bare "+25,000" (no
+     unit) so it fits the 348px viewport; hiding the " GT" suffix on mobile
+     keeps the Invoices table the same width as TH (no left/right scroll).
+     Desktop keeps "25,000 GT". */
+  #invoicesTable .gt-unit { display: none; }
 }
 .pm-recharge:active { transform: scale(0.96); }
