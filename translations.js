@@ -1908,6 +1908,15 @@ I18N["Japan"] = {"zh-CN": "日本", ru: "Япония", ja: "日本", de: "Japan
 I18N["Join Organization — GlbTOKEN"] = {"zh-CN": "加入组织 — GlbTOKEN", ru: "Вступить в организацию — GlbTOKEN", ja: "組織に参加 — GlbTOKEN", de: "Organisation beitreten — GlbTOKEN"};
 I18N["Jordan"] = {"zh-CN": "约旦", ru: "Иордания", ja: "ヨルダン", de: "Jordanien"};
 
+I18N["Invalid or expired refresh token"] = {"zh-CN": "刷新令牌无效或已过期", ru: "Недействительный или истёкший токен обновления", ja: "リフレッシュトークンが無効か期限切れです", de: "Ungültiges oder abgelaufenes Aktualisierungstoken"};
+I18N["July 1, 2026"] = {"zh-CN": "2026年7月1日", ru: "1 июля 2026 г.", ja: "2026年7月1日", de: "1. Juli 2026"};
+I18N["July 1, 2026 · 6 min read"] = {"zh-CN": "2026年7月1日 · 6 分钟阅读", ru: "1 июля 2026 г. · 6 мин чтения", ja: "2026年7月1日 · 読了6分", de: "1. Juli 2026 · 6 Min. Lesezeit"};
+I18N["July 3, 2026"] = {"zh-CN": "2026年7月3日", ru: "3 июля 2026 г.", ja: "2026年7月3日", de: "3. Juli 2026"};
+I18N["June 15, 2026"] = {"zh-CN": "2026年6月15日", ru: "15 июня 2026 г.", ja: "2026年6月15日", de: "15. Juni 2026"};
+I18N["June 15, 2026 · 5 min read"] = {"zh-CN": "2026年6月15日 · 5 分钟阅读", ru: "15 июня 2026 г. · 5 мин чтения", ja: "2026年6月15日 · 読了5分", de: "15. Juni 2026 · 5 Min. Lesezeit"};
+I18N["June 20, 2026"] = {"zh-CN": "2026年6月20日", ru: "20 июня 2026 г.", ja: "2026年6月20日", de: "20. Juni 2026"};
+I18N["June 20, 2026 · 6 min read"] = {"zh-CN": "2026年6月20日 · 6 分钟阅读", ru: "20 июня 2026 г. · 6 мин чтения", ja: "2026年6月20日 · 読了6分", de: "20. Juni 2026 · 6 Min. Lesezeit"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
