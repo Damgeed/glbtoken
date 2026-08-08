@@ -2182,6 +2182,44 @@ I18N["Unknown"] = {"zh-CN": "未知", ru: "Неизвестно", ja: "不明", 
 I18N["Update name, permissions, expiry, rate limit, or IP allowlist"] = {"zh-CN": "更新名称、权限、有效期、速率限制或 IP 白名单", ru: "Обновите имя, права доступа, срок действия, лимит запросов или IP-белый список", ja: "名前、権限、有効期限、レート制限、IP 許可リストを更新", de: "Name, Berechtigungen, Ablaufdatum, Ratenlimit oder IP-Whitelist aktualisieren"};
 I18N["Uruguay"] = {"zh-CN": "乌拉圭", ru: "Уругвай", ja: "ウルグアイ", de: "Uruguay"};
 
+I18N["True"] = {"zh-CN": "是", ru: "Да", ja: "はい", de: "Ja"};
+I18N["Usage & History — GlbTOKEN"] = {"zh-CN": "用量与历史记录 — GlbTOKEN", ru: "Использование и история — GlbTOKEN", ja: "使用状況と履歴 — GlbTOKEN", de: "Nutzung & Verlauf — GlbTOKEN"};
+I18N["Usage vs top member"] = {"zh-CN": "与团队最高成员的用量对比", ru: "Использование по сравнению с лучшим участником команды", ja: "トップメンバーとの使用量比較", de: "Nutzung im Vergleich zum Top-Mitglied"};
+I18N["Use the OpenAI Python SDK with your GlbTOKEN API key:"] = {"zh-CN": "使用 OpenAI Python SDK 配合您的 GlbTOKEN API 密钥：", ru: "Используйте OpenAI Python SDK со своим ключом GlbTOKEN API:", ja: "OpenAI Python SDK を GlbTOKEN API キーと併用する場合：", de: "Verwenden Sie das OpenAI Python SDK mit Ihrem GlbTOKEN-API-Schlüssel:"};
+I18N["Use the OpenAI SDK (or any HTTP client) to call"] = {"zh-CN": "使用 OpenAI SDK（或任意 HTTP 客户端）调用", ru: "Используйте OpenAI SDK (или любой HTTP-клиент) для вызова", ja: "OpenAI SDK（または任意の HTTP クライアント）を使用して呼び出します", de: "Verwenden Sie das OpenAI SDK (oder einen beliebigen HTTP-Client) zum Aufrufen"};
+I18N["Using GPT-5.5 Pro and Claude Sonnet 5 is as simple as any other model on GlbTOKEN:"] = {"zh-CN": "在 GlbTOKEN 上使用 GPT-5.5 Pro 和 Claude Sonnet 5，与使用其他任何模型一样简单：", ru: "Использовать GPT-5.5 Pro и Claude Sonnet 5 так же просто, как любую другую модель на GlbTOKEN:", ja: "GPT-5.5 Pro や Claude Sonnet 5 の使用は、GlbTOKEN 上の他のモデルと同じくらい簡単です：", de: "GPT-5.5 Pro und Claude Sonnet 5 lassen sich auf GlbTOKEN so einfach verwenden wie jedes andere Modell:"};
+I18N["Uzbekistan"] = {"zh-CN": "乌兹别克斯坦", ru: "Узбекистан", ja: "ウズベキスタン", de: "Usbekistan"};
+I18N["Value: $0.00"] = {"zh-CN": "价值：$0.00", ru: "Стоимость: $0.00", ja: "価値：$0.00", de: "Wert: $0.00"};
+I18N["Vanuatu"] = {"zh-CN": "瓦努阿图", ru: "Вануату", ja: "バヌアツ", de: "Vanuatu"};
+I18N["Venezuela"] = {"zh-CN": "委内瑞拉", ru: "Венесуэла", ja: "ベネズエラ", de: "Venezuela"};
+I18N["Version"] = {"zh-CN": "版本", ru: "Версия", ja: "バージョン", de: "Version"};
+I18N["Vietnam"] = {"zh-CN": "越南", ru: "Вьетнам", ja: "ベトナム", de: "Vietnam"};
+I18N["View"] = {"zh-CN": "查看", ru: "Просмотр", ja: "表示", de: "Anzeigen"};
+I18N["View all 100+ →"] = {"zh-CN": "查看全部 100+ →", ru: "Показать все 100+ →", ja: "すべて表示（100+）→", de: "Alle 100+ anzeigen →"};
+I18N["Volume discounts"] = {"zh-CN": "批量折扣", ru: "Скидки за объём", ja: "ボリュームディスカウント", de: "Mengenrabatte"};
+I18N["We are proud to announce that GlbTOKEN has successfully completed"] = {"zh-CN": "我们自豪地宣布，GlbTOKEN 已成功完成", ru: "С гордостью сообщаем, что GlbTOKEN успешно завершил", ja: "GlbTOKEN が無事に完了したことを誇りを持ってお知らせします", de: "Wir freuen uns, bekannt zu geben, dass GlbTOKEN erfolgreich abgeschlossen hat"};
+I18N["We are thrilled to announce that GlbTOKEN now supports"] = {"zh-CN": "我们激动地宣布，GlbTOKEN 现已支持", ru: "С восторгом сообщаем, что GlbTOKEN теперь поддерживает", ja: "GlbTOKEN が新たに対応したことをお知らせします", de: "Wir freuen uns sehr, bekannt zu geben, dass GlbTOKEN jetzt unterstützt"};
+I18N["We designed GlbTOKEN from day one as a"] = {"zh-CN": "我们从第一天起就将 GlbTOKEN 设计为一款", ru: "Мы с самого первого дня проектировали GlbTOKEN как", ja: "私たちは GlbTOKEN を最初から次のように設計しました：", de: "Wir haben GlbTOKEN von Anfang an als"};
+I18N["We've built GlbTOKEN with a"] = {"zh-CN": "我们以这样的理念构建了 GlbTOKEN：", ru: "Мы создали GlbTOKEN с", ja: "私たちは GlbTOKEN を次のような理念で構築しました：", de: "Wir haben GlbTOKEN mit einem"};
+I18N["We've just added two of the most anticipated AI models to the GlbTOKEN platform:"] = {"zh-CN": "我们刚刚在 GlbTOKEN 平台上新增了两个备受期待的 AI 模型：", ru: "Мы только что добавили две самые ожидаемые модели ИИ на платформу GlbTOKEN:", ja: "GlbTOKEN プラットフォームに、最も期待されていた 2 つの AI モデルを追加しました：", de: "Wir haben gerade zwei der am meisten erwarteten KI-Modelle zur GlbTOKEN-Plattform hinzugefügt:"};
+I18N["Webhook URL"] = {"zh-CN": "Webhook 地址", ru: "URL вебхука", ja: "Webhook URL", de: "Webhook-URL"};
+I18N["Webhooks"] = {"zh-CN": "Webhook", ru: "Вебхуки", ja: "Webhook", de: "Webhooks"};
+I18N["What Is GlbTOKEN?"] = {"zh-CN": "什么是 GlbTOKEN？", ru: "Что такое GlbTOKEN?", ja: "GlbTOKEN とは？", de: "Was ist GlbTOKEN?"};
+I18N["What Makes the GlbTOKEN API Different?"] = {"zh-CN": "GlbTOKEN API 有何不同？", ru: "Что делает GlbTOKEN API особенным?", ja: "GlbTOKEN API の違いは何ですか？", de: "Was macht die GlbTOKEN API anders?"};
+I18N["What's Next"] = {"zh-CN": "下一步", ru: "Что дальше?", ja: "次のステップ", de: "Was kommt als Nächstes?"};
+I18N["Why Paystack?"] = {"zh-CN": "为什么选择 Paystack？", ru: "Почему Paystack?", ja: "なぜ Paystack なのか？", de: "Warum Paystack?"};
+I18N["Write a Python sort function"] = {"zh-CN": "编写一个 Python 排序函数", ru: "Напишите функцию сортировки на Python", ja: "Python のソート関数を書いてください", de: "Schreiben Sie eine Python-Sortierfunktion"};
+I18N["Yemen"] = {"zh-CN": "也门", ru: "Йемен", ja: "イエメン", de: "Jemen"};
+I18N["Your API Keys"] = {"zh-CN": "您的 API 密钥", ru: "Ваши ключи API", ja: "あなたの API キー", de: "Ihre API-Schlüssel"};
+I18N["Your Presets"] = {"zh-CN": "您的预设", ru: "Ваши пресеты", ja: "あなたのプリセット", de: "Ihre Voreinstellungen"};
+I18N["Your friends create an account using your referral link and start using GlbTOKEN."] = {"zh-CN": "您的好友通过您的推荐链接注册账号并开始使用 GlbTOKEN。", ru: "Ваши друзья создают аккаунт по вашей реферальной ссылке и начинают пользоваться GlbTOKEN.", ja: "友人があなたの紹介リンクからアカウントを作成し、GlbTOKEN を使い始めます。", de: "Ihre Freunde erstellen über Ihren Empfehlungslink ein Konto und beginnen, GlbTOKEN zu nutzen."};
+I18N["ZAR (R)"] = {"zh-CN": "ZAR (R)", ru: "ZAR (R)", ja: "ZAR (R)", de: "ZAR (R)"};
+I18N["ZAR (South African Rand)"] = {"zh-CN": "ZAR（南非兰特）", ru: "ZAR (южноафриканский рэнд)", ja: "ZAR（南アフリカランド）", de: "ZAR (Südafrikanischer Rand)"};
+I18N["Zambia"] = {"zh-CN": "赞比亚", ru: "Замбия", ja: "ザンビア", de: "Sambia"};
+I18N["Zimbabwe"] = {"zh-CN": "津巴布韦", ru: "Зимбабве", ja: "ジンバブエ", de: "Simbabwe"};
+I18N["after signing up."] = {"zh-CN": "注册后。", ru: "после регистрации.", ja: "登録後。", de: "nach der Anmeldung."};
+I18N["cURL"] = {"zh-CN": "cURL", ru: "cURL", ja: "cURL", de: "cURL"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
