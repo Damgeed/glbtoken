@@ -2020,6 +2020,47 @@ I18N["North Macedonia"] = {"zh-CN": "北马其顿", ru: "Северная Мак
 I18N["Norway"] = {"zh-CN": "挪威", ru: "Норвегия", ja: "ノルウェー", de: "Norwegen"};
 I18N["Not authenticated"] = {"zh-CN": "未认证", ru: "Не авторизован", ja: "認証されていません", de: "Nicht authentifiziert"};
 
+I18N["Change the model string (e.g."] = {"zh-CN": "更改模型字符串（例如", ru: "Измените строку модели (например,", ja: "モデル文字列を変更（例：", de: "Ändern Sie die Modellzeichenfolge (z. B."};
+I18N["Generate your first API key from the"] = {"zh-CN": "从以下位置生成您的第一个 API 密钥：", ru: "Создайте свой первый API-ключ в", ja: "最初のAPIキーは以下の場所から生成できます：", de: "Generieren Sie Ihren ersten API-Schlüssel über"};
+I18N["GlbTOKEN is exactly that abstraction layer. We've built a platform where"] = {"zh-CN": "GlbTOKEN 正是这样的抽象层。我们构建了一个平台，在这里", ru: "GlbTOKEN — именно тот уровень абстракции. Мы создали платформу, где", ja: "GlbTOKENはまさにその抽象化レイヤーです。私たちが構築したプラットフォームでは、", de: "GlbTOKEN ist genau diese Abstraktionsebene. Wir haben eine Plattform gebaut, auf der"};
+I18N["Notifications now live inside"] = {"zh-CN": "通知现已移至", ru: "Уведомления теперь в разделе", ja: "通知は", de: "Benachrichtigungen befinden sich jetzt im Bereich"};
+I18N["Notifications — GlbTOKEN"] = {"zh-CN": "通知 — GlbTOKEN", ru: "Уведомления — GlbTOKEN", ja: "通知 — GlbTOKEN", de: "Benachrichtigungen — GlbTOKEN"};
+I18N["Notifications."] = {"zh-CN": "通知。", ru: "Уведомления.", ja: "通知。", de: "Benachrichtigungen."};
+I18N["One API key"] = {"zh-CN": "一个 API 密钥", ru: "Один API-ключ", ja: "1つのAPIキー", de: "Ein API-Schlüssel"};
+I18N["OpenAI"] = {"zh-CN": "OpenAI", ru: "OpenAI", ja: "OpenAI", de: "OpenAI"};
+I18N["OpenAI's GPT-5.5 Pro"] = {"zh-CN": "OpenAI 的 GPT-5.5 Pro", ru: "GPT-5.5 Pro от OpenAI", ja: "OpenAI の GPT-5.5 Pro", de: "GPT-5.5 Pro von OpenAI"};
+I18N["Opera"] = {"zh-CN": "Opera", ru: "Opera", ja: "Opera", de: "Opera"};
+I18N["Or browse all models on the"] = {"zh-CN": "或在以下位置浏览所有模型：", ru: "Или просмотрите все модели на", ja: "または、次の場所ですべてのモデルを閲覧できます：", de: "Oder durchsuchen Sie alle Modelle auf der"};
+I18N["Organization Invitation"] = {"zh-CN": "组织邀请", ru: "Приглашение в организацию", ja: "組織への招待", de: "Einladung zur Organisation"};
+I18N["Our Commitment"] = {"zh-CN": "我们的承诺", ru: "Наши обязательства", ja: "私たちの約束", de: "Unser Engagement"};
+I18N["Page 1"] = {"zh-CN": "第 1 页", ru: "Страница 1", ja: "1ページ", de: "Seite 1"};
+I18N["Pakistan"] = {"zh-CN": "巴基斯坦", ru: "Пакистан", ja: "パキスタン", de: "Pakistan"};
+I18N["Palau"] = {"zh-CN": "帕劳", ru: "Палау", ja: "パラオ", de: "Palau"};
+I18N["Panama"] = {"zh-CN": "巴拿马", ru: "Панама", ja: "パナマ", de: "Panama"};
+I18N["Papua New Guinea"] = {"zh-CN": "巴布亚新几内亚", ru: "Папуа — Новая Гвинея", ja: "パプアニューギニア", de: "Papua-Neuguinea"};
+I18N["Paraguay"] = {"zh-CN": "巴拉圭", ru: "Парагвай", ja: "パラグアイ", de: "Paraguay"};
+I18N["Pause"] = {"zh-CN": "暂停", ru: "Пауза", ja: "一時停止", de: "Pausieren"};
+I18N["Paused API key:"] = {"zh-CN": "已暂停的 API 密钥：", ru: "Приостановленный API-ключ:", ja: "一時停止中のAPIキー：", de: "Pausierter API-Schlüssel:"};
+I18N["Pay-as-you-go"] = {"zh-CN": "按量付费", ru: "Оплата по мере использования", ja: "従量課金制", de: "Pay-as-you-go"};
+I18N["Payloads are POSTed as JSON with"] = {"zh-CN": "负载以 JSON 形式 POST 发送，并带有", ru: "Полезная нагрузка отправляется как JSON с", ja: "ペイロードはJSONとしてPOST送信され、", de: "Die Nutzlast wird als JSON per POST gesendet, mit"};
+I18N["Paystack Integration: African Payments Now Live — GlbTOKEN Blog"] = {"zh-CN": "Paystack 集成：非洲支付现已上线 — GlbTOKEN 博客", ru: "Интеграция Paystack: африканские платежи теперь доступны — блог GlbTOKEN", ja: "Paystack連携：アフリカでの決済が利用可能に — GlbTOKEN ブログ", de: "Paystack-Integration: Afrikanische Zahlungen jetzt live — GlbTOKEN Blog"};
+I18N["Pending invites appear here after sending."] = {"zh-CN": "发送后，待处理的邀请会显示在这里。", ru: "После отправки здесь появятся ожидающие приглашения.", ja: "送信後、保留中の招待がここに表示されます。", de: "Ausstehende Einladungen erscheinen hier nach dem Senden."};
+I18N["Per-key consumption"] = {"zh-CN": "每个密钥的消耗量", ru: "Расход по каждому ключу", ja: "キーごとの消費量", de: "Verbrauch pro Schlüssel"};
+I18N["Period forecast"] = {"zh-CN": "周期预测", ru: "Прогноз на период", ja: "期間予測", de: "Prognose für den Zeitraum"};
+I18N["Permanently delete your account and all associated data. This action cannot be undone."] = {"zh-CN": "永久删除你的账户及所有相关数据。此操作无法撤销。", ru: "Навсегда удалить ваш аккаунт и все связанные данные. Это действие нельзя отменить.", ja: "アカウントと関連するすべてのデータを完全に削除します。この操作は取り消せません。", de: "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden."};
+I18N["Phi-4 — Microsoft"] = {"zh-CN": "Phi-4 — Microsoft", ru: "Phi-4 — Microsoft", ja: "Phi-4 — Microsoft", de: "Phi-4 — Microsoft"};
+I18N["Philippines"] = {"zh-CN": "菲律宾", ru: "Филиппины", ja: "フィリピン", de: "Philippinen"};
+I18N["Platform news, updates and important notices"] = {"zh-CN": "平台新闻、更新和重要通知", ru: "Новости платформы, обновления и важные уведомления", ja: "プラットフォームのニュース、更新情報、重要なお知らせ", de: "Plattform-News, Updates und wichtige Hinweise"};
+I18N["Playground — GlbTOKEN"] = {"zh-CN": "Playground — GlbTOKEN", ru: "Playground — GlbTOKEN", ja: "Playground — GlbTOKEN", de: "Playground — GlbTOKEN"};
+I18N["Poland"] = {"zh-CN": "波兰", ru: "Польша", ja: "ポーランド", de: "Polen"};
+I18N["Portugal"] = {"zh-CN": "葡萄牙", ru: "Португалия", ja: "ポルトガル", de: "Portugal"};
+I18N["Postman"] = {"zh-CN": "Postman", ru: "Postman", ja: "Postman", de: "Postman"};
+I18N["Pricing on GlbTOKEN"] = {"zh-CN": "GlbTOKEN 定价", ru: "Цены на GlbTOKEN", ja: "GlbTOKENの料金", de: "Preise bei GlbTOKEN"};
+I18N["Pricing — GlbTOKEN"] = {"zh-CN": "定价 — GlbTOKEN", ru: "Цены — GlbTOKEN", ja: "料金 — GlbTOKEN", de: "Preise — GlbTOKEN"};
+I18N["Privacy Policy — GlbTOKEN"] = {"zh-CN": "隐私政策 — GlbTOKEN", ru: "Политика конфиденциальности — GlbTOKEN", ja: "プライバシーポリシー — GlbTOKEN", de: "Datenschutzerklärung — GlbTOKEN"};
+I18N["Product Updates"] = {"zh-CN": "产品更新", ru: "Обновления продукта", ja: "製品アップデート", de: "Produkt-Updates"};
+I18N["Project your monthly spend based on recent usage"] = {"zh-CN": "根据近期使用情况预测你的每月支出", ru: "Прогнозируйте ежемесячные расходы на основе недавнего использования", ja: "最近の利用状況に基づいて毎月の支出を予測", de: "Prognostizieren Sie Ihre monatlichen Ausgaben auf Basis der letzten Nutzung"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
