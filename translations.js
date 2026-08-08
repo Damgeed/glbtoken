@@ -1900,6 +1900,14 @@ I18N["Interface Language"] = {"zh-CN": "界面语言", ru: "Язык интер�
 I18N["Introducing GlbTOKEN — One Balance for All AI"] = {"zh-CN": "隆重推出 GlbTOKEN — 一个余额，畅用所有 AI", ru: "Представляем GlbTOKEN — один баланс для всех ИИ", ja: "GlbTOKEN 登場 — すべての AI でひとつの残高", de: "Wir stellen vor: GlbTOKEN — ein Guthaben für alle KI"};
 I18N["Introducing GlbTOKEN — One Balance for All AI | Blog"] = {"zh-CN": "隆重推出 GlbTOKEN — 一个余额，畅用所有 AI | 博客", ru: "Представляем GlbTOKEN — один баланс для всех ИИ | Блог", ja: "GlbTOKEN 登場 — すべての AI でひとつの残高 | ブログ", de: "Wir stellen vor: GlbTOKEN — ein Guthaben für alle KI | Blog"};
 
+I18N["Ireland"] = {"zh-CN": "爱尔兰", ru: "Ирландия", ja: "アイルランド", de: "Irland"};
+I18N["Israel"] = {"zh-CN": "以色列", ru: "Израиль", ja: "イスラエル", de: "Israel"};
+I18N["Italy"] = {"zh-CN": "意大利", ru: "Италия", ja: "イタリア", de: "Italien"};
+I18N["Jamaica"] = {"zh-CN": "牙买加", ru: "Ямайка", ja: "ジャマイカ", de: "Jamaika"};
+I18N["Japan"] = {"zh-CN": "日本", ru: "Япония", ja: "日本", de: "Japan"};
+I18N["Join Organization — GlbTOKEN"] = {"zh-CN": "加入组织 — GlbTOKEN", ru: "Вступить в организацию — GlbTOKEN", ja: "組織に参加 — GlbTOKEN", de: "Organisation beitreten — GlbTOKEN"};
+I18N["Jordan"] = {"zh-CN": "约旦", ru: "Иордания", ja: "ヨルダン", de: "Jordanien"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
