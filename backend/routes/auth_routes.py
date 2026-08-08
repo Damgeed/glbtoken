@@ -1368,13 +1368,28 @@ def delete_own_account(
 @router.get("/api/auth/sessions")
 @limiter.limit("30/minute")
 def list_sessions(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """List the user's active (non-revoked, non-expired) refresh sessions."""
+    """List the user's active (non-revoked, non-expired) refresh sessions.
+
+    Historical cleanup: before the refresh endpoint rotated tokens (it revokes
+    the old one each refresh), every silent page-load refresh minted a new row
+    without revoking the previous one — so one browser could accumulate 20+
+    "sessions". We cap active tokens per user at MAX_ACTIVE_SESSIONS and revoke
+    the oldest beyond that, so the count reflects real devices/sessions.
+    """
     from database import RefreshToken
+    MAX_ACTIVE_SESSIONS = 8
     rows = db.query(RefreshToken).filter(
         RefreshToken.user_id == user.id,
         RefreshToken.revoked == False,
         RefreshToken.expires_at > datetime.now(timezone.utc),
     ).order_by(desc(RefreshToken.created_at)).all()
+    if len(rows) > MAX_ACTIVE_SESSIONS:
+        # Revoke the oldest tokens beyond the cap (one-time historical cleanup;
+        # rotation keeps new sessions at ~1 per device from here on).
+        for stale in rows[MAX_ACTIVE_SESSIONS:]:
+            stale.revoked = True
+        db.commit()
+        rows = rows[:MAX_ACTIVE_SESSIONS]
     return {
         "sessions": [
             {

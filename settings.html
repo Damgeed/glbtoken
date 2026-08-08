@@ -970,7 +970,7 @@ window.openAvatarMenu = function(){
     +   '<button onclick="closeAvatarMenu()" style="background:none;border:none;color:'+muted+';font-size:1.05rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
     + '</div>'
     + '<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1rem">'
-    +   '<div onclick="document.getElementById(\'avatarFileInput\').click();" title="Click to upload a new photo" style="cursor:pointer;border-radius:50%;position:relative;transition:transform 0.15s,box-shadow 0.15s" onmouseover="this.style.transform=\'scale(1.05)\';this.style.boxShadow=\'0 0 0 4px rgba(244,180,0,0.25)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'none\'">'
+    +   '<div id="avatarMenuPreview" onclick="document.getElementById(\'avatarFileInput\').click();" title="Click to upload a new photo" style="cursor:pointer;border-radius:50%;position:relative;transition:transform 0.15s,box-shadow 0.15s" onmouseover="this.style.transform=\'scale(1.05)\';this.style.boxShadow=\'0 0 0 4px rgba(244,180,0,0.25)\'" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'none\'">'
     +     (imgEl
         ? '<img src="'+imgEl.src+'" alt="Profile picture" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,180,0,0.45);box-shadow:0 4px 16px rgba(244,180,0,0.18);display:block">'
         : '<div style="width:110px;height:110px;border-radius:50%;background:rgba(244,180,0,0.07);border:2px dashed rgba(244,180,0,0.35);display:flex;align-items:center;justify-content:center">'
@@ -1037,8 +1037,16 @@ document.addEventListener('change', function(e){
 
 function renderAvatarPreview(dataUrl){
   var p = document.getElementById('avatarPreview');
-  if(!p) return;
-  p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><span class="settings-avatar-hint">✎</span>';
+  if(p) p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><span class="settings-avatar-hint">✎</span>';
+  // Keep the open avatar menu's preview in sync so the user sees the new
+  // photo immediately instead of the old/default one.
+  var mp = document.getElementById('avatarMenuPreview');
+  if(mp){
+    mp.innerHTML = '<img src="'+dataUrl+'" alt="Profile picture" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,180,0,0.45);box-shadow:0 4px 16px rgba(244,180,0,0.18);display:block">'
+      + '<div style="position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#F4B400 0%,#E08E27 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(244,180,0,0.35);border:2px solid #171923">'
+      +   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0A0B14" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+      + '</div>';
+  }
 }
 
 function saveAvatar(dataUrl){
@@ -1496,7 +1504,7 @@ function loadNotifications(){
     // users scroll; the .notif-grid container scrolls to reach every item).
     list.innerHTML = visible.map(function(n){
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
-      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'" style="margin-bottom:0.5rem">'
+      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
         + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'" style="margin-right:1rem">'+(ICONS[n.kind]||'')+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
