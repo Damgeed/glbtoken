@@ -2220,6 +2220,41 @@ I18N["Zimbabwe"] = {"zh-CN": "津巴布韦", ru: "Зимбабве", ja: "ジン
 I18N["after signing up."] = {"zh-CN": "注册后。", ru: "после регистрации.", ja: "登録後。", de: "nach der Anmeldung."};
 I18N["cURL"] = {"zh-CN": "cURL", ru: "cURL", ja: "cURL", de: "cURL"};
 
+I18N["for a case-by-case review."] = {"zh-CN": "以便进行逐案审核。", ru: "для индивидуального рассмотрения.", ja: "ケースバイケースで審査いたします。", de: "für eine Einzelfallprüfung."};
+I18N["for custom pricing."] = {"zh-CN": "以获取定制价格。", ru: "для индивидуальных цен.", ja: "カスタム価格についてはこちら。", de: "für individuelle Preise."};
+I18N["for full details."] = {"zh-CN": "以了解完整详情。", ru: "за полными подробностями.", ja: "詳しくはこちら。", de: "für weitere Details."};
+I18N["from the Dashboard and use our OpenAI-compatible endpoint"] = {"zh-CN": "从仪表板获取，并使用我们兼容 OpenAI 的端点", ru: "в панели управления и используйте наш совместимый с OpenAI endpoint", ja: "ダッシュボードから取得し、OpenAI 互換のエンドポイントを使用してください", de: "aus dem Dashboard und verwenden Sie unseren OpenAI-kompatiblen Endpunkt"};
+I18N["from your Dashboard"] = {"zh-CN": "从您的仪表板", ru: "в вашей панели управления", ja: "ダッシュボードから", de: "aus Ihrem Dashboard"};
+I18N["headers."] = {"zh-CN": "请求头。", ru: "заголовки.", ja: "ヘッダー。", de: "Header."};
+I18N["icon in the bottom-right corner."] = {"zh-CN": "右下角的图标。", ru: "значок в правом нижнем углу.", ja: "右下隅にあるアイコン。", de: "das Symbol in der unteren rechten Ecke."};
+I18N["page from your Dashboard or the main navigation."] = {"zh-CN": "从您的仪表板或主导航进入的页面。", ru: "страницу из панели управления или главного меню.", ja: "ダッシュボードまたはメインナビゲーションからアクセスできるページ。", de: "die Seite über Ihr Dashboard oder die Hauptnavigation."};
+I18N["page."] = {"zh-CN": "页面。", ru: "страницу.", ja: "ページ。", de: "Seite."};
+I18N["to control costs."] = {"zh-CN": "以控制成本。", ru: "для контроля расходов.", ja: "コストを抑えるため。", de: "um Kosten zu kontrollieren."};
+I18N["to your GlbTOKEN account and navigate to the"] = {"zh-CN": "到您的 GlbTOKEN 账户，然后导航到", ru: "в свой аккаунт GlbTOKEN и перейдите в", ja: "GlbTOKEN アカウントにログインし、次の場所へ移動します：", de: "zu Ihrem GlbTOKEN-Konto und navigieren Sie zu"};
+I18N["to your GlbTOKEN account at"] = {"zh-CN": "到您在以下地址的 GlbTOKEN 账户", ru: "в свой аккаунт GlbTOKEN по адресу", ja: "GlbTOKEN アカウント（以下の URL）に", de: "zu Ihrem GlbTOKEN-Konto unter"};
+I18N["via Stripe (global) — Visa, Mastercard, AmEx"] = {"zh-CN": "通过 Stripe（全球）— Visa、Mastercard、AmEx", ru: "через Stripe (глобально) — Visa, Mastercard, AmEx", ja: "Stripe（グローバル）経由 — Visa、Mastercard、AmEx", de: "über Stripe (global) — Visa, Mastercard, AmEx"};
+I18N["with your key and the model of your choice. That's it."] = {"zh-CN": "使用您的密钥和你选择的模型即可，就这么简单。", ru: "со своим ключом и нужной вам моделью. Вот и всё.", ja: "あなたのキーとお好みのモデルを使うだけです。これで完了です。", de: "mit Ihrem Schlüssel und dem Modell Ihrer Wahl. Das war's."};
+I18N["— Always set"] = {"zh-CN": "— 始终设置", ru: "— Всегда устанавливайте", ja: "— 必ず設定してください", de: "— Setzen Sie immer"};
+I18N["— Check your Dashboard for real-time token consumption."] = {"zh-CN": "— 在仪表板中查看实时令牌消耗。", ru: "— Следите за расходом токенов в реальном времени в панели управления.", ja: "— ダッシュボードでリアルタイムのトークン消費量を確認してください。", de: "— Prüfen Sie Ihren Token-Verbrauch in Echtzeit im Dashboard."};
+I18N["— Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku"] = {"zh-CN": "— Claude 3.5 Sonnet、Claude 3 Opus、Claude 3 Haiku", ru: "— Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku", ja: "— Claude 3.5 Sonnet、Claude 3 Opus、Claude 3 Haiku", de: "— Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku"};
+I18N["— DALL·E, Stable Diffusion, and Midjourney through the same API"] = {"zh-CN": "— 通过同一个 API 使用 DALL·E、Stable Diffusion 和 Midjourney", ru: "— DALL·E, Stable Diffusion и Midjourney через тот же API", ja: "— 同じ API で DALL·E、Stable Diffusion、Midjourney を利用可能", de: "— DALL·E, Stable Diffusion und Midjourney über dieselbe API"};
+I18N["— Daniel A., Lead Engineer"] = {"zh-CN": "— Daniel A.，首席工程师", ru: "— Daniel A., ведущий инженер", ja: "— Daniel A.（リードエンジニア）", de: "— Daniel A., leitender Ingenieur"};
+I18N["— GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3"] = {"zh-CN": "— GPT-4o、GPT-4o Mini、GPT-4 Turbo、o1、o3", ru: "— GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3", ja: "— GPT-4o、GPT-4o Mini、GPT-4 Turbo、o1、o3", de: "— GPT-4o, GPT-4o Mini, GPT-4 Turbo, o1, o3"};
+I18N["— Gemini 2.0 Flash, Gemini 2.0 Pro"] = {"zh-CN": "— Gemini 2.0 Flash、Gemini 2.0 Pro", ru: "— Gemini 2.0 Flash, Gemini 2.0 Pro", ja: "— Gemini 2.0 Flash、Gemini 2.0 Pro", de: "— Gemini 2.0 Flash, Gemini 2.0 Pro"};
+I18N["— Generate new API keys from your Dashboard and revoke old ones."] = {"zh-CN": "— 从您的仪表板生成新的 API 密钥，并撤销旧密钥。", ru: "— Создавайте новые ключи API в панели управления и отзывайте старые.", ja: "— ダッシュボードから新しい API キーを生成し、古いキーを失効させます。", de: "— Generieren Sie neue API-Schlüssel über Ihr Dashboard und widerrufen Sie alte."};
+I18N["— Llama 4 Scout, Llama 4 Maverick"] = {"zh-CN": "— Llama 4 Scout、Llama 4 Maverick", ru: "— Llama 4 Scout, Llama 4 Maverick", ja: "— Llama 4 Scout、Llama 4 Maverick", de: "— Llama 4 Scout, Llama 4 Maverick"};
+I18N["— Manage your balance, monitor usage, and generate API keys from your phone."] = {"zh-CN": "— 在手机上管理余额、监控用量并生成 API 密钥。", ru: "— Управляйте балансом, следите за использованием и создавайте ключи API с телефона.", ja: "— スマートフォンで残高の管理、使用状況の確認、API キーの生成ができます。", de: "— Verwalten Sie Ihr Guthaben, überwachen Sie die Nutzung und erstellen Sie API-Schlüssel vom Telefon aus."};
+I18N["— Maps model names to provider endpoints. Supports both exact model selection (e.g.,"] = {"zh-CN": "— 将模型名称映射到提供商端点。既支持精确选择模型（例如，", ru: "— Сопоставляет названия моделей с конечными точками провайдеров. Поддерживает как точный выбор модели (например,", ja: "— モデル名をプロバイダーのエンドポイントにマッピングします。正確なモデル選択にも対応（例：", de: "— Ordnet Modellnamen den Endpunkten der Anbieter zu. Unterstützt sowohl die genaue Modellauswahl (z. B."};
+I18N["— Platform default —"] = {"zh-CN": "— 平台默认 —", ru: "— По умолчанию на платформе —", ja: "— プラットフォームのデフォルト —", de: "— Plattformstandard —"};
+I18N["— Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI"] = {"zh-CN": "— Qwen、Cohere、Perplexity、xAI (Grok)、Microsoft (Phi-4)、Stability AI", ru: "— Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI", ja: "— Qwen、Cohere、Perplexity、xAI (Grok)、Microsoft (Phi-4)、Stability AI", de: "— Qwen, Cohere, Perplexity, xAI (Grok), Microsoft (Phi-4), Stability AI"};
+I18N["— Small, Large 2"] = {"zh-CN": "— Small、Large 2", ru: "— Small, Large 2", ja: "— Small、Large 2", de: "— Small, Large 2"};
+I18N["— USDT (TRC-20 / ERC-20), BTC, and ETH"] = {"zh-CN": "— USDT（TRC-20 / ERC-20）、BTC 和 ETH", ru: "— USDT (TRC-20 / ERC-20), BTC и ETH", ja: "— USDT（TRC-20 / ERC-20）、BTC、ETH", de: "— USDT (TRC-20 / ERC-20), BTC und ETH"};
+I18N["— USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Credits after 1 confirmation."] = {"zh-CN": "— USDT（TRC-20 / ERC-20）、Bitcoin (BTC)、Ethereum (ETH)。1 次确认后到账。", ru: "— USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Кредиты после 1 подтверждения.", ja: "— USDT（TRC-20 / ERC-20）、Bitcoin（BTC）、Ethereum（ETH）。1 回の確認後に入金されます。", de: "— USDT (TRC-20 / ERC-20), Bitcoin (BTC), Ethereum (ETH). Gutschrift nach 1 Bestätigung."};
+I18N["— USDT (TRC-20, ERC-20) and BTC"] = {"zh-CN": "— USDT（TRC-20、ERC-20）和 BTC", ru: "— USDT (TRC-20, ERC-20) и BTC", ja: "— USDT（TRC-20、ERC-20）と BTC", de: "— USDT (TRC-20, ERC-20) und BTC"};
+I18N["— Upload your datasets and fine-tune models from your GlbTOKEN balance."] = {"zh-CN": "— 上传数据集，并使用您的 GlbTOKEN 余额微调模型。", ru: "— Загружайте свои наборы данных и дообучайте модели за счёт баланса GlbTOKEN.", ja: "— データセットをアップロードし、GlbTOKEN の残高でモデルをファインチューニングできます。", de: "— Laden Sie Ihre Datensätze hoch und stimmen Sie Modelle über Ihr GlbTOKEN-Guthaben fein ab."};
+I18N["— V3, V4 Pro, R1"] = {"zh-CN": "— V3、V4 Pro、R1", ru: "— V3, V4 Pro, R1", ja: "— V3、V4 Pro、R1", de: "— V3, V4 Pro, R1"};
+I18N["— Your balance is below 1,000 tokens. Top up to keep your API calls running."] = {"zh-CN": "— 您的余额低于 1,000 个令牌。请充值以保持 API 调用正常运行。", ru: "— Ваш баланс ниже 1 000 токенов. Пополните счёт, чтобы API-запросы продолжали работать.", ja: "— 残高が 1,000 トークンを下回っています。API 呼び出しを継続するにはチャージしてください。", de: "— Ihr Guthaben liegt unter 1.000 Tokens. Laden Sie auf, damit Ihre API-Aufrufe weiterlaufen."};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
