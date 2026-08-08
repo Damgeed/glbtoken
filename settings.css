@@ -547,6 +547,13 @@ button.settings-save-btn:hover {
   background: rgba(244, 180, 0, 0.14);
   color: #F4B400;
 }
+.settings-avatar-verified.no:hover {
+  background: rgba(244, 180, 0, 0.24);
+  color: #FFC53D;
+}
+.settings-avatar-verified.no:active {
+  transform: scale(0.96);
+}
 .settings-avatar-meta {
   display: flex;
   align-items: baseline;

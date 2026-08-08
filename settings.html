@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1248" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1062" />
+<link rel="stylesheet" href="settings.css?v=1063" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -181,21 +181,8 @@
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</h3>
           <div class="settings-field-group">
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-              <div style="flex:1"><div class="settings-item-name-sm">Token Balance</div><div class="settings-item-desc-sm" id="acctBalance" style="font-size:0.9rem;font-weight:600;color:var(--primary)">—</div></div>
-            </div>
-            <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Total Spent</div><div class="settings-item-desc-sm" id="acctSpent">—</div></div>
-            </div>
-            <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <div style="flex:1"><div class="settings-item-name-sm">Email Verified</div><div class="settings-item-desc-sm" id="acctEmailVerified">—</div></div>
-              <button class="btn-secondary settings-btn-right" id="verifyEmailBtn" onclick="openEmailVerifyModal()" style="display:none">Verify</button>
-            </div>
-            <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <div style="flex:1"><div class="settings-item-name-sm">Member Since</div><div class="settings-item-desc-sm" id="acctSince">—</div></div>
             </div>
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -1150,6 +1137,8 @@ function lhBrowser(ua){
   if(u.indexOf('safari/') !== -1 && u.indexOf('chrome') === -1) return 'Safari';
   if(u.indexOf('edg/') !== -1 || u.indexOf('edge/') !== -1) return 'Edge';
   if(u.indexOf('opr/') !== -1) return 'Opera';
+  if(u.indexOf('python') !== -1 || u.indexOf('okhttp') !== -1 || u.indexOf('axios') !== -1 || u.indexOf('postman') !== -1 || u.indexOf('http-client') !== -1) return 'API client';
+  if(u.indexOf('curl') !== -1) return 'curl';
   return 'Browser';
 }
 function lhDevice(deviceType){
@@ -1206,7 +1195,20 @@ window.loadSessions = function(){
   safeApi('GET','/api/auth/sessions',null,null,true).then(function(d){
     if(!d || !d.sessions){ summary.textContent = '—'; return; }
     var n = d.sessions.length;
-    summary.textContent = n + (n === 1 ? ' active session' : ' active sessions');
+    var label = n + (n === 1 ? ' active session' : ' active sessions');
+    // Show WHICH devices so the number is meaningful (e.g. "· Safari, Firefox")
+    var seen = [];
+    d.sessions.forEach(function(s){
+      var name = lhBrowser(s.user_agent || '');
+      if(name && name !== 'Unknown device' && seen.indexOf(name) === -1) seen.push(name);
+    });
+    if(seen.length){
+      var names = seen.slice(0,3).join(', ');
+      if(seen.length > 3) names += ', +' + (seen.length - 3);
+      summary.textContent = label + ' · ' + names;
+    } else {
+      summary.textContent = label;
+    }
   }).catch(function(){ summary.textContent = '—'; });
 };
 
@@ -1280,25 +1282,8 @@ function loadSettingsExtras(){
 function loadAccountOverview(){
   safeApi('GET','/api/user/profile',null,null,true).then(function(p){
     if(!p) return;
-    var balEl = document.getElementById('acctBalance');
-    if(balEl) balEl.textContent = Number(p.token_balance||0).toLocaleString() + ' tokens';
     var spentEl = document.getElementById('acctSpent');
     if(spentEl) spentEl.textContent = '$' + Number(p.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-    var verEl = document.getElementById('acctEmailVerified');
-    var verBtn = document.getElementById('verifyEmailBtn');
-    var verified = !!p.email_verified;
-    var acctEmail = p.email || '';
-    // Synthetic addresses (phone signup / Apple hide-my-email / GitHub fallback)
-    // are not real mailboxes — they can never be email-verified, so show "—"
-    // instead of a misleading "Not verified" + Verify button.
-    var synthetic = /@(phone\.glbtoken\.io|privaterelay\.local|github\.com)$/i.test(acctEmail);
-    if(verEl) verEl.textContent = synthetic ? '—' : (verified ? '✅ Verified' : '⚠️ Not verified');
-    if(verBtn) verBtn.style.display = (verified || synthetic) ? 'none' : '';
-    var sinceEl = document.getElementById('acctSince');
-    if(sinceEl && p.created_at){
-      var d = new Date(p.created_at);
-      sinceEl.textContent = d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
-    }
     var uidEl = document.getElementById('acctUserId');
     if(uidEl && p.public_id) uidEl.textContent = p.public_id;
   });
@@ -1442,10 +1427,15 @@ window.confirmEmailVerification = function(){
     if(d && d.status === 'verified'){
       showToast('Email verified!','success');
       closeEmailVerifyModal();
-      var verEl = document.getElementById('acctEmailVerified');
-      if(verEl) verEl.textContent = '✅ Verified';
-      var verBtn = document.getElementById('verifyEmailBtn');
-      if(verBtn) verBtn.style.display = 'none';
+      // Update the Profile badge (the Verify entry point now lives there)
+      var vEl = document.getElementById('avatarVerified');
+      if(vEl){
+        vEl.className = 'settings-avatar-verified ok';
+        vEl.textContent = '✓ Verified';
+        vEl.title = '';
+        vEl.style.cursor = 'default';
+        vEl.onclick = null;
+      }
     } else {
       showToast((d && d.detail) || 'Invalid code — try again','error');
     }
@@ -1696,12 +1686,29 @@ document.addEventListener('DOMContentLoaded', function(){
     if(emailEl2 && p && p.email) emailEl2.textContent = p.email;
     var vEl = document.getElementById('avatarVerified');
     if(vEl){
+      // Synthetic addresses (phone signup / Apple hide-my-email / GitHub
+      // fallback) are not real mailboxes — they can never be verified, so
+      // show "—" instead of a misleading "Verify" affordance.
+      var acctEmail2 = (p && p.email) || '';
+      var synthetic2 = /@(phone\.glbtoken\.io|privaterelay\.local|github\.com)$/i.test(acctEmail2);
       if(p && p.email_verified){
         vEl.className = 'settings-avatar-verified ok';
         vEl.textContent = '✓ Verified';
+        vEl.title = '';
+        vEl.style.cursor = 'default';
+        vEl.onclick = null;
+      } else if(synthetic2){
+        vEl.className = 'settings-avatar-verified';
+        vEl.textContent = '—';
+        vEl.title = '';
+        vEl.style.cursor = 'default';
+        vEl.onclick = null;
       } else {
         vEl.className = 'settings-avatar-verified no';
         vEl.textContent = '⚠ Verify';
+        vEl.title = 'Verify your email';
+        vEl.style.cursor = 'pointer';
+        vEl.onclick = function(){ openEmailVerifyModal(); };
       }
     }
     // Meta line: token count (gold bold) + "Tokens" label · "Member since" + date (bold)
