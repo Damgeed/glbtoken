@@ -1051,8 +1051,8 @@ async def refresh_access_token(
     # that ended up in storage after this refresh.
     try:
         revoke_refresh_token(raw, db)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ Refresh-token rotation: failed to revoke old token: {e}")
     # Generate new access + refresh tokens
     new_access = create_access_token({"sub": str(user_id)})
     new_refresh = generate_refresh_token(user_id, db)
@@ -1361,8 +1361,8 @@ def delete_own_account(
             "GlbTOKEN account deleted",
             "Your GlbTOKEN account and all associated data have been permanently deleted.\n\nIf this was a mistake, please contact support@glbtoken.com.",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"⚠️ Account-deletion alert email failed for {user.email}: {e}")
     return {"status": "deleted"}
 
 

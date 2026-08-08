@@ -140,25 +140,6 @@
 
 /* ── Playground — glbgpt.com/home style ── */
 /* Chat messages */
-@keyframes typing {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* Mobile responsive */
 @media (max-width: 768px) {
