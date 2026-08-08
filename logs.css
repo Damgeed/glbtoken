@@ -83,22 +83,6 @@
   font-size: 1.5rem;
   flex-shrink: 0;
 }
-.payment-card .card-info {
-  flex: 1;
-}
-.payment-card .card-info .name {
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-.payment-card .card-info .meta {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-
-
-
-
 
 .receipt-link {
   color: var(--primary);
@@ -162,12 +146,7 @@
 #section-logs {
   display: block;
 }
-
-/* ── Mobile show-more collapse for logs tables (Bud: show 3 on mobile) ── */
-.tx-collapse { display: table-row-group; }   /* desktop: show all rows */
 #responseTimeMoreBtn, #speedComparisonMoreBtn { display: none; }
 @media (max-width: 767px) {
-  .tx-collapse { display: none; }
-  .tx-collapse.open { display: table-row-group; }
   #responseTimeMoreBtn, #speedComparisonMoreBtn { display: block; }
 }

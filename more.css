@@ -23,24 +23,6 @@
 .act-filter{font-size:0.78rem;font-weight:600;padding:0.38rem 0.8rem;border-radius:999px;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text-secondary);transition:all 0.18s}
 .act-filter:hover{border-color:rgba(244,180,0,0.45);color:var(--text)}
 .act-filter.active{background:linear-gradient(135deg,#F4B400 0%,#E08E27 100%);color:#0A0B14;border-color:transparent;box-shadow:0 4px 14px rgba(244,180,0,0.22)}
-/* All Events as 3x grid of dark cards */
-.act-list{display:grid;grid-template-columns:repeat(3,1fr);gap:0.85rem;margin-top:1rem;max-height:70vh;overflow-y:auto;padding-right:0.25rem}
-.act-card{display:flex;flex-direction:column;gap:0.55rem;padding:1rem 1.1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s}
-.act-card:hover{border-color:rgba(244,180,0,0.45);box-shadow:0 4px 14px rgba(244,180,0,0.08);transform:translateY(-1px)}
-.act-card-top{display:flex;align-items:center;justify-content:space-between;gap:0.5rem}
-.act-card-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.act-card-icon svg{width:15px;height:15px}
-.act-card-icon-teal{background:rgba(0,214,143,0.12);color:#00D68F}
-.act-card-icon-gold{background:rgba(244,180,0,0.12);color:#F4B400}
-.act-card-icon-red{background:rgba(255,77,79,0.12);color:#FF4D4F}
-.act-card-icon-blue{background:rgba(79,195,247,0.12);color:#4FC3F7}
-.act-card-time{font-size:0.68rem;color:var(--text-muted);white-space:nowrap}
-.act-card-desc{font-size:0.82rem;color:var(--text);line-height:1.45;word-break:break-word}
-.act-card-amt{margin-top:auto;padding-top:0.4rem;border-top:1px solid var(--border-light);font-weight:700;font-size:0.82rem}
-.act-card-amt .amt-pos{color:var(--success)}
-.act-card-amt .amt-neg{color:var(--destructive)}
-@media (max-width:1100px){.act-list{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.act-list{grid-template-columns:1fr;max-height:none}}
 
 /* ── Cost Projection ── */
 .cp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-top:1rem}

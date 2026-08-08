@@ -12,14 +12,6 @@
 .billing-empty-state p{font-size:0.85rem;margin:0.25rem 0}
 .payment-card{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-alt);border-radius:var(--radius-sm);border:1px solid var(--border)}
 .payment-card .card-icon{font-size:1.5rem;flex-shrink:0}
-.payment-card .card-info{flex:1}
-.payment-card .card-info .name{font-weight:600;font-size:0.85rem}
-.payment-card .card-info .meta{font-size:0.75rem;color:var(--text-muted)}
-
-
-
-
-
 
 .receipt-link{color:var(--primary);text-decoration:none;font-size:0.8rem;font-weight:500}
 .receipt-link:hover{text-decoration:underline}
@@ -209,14 +201,6 @@
 /* Pending/awaiting color */
 .refs-pending {
   color: #FFB347;
-}
-/* Status color: success */
-.refs-status-success {
-  color: #00D68F;
-}
-/* Status color: failed */
-.refs-status-failed {
-  color: #FF6B6B;
 }
 /* Rewards grid */
 .refs-rewards-grid {

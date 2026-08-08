@@ -36,13 +36,6 @@
   margin-top: 0.1rem;
   font-variant-numeric: tabular-nums;
 }
-.pm-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
 .pm-default-badge {
   font-size: 0.68rem;
   font-weight: 700;
@@ -151,18 +144,6 @@
   font-size: 1.5rem;
   flex-shrink: 0;
 }
-.payment-card .card-info {
-  flex: 1;
-}
-.payment-card .card-info .name {
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-.payment-card .card-info .meta {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
 
 /* Table cell styles — matched to Login Attempts table (usage.css) */
 .td-date {
@@ -179,9 +160,6 @@
 .td-device {
   font-size: 0.85rem;
 }
-
-
-
 
 .receipt-link {
   color: var(--primary);

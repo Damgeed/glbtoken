@@ -1762,7 +1762,6 @@ input[type="range"]::-moz-range-thumb {
 .align-middle { vertical-align: middle; }
 .mx-auto { margin: 0 auto; }
 .block { display: block; }
-.inline-block { display: inline-block; }
 .flex { display: flex; }
 .flex-col { display: flex; flex-direction: column; }
 .flex-wrap { flex-wrap: wrap; }
@@ -1809,7 +1808,6 @@ input[type="range"]::-moz-range-thumb {
     font-size: 0.8125rem;
   }
 }
-.opacity-4 { opacity: 0.4; }
 .opacity-5 { opacity: 0.5; }
 .empty-state-alt { text-align: center; color: var(--text-muted); padding: 1.5rem; font-size: 0.85rem; }
 .text-decoration-none { text-decoration: none; }
