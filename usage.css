@@ -18,8 +18,12 @@
     white-space: normal;
     word-break: break-word;
   }
-  #loginTable {
-    min-width: 650px;
+  /* Login History = 5 visible columns on mobile (hide IP) so it fits the
+     viewport like Transaction History (tx-fit) — no horizontal scroll, clean
+     vertical scroll when the device list grows. Desktop keeps all 6 columns. */
+  #loginTable th:nth-child(4),
+  #loginTable td:nth-child(4) {
+    display: none;
   }
   #loginTable td:nth-child(4) {
     white-space: nowrap;

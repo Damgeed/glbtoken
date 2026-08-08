@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1250" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1066" />
+<link rel="stylesheet" href="settings.css?v=1067" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -159,7 +159,8 @@
                 <span class="settings-avatar-cam" id="avatarCam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
               </div>
               <div class="settings-avatar-actions">
-                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/heic,image/heif" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden">
+                <input type="file" id="avatarFileInput" accept="image/*" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none">
+                <input type="file" id="avatarCameraInput" accept="image/*" capture="user" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none">
                 <div class="settings-avatar-name-line">
                   <span class="settings-avatar-name" id="avatarName">User</span>
                   <span class="settings-avatar-flag" id="avatarFlag"></span>
@@ -966,14 +967,18 @@ window.openAvatarMenu = function(){
         ? '<img src="'+imgEl.src+'" alt="Profile picture" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,180,0,0.45);box-shadow:0 4px 16px rgba(244,180,0,0.18);display:block">'
         : '<div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--primary),hsl(44 96% 40%));display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:700;color:#0a0b14">'+escapeHtml((window._userInitial || 'U')[0].toUpperCase())+'</div>')
     +   '</div>'
-    +   '<div style="font-size:0.7rem;color:'+muted+';margin-top:0.45rem">Click the photo to upload a new one</div>'
+    +   '<div style="font-size:0.7rem;color:'+muted+';margin-top:0.45rem">Take a photo or upload one</div>'
     +   '<div style="font-size:0.68rem;color:'+muted+';margin-top:0.15rem">JPG · PNG · WebP (iPhone HEIC works in Safari)</div>'
     + '</div>'
-    + '<div style="display:flex;gap:0.5rem">'
-    +   '<button onclick="document.getElementById(\'avatarFileInput\').click();" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
+    + '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">'
+    +   '<label for="avatarCameraInput" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;min-width:130px;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
+    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+    +     'Take photo'
+    +   '</label>'
+    +   '<label for="avatarFileInput" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;min-width:130px;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
     +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
     +     'Upload photo'
-    +   '</button>'
+    +   '</label>'
     +   (hasAvatar ? '<button onclick="clearAvatar(); closeAvatarMenu();" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;flex:1;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.06);color:#ff4d4f;font-size:0.84rem;font-weight:600;cursor:pointer;text-align:center;white-space:nowrap">'
     +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'
     +     'Remove photo'
@@ -995,7 +1000,7 @@ window.closeAvatarMenu = function(){
 };
 
 document.addEventListener('change', function(e){
-  if(e.target && e.target.id === 'avatarFileInput'){
+  if(e.target && (e.target.id === 'avatarFileInput' || e.target.id === 'avatarCameraInput')){
     var file = e.target.files && e.target.files[0];
     if(!file) return;
     // Source files can be large (phone photos 2-10MB) — we downscale to 128px
