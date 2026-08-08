@@ -1002,6 +1002,23 @@ window.openAvatarModal = function(){
     document.head.appendChild(s);
   }
   m.onclick = function(e){ if(e.target === m) closeAvatarModal(); };
+  // First load race: the profile API (which renders avatarPreview) may still be
+  // in flight, so the DOM above had no <img> yet. Re-fetch profile and refresh
+  // the modal preview so a changed avatar shows inside the popup immediately.
+  var hasImgInDom = !!(preview && preview.querySelector('img'));
+  if(!hasImgInDom && typeof safeApi === 'function'){
+    safeApi('GET','/api/user/profile',null,null,true).then(function(p){
+      if(!p || !document.getElementById('avatarModal')) return;
+      var box = document.getElementById('avatarModalPreview');
+      if(!box) return;
+      if(p && typeof p.avatar === 'string' && p.avatar){
+        box.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">';
+      } else {
+        var initial = (p && p.name) ? (p.name.trim()[0] || 'U').toUpperCase() : (window._userInitial || 'U');
+        box.innerHTML = '<div style="width:112px;height:112px;border-radius:50%;background:linear-gradient(135deg,#F4B400,#b8860b);display:flex;align-items:center;justify-content:center;font-size:2.4rem;font-weight:800;color:#0b0e14;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">' + escapeHtml(initial) + '</div>';
+      }
+    }).catch(function(){});
+  }
 };
 
 window.avatarModalPick = function(){
