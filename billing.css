@@ -82,6 +82,11 @@
   .billing-grid {
     grid-template-columns: 1fr 1fr;
   }
+  /* Invoices = same full width as Transaction History (usage.html) —
+     Payment Methods stays half-width, Invoices spans the full row. */
+  #invoicesCard {
+    grid-column: 1 / -1;
+  }
 }
 .billing-summary-grid {
   display: grid;
