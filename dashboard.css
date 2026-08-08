@@ -620,13 +620,6 @@
   text-align: center;
   padding: 0.5rem;
 }
-/* View all models link */
-.view-models-link {
-  font-size: 0.75rem;
-  color: var(--primary);
-  cursor: pointer;
-  text-decoration: none;
-}
 /* Table header cell (shared .tx-table styles live in style.css) */
 /* Table empty cell */
 .td-empty {

@@ -187,7 +187,6 @@ textarea {
 .faded { opacity: 0.6; }
 .link-primary { color: var(--primary); }
 .text-center { text-align: center; }
-.mx-auto { margin-left: auto; margin-right: auto; }
 .w-full { width: 100%; }
 .inline-code { background: var(--bg-alt); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
 .models-header { margin-bottom: 2rem; }
@@ -1534,12 +1533,6 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   background: radial-gradient(circle, hsla(44 96% 52% / 0.1), transparent);
 }
-.dash-balance .top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
-}
 .dash-balance .label {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -1551,47 +1544,16 @@ input[type="range"]::-moz-range-thumb {
   color: var(--primary);
   line-height: 1;
 }
-.dash-balance .amount small {
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: var(--text-muted);
-}
 .dash-balance .usd-equiv {
   font-size: 0.85rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
-}
-.dash-balance .actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 2rem;
-  position: relative;
-}
-.dash-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-.dash-stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
 }
 .dash-stat-card .num {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 0.15rem;
-}
-.dash-stat-card .lbl {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-.dash-stat-card .chg {
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-top: 0.35rem;
 }
 /* ── Syntax Highlighting ── */
 .syn-str { color: var(--code-string); }
@@ -1841,18 +1803,6 @@ input[type="range"]::-moz-range-thumb {
   padding: 2rem;
   position: relative;
 }
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 4px;
-  line-height: 1;
-}
 /* ── Spinner ── */
 .spinner-btn {
   display: inline-block;
@@ -1899,14 +1849,6 @@ input[type="range"]::-moz-range-thumb {
 .input-search:focus {
   outline: none;
   border-color: var(--primary);
-}
-.dash-section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 /* ── Dashboard Sidebar Navigation ── */
 .dash-layout {
@@ -2144,20 +2086,6 @@ body.compact-cards .billing-stat-card {
   border-color: color-mix(in srgb, var(--border) 70%, var(--primary));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
-.tx-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.tx-table th {
-  text-align: left;
-  padding: 0.625rem 0.75rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
-  font-weight: 500;
-}
 .tx-table td {
   padding: 0.625rem 0.75rem;
   font-size: 0.85rem;
@@ -2178,11 +2106,6 @@ body.compact-cards .billing-stat-card {
 }
 .tx-table .red {
   color: var(--destructive);
-}
-.dash-activity {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
 }
 .dash-activity-item {
   display: flex;
@@ -3452,9 +3375,6 @@ html.light .modal-overlay {
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s;
-}
-.sort-btn:hover {
-  border-color: var(--primary);
 }
 .badge {
   display: inline-flex;
