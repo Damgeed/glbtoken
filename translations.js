@@ -1944,6 +1944,44 @@ I18N["Lebanon"] = {"zh-CN": "黎巴嫩", ru: "Ливан", ja: "レバノン", d
 I18N["Lesotho"] = {"zh-CN": "莱索托", ru: "Лесото", ja: "レソト", de: "Lesotho"};
 I18N["Liberia"] = {"zh-CN": "利比里亚", ru: "Либерия", ja: "リベリア", de: "Liberia"};
 
+I18N["Libya"] = {"zh-CN": "利比亚", ru: "Ливия", ja: "リビア", de: "Libyen"};
+I18N["Liechtenstein"] = {"zh-CN": "列支敦士登", ru: "Лихтенштейн", ja: "リヒテンシュタイン", de: "Liechtenstein"};
+I18N["Lithuania"] = {"zh-CN": "立陶宛", ru: "Литва", ja: "リトアニア", de: "Litauen"};
+I18N["Llama 3.1 405B — Meta"] = {"zh-CN": "Llama 3.1 405B — Meta", ru: "Llama 3.1 405B — Meta", ja: "Llama 3.1 405B — Meta", de: "Llama 3.1 405B — Meta"};
+I18N["Llama 4 (70B)"] = {"zh-CN": "Llama 4 (70B)", ru: "Llama 4 (70B)", ja: "Llama 4 (70B)", de: "Llama 4 (70B)"};
+I18N["Llama 4 Maverick"] = {"zh-CN": "Llama 4 Maverick", ru: "Llama 4 Maverick", ja: "Llama 4 Maverick", de: "Llama 4 Maverick"};
+I18N["Llama 4 Maverick — Meta"] = {"zh-CN": "Llama 4 Maverick — Meta", ru: "Llama 4 Maverick — Meta", ja: "Llama 4 Maverick — Meta", de: "Llama 4 Maverick — Meta"};
+I18N["Llama 4 Scout — Meta"] = {"zh-CN": "Llama 4 Scout — Meta", ru: "Llama 4 Scout — Meta", ja: "Llama 4 Scout — Meta", de: "Llama 4 Scout — Meta"};
+I18N["Loading announcements…"] = {"zh-CN": "正在加载公告…", ru: "Загрузка объявлений…", ja: "お知らせを読み込み中…", de: "Ankündigungen werden geladen…"};
+I18N["Loading invitation…"] = {"zh-CN": "正在加载邀请…", ru: "Загрузка приглашения…", ja: "招待状を読み込み中…", de: "Einladung wird geladen…"};
+I18N["Loading key usage..."] = {"zh-CN": "正在加载密钥用量...", ru: "Загрузка данных об использовании ключей...", ja: "キー使用量を読み込み中...", de: "Schlüsselnutzung wird geladen..."};
+I18N["Loading request logs..."] = {"zh-CN": "正在加载请求日志...", ru: "Загрузка журналов запросов...", ja: "リクエストログを読み込み中...", de: "Anfrageprotokolle werden geladen..."};
+I18N["Login — GlbTOKEN"] = {"zh-CN": "登录 — GlbTOKEN", ru: "Вход — GlbTOKEN", ja: "ログイン — GlbTOKEN", de: "Anmelden — GlbTOKEN"};
+I18N["Logs — GlbTOKEN"] = {"zh-CN": "日志 — GlbTOKEN", ru: "Журналы — GlbTOKEN", ja: "ログ — GlbTOKEN", de: "Protokolle — GlbTOKEN"};
+I18N["Long-form writing"] = {"zh-CN": "长文写作", ru: "Написание длинных текстов", ja: "長文ライティング", de: "Langtexte verfassen"};
+I18N["Low balance"] = {"zh-CN": "余额不足", ru: "Низкий баланс", ja: "残高不足", de: "Niedriger Kontostand"};
+I18N["Luxembourg"] = {"zh-CN": "卢森堡", ru: "Люксембург", ja: "ルクセンブルク", de: "Luxemburg"};
+I18N["MMLU-Pro"] = {"zh-CN": "MMLU-Pro", ru: "MMLU-Pro", ja: "MMLU-Pro", de: "MMLU-Pro"};
+I18N["Macau"] = {"zh-CN": "澳门", ru: "Макао", ja: "マカオ", de: "Macau"};
+I18N["Madagascar"] = {"zh-CN": "马达加斯加", ru: "Мадагаскар", ja: "マダガスカル", de: "Madagaskar"};
+I18N["Malawi"] = {"zh-CN": "马拉维", ru: "Малави", ja: "マラウイ", de: "Malawi"};
+I18N["Malaysia"] = {"zh-CN": "马来西亚", ru: "Малайзия", ja: "マレーシア", de: "Malaysia"};
+I18N["Maldives"] = {"zh-CN": "马尔代夫", ru: "Мальдивы", ja: "モルディブ", de: "Malediven"};
+I18N["Malta"] = {"zh-CN": "马耳他", ru: "Мальта", ja: "マルタ", de: "Malta"};
+I18N["Marshall Islands"] = {"zh-CN": "马绍尔群岛", ru: "Маршалловы Острова", ja: "マーシャル諸島", de: "Marshallinseln"};
+I18N["Mauritania"] = {"zh-CN": "毛里塔尼亚", ru: "Мавритания", ja: "モーリタニア", de: "Mauretanien"};
+I18N["Mauritius"] = {"zh-CN": "毛里求斯", ru: "Маврикий", ja: "モーリシャス", de: "Mauritius"};
+I18N["Member Mix"] = {"zh-CN": "成员构成", ru: "Состав участников", ja: "メンバー構成", de: "Mitglieder-Mix"};
+I18N["Mexico"] = {"zh-CN": "墨西哥", ru: "Мексика", ja: "メキシコ", de: "Mexiko"};
+I18N["Micronesia"] = {"zh-CN": "密克罗尼西亚", ru: "Микронезия", ja: "ミクロネシア", de: "Mikronesien"};
+I18N["Microsoft"] = {"zh-CN": "Microsoft", ru: "Microsoft", ja: "Microsoft", de: "Microsoft"};
+I18N["Migration guides from OpenAI, Anthropic, Google, and others"] = {"zh-CN": "来自 OpenAI、Anthropic、Google 等平台的迁移指南", ru: "Руководства по миграции с OpenAI, Anthropic, Google и других платформ", ja: "OpenAI、Anthropic、Google などからの移行ガイド", de: "Migrationsanleitungen von OpenAI, Anthropic, Google und anderen"};
+I18N["Mistral"] = {"zh-CN": "Mistral", ru: "Mistral", ja: "Mistral", de: "Mistral"};
+I18N["Mistral Large 2 — Mistral"] = {"zh-CN": "Mistral Large 2 — Mistral", ru: "Mistral Large 2 — Mistral", ja: "Mistral Large 2 — Mistral", de: "Mistral Large 2 — Mistral"};
+I18N["Mistral Large 3"] = {"zh-CN": "Mistral Large 3", ru: "Mistral Large 3", ja: "Mistral Large 3", de: "Mistral Large 3"};
+I18N["Mistral Large — Mistral"] = {"zh-CN": "Mistral Large — Mistral", ru: "Mistral Large — Mistral", ja: "Mistral Large — Mistral", de: "Mistral Large — Mistral"};
+I18N["Mistral Small — Mistral"] = {"zh-CN": "Mistral Small — Mistral", ru: "Mistral Small — Mistral", ja: "Mistral Small — Mistral", de: "Mistral Small — Mistral"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
