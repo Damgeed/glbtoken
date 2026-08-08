@@ -1890,6 +1890,16 @@ I18N["How It Works — GlbTOKEN"] = {"zh-CN": "工作原理 — GlbTOKEN", ru: "
 I18N["HumanEval"] = {"zh-CN": "HumanEval", ru: "HumanEval", ja: "HumanEval", de: "HumanEval"};
 I18N["Hungary"] = {"zh-CN": "匈牙利", ru: "Венгрия", ja: "ハンガリー", de: "Ungarn"};
 
+I18N["Iceland"] = {"zh-CN": "冰岛", ru: "Исландия", ja: "アイスランド", de: "Island"};
+I18N["Immutable Audit Logs."] = {"zh-CN": "不可篡改的审计日志。", ru: "Неизменяемые журналы аудита.", ja: "改ざん不可の監査ログ。", de: "Unveränderliche Audit-Protokolle."};
+I18N["Independent Verification"] = {"zh-CN": "独立验证", ru: "Независимая проверка", ja: "独立した検証", de: "Unabhängige Verifizierung"};
+I18N["India"] = {"zh-CN": "印度", ru: "Индия", ja: "インド", de: "Indien"};
+I18N["Indonesia"] = {"zh-CN": "印度尼西亚", ru: "Индонезия", ja: "インドネシア", de: "Indonesien"};
+I18N["Ingress Layer"] = {"zh-CN": "入口层", ru: "Входной слой", ja: "イングレス層", de: "Eingangsschicht"};
+I18N["Interface Language"] = {"zh-CN": "界面语言", ru: "Язык интерфейса", ja: "表示言語", de: "Oberflächensprache"};
+I18N["Introducing GlbTOKEN — One Balance for All AI"] = {"zh-CN": "隆重推出 GlbTOKEN — 一个余额，畅用所有 AI", ru: "Представляем GlbTOKEN — один баланс для всех ИИ", ja: "GlbTOKEN 登場 — すべての AI でひとつの残高", de: "Wir stellen vor: GlbTOKEN — ein Guthaben für alle KI"};
+I18N["Introducing GlbTOKEN — One Balance for All AI | Blog"] = {"zh-CN": "隆重推出 GlbTOKEN — 一个余额，畅用所有 AI | 博客", ru: "Представляем GlbTOKEN — один баланс для всех ИИ | Блог", ja: "GlbTOKEN 登場 — すべての AI でひとつの残高 | ブログ", de: "Wir stellen vor: GlbTOKEN — ein Guthaben für alle KI | Blog"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
