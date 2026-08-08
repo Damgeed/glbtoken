@@ -548,13 +548,26 @@ button.settings-save-btn:hover {
   color: #F4B400;
 }
 .settings-avatar-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
   margin-top: 0.1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+.settings-avatar-tokens {
+  font-weight: 700;
+  color: #F4B400;
+}
+.settings-avatar-dot {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+.settings-avatar-since {
+  color: var(--text-muted);
 }
 @media (max-width: 480px) {
   .settings-avatar-row {
