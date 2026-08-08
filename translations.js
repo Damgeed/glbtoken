@@ -1643,6 +1643,8 @@ I18N["Response workflow ready."] = {"zh-CN": "响应工作流已就绪。", ru: 
 I18N["Tell me a story"] = {"zh-CN": "给我讲个故事", ru: "Расскажи мне историю", ja: "物語を聞かせて", de: "Erzähl mir eine Geschichte"};
 I18N["You are a helpful assistant."] = {"zh-CN": "你是一个乐于助人的助手。", ru: "Ты — полезный ассистент.", ja: "あなたは頼りになるアシスタントです。", de: "Du bist ein hilfsbereiter Assistent."};
 
+I18N["$0.00 USD"] = {"zh-CN": "$0.00 USD", ru: "$0.00 USD", ja: "$0.00 USD", de: "0,00 USD"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
