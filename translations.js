@@ -1823,6 +1823,23 @@ I18N["El Salvador"] = {"zh-CN": "萨尔瓦多", ru: "Сальвадор", ja: "�
 I18N["Email Notifications"] = {"zh-CN": "邮件通知", ru: "Уведомления по электронной почте", ja: "メール通知", de: "E-Mail-Benachrichtigungen"};
 I18N["Enter"] = {"zh-CN": "进入", ru: "Ввод", ja: "入力", de: "Eingeben"};
 
+I18N["Enter the 6-digit code from your authenticator app to finish signing in."] = {"zh-CN": "输入身份验证器应用中的 6 位验证码以完成登录。", ru: "Введите 6-значный код из вашего приложения-аутентификатора, чтобы завершить вход.", ja: "認証アプリの 6 桁のコードを入力して、サインインを完了してください。", de: "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein, um die Anmeldung abzuschließen."};
+I18N["Equatorial Guinea"] = {"zh-CN": "赤道几内亚", ru: "Экваториальная Гвинея", ja: "赤道ギニア", de: "Äquatorialguinea"};
+I18N["Eritrea"] = {"zh-CN": "厄立特里亚", ru: "Эритрея", ja: "エリトリア", de: "Eritrea"};
+I18N["Errors"] = {"zh-CN": "错误", ru: "Ошибки", ja: "エラー", de: "Fehler"};
+I18N["Estonia"] = {"zh-CN": "爱沙尼亚", ru: "Эстония", ja: "エストニア", de: "Estland"};
+I18N["Eswatini"] = {"zh-CN": "斯威士兰", ru: "Эсватини", ja: "エスワティニ", de: "Eswatini"};
+I18N["Ethiopia"] = {"zh-CN": "埃塞俄比亚", ru: "Эфиопия", ja: "エチオピア", de: "Äthiopien"};
+I18N["Events"] = {"zh-CN": "事件", ru: "События", ja: "イベント", de: "Ereignisse"};
+I18N["Export"] = {"zh-CN": "导出", ru: "Экспорт", ja: "エクスポート", de: "Exportieren"};
+I18N["Export My Data"] = {"zh-CN": "导出我的数据", ru: "Экспортировать мои данные", ja: "データをエクスポート", de: "Meine Daten exportieren"};
+I18N["FAQ — GlbTOKEN"] = {"zh-CN": "常见问题 — GlbTOKEN", ru: "Частые вопросы — GlbTOKEN", ja: "よくある質問 — GlbTOKEN", de: "FAQ — GlbTOKEN"};
+I18N["Finland"] = {"zh-CN": "芬兰", ru: "Финляндия", ja: "フィンランド", de: "Finnland"};
+I18N["Firefox"] = {"zh-CN": "Firefox", ru: "Firefox", ja: "Firefox", de: "Firefox"};
+I18N["Flagship"] = {"zh-CN": "旗舰", ru: "Флагман", ja: "フラッグシップ", de: "Flaggschiff"};
+I18N["Flash"] = {"zh-CN": "Flash", ru: "Flash", ja: "Flash", de: "Flash"};
+I18N["France"] = {"zh-CN": "法国", ru: "Франция", ja: "フランス", de: "Frankreich"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
