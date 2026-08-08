@@ -1645,6 +1645,32 @@ I18N["You are a helpful assistant."] = {"zh-CN": "你是一个乐于助人的助
 
 I18N["$0.00 USD"] = {"zh-CN": "$0.00 USD", ru: "$0.00 USD", ja: "$0.00 USD", de: "0,00 USD"};
 
+I18N["(Python code)"] = {"zh-CN": "(Python 代码)", ru: "(код Python)", ja: "(Python コード)", de: "(Python-Code)"};
+I18N["(math)"] = {"zh-CN": "(数学)", ru: "(математика)", ja: "(数学)", de: "(Mathematik)"};
+I18N["(real-world engineering)"] = {"zh-CN": "(真实工程场景)", ru: "(реальная инженерия)", ja: "(実践的エンジニアリング)", de: "(praxisnahe Softwareentwicklung)"};
+I18N["(reasoning)"] = {"zh-CN": "(推理)", ru: "(рассуждение)", ja: "(推論)", de: "(Schlussfolgerung)"};
+I18N["+ Create Organization"] = {"zh-CN": "+ 创建组织", ru: "+ Создать организацию", ja: "+ 組織を作成", de: "+ Organisation erstellen"};
+I18N["1 Token ≈"] = {"zh-CN": "1 代币 ≈", ru: "1 токен ≈", ja: "1 トークン ≈", de: "1 Token ≈"};
+I18N["10 Tokens"] = {"zh-CN": "10 代币", ru: "10 токенов", ja: "10 トークン", de: "10 Tokens"};
+I18N["12 Tokens"] = {"zh-CN": "12 代币", ru: "12 токенов", ja: "12 トークン", de: "12 Tokens"};
+I18N["15 Tokens"] = {"zh-CN": "15 代币", ru: "15 токенов", ja: "15 トークン", de: "15 Tokens"};
+I18N["2 Tokens"] = {"zh-CN": "2 代币", ru: "2 токена", ja: "2 トークン", de: "2 Tokens"};
+I18N["2. OpenAI SDK Compatibility"] = {"zh-CN": "2. OpenAI SDK 兼容性", ru: "2. Совместимость с OpenAI SDK", ja: "2. OpenAI SDK 互換性", de: "2. OpenAI SDK-Kompatibilität"};
+I18N["24 Tokens"] = {"zh-CN": "24 代币", ru: "24 токена", ja: "24 トークン", de: "24 Tokens"};
+I18N["40 Tokens"] = {"zh-CN": "40 代币", ru: "40 токенов", ja: "40 トークン", de: "40 Tokens"};
+I18N["6 Tokens"] = {"zh-CN": "6 代币", ru: "6 токенов", ja: "6 トークン", de: "6 Tokens"};
+I18N["60 Tokens"] = {"zh-CN": "60 代币", ru: "60 токенов", ja: "60 トークン", de: "60 Tokens"};
+I18N["75 Tokens"] = {"zh-CN": "75 代币", ru: "75 токенов", ja: "75 トークン", de: "75 Tokens"};
+I18N["8 Tokens"] = {"zh-CN": "8 代币", ru: "8 токенов", ja: "8 トークン", de: "8 Tokens"};
+I18N["API Defaults"] = {"zh-CN": "API 默认设置", ru: "Параметры API по умолчанию", ja: "API のデフォルト設定", de: "API-Standardwerte"};
+I18N["API Key Management."] = {"zh-CN": "API 密钥管理。", ru: "Управление ключами API.", ja: "API キー管理。", de: "API-Schlüsselverwaltung."};
+I18N["API Key Scoping."] = {"zh-CN": "API 密钥范围限定。", ru: "Ограничение области ключей API.", ja: "API キーのスコープ設定。", de: "API-Schlüssel-Bereichsbegrenzung."};
+I18N["API Key Usage"] = {"zh-CN": "API 密钥使用", ru: "Использование ключей API", ja: "API キーの使用", de: "API-Schlüssel-Nutzung"};
+I18N["API Keys — GlbTOKEN"] = {"zh-CN": "API 密钥 — GlbTOKEN", ru: "Ключи API — GlbTOKEN", ja: "API キー — GlbTOKEN", de: "API-Schlüssel — GlbTOKEN"};
+I18N["API Request"] = {"zh-CN": "API 请求", ru: "Запрос API", ja: "API リクエスト", de: "API-Anfrage"};
+I18N["API Server"] = {"zh-CN": "API 服务器", ru: "Сервер API", ja: "API サーバー", de: "API-Server"};
+I18N["API error"] = {"zh-CN": "API 错误", ru: "Ошибка API", ja: "API エラー", de: "API-Fehler"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
