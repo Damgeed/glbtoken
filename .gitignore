@@ -7,7 +7,5 @@ scripts/.i18n_state.json
 make_guide_pdf.py
 
 # Test artifacts
-backend/test_glbtoken.db
-__pycache__/
-.pytest_cache/
 test_glbtoken.db
+.pytest_cache/
