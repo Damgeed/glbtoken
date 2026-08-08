@@ -514,9 +514,9 @@ function openTwoFAModal(mode){
     +   '</div>'
     +   '<div style="display:flex;align-items:center;gap:0.4rem;width:100%;max-width:340px">'
     +     '<code id="twofaSecret" style="flex:1;min-width:0;background:rgba(244,180,0,0.07);border:1px solid rgba(244,180,0,0.25);padding:0.45rem 0.6rem;border-radius:8px;font-size:0.72rem;white-space:nowrap;overflow-x:auto;color:'+textClr+';text-align:center;letter-spacing:0.5px">…</code>'
-    +     '<button onclick="copyTwoFASecret()" title="Copy secret" style="flex-shrink:0;padding:0.45rem 0.7rem;border-radius:8px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.35rem;white-space:nowrap">'
-    +       '<svg class="twofa-copy-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>'
-    +       '<span class="twofa-copy-lbl">Copy</span>'
+    +     '<button id="twofaSecretCopyBtn" onclick="copyTwoFASecret()" title="Copy secret" style="flex-shrink:0;padding:0.45rem 0.7rem;border-radius:10px;border:1px solid rgba(244,180,0,0.35);background:linear-gradient(135deg, rgba(244,180,0,0.14) 0%, rgba(224,142,39,0.10) 100%);color:#F4B400;font-size:0.75rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:0.35rem;white-space:nowrap;transition:background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease">'
+    +       '<svg id="twofaCopyIc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>'
+    +       '<span class="twofa-copy-lbl" style="font-weight:600">Copy</span>'
     +     '</button>'
     +   '</div>'
     + '</div>'
@@ -542,7 +542,7 @@ function openTwoFAModal(mode){
   document.body.appendChild(m);
   if(!document.getElementById('twofaModalStyle')){
     var s = document.createElement('style'); s.id = 'twofaModalStyle';
-    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}#twofaCode{width:auto}@media (max-width:420px){#twofaCode{font-size:0.85rem!important;letter-spacing:0.22rem!important;padding:0.62rem 0.5rem!important;text-align:left!important}#twofaConfirmBtn{padding:0.62rem 0.75rem!important;font-size:0.78rem!important}.twofa-copy-lbl{display:none!important}.twofa-copy-ic{width:15px!important;height:15px!important}}';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}#twofaCode{width:auto}@media (max-width:420px){#twofaCode{font-size:0.85rem!important;letter-spacing:0.22rem!important;padding:0.62rem 0.5rem!important;text-align:left!important}#twofaConfirmBtn{padding:0.62rem 0.75rem!important;font-size:0.78rem!important}.twofa-copy-lbl{display:none!important}#twofaCopyIc{width:15px!important;height:15px!important}}';
     document.head.appendChild(s);
   }
   m.onclick = function(e){ if(e.target === m) closeTwoFAModal(); };
@@ -601,15 +601,34 @@ window.closeTwoFAModal = function(){
   if(m) m.remove();
 };
 
+function twofaCopyFeedback(){
+  var btn = document.getElementById('twofaSecretCopyBtn');
+  var ic = document.getElementById('twofaCopyIc');
+  if(!btn || !ic) return;
+  var original = ic.innerHTML;
+  ic.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+  btn.style.background = 'rgba(76,175,80,0.14)';
+  btn.style.borderColor = 'rgba(76,175,80,0.45)';
+  btn.style.color = '#00D68F';
+  btn.style.boxShadow = '0 2px 10px rgba(0,214,143,0.18)';
+  clearTimeout(btn._twofaCopyT);
+  btn._twofaCopyT = setTimeout(function(){
+    ic.innerHTML = original;
+    btn.style.background = 'linear-gradient(135deg, rgba(244,180,0,0.14) 0%, rgba(224,142,39,0.10) 100%)';
+    btn.style.borderColor = 'rgba(244,180,0,0.35)';
+    btn.style.color = '#F4B400';
+    btn.style.boxShadow = 'none';
+  }, 1600);
+}
 window.copyTwoFASecret = function(){
   var s = document.getElementById('twofaSecret').textContent;
   if(!s || s === '…') return;
   (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject())
-    .then(function(){ showToast('Secret copied','success'); })
+    .then(function(){ twofaCopyFeedback(); showToast('Secret copied','success'); })
     .catch(function(){
       var ta = document.createElement('textarea');
       ta.value = s; document.body.appendChild(ta); ta.select();
-      try{ document.execCommand('copy'); showToast('Secret copied','success'); }catch(e){ showToast('Copy failed — select the secret manually','error'); }
+      try{ document.execCommand('copy'); twofaCopyFeedback(); showToast('Secret copied','success'); }catch(e){ showToast('Copy failed — select the secret manually','error'); }
       document.body.removeChild(ta);
     });
 };
@@ -943,11 +962,20 @@ window.openAvatarMenu = function(){
   var textClr = isDark ? '#f3f5f7' : '#1a1a2e';
   var muted = isDark ? '#8b93a7' : '#666';
   var border = isDark ? '#2c2f3d' : '#e2e2ea';
+  var pvEl = document.getElementById('avatarPreview');
+  var imgEl = pvEl ? pvEl.querySelector('img') : null;
   m.innerHTML =
     '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.25rem;max-width:300px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.2s ease">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">'
     +   '<h3 style="margin:0;font-size:0.95rem;font-weight:700;color:'+textClr+'">Change avatar</h3>'
     +   '<button onclick="closeAvatarMenu()" style="background:none;border:none;color:'+muted+';font-size:1.05rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:0.9rem">'
+    +   (imgEl
+        ? '<img src="'+imgEl.src+'" alt="Profile picture" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,180,0,0.45);box-shadow:0 4px 16px rgba(244,180,0,0.18)">'
+        : '<div style="width:96px;height:96px;border-radius:50%;background:rgba(244,180,0,0.07);border:1px dashed rgba(244,180,0,0.35);display:flex;align-items:center;justify-content:center">'
+        +   '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="'+muted+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+        + '</div>')
     + '</div>'
     + '<div style="display:flex;flex-direction:column;gap:0.5rem">'
     +   '<button onclick="document.getElementById(\'avatarFileInput\').click(); closeAvatarMenu();" style="display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:left">'
