@@ -1806,6 +1806,23 @@ I18N["Default Model"] = {"zh-CN": "默认模型", ru: "Модель по умо�
 I18N["Delete"] = {"zh-CN": "删除", ru: "Удалить", ja: "削除", de: "Löschen"};
 I18N["Delete Account"] = {"zh-CN": "删除账户", ru: "Удалить аккаунт", ja: "アカウントを削除", de: "Konto löschen"};
 
+I18N["Chat with our AI assistant instantly — click the"] = {"zh-CN": "立即与我们的 AI 助手聊天 — 点击", ru: "Общайтесь с нашим ИИ-ассистентом мгновенно — нажмите", ja: "AI アシスタントとすぐにチャット — クリック", de: "Chatten Sie sofort mit unserem KI-Assistenten — klicken Sie auf"};
+I18N["Deleted API key:"] = {"zh-CN": "已删除 API 密钥：", ru: "Удалён API-ключ:", ja: "API キーを削除しました：", de: "API-Schlüssel gelöscht:"};
+I18N["Denmark"] = {"zh-CN": "丹麦", ru: "Дания", ja: "デンマーク", de: "Dänemark"};
+I18N["Developer API Launched: 100+ Models, One Endpoint — GlbTOKEN Blog"] = {"zh-CN": "开发者 API 已上线：100+ 模型，单一端点 — GlbTOKEN 博客", ru: "Запущен Developer API: 100+ моделей, один эндпоинт — блог GlbTOKEN", ja: "Developer API リリース：100+ モデル、1 つのエンドポイント — GlbTOKEN ブログ", de: "Developer-API gestartet: 100+ Modelle, ein Endpoint — GlbTOKEN Blog"};
+I18N["Dismiss"] = {"zh-CN": "关闭", ru: "Закрыть", ja: "閉じる", de: "Schließen"};
+I18N["Djibouti"] = {"zh-CN": "吉布提", ru: "Джибути", ja: "ジブチ", de: "Dschibuti"};
+I18N["Docs — GlbTOKEN"] = {"zh-CN": "文档 — GlbTOKEN", ru: "Документация — GlbTOKEN", ja: "ドキュメント — GlbTOKEN", de: "Dokumentation — GlbTOKEN"};
+I18N["Dominican Republic"] = {"zh-CN": "多米尼加共和国", ru: "Доминиканская Республика", ja: "ドミニカ共和国", de: "Dominikanische Republik"};
+I18N["Done"] = {"zh-CN": "完成", ru: "Готово", ja: "完了", de: "Fertig"};
+I18N["Download your profile, transactions, keys and usage as JSON"] = {"zh-CN": "以 JSON 格式下载你的个人资料、交易、密钥和使用数据", ru: "Скачайте свой профиль, транзакции, ключи и статистику использования в формате JSON", ja: "プロフィール、取引、キー、利用状況を JSON 形式でダウンロード", de: "Laden Sie Ihr Profil, Transaktionen, Schlüssel und Ihre Nutzung als JSON herunter"};
+I18N["Ecuador"] = {"zh-CN": "厄瓜多尔", ru: "Эквадор", ja: "エクアドル", de: "Ecuador"};
+I18N["Edit API Key"] = {"zh-CN": "编辑 API 密钥", ru: "Редактировать API-ключ", ja: "API キーを編集", de: "API-Schlüssel bearbeiten"};
+I18N["Egypt"] = {"zh-CN": "埃及", ru: "Египет", ja: "エジプト", de: "Ägypten"};
+I18N["El Salvador"] = {"zh-CN": "萨尔瓦多", ru: "Сальвадор", ja: "エルサルバドル", de: "El Salvador"};
+I18N["Email Notifications"] = {"zh-CN": "邮件通知", ru: "Уведомления по электронной почте", ja: "メール通知", de: "E-Mail-Benachrichtigungen"};
+I18N["Enter"] = {"zh-CN": "进入", ru: "Ввод", ja: "入力", de: "Eingeben"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
