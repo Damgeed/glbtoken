@@ -1982,6 +1982,44 @@ I18N["Mistral Large 3"] = {"zh-CN": "Mistral Large 3", ru: "Mistral Large 3", ja
 I18N["Mistral Large — Mistral"] = {"zh-CN": "Mistral Large — Mistral", ru: "Mistral Large — Mistral", ja: "Mistral Large — Mistral", de: "Mistral Large — Mistral"};
 I18N["Mistral Small — Mistral"] = {"zh-CN": "Mistral Small — Mistral", ru: "Mistral Small — Mistral", ja: "Mistral Small — Mistral", de: "Mistral Small — Mistral"};
 
+I18N["Mobile App Beta: Manage Your Balance on the Go — GlbTOKEN Blog"] = {"zh-CN": "移动应用 Beta：随时随地管理余额 — GlbTOKEN 博客", ru: "Мобильное приложение Beta: управляйте балансом на ходу — блог GlbTOKEN", ja: "モバイルアプリβ版：移動中でも残高を管理 — GlbTOKEN ブログ", de: "Mobile App Beta: Verwalten Sie Ihr Guthaben unterwegs — GlbTOKEN Blog"};
+I18N["Model Presets"] = {"zh-CN": "模型预设", ru: "Пресеты моделей", ja: "モデルプリセット", de: "Modell-Voreinstellungen"};
+I18N["Model Presets — GlbTOKEN"] = {"zh-CN": "模型预设 — GlbTOKEN", ru: "Пресеты моделей — GlbTOKEN", ja: "モデルプリセット — GlbTOKEN", de: "Modell-Voreinstellungen — GlbTOKEN"};
+I18N["Model Routing (New API)"] = {"zh-CN": "模型路由（New API）", ru: "Маршрутизация моделей (New API)", ja: "モデルルーティング（New API）", de: "Modell-Routing (New API)"};
+I18N["Model catalog with capabilities, context windows, and pricing"] = {"zh-CN": "模型目录：包含能力、上下文窗口和价格", ru: "Каталог моделей: возможности, контекстные окна и цены", ja: "能力・コンテキストウィンドウ・価格を備えたモデルカタログ", de: "Modellkatalog mit Fähigkeiten, Kontextfenstern und Preisen"};
+I18N["Models — GlbTOKEN"] = {"zh-CN": "模型 — GlbTOKEN", ru: "Модели — GlbTOKEN", ja: "モデル — GlbTOKEN", de: "Modelle — GlbTOKEN"};
+I18N["Moldova"] = {"zh-CN": "摩尔多瓦", ru: "Молдова", ja: "モルドバ", de: "Moldau"};
+I18N["Mongolia"] = {"zh-CN": "蒙古", ru: "Монголия", ja: "モンゴル", de: "Mongolei"};
+I18N["Montenegro"] = {"zh-CN": "黑山", ru: "Черногория", ja: "モンテネグロ", de: "Montenegro"};
+I18N["Mon–Fri, 08:00–18:00 UTC+0"] = {"zh-CN": "周一至周五 08:00–18:00 UTC+0", ru: "Пн–Пт, 08:00–18:00 UTC+0", ja: "月～金 08:00–18:00 UTC+0", de: "Mo–Fr, 08:00–18:00 UTC+0"};
+I18N["More…"] = {"zh-CN": "更多…", ru: "Ещё…", ja: "もっと見る…", de: "Mehr…"};
+I18N["Morocco"] = {"zh-CN": "摩洛哥", ru: "Марокко", ja: "モロッコ", de: "Marokko"};
+I18N["Most tokens"] = {"zh-CN": "代币最多", ru: "Больше всего токенов", ja: "トークンが多い順", de: "Meiste Token"};
+I18N["Mozambique"] = {"zh-CN": "莫桑比克", ru: "Мозамбик", ja: "モザンビーク", de: "Mosambik"};
+I18N["Myanmar"] = {"zh-CN": "缅甸", ru: "Мьянма", ja: "ミャンマー", de: "Myanmar"};
+I18N["NGN (Nigerian Naira)"] = {"zh-CN": "NGN（尼日利亚奈拉）", ru: "NGN (нигерийская найра)", ja: "NGN（ナイジェリア・ナイラ）", de: "NGN (Nigerianischer Naira)"};
+I18N["NGN (₦)"] = {"zh-CN": "NGN (₦)", ru: "NGN (₦)", ja: "NGN (₦)", de: "NGN (₦)"};
+I18N["Name A–Z"] = {"zh-CN": "名称 A–Z", ru: "Имя А–Я", ja: "名前 A–Z", de: "Name A–Z"};
+I18N["Namibia"] = {"zh-CN": "纳米比亚", ru: "Намибия", ja: "ナミビア", de: "Namibia"};
+I18N["Nauru"] = {"zh-CN": "瑙鲁", ru: "Науру", ja: "ナウル", de: "Nauru"};
+I18N["Need help?"] = {"zh-CN": "需要帮助？", ru: "Нужна помощь?", ja: "ヘルプが必要ですか？", de: "Hilfe nötig?"};
+I18N["Nepal"] = {"zh-CN": "尼泊尔", ru: "Непал", ja: "ネパール", de: "Nepal"};
+I18N["Netherlands"] = {"zh-CN": "荷兰", ru: "Нидерланды", ja: "オランダ", de: "Niederlande"};
+I18N["Network error. Check your connection."] = {"zh-CN": "网络错误。请检查你的连接。", ru: "Ошибка сети. Проверьте подключение.", ja: "ネットワークエラーです。接続を確認してください。", de: "Netzwerkfehler. Überprüfen Sie Ihre Verbindung."};
+I18N["Next ›"] = {"zh-CN": "下一页 ›", ru: "Далее ›", ja: "次へ ›", de: "Weiter ›"};
+I18N["Nicaragua"] = {"zh-CN": "尼加拉瓜", ru: "Никарагуа", ja: "ニカラグア", de: "Nicaragua"};
+I18N["Niger"] = {"zh-CN": "尼日尔", ru: "Нигер", ja: "ニジェール", de: "Niger"};
+I18N["No announcements right now"] = {"zh-CN": "暂无公告", ru: "Сейчас нет объявлений", ja: "現在お知らせはありません", de: "Derzeit keine Ankündigungen"};
+I18N["No hidden fees"] = {"zh-CN": "无隐藏费用", ru: "Без скрытых комиссий", ja: "隠れた料金はありません", de: "Keine versteckten Gebühren"};
+I18N["No notifications yet"] = {"zh-CN": "暂无通知", ru: "Пока нет уведомлений", ja: "まだ通知はありません", de: "Noch keine Benachrichtigungen"};
+I18N["No organization"] = {"zh-CN": "无组织", ru: "Нет организации", ja: "組織がありません", de: "Keine Organisation"};
+I18N["No organizations yet"] = {"zh-CN": "暂无组织", ru: "Пока нет организаций", ja: "まだ組織はありません", de: "Noch keine Organisationen"};
+I18N["No referrals yet"] = {"zh-CN": "暂无推荐记录", ru: "Пока нет рефералов", ja: "まだ紹介はありません", de: "Noch keine Empfehlungen"};
+I18N["No refresh token"] = {"zh-CN": "没有刷新令牌", ru: "Нет refresh-токена", ja: "リフレッシュトークンがありません", de: "Kein Refresh-Token"};
+I18N["North Macedonia"] = {"zh-CN": "北马其顿", ru: "Северная Македония", ja: "北マケドニア", de: "Nordmazedonien"};
+I18N["Norway"] = {"zh-CN": "挪威", ru: "Норвегия", ja: "ノルウェー", de: "Norwegen"};
+I18N["Not authenticated"] = {"zh-CN": "未认证", ru: "Не авторизован", ja: "認証されていません", de: "Nicht authentifiziert"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
