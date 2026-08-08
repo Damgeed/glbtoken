@@ -569,7 +569,8 @@
   font-weight: 500;
   text-decoration: none;
 }
-#activityCount {
+#activityCount,
+#recentTxCount {
   font-size: 0.72rem;
   color: var(--text-muted);
   font-weight: 400;

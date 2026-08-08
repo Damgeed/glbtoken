@@ -466,11 +466,14 @@ async function loadActivityFeed(){
 async function loadRecentTx(){
   var body = document.getElementById('dashTxBody');
   if(!body) return;
+  var countEl = document.getElementById('recentTxCount');
   var d = await safeApi('GET','/api/transactions?limit=5',null,null,true);
   if(!d || !d.items || !d.items.length){
     body.innerHTML = '<tr><td colspan="5" class="td-empty">No transactions yet</td></tr>';
+    if(countEl) countEl.textContent = 'Last 0';
     return;
   }
+  if(countEl) countEl.textContent = 'Last ' + d.items.length;
   body.innerHTML = d.items.map(function(t){
     var date = t.created_at ? fmtDTStack(t.created_at) : '<div class="td-date-strong">—</div>';
     var type = escapeHtml(t.type||'');
