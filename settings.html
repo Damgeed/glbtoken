@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1247" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1059" />
+<link rel="stylesheet" href="settings.css?v=1060" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -168,7 +168,7 @@
                   <span class="settings-avatar-email" id="avatarEmail">—</span>
                   <span class="settings-avatar-verified" id="avatarVerified"></span>
                 </div>
-                <div class="settings-avatar-meta"><span class="settings-avatar-tokens" id="avatarTokens"></span><span class="settings-avatar-dot">·</span><span class="settings-avatar-since" id="avatarSince"></span></div>
+                <div class="settings-avatar-meta"><span class="settings-avatar-tokens-num" id="avatarTokensNum"></span><span class="settings-avatar-tokens-label" id="avatarTokensLabel">Tokens</span><span class="settings-avatar-dot">·</span><span class="settings-avatar-since-label">Member since</span><span class="settings-avatar-since-date" id="avatarSinceDate"></span></div>
               </div>
             </div>
             <div><label class="settings-field-label">Full Name</label><input type="text" id="settingsName" value="User" class="settings-input"></div>
@@ -746,23 +746,15 @@ window.saveNotificationSettings = function(){
   var settings = {
     email_notifications: document.getElementById('notifEmail').checked,
     low_balance_alert: document.getElementById('notifLowBalance').checked,
-    login_alerts: document.getElementById('notifLogin').checked,
-    product_updates: document.getElementById('notifProduct') ? document.getElementById('notifProduct').checked : undefined
+    login_alerts: document.getElementById('notifLogin').checked
   };
-  fetch(API_URL + '/api/user/settings', {
-    method: 'PUT',
-    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
-    body: JSON.stringify(settings)
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data){
+  safeApi('PUT','/api/user/settings', settings, null, true).then(function(data){
     if(data && data.status === 'updated'){
       showToast('Notification preferences saved!','success');
     } else {
       showToast((data && data.detail) || 'Failed to save notification preferences','error');
     }
-  })
-  .catch(function(e){
+  }).catch(function(e){
     showToast('Failed to save notification preferences','error');
     console.error(e);
   });
@@ -1710,27 +1702,33 @@ document.addEventListener('DOMContentLoaded', function(){
         vEl.textContent = '⚠ Verify';
       }
     }
-    // Meta line: token balance (gold, bold) · member since (muted)
-    var tokensEl = document.getElementById('avatarTokens');
-    var sinceEl = document.getElementById('avatarSince');
-    if(tokensEl){
+    // Meta line: token count (gold bold) + "Tokens" label · "Member since" + date (bold)
+    var tokensNumEl = document.getElementById('avatarTokensNum');
+    var sinceDateEl = document.getElementById('avatarSinceDate');
+    if(tokensNumEl){
       if(p && typeof p.token_balance === 'number'){
-        tokensEl.textContent = parseInt(p.token_balance).toLocaleString() + ' tokens';
+        tokensNumEl.textContent = parseInt(p.token_balance).toLocaleString();
       } else {
-        tokensEl.textContent = '';
+        tokensNumEl.textContent = '';
       }
     }
-    if(sinceEl){
+    if(sinceDateEl){
       if(p && p.created_at){
         var cd = new Date(typeof window.parseUTCDate === 'function' ? window.parseUTCDate(p.created_at) : p.created_at);
         if(!isNaN(cd.getTime())){
-          sinceEl.textContent = 'Member since ' + cd.toLocaleDateString(undefined,{month:'short', year:'numeric'});
-        } else sinceEl.textContent = '';
-      } else sinceEl.textContent = '';
+          sinceDateEl.textContent = cd.toLocaleDateString(undefined,{month:'short', year:'numeric'});
+        } else sinceDateEl.textContent = '';
+      } else sinceDateEl.textContent = '';
     }
-    // Hide the dot separator when either side is empty
+    // Hide the dot + label when either side is empty
     var dotEl = document.querySelector('.settings-avatar-dot');
-    if(dotEl) dotEl.style.display = (tokensEl && tokensEl.textContent && sinceEl && sinceEl.textContent) ? '' : 'none';
+    var tokLabelEl = document.getElementById('avatarTokensLabel');
+    var sinceLabelEl = document.querySelector('.settings-avatar-since-label');
+    var hasTokens = !!(tokensNumEl && tokensNumEl.textContent);
+    var hasSince = !!(sinceDateEl && sinceDateEl.textContent);
+    if(dotEl) dotEl.style.display = (hasTokens && hasSince) ? '' : 'none';
+    if(tokLabelEl) tokLabelEl.style.display = hasTokens ? '' : 'none';
+    if(sinceLabelEl) sinceLabelEl.style.display = hasSince ? '' : 'none';
   });
   // Login history summary + active sessions
   safeApi('GET','/api/auth/login-history?offset=0&limit=1',null,null,true).then(function(d){

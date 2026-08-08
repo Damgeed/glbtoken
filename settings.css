@@ -558,16 +558,25 @@ button.settings-save-btn:hover {
   text-overflow: ellipsis;
   max-width: 100%;
 }
-.settings-avatar-tokens {
+.settings-avatar-tokens-num {
   font-weight: 700;
   color: #F4B400;
+}
+.settings-avatar-tokens-label {
+  font-weight: 400;
+  color: var(--text-muted);
 }
 .settings-avatar-dot {
   color: var(--text-muted);
   opacity: 0.6;
 }
-.settings-avatar-since {
+.settings-avatar-since-label {
+  font-weight: 400;
   color: var(--text-muted);
+}
+.settings-avatar-since-date {
+  font-weight: 700;
+  color: var(--text);
 }
 @media (max-width: 480px) {
   .settings-avatar-row {

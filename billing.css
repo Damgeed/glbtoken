@@ -233,11 +233,14 @@
     font-size: 0.85rem;
   }
   .tx-table {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
   .tx-table th,
   .tx-table td {
-    padding: 0.4rem 0.3rem;
+    /* Match style.css mobile compact padding so Invoices spacing is
+       identical to Transaction History (usage) — was 0.4rem 0.3rem
+       which made the table look spread out. */
+    padding: 0.3rem 0.25rem;
   }
 }
 
