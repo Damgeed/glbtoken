@@ -38,8 +38,13 @@ def create_access_token(data: dict, expires_minutes: int | None = None) -> str:
     to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc)})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def generate_refresh_token(user_id: int, db: Session) -> str:
-    """Generate a refresh token, store its SHA-256 hash, return the raw token."""
+def generate_refresh_token(user_id: int, db: Session, ua: str = "", device_type: str = "") -> str:
+    """Generate a refresh token, store its SHA-256 hash, return the raw token.
+
+    ua/device_type label the row so the sessions list can show which browser
+    a session belongs to (and so login can replace the same device's old
+    token instead of accumulating one row per login).
+    """
     # Opportunistic cleanup: drop this user's expired tokens (rotation is
     # non-destructive now, so without this the table would grow until expiry)
     try:
@@ -52,7 +57,13 @@ def generate_refresh_token(user_id: int, db: Session) -> str:
     raw = secrets.token_hex(32)  # 64-char hex string
     token_hash = hashlib.sha256(raw.encode()).hexdigest()
     expires = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    db_entry = RefreshToken(user_id=user_id, token_hash=token_hash, expires_at=expires)
+    db_entry = RefreshToken(
+        user_id=user_id,
+        token_hash=token_hash,
+        expires_at=expires,
+        user_agent=(ua or "")[:500],
+        device_type=(device_type or "")[:50],
+    )
     db.add(db_entry)
     db.commit()
     return raw

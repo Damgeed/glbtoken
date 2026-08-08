@@ -110,6 +110,24 @@ async def lifespan(app: FastAPI):
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (api keys, non-critical): {e}")
+    # Auto-migrate: refresh_tokens device columns (sessions list shows browser names)
+    try:
+        from database import engine
+        from sqlalchemy import inspect, text
+        inspector = inspect(engine)
+        rt_cols = {c['name'] for c in inspector.get_columns('refresh_tokens')}
+        rt_add = {
+            'user_agent': "VARCHAR DEFAULT ''",
+            'device_type': "VARCHAR DEFAULT ''",
+        }
+        with engine.connect() as conn:
+            for col_name, col_type in rt_add.items():
+                if col_name not in rt_cols:
+                    conn.execute(text(f'ALTER TABLE refresh_tokens ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}'))
+                    print(f"✅ Added missing column: refresh_tokens.{col_name}")
+            conn.commit()
+    except Exception as e:
+        print(f"⚠️ Migration error (refresh_tokens, non-critical): {e}")
     # Auto-migrate: org capacity — bump existing orgs to the current default
     try:
         from database import engine, MAX_ORG_MEMBERS

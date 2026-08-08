@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone, timedelta
 import secrets, json, random, re, hashlib
 
-from database import get_db, User, LoginEvent, Referral
+from database import get_db, User, LoginEvent, Referral, RefreshToken
 from auth import (
     hash_password, verify_password, create_access_token, decode_token,
     get_current_user,
@@ -37,12 +37,28 @@ from schemas import (
 router = APIRouter()
 
 # ── Helper: build auth response with refresh token ──
-def _auth_response(user, db):
+def _auth_response(user, db, ua: str = ""):
     """Return token + refresh_token + user object."""
     return {
         "token": create_access_token({"sub": str(user.id)}),
-        "refresh_token": generate_refresh_token(user.id, db),
+        "refresh_token": generate_refresh_token(
+            user.id, db,
+            ua=ua,
+            device_type=_ua_device_type(ua),
+        ),
     }
+
+def _issue_auth_response(user, db, ua: str = ""):
+    """Auth response for a REAL login/registration.
+
+    Replaces the same browser's stale refresh tokens first, so the active
+    session count reflects devices, not the number of times you've logged in.
+    """
+    try:
+        _revoke_same_device(user.id, ua, db)
+    except Exception as e:
+        print(f"⚠️ Same-device session cleanup failed: {e}")
+    return _auth_response(user, db, ua)
 
 def _client_ip(request: Request) -> str:
     """Get the REAL client IP.
@@ -84,6 +100,78 @@ def record_login_event(user_id: int, request: Request, success: bool, db: Sessio
     except Exception as e:
         print(f"⚠️ Failed to record login event: {e}")
         db.rollback()
+
+
+def _ua_family(ua: str) -> str:
+    """Coarse browser-family key from a User-Agent string.
+
+    Used to decide whether two sessions belong to the same logical device:
+    a fresh login replaces that browser's old refresh token (instead of
+    accumulating one row per login), while different browsers keep their
+    own sessions. Unknown clients fall back to the normalized UA so only
+    identical clients collapse into one session.
+    """
+    if not ua:
+        return ""
+    u = ua.lower()
+    if "edg/" in u or "edge/" in u:
+        return "edge"
+    if "opr/" in u or "opera" in u:
+        return "opera"
+    if "chrome/" in u and "chromium" not in u and "edg/" not in u:
+        return "chrome"
+    if "firefox/" in u:
+        return "firefox"
+    if "safari/" in u and "chrome" not in u:
+        return "safari"
+    return "other:" + u[:200]
+
+
+def _ua_device_type(ua: str) -> str:
+    """mobile / tablet / desktop classification for the sessions list."""
+    if not ua:
+        return "desktop"
+    u = ua.lower()
+    if "ipad" in u or "tablet" in u:
+        return "tablet"
+    if any(k in u for k in ["mobile", "android", "iphone"]):
+        return "mobile"
+    return "desktop"
+
+
+def _revoke_same_device(user_id: int, ua: str, db: Session) -> int:
+    """Revoke this user's OTHER active refresh tokens from the SAME browser.
+
+    Root fix for 'N active sessions' inflation: before rotation, every login
+    minted a new refresh token without revoking the old one, so the count was
+    really 'number of times you logged in' (Bud saw 3 sessions = 3 logins).
+    With this, logging in from Safari replaces the old Safari token, while a
+    Firefox/Chrome/other-device session stays untouched. Refresh rotation
+    already keeps one token per browser going forward.
+    """
+    if not ua:
+        return 0
+    family = _ua_family(ua)
+    device_type = _ua_device_type(ua)
+    if not family:
+        return 0
+    rows = db.query(RefreshToken).filter(
+        RefreshToken.user_id == user_id,
+        RefreshToken.revoked == False,
+        RefreshToken.expires_at > datetime.now(timezone.utc),
+    ).all()
+    n = 0
+    for r in rows:
+        # Old rows created before the device columns existed have ua "" —
+        # they never match and simply expire on schedule. No retro-kill.
+        if not (r.user_agent or ""):
+            continue
+        if _ua_family(r.user_agent) == family and (r.device_type or "") == device_type:
+            r.revoked = True
+            n += 1
+    if n:
+        db.commit()
+    return n
 
 
 # ── Auth Routes ──
@@ -175,7 +263,7 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         print(f"⚠️ New API sync failed on register: {e}")
         # Don't block registration on New API failure
     
-    auth = _auth_response(user, db)
+    auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     from common import ensure_public_id
     public_id = ensure_public_id(user)
     db.commit()
@@ -233,7 +321,7 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
         except Exception as e:
             print(f"⚠️ Login alert failed: {e}")
     token = create_access_token({"sub": str(user.id)})
-    auth = _auth_response(user, db)
+    auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     from common import ensure_public_id
     public_id = ensure_public_id(user)
     db.commit()
@@ -292,7 +380,7 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
         pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
         return {"requires_2fa": True, "pre_token": pre_token}
     token = create_access_token({"sub": str(user.id)})
-    auth = _auth_response(user, db)
+    auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
@@ -329,7 +417,7 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
         pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
         return {"requires_2fa": True, "pre_token": pre_token}
     token = create_access_token({"sub": str(user.id)})
-    auth = _auth_response(user, db)
+    auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
@@ -690,8 +778,13 @@ async def auth0_callback_redirect(request: Request, id_token: str = Query(...)):
     if twofa_redirect:
         db.close()
         return twofa_redirect
+    ua = request.headers.get("user-agent", "")
     jwt_token = create_access_token({"sub": str(user.id)})
-    refresh_token = generate_refresh_token(user.id, db)
+    try:
+        _revoke_same_device(user.id, ua, db)
+    except Exception as e:
+        print(f"⚠️ Same-device session cleanup failed: {e}")
+    refresh_token = generate_refresh_token(user.id, db, ua=ua, device_type=_ua_device_type(ua))
     user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
@@ -739,8 +832,13 @@ async def auth0_pkce_callback(request: Request, code: str = Query(...), code_ver
     if twofa_redirect:
         db.close()
         return twofa_redirect
+    ua = request.headers.get("user-agent", "")
     jwt_token = create_access_token({"sub": str(user.id)})
-    refresh_token = generate_refresh_token(user.id, db)
+    try:
+        _revoke_same_device(user.id, ua, db)
+    except Exception as e:
+        print(f"⚠️ Same-device session cleanup failed: {e}")
+    refresh_token = generate_refresh_token(user.id, db, ua=ua, device_type=_ua_device_type(ua))
     user_json = _url_quote(json.dumps({
         "id": user.id, "name": user.name, "email": user.email,
         "token_balance": user.token_balance, "picture": info.get("picture", ""),
@@ -1069,8 +1167,9 @@ async def refresh_access_token(
     except Exception as e:
         print(f"⚠️ Refresh UA-change login event failed: {e}")
     # Generate new access + refresh tokens
+    ua = request.headers.get("user-agent", "")
     new_access = create_access_token({"sub": str(user_id)})
-    new_refresh = generate_refresh_token(user_id, db)
+    new_refresh = generate_refresh_token(user_id, db, ua=ua, device_type=_ua_device_type(ua))
     return {"token": new_access, "refresh_token": new_refresh}
 
 @router.post("/auth/logout")
@@ -1306,7 +1405,7 @@ def twofa_confirm(req: TwoFactorConfirmRequest, request: Request, db: Session = 
             _401("Invalid authenticator code")
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
-    auth = _auth_response(user, db)
+    auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     return {
         "token": token,
         "refresh_token": auth["refresh_token"],
@@ -1393,7 +1492,6 @@ def list_sessions(request: Request, user: User = Depends(get_current_user), db: 
     "sessions". We cap active tokens per user at MAX_ACTIVE_SESSIONS and revoke
     the oldest beyond that, so the count reflects real devices/sessions.
     """
-    from database import RefreshToken
     MAX_ACTIVE_SESSIONS = 8
     rows = db.query(RefreshToken).filter(
         RefreshToken.user_id == user.id,
@@ -1413,6 +1511,8 @@ def list_sessions(request: Request, user: User = Depends(get_current_user), db: 
                 "id": r.id,
                 "created_at": r.created_at.isoformat() if r.created_at else None,
                 "expires_at": r.expires_at.isoformat() if r.expires_at else None,
+                "user_agent": r.user_agent or "",
+                "device_type": r.device_type or "",
             }
             for r in rows
         ]
@@ -1427,7 +1527,6 @@ def revoke_all_sessions(request: Request, user: User = Depends(get_current_user)
     The current access token remains valid until it expires (short-lived),
     but no refresh token can mint new ones — the next refresh forces re-login.
     """
-    from database import RefreshToken
     n = db.query(RefreshToken).filter(
         RefreshToken.user_id == user.id,
         RefreshToken.revoked == False,

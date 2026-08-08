@@ -93,6 +93,10 @@ class RefreshToken(Base):
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     revoked = Column(Boolean, default=False)
+    # Device label so the sessions list can show WHICH browser/device a token
+    # belongs to — without it "N active sessions" is an opaque number.
+    user_agent = Column(String, default="")
+    device_type = Column(String, default="")
     
     user = relationship("User")
 
