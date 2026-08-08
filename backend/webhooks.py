@@ -11,7 +11,6 @@ import hmac
 import ipaddress
 import json
 import socket
-import ssl
 import threading
 import urllib.parse
 import urllib.request
@@ -54,7 +53,8 @@ def _is_private_url(url: str) -> bool:
                     or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
                 return True
         return False
-    except Exception:
+    except Exception as e:
+        print(f"⚠️  Webhook URL SSRF check failed (fail-closed): {e}")
         return True  # fail closed
 
 

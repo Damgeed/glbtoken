@@ -13,7 +13,7 @@ import time as _time
 from database import get_db, User, Transaction
 from auth import get_current_user
 from newapi_integration import add_user_quota
-from common import _400, _401, _402, _403, _404, _500, _502, _503, _not_configured, limiter, \
+from common import _400, _404, _500, _not_configured, limiter, \
     PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES, GHS_TO_USD_RATE
 from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest, PaystackVerifyRequest
 
@@ -283,7 +283,8 @@ def paystack_verify(body: PaystackVerifyRequest, request: Request = None, user: 
 def stripe_create_checkout(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not STRIPE_SECRET_KEY:
         _not_configured("Stripe")
-    if req.amount < 2 or req.amount > 2000:
+    import math
+    if req.amount is None or not math.isfinite(float(req.amount)) or float(req.amount) < 2.0 or float(req.amount) > 2000.0:
         _400("Amount must be between $2 and $2000")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
@@ -332,7 +333,8 @@ def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: U
         _not_configured("Stripe")
     if not req.payment_method_id:
         _400("payment_method_id is required")
-    if req.amount < 1:
+    import math
+    if req.amount is None or not math.isfinite(float(req.amount)) or float(req.amount) < 1.0:
         _400("Minimum recharge is $1")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
@@ -883,6 +885,8 @@ def confirm_card(request: Request, req: CardConfirmRequest, user: User = Depends
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     session = stripe_lib.checkout.Session.retrieve(req.session_id)
+    # stripe ≥15 returns StripeObject (no .get()); normalize like the webhook handler
+    session = session.to_dict() if hasattr(session, "to_dict") else session
     # Ownership check: the Setup session must belong to THIS user's Stripe customer.
     meta_user = session.get("metadata", {}).get("user_id")
     cus = _stripe_customer_for(user)

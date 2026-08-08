@@ -120,7 +120,7 @@ def key_usage_series(key_id: int, request: Request, user: User = Depends(get_cur
     if not key:
         _404("API key not found")
     from datetime import datetime, timezone, timedelta
-    from sqlalchemy import func as _func, cast, Date
+    from sqlalchemy import func as _func
     since = datetime.now(timezone.utc) - timedelta(days=6)
     rows = db.query(
         _func.date(Transaction.created_at).label("day"),

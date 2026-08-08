@@ -194,14 +194,16 @@ limiter = Limiter(key_func=get_remote_address)
 # ── Safe Error Helper ──
 
 def _safe_error(msg: str) -> str:
-    """Sanitize and truncate exception messages for URL-safe redirects."""
-    msg = str(msg)
-    # Only first line (SQL traces span multiple lines)
-    first_line = msg.split('\n')[0].strip()
-    # Truncate to 200 chars maximum
-    if len(first_line) > 200:
-        first_line = first_line[:197] + '...'
-    return _url_quote(first_line)
+    """Return a generic, URL-safe error message for redirects.
+
+    The raw exception detail is logged server-side only — surfacing the first
+    line of SQL/provider errors in the browser URL bar leaks DB paths, table
+    names, and provider internals to anyone watching history/proxy/access logs.
+    """
+    raw = str(msg)
+    if raw and raw != "None":
+        print(f"⚠️  Redirect error detail (logged, not shown to client): {raw}")
+    return "Authentication failed, please try again"
 
 
 # ── Alert Helpers (login alerts, low-balance alerts) ──

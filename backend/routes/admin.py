@@ -1,6 +1,6 @@
 """GlbTOKEN — Admin Routes (balance, transactions, rates, providers, sync-users)"""
 
-from fastapi import APIRouter, Depends, Header, Request
+from fastapi import APIRouter, Depends, Header, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import Optional
@@ -52,7 +52,7 @@ def _audit(db: Session, admin, action: str, target=None, detail: str = "", ip: s
 
 @router.get("/api/admin/users")
 @limiter.limit("30/minute")
-def admin_list_users(request: Request, page: int = 1, per_page: int = 20, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def admin_list_users(request: Request, page: int = Query(1, ge=1), per_page: int = 20, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
     per_page = max(1, min(per_page, MAX_ADMIN_PAGE_SIZE))
@@ -99,7 +99,7 @@ def admin_adjust_balance(req: AdminBalanceRequest, request: Request, user: User 
 
 @router.get("/api/admin/transactions")
 @limiter.limit("30/minute")
-def admin_transactions(request: Request, page: int = 1, per_page: int = 20, status_filter: Optional[str] = None,
+def admin_transactions(request: Request, page: int = Query(1, ge=1), per_page: int = 20, status_filter: Optional[str] = None,
                        user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")

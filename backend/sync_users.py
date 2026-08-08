@@ -26,7 +26,6 @@ Environment:
 
 import os
 import sys
-import json
 import time
 import argparse
 from datetime import datetime, timezone

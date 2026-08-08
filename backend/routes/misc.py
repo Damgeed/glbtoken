@@ -48,6 +48,7 @@ def list_announcements(request: Request, db: Session = Depends(get_db)):
 @limiter.limit("3/minute")
 async def contact_form(req: ContactRequest, request: Request):
     name = req.name.strip()
+    name = re.sub(r"[\r\n]", "", name)  # SMTP header injection guard (subject)
     email = req.email.strip()
     message = req.message.strip()
     if not name or not email or len(message) < 10:

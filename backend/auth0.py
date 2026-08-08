@@ -5,13 +5,10 @@ Gracefully disabled — falls back to custom auth if Auth0 not configured."""
 
 import os, json, requests, time, secrets
 from jose import jwt, JWTError
-from datetime import datetime, timezone
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID", "")
 AUTH0_CLIENT_SECRET = os.getenv("AUTH0_CLIENT_SECRET", "")
-
-JWKS_CACHE = None
 
 def is_configured() -> bool:
     return bool(AUTH0_DOMAIN and AUTH0_CLIENT_ID and AUTH0_CLIENT_SECRET)

@@ -80,6 +80,8 @@ async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
     Returns user dict with 'id' field on success.
     """
     if not NEW_API_BASE or not ADMIN_TOKEN:
+        if NEW_API_BASE and not ADMIN_TOKEN:
+            print("⚠️  NEW_API_BASE_URL is set but NEW_API_ADMIN_TOKEN is missing — New API user creation falls back to local-only mode; upstream quota will NOT be credited!")
         # Fall back to local-only mode
         return {"id": 0, "email": email, "name": name, "quota": quota}
     import secrets

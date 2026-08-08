@@ -9,7 +9,7 @@ import os, json, secrets
 from database import get_db, User, AIModel, SessionLocal
 from auth import get_current_user
 from newapi_integration import get_user_models
-from common import _400, _403, limiter, GLBTOKEN_SECRET, NEW_API_BASE_URL, FALLBACK_API_URL, FALLBACK_API_KEY
+from common import _403, GLBTOKEN_SECRET, NEW_API_BASE_URL, FALLBACK_API_URL, FALLBACK_API_KEY
 
 router = APIRouter()
 

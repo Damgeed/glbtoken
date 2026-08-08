@@ -325,7 +325,6 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     # Login alert email (fire-and-forget, respects user prefs)
     if _user_setting(user, "login_alerts", True):
         try:
-            from routes.auth_routes import _client_ip
             ip = _client_ip(request)
             send_alert_email(
                 user,
@@ -933,6 +932,8 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
     password = body.password
     if not name or not email or not password:
         _400("Name, email, and password required")
+    if len(password) < 8:
+        _400("Password must be at least 8 characters")
 
     try:
         auth0_signup(email, password, name)

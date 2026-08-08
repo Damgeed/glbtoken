@@ -257,7 +257,9 @@ def invite_to_org(org_id: int, req: InviteMemberRequest, request: Request,
 
     base_url = os.getenv("FRONTEND_URL", "https://glbtoken.com").rstrip("/")
     inviter_name = user.name or user.email or "Someone"
-    subject = f"You're invited to join {org.name} on GlbTOKEN"
+    # SMTP header injection guard: org name is user-controlled, strip CR/LF from subject
+    org_name_safe = re.sub(r"[\r\n]", "", org.name or "")
+    subject = f"You're invited to join {org_name_safe} on GlbTOKEN"
 
     def _send(invite_token):
         """Build the join link + email body and attempt delivery (best-effort)."""
