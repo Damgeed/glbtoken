@@ -1634,6 +1634,15 @@ I18N["20,000 Tokens"] = {"zh-CN": "20,000 代币", ru: "20 000 токенов", 
 I18N["50,000 Tokens"] = {"zh-CN": "50,000 代币", ru: "50 000 токенов", ja: "50,000 トークン", de: "50.000 Tokens"};
 I18N["100,000 Tokens"] = {"zh-CN": "100,000 代币", ru: "100 000 токенов", ja: "100,000 トークン", de: "100.000 Tokens"};
 
+I18N["Chat request routed."] = {"zh-CN": "聊天请求已路由。", ru: "Запрос чата направлен.", ja: "チャットリクエストを転送しました。", de: "Chat-Anfrage weitergeleitet."};
+I18N["Claude message routed."] = {"zh-CN": "Claude 消息已路由。", ru: "Сообщение Claude направлено.", ja: "Claude メッセージを転送しました。", de: "Claude-Nachricht weitergeleitet."};
+I18N["Gemini request served."] = {"zh-CN": "Gemini 请求已处理。", ru: "Запрос Gemini обработан.", ja: "Gemini リクエストを処理しました。", de: "Gemini-Anfrage verarbeitet."};
+I18N["GlbTOKEN simplified our AI infrastructure. One balance for all models — game changer."] = {"zh-CN": "GlbTOKEN 简化了我们的 AI 基础设施。一个余额用遍所有模型——太颠覆了。", ru: "GlbTOKEN упростил нашу ИИ-инфраструктуру. Один баланс для всех моделей — это прорыв.", ja: "GlbTOKEN のおかげで AI インフラがシンプルに。全モデル共通の残高で使えるのは革命的です。", de: "GlbTOKEN hat unsere KI-Infrastruktur vereinfacht. Ein Guthaben für alle Modelle — ein echter Gamechanger."};
+I18N["Hello!"] = {"zh-CN": "你好！", ru: "Привет!", ja: "こんにちは！", de: "Hallo!"};
+I18N["Response workflow ready."] = {"zh-CN": "响应工作流已就绪。", ru: "Рабочий процесс ответов готов.", ja: "レスポンスワークフローの準備ができました。", de: "Antwort-Workflow bereit."};
+I18N["Tell me a story"] = {"zh-CN": "给我讲个故事", ru: "Расскажи мне историю", ja: "物語を聞かせて", de: "Erzähl mir eine Geschichte"};
+I18N["You are a helpful assistant."] = {"zh-CN": "你是一个乐于助人的助手。", ru: "Ты — полезный ассистент.", ja: "あなたは頼りになるアシスタントです。", de: "Du bist ein hilfsbereiter Assistent."};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
