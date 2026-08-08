@@ -2061,6 +2061,47 @@ I18N["Privacy Policy — GlbTOKEN"] = {"zh-CN": "隐私政策 — GlbTOKEN", ru:
 I18N["Product Updates"] = {"zh-CN": "产品更新", ru: "Обновления продукта", ja: "製品アップデート", de: "Produkt-Updates"};
 I18N["Project your monthly spend based on recent usage"] = {"zh-CN": "根据近期使用情况预测你的每月支出", ru: "Прогнозируйте ежемесячные расходы на основе недавнего использования", ja: "最近の利用状況に基づいて毎月の支出を予測", de: "Prognostizieren Sie Ihre monatlichen Ausgaben auf Basis der letzten Nutzung"};
 
+I18N["Projected Monthly"] = {"zh-CN": "月度预测", ru: "Прогноз на месяц", ja: "月次予測", de: "Monatsprognose"};
+I18N["Projected This Month"] = {"zh-CN": "本月预测", ru: "Прогноз на этот месяц", ja: "今月の予測", de: "Prognose für diesen Monat"};
+I18N["Projected monthly spend"] = {"zh-CN": "预计月度支出", ru: "Прогнозируемые месячные расходы", ja: "月間支出の予測", de: "Voraussichtliche Monatsausgaben"};
+I18N["Projection"] = {"zh-CN": "预测", ru: "Прогноз", ja: "予測", de: "Prognose"};
+I18N["Provider Proxies"] = {"zh-CN": "提供商代理", ru: "Прокси провайдеров", ja: "プロバイダープロキシ", de: "Anbieter-Proxys"};
+I18N["Puerto Rico"] = {"zh-CN": "波多黎各", ru: "Пуэрто-Рико", ja: "プエルトリコ", de: "Puerto Rico"};
+I18N["Python"] = {"zh-CN": "Python", ru: "Python", ja: "Python", de: "Python"};
+I18N["Qatar"] = {"zh-CN": "卡塔尔", ru: "Катар", ja: "カタール", de: "Katar"};
+I18N["Quick Links"] = {"zh-CN": "快捷链接", ru: "Быстрые ссылки", ja: "クイックリンク", de: "Schnellzugriff"};
+I18N["Qwen 3.7 Plus — Qwen"] = {"zh-CN": "Qwen 3.7 Plus — Qwen", ru: "Qwen 3.7 Plus — Qwen", ja: "Qwen 3.7 Plus — Qwen", de: "Qwen 3.7 Plus — Qwen"};
+I18N["REQUEST"] = {"zh-CN": "请求", ru: "ЗАПРОС", ja: "リクエスト", de: "ANFRAGE"};
+I18N["RESPONSE"] = {"zh-CN": "响应", ru: "ОТВЕТ", ja: "レスポンス", de: "ANTWORT"};
+I18N["RPM"] = {"zh-CN": "RPM", ru: "RPM", ja: "RPM", de: "RPM"};
+I18N["Range"] = {"zh-CN": "范围", ru: "Диапазон", ja: "範囲", de: "Bereich"};
+I18N["Real spend"] = {"zh-CN": "实际支出", ru: "Фактические расходы", ja: "実際の支出", de: "Tatsächliche Ausgaben"};
+I18N["Recent Notifications"] = {"zh-CN": "最近的通知", ru: "Недавние уведомления", ja: "最近の通知", de: "Aktuelle Benachrichtigungen"};
+I18N["Referrals Over Time"] = {"zh-CN": "邀请趋势", ru: "Динамика рефералов", ja: "紹介数の推移", de: "Empfehlungen im Zeitverlauf"};
+I18N["Referrals — GlbTOKEN"] = {"zh-CN": "邀请 — GlbTOKEN", ru: "Рефералы — GlbTOKEN", ja: "紹介 — GlbTOKEN", de: "Empfehlungen — GlbTOKEN"};
+I18N["Refresh failed"] = {"zh-CN": "刷新失败", ru: "Не удалось обновить", ja: "更新に失敗しました", de: "Aktualisierung fehlgeschlagen"};
+I18N["Refund Policy — GlbTOKEN"] = {"zh-CN": "退款政策 — GlbTOKEN", ru: "Политика возврата — GlbTOKEN", ja: "返金ポリシー — GlbTOKEN", de: "Rückerstattungsrichtlinie — GlbTOKEN"};
+I18N["Remove locally cached data (theme, language, dismissed notifications)"] = {"zh-CN": "清除本地缓存数据（主题、语言、已忽略的通知）", ru: "Удалить локально сохранённые данные (тема, язык, скрытые уведомления)", ja: "ローカルにキャッシュされたデータを削除（テーマ、言語、非表示にした通知）", de: "Lokal zwischengespeicherte Daten entfernen (Design, Sprache, ausgeblendete Benachrichtigungen)"};
+I18N["Replace YOUR_GLBTOKEN_API_KEY with your key"] = {"zh-CN": "将 YOUR_GLBTOKEN_API_KEY 替换为你的密钥", ru: "Замените YOUR_GLBTOKEN_API_KEY на ваш ключ", ja: "YOUR_GLBTOKEN_API_KEY を自分のキーに置き換えてください", de: "Ersetzen Sie YOUR_GLBTOKEN_API_KEY durch Ihren Schlüssel"};
+I18N["Request Details"] = {"zh-CN": "请求详情", ru: "Детали запроса", ja: "リクエストの詳細", de: "Anfragedetails"};
+I18N["Request Logs"] = {"zh-CN": "请求日志", ru: "Журналы запросов", ja: "リクエストログ", de: "Anfrageprotokolle"};
+I18N["Romania"] = {"zh-CN": "罗马尼亚", ru: "Румыния", ja: "ルーマニア", de: "Rumänien"};
+I18N["Router"] = {"zh-CN": "路由器", ru: "Маршрутизатор", ja: "ルーター", de: "Router"};
+I18N["Russia"] = {"zh-CN": "俄罗斯", ru: "Россия", ja: "ロシア", de: "Russland"};
+I18N["Rwanda"] = {"zh-CN": "卢旺达", ru: "Руанда", ja: "ルワンダ", de: "Ruanda"};
+I18N["SWE-bench"] = {"zh-CN": "SWE-bench", ru: "SWE-bench", ja: "SWE-bench", de: "SWE-bench"};
+I18N["Safari"] = {"zh-CN": "Safari", ru: "Safari", ja: "Safari", de: "Safari"};
+I18N["Samoa"] = {"zh-CN": "萨摩亚", ru: "Самоа", ja: "サモア", de: "Samoa"};
+I18N["Samsung"] = {"zh-CN": "Samsung", ru: "Samsung", ja: "Samsung", de: "Samsung"};
+I18N["San Marino"] = {"zh-CN": "圣马力诺", ru: "Сан-Марино", ja: "サンマリノ", de: "San Marino"};
+I18N["Saudi Arabia"] = {"zh-CN": "沙特阿拉伯", ru: "Саудовская Аравия", ja: "サウジアラビア", de: "Saudi-Arabien"};
+I18N["Save API Defaults"] = {"zh-CN": "保存 API 默认设置", ru: "Сохранить настройки API по умолчанию", ja: "APIのデフォルトを保存", de: "API-Standards speichern"};
+I18N["Save Webhook"] = {"zh-CN": "保存 Webhook", ru: "Сохранить вебхук", ja: "Webhookを保存", de: "Webhook speichern"};
+I18N["Security Update: SOC 2 Compliance & Encryption — GlbTOKEN Blog"] = {"zh-CN": "安全更新：SOC 2 合规与加密 — GlbTOKEN 博客", ru: "Обновление безопасности: соответствие SOC 2 и шифрование — блог GlbTOKEN", ja: "セキュリティ更新：SOC 2 準拠と暗号化 — GlbTOKEN ブログ", de: "Sicherheitsupdate: SOC-2-Konformität & Verschlüsselung — GlbTOKEN Blog"};
+I18N["Security Whitepaper"] = {"zh-CN": "安全白皮书", ru: "Технический документ по безопасности", ja: "セキュリティホワイトペーパー", de: "Sicherheits-Whitepaper"};
+I18N["Select"] = {"zh-CN": "选择", ru: "Выбрать", ja: "選択", de: "Auswählen"};
+I18N["Select all"] = {"zh-CN": "全选", ru: "Выбрать все", ja: "すべて選択", de: "Alle auswählen"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
