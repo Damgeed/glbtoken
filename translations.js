@@ -1728,6 +1728,29 @@ I18N["Brazil"] = {"zh-CN": "巴西", ru: "Бразилия", ja: "ブラジル",
 I18N["Brunei"] = {"zh-CN": "文莱", ru: "Бруней", ja: "ブルネイ", de: "Brunei"};
 I18N["Bulgaria"] = {"zh-CN": "保加利亚", ru: "Болгария", ja: "ブルガリア", de: "Bulgarien"};
 
+I18N["Burkina Faso"] = {"zh-CN": "布基纳法索", ru: "Буркина-Фасо", ja: "ブルキナファソ", de: "Burkina Faso"};
+I18N["Burundi"] = {"zh-CN": "布隆迪", ru: "Бурунди", ja: "ブルンジ", de: "Burundi"};
+I18N["Buy Tokens — GlbTOKEN"] = {"zh-CN": "购买令牌 — GlbTOKEN", ru: "Купить токены — GlbTOKEN", ja: "トークンを購入 — GlbTOKEN", de: "Token kaufen — GlbTOKEN"};
+I18N["Buying tokens via Paystack is straightforward and takes less than two minutes:"] = {"zh-CN": "通过 Paystack 购买令牌非常简单，两分钟以内即可完成：", ru: "Покупка токенов через Paystack проста и занимает меньше двух минут:", ja: "Paystack でのトークン購入は簡単で、2分もかかりません：", de: "Der Kauf von Tokens über Paystack ist unkompliziert und dauert weniger als zwei Minuten:"};
+I18N["Calls"] = {"zh-CN": "调用次数", ru: "Вызовы", ja: "呼び出し数", de: "Aufrufe"};
+I18N["Cambodia"] = {"zh-CN": "柬埔寨", ru: "Камбоджа", ja: "カンボジア", de: "Kambodscha"};
+I18N["Cameroon"] = {"zh-CN": "喀麦隆", ru: "Камерун", ja: "カメルーン", de: "Kamerun"};
+I18N["Canada"] = {"zh-CN": "加拿大", ru: "Канада", ja: "カナダ", de: "Kanada"};
+I18N["Capacity"] = {"zh-CN": "容量", ru: "Ёмкость", ja: "容量", de: "Kapazität"};
+I18N["Cape Verde"] = {"zh-CN": "佛得角", ru: "Кабо-Верде", ja: "カーボベルデ", de: "Kap Verde"};
+I18N["Chargebacks"] = {"zh-CN": "拒付", ru: "Возвратные платежи", ja: "チャージバック", de: "Rückbuchungen"};
+I18N["Checking status…"] = {"zh-CN": "正在检查状态…", ru: "Проверка статуса…", ja: "ステータスを確認中…", de: "Status wird geprüft…"};
+I18N["Chile"] = {"zh-CN": "智利", ru: "Чили", ja: "チリ", de: "Chile"};
+I18N["China"] = {"zh-CN": "中国", ru: "Китай", ja: "中国", de: "China"};
+I18N["Choose Claude Sonnet 5 if"] = {"zh-CN": "如果需要，请选择 Claude Sonnet 5", ru: "Если нужно, выберите Claude Sonnet 5", ja: "必要であれば Claude Sonnet 5 を選択してください", de: "Bei Bedarf Claude Sonnet 5 wählen"};
+I18N["Choose GPT-5.5 Pro if"] = {"zh-CN": "如果需要，请选择 GPT-5.5 Pro", ru: "Если нужно, выберите GPT-5.5 Pro", ja: "必要であれば GPT-5.5 Pro を選択してください", de: "Bei Bedarf GPT-5.5 Pro wählen"};
+I18N["Choose Paystack"] = {"zh-CN": "选择 Paystack", ru: "Выберите Paystack", ja: "Paystack を選択", de: "Paystack wählen"};
+I18N["Claim Rewards"] = {"zh-CN": "领取奖励", ru: "Получить награды", ja: "報酬を受け取る", de: "Belohnungen einlösen"};
+I18N["Claude 3 Haiku — Anthropic"] = {"zh-CN": "Claude 3 Haiku — Anthropic", ru: "Claude 3 Haiku — Anthropic", ja: "Claude 3 Haiku — Anthropic", de: "Claude 3 Haiku — Anthropic"};
+I18N["Claude 3 Opus — Anthropic"] = {"zh-CN": "Claude 3 Opus — Anthropic", ru: "Claude 3 Opus — Anthropic", ja: "Claude 3 Opus — Anthropic", de: "Claude 3 Opus — Anthropic"};
+I18N["Claude 3.5 Sonnet"] = {"zh-CN": "Claude 3.5 Sonnet", ru: "Claude 3.5 Sonnet", ja: "Claude 3.5 Sonnet", de: "Claude 3.5 Sonnet"};
+I18N["Claude 3.5 Sonnet — Anthropic"] = {"zh-CN": "Claude 3.5 Sonnet — Anthropic", ru: "Claude 3.5 Sonnet — Anthropic", ja: "Claude 3.5 Sonnet — Anthropic", de: "Claude 3.5 Sonnet — Anthropic"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
