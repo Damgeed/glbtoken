@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1245" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1052" />
+<link rel="stylesheet" href="settings.css?v=1053" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -155,12 +155,13 @@
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
           <div class="settings-field-group">
             <div class="settings-avatar-row">
-              <div class="settings-avatar-preview" id="avatarPreview"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div class="settings-avatar-preview clickable" id="avatarPreview" onclick="openAvatarMenu()" title="Change avatar"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="settings-avatar-hint">✎</span>
+              </div>
               <div class="settings-avatar-actions">
                 <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
-                <button class="btn-secondary settings-btn-avatar" onclick="document.getElementById('avatarFileInput').click()">Upload Photo</button>
-                <button class="btn-secondary settings-btn-avatar" id="avatarClearBtn" onclick="clearAvatar()" style="display:none">Remove</button>
-                <div class="settings-item-desc-sm" style="margin-top:0.35rem">PNG / JPG / WebP, max 300 KB</div>
+                <div class="settings-avatar-name" id="avatarName">User</div>
+                <div class="settings-item-desc-sm">PNG / JPG / WebP, max 300 KB · click avatar to change</div>
               </div>
             </div>
             <div><label class="settings-field-label">Full Name</label><input type="text" id="settingsName" value="User" class="settings-input"></div>
@@ -926,6 +927,50 @@ window.confirmDeleteAccount = function(){
 
 // ── Avatar ──
 window._avatarDataUrl = '';
+window.openAvatarMenu = function(){
+  var hasAvatar = !!(document.getElementById('avatarPreview') && document.getElementById('avatarPreview').querySelector('img'));
+  var existing = document.getElementById('avatarMenu');
+  if(existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = 'avatarMenu';
+  m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,14,0.65);backdrop-filter:blur(4px);animation:twofaFadeIn 0.15s ease;padding:1rem';
+  var theme = document.documentElement.className;
+  var isDark = theme === 'dark';
+  var cardBg = isDark ? '#171923' : '#ffffff';
+  var textClr = isDark ? '#f3f5f7' : '#1a1a2e';
+  var muted = isDark ? '#8b93a7' : '#666';
+  var border = isDark ? '#2c2f3d' : '#e2e2ea';
+  m.innerHTML =
+    '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.25rem;max-width:300px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.2s ease">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">'
+    +   '<h3 style="margin:0;font-size:0.95rem;font-weight:700;color:'+textClr+'">Change avatar</h3>'
+    +   '<button onclick="closeAvatarMenu()" style="background:none;border:none;color:'+muted+';font-size:1.05rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;gap:0.5rem">'
+    +   '<button onclick="document.getElementById(\'avatarFileInput\').click(); closeAvatarMenu();" style="display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.84rem;font-weight:600;cursor:pointer;text-align:left">'
+    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+    +     'Upload photo'
+    +   '</button>'
+    +   (hasAvatar ? '<button onclick="clearAvatar(); closeAvatarMenu();" style="display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.7rem 0.9rem;border-radius:10px;border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.06);color:#ff4d4f;font-size:0.84rem;font-weight:600;cursor:pointer;text-align:left">'
+    +     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'
+    +     'Remove photo'
+    +   '</button>' : '')
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(m);
+  if(!document.getElementById('avatarMenuStyle')){
+    var s = document.createElement('style'); s.id = 'avatarMenuStyle';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}';
+    document.head.appendChild(s);
+  }
+  m.onclick = function(e){ if(e.target === m) closeAvatarMenu(); };
+};
+
+window.closeAvatarMenu = function(){
+  var m = document.getElementById('avatarMenu');
+  if(m) m.remove();
+};
+
 document.addEventListener('change', function(e){
   if(e.target && e.target.id === 'avatarFileInput'){
     var file = e.target.files && e.target.files[0];
@@ -957,9 +1002,7 @@ document.addEventListener('change', function(e){
 function renderAvatarPreview(dataUrl){
   var p = document.getElementById('avatarPreview');
   if(!p) return;
-  p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
-  var clearBtn = document.getElementById('avatarClearBtn');
-  if(clearBtn) clearBtn.style.display = '';
+  p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><span class="settings-avatar-hint">✎</span>';
 }
 
 function saveAvatar(dataUrl){
@@ -986,9 +1029,7 @@ window.clearAvatar = function(){
   .then(function(d){
     if(d && d.status === 'updated'){
       var p = document.getElementById('avatarPreview');
-      if(p) p.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-      var clearBtn = document.getElementById('avatarClearBtn');
-      if(clearBtn) clearBtn.style.display = 'none';
+      if(p) p.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="settings-avatar-hint">✎</span>';
       showToast('Avatar removed','success');
     } else { showToast((d && d.detail) || 'Failed to remove avatar','error'); }
   })
@@ -1517,7 +1558,11 @@ document.addEventListener('DOMContentLoaded', function(){
   if(storedUser){
     try {
       var parsed = JSON.parse(storedUser);
-      if(parsed && parsed.name) document.getElementById('settingsName').value = parsed.name;
+      if(parsed && parsed.name){
+        document.getElementById('settingsName').value = parsed.name;
+        var nameEl = document.getElementById('avatarName');
+        if(nameEl) nameEl.textContent = parsed.name;
+      }
       if(parsed && parsed.email) document.getElementById('settingsEmail').value = parsed.email;
     } catch(e){
       document.getElementById('settingsName').value = storedUser;
@@ -1529,9 +1574,11 @@ document.addEventListener('DOMContentLoaded', function(){
     // Avatar preview from profile
     if(p && p.avatar){
       var av = document.getElementById('avatarPreview');
-      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
-      var clearBtn = document.getElementById('avatarClearBtn');
-      if(clearBtn) clearBtn.style.display = '';
+      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><span class="settings-avatar-hint">✎</span>';
+    }
+    if(p && p.name){
+      var nameEl2 = document.getElementById('avatarName');
+      if(nameEl2) nameEl2.textContent = p.name;
     }
   });
   // Login history summary + active sessions
