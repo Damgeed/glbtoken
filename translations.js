@@ -2143,6 +2143,45 @@ I18N["Taiwan"] = {"zh-CN": "台湾", ru: "Тайвань", ja: "台湾", de: "Ta
 I18N["Tajikistan"] = {"zh-CN": "塔吉克斯坦", ru: "Таджикистан", ja: "タジキスタン", de: "Tadschikistan"};
 I18N["Tanzania"] = {"zh-CN": "坦桑尼亚", ru: "Танзания", ja: "タンザニア", de: "Tansania"};
 
+I18N["Team Insights"] = {"zh-CN": "团队洞察", ru: "Аналитика команды", ja: "チームインサイト", de: "Team-Einblicke"};
+I18N["Team Management"] = {"zh-CN": "团队管理", ru: "Управление командой", ja: "チーム管理", de: "Teamverwaltung"};
+I18N["Team Members"] = {"zh-CN": "团队成员", ru: "Участники команды", ja: "チームメンバー", de: "Teammitglieder"};
+I18N["Team — GlbTOKEN"] = {"zh-CN": "团队 — GlbTOKEN", ru: "Команда — GlbTOKEN", ja: "チーム — GlbTOKEN", de: "Team — GlbTOKEN"};
+I18N["Temperature"] = {"zh-CN": "温度", ru: "Температура", ja: "温度", de: "Temperatur"};
+I18N["Terms of Service — GlbTOKEN"] = {"zh-CN": "服务条款 — GlbTOKEN", ru: "Условия обслуживания — GlbTOKEN", ja: "利用規約 — GlbTOKEN", de: "Nutzungsbedingungen — GlbTOKEN"};
+I18N["Thailand"] = {"zh-CN": "泰国", ru: "Таиланд", ja: "タイ", de: "Thailand"};
+I18N["The GlbTOKEN Insight"] = {"zh-CN": "GlbTOKEN 洞察", ru: "Обзор GlbTOKEN", ja: "GlbTOKEN インサイト", de: "Der GlbTOKEN-Überblick"};
+I18N["The initial release of the GlbTOKEN API includes the following endpoints:"] = {"zh-CN": "GlbTOKEN API 的首个版本包含以下端点：", ru: "Первая версия GlbTOKEN API включает следующие конечные точки:", ja: "GlbTOKEN API の初期リリースには以下のエンドポイントが含まれます：", de: "Die erste Version der GlbTOKEN API umfasst die folgenden Endpunkte:"};
+I18N["This endpoint is fully compatible with the OpenAI SDK. Just change the"] = {"zh-CN": "此端点与 OpenAI SDK 完全兼容。只需更改", ru: "Эта конечная точка полностью совместима с OpenAI SDK. Просто измените", ja: "このエンドポイントは OpenAI SDK と完全互換です。変更するのは", de: "Dieser Endpunkt ist vollständig mit dem OpenAI SDK kompatibel. Ändern Sie einfach"};
+I18N["Tighter spacing on dashboard cards"] = {"zh-CN": "仪表盘卡片间距更紧凑", ru: "Более компактные отступы на карточках панели управления", ja: "ダッシュボードカードの間隔をよりコンパクトに", de: "Engere Abstände auf den Dashboard-Karten"};
+I18N["Token-by-token streaming by default"] = {"zh-CN": "默认逐 Token 流式输出", ru: "Потоковая передача по токенам по умолчанию", ja: "デフォルトでトークン単位のストリーミング", de: "Standardmäßig tokenweises Streaming"};
+I18N["Tokens This Month"] = {"zh-CN": "本月 Token 用量", ru: "Токены за этот месяц", ja: "今月のトークン", de: "Token diesen Monat"};
+I18N["Tokens Used"] = {"zh-CN": "已用 Token", ru: "Использовано токенов", ja: "使用済みトークン", de: "Verwendete Token"};
+I18N["Tokens:"] = {"zh-CN": "Token：", ru: "Токены:", ja: "トークン：", de: "Token:"};
+I18N["Tonga"] = {"zh-CN": "汤加", ru: "Тонга", ja: "トンガ", de: "Tonga"};
+I18N["Top Channels"] = {"zh-CN": "热门渠道", ru: "Лучшие каналы", ja: "トップチャネル", de: "Top-Kanäle"};
+I18N["Top Consumers"] = {"zh-CN": "主要消费者", ru: "Крупнейшие потребители", ja: "トップ利用者", de: "Größte Verbraucher"};
+I18N["Top Up Now"] = {"zh-CN": "立即充值", ru: "Пополнить сейчас", ja: "今すぐチャージ", de: "Jetzt aufladen"};
+I18N["Top-up success"] = {"zh-CN": "充值成功", ru: "Пополнение успешно", ja: "チャージ成功", de: "Aufladung erfolgreich"};
+I18N["Total API Calls"] = {"zh-CN": "API 调用总数", ru: "Всего вызовов API", ja: "API 呼び出しの合計", de: "Gesamtzahl der API-Aufrufe"};
+I18N["Total Referrals"] = {"zh-CN": "推荐总数", ru: "Всего рефералов", ja: "紹介の合計", de: "Gesamtzahl der Empfehlungen"};
+I18N["Track API errors"] = {"zh-CN": "追踪 API 错误", ru: "Отслеживание ошибок API", ja: "API エラーの追跡", de: "API-Fehler verfolgen"};
+I18N["Trinidad and Tobago"] = {"zh-CN": "特立尼达和多巴哥", ru: "Тринидад и Тобаго", ja: "トリニダード・トバゴ", de: "Trinidad und Tobago"};
+I18N["Tunisia"] = {"zh-CN": "突尼斯", ru: "Тунис", ja: "チュニジア", de: "Tunesien"};
+I18N["Turkey"] = {"zh-CN": "土耳其", ru: "Турция", ja: "トルコ", de: "Türkei"};
+I18N["Turkmenistan"] = {"zh-CN": "土库曼斯坦", ru: "Туркменистан", ja: "トルクメニスタン", de: "Turkmenistan"};
+I18N["Tuvalu"] = {"zh-CN": "图瓦卢", ru: "Тувалу", ja: "ツバル", de: "Tuvalu"};
+I18N["Twitter"] = {"zh-CN": "Twitter", ru: "Twitter", ja: "Twitter", de: "Twitter"};
+I18N["Two-Factor Verification"] = {"zh-CN": "双重身份验证", ru: "Двухфакторная проверка", ja: "二段階認証", de: "Zwei-Faktor-Verifizierung"};
+I18N["Two-Factor Verification — GlbTOKEN"] = {"zh-CN": "双重身份验证 — GlbTOKEN", ru: "Двухфакторная проверка — GlbTOKEN", ja: "二段階認証 — GlbTOKEN", de: "Zwei-Faktor-Verifizierung — GlbTOKEN"};
+I18N["Uganda"] = {"zh-CN": "乌干达", ru: "Уганда", ja: "ウガンダ", de: "Uganda"};
+I18N["Ukraine"] = {"zh-CN": "乌克兰", ru: "Украина", ja: "ウクライナ", de: "Ukraine"};
+I18N["United Kingdom"] = {"zh-CN": "英国", ru: "Великобритания", ja: "イギリス", de: "Vereinigtes Königreich"};
+I18N["United States"] = {"zh-CN": "美国", ru: "Соединённые Штаты", ja: "アメリカ合衆国", de: "Vereinigte Staaten"};
+I18N["Unknown"] = {"zh-CN": "未知", ru: "Неизвестно", ja: "不明", de: "Unbekannt"};
+I18N["Update name, permissions, expiry, rate limit, or IP allowlist"] = {"zh-CN": "更新名称、权限、有效期、速率限制或 IP 白名单", ru: "Обновите имя, права доступа, срок действия, лимит запросов или IP-белый список", ja: "名前、権限、有効期限、レート制限、IP 許可リストを更新", de: "Name, Berechtigungen, Ablaufdatum, Ratenlimit oder IP-Whitelist aktualisieren"};
+I18N["Uruguay"] = {"zh-CN": "乌拉圭", ru: "Уругвай", ja: "ウルグアイ", de: "Uruguay"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
