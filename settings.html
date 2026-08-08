@@ -514,7 +514,10 @@ function openTwoFAModal(mode){
     +   '</div>'
     +   '<div style="display:flex;align-items:center;gap:0.4rem;width:100%;max-width:340px">'
     +     '<code id="twofaSecret" style="flex:1;min-width:0;background:rgba(244,180,0,0.07);border:1px solid rgba(244,180,0,0.25);padding:0.45rem 0.6rem;border-radius:8px;font-size:0.72rem;white-space:nowrap;overflow-x:auto;color:'+textClr+';text-align:center;letter-spacing:0.5px">…</code>'
-    +     '<button onclick="copyTwoFASecret()" style="flex-shrink:0;padding:0.45rem 0.7rem;border-radius:8px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.75rem;cursor:pointer">Copy</button>'
+    +     '<button onclick="copyTwoFASecret()" title="Copy secret" style="flex-shrink:0;padding:0.45rem 0.7rem;border-radius:8px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.35rem;white-space:nowrap">'
+    +       '<svg class="twofa-copy-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>'
+    +       '<span class="twofa-copy-lbl">Copy</span>'
+    +     '</button>'
     +   '</div>'
     + '</div>'
     + '<div style="display:flex;gap:0.5rem;margin-top:0.75rem;align-items:center">'
@@ -539,7 +542,7 @@ function openTwoFAModal(mode){
   document.body.appendChild(m);
   if(!document.getElementById('twofaModalStyle')){
     var s = document.createElement('style'); s.id = 'twofaModalStyle';
-    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}#twofaCode{width:auto}@media (max-width:420px){#twofaCode{font-size:0.85rem!important;letter-spacing:0.22rem!important;padding:0.62rem 0.5rem!important;text-align:left!important}#twofaConfirmBtn{padding:0.62rem 0.75rem!important;font-size:0.78rem!important}}';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}#twofaCode{width:auto}@media (max-width:420px){#twofaCode{font-size:0.85rem!important;letter-spacing:0.22rem!important;padding:0.62rem 0.5rem!important;text-align:left!important}#twofaConfirmBtn{padding:0.62rem 0.75rem!important;font-size:0.78rem!important}.twofa-copy-lbl{display:none!important}.twofa-copy-ic{width:15px!important;height:15px!important}}';
     document.head.appendChild(s);
   }
   m.onclick = function(e){ if(e.target === m) closeTwoFAModal(); };
