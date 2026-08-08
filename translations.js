@@ -1789,6 +1789,23 @@ I18N["Cyprus"] = {"zh-CN": "塞浦路斯", ru: "Кипр", ja: "キプロス", d
 I18N["Czech Republic"] = {"zh-CN": "捷克共和国", ru: "Чехия", ja: "チェコ共和国", de: "Tschechische Republik"};
 I18N["DR Congo"] = {"zh-CN": "刚果民主共和国", ru: "ДР Конго", ja: "コンゴ民主共和国", de: "DR Kongo"};
 
+I18N["Daily Average"] = {"zh-CN": "日均", ru: "Среднее за день", ja: "日平均", de: "Tagesdurchschnitt"};
+I18N["Daily pace"] = {"zh-CN": "每日进度", ru: "Ежедневный темп", ja: "日次ペース", de: "Tägliches Tempo"};
+I18N["Danger Zone"] = {"zh-CN": "危险区域", ru: "Опасная зона", ja: "危険ゾーン", de: "Gefahrenzone"};
+I18N["Dark Mode"] = {"zh-CN": "深色模式", ru: "Тёмная тема", ja: "ダークモード", de: "Dunkler Modus"};
+I18N["Dashboard — GlbTOKEN"] = {"zh-CN": "仪表盘 — GlbTOKEN", ru: "Панель управления — GlbTOKEN", ja: "ダッシュボード — GlbTOKEN", de: "Dashboard — GlbTOKEN"};
+I18N["Database"] = {"zh-CN": "数据库", ru: "База данных", ja: "データベース", de: "Datenbank"};
+I18N["DeepSeek"] = {"zh-CN": "DeepSeek", ru: "DeepSeek", ja: "DeepSeek", de: "DeepSeek"};
+I18N["DeepSeek R1 — DeepSeek"] = {"zh-CN": "DeepSeek R1 — DeepSeek", ru: "DeepSeek R1 — DeepSeek", ja: "DeepSeek R1 — DeepSeek", de: "DeepSeek R1 — DeepSeek"};
+I18N["DeepSeek V3"] = {"zh-CN": "DeepSeek V3", ru: "DeepSeek V3", ja: "DeepSeek V3", de: "DeepSeek V3"};
+I18N["DeepSeek V3 Flash — DeepSeek"] = {"zh-CN": "DeepSeek V3 Flash — DeepSeek", ru: "DeepSeek V3 Flash — DeepSeek", ja: "DeepSeek V3 Flash — DeepSeek", de: "DeepSeek V3 Flash — DeepSeek"};
+I18N["DeepSeek V3 — DeepSeek"] = {"zh-CN": "DeepSeek V3 — DeepSeek", ru: "DeepSeek V3 — DeepSeek", ja: "DeepSeek V3 — DeepSeek", de: "DeepSeek V3 — DeepSeek"};
+I18N["DeepSeek V4 Pro"] = {"zh-CN": "DeepSeek V4 Pro", ru: "DeepSeek V4 Pro", ja: "DeepSeek V4 Pro", de: "DeepSeek V4 Pro"};
+I18N["DeepSeek V4 Pro — DeepSeek"] = {"zh-CN": "DeepSeek V4 Pro — DeepSeek", ru: "DeepSeek V4 Pro — DeepSeek", ja: "DeepSeek V4 Pro — DeepSeek", de: "DeepSeek V4 Pro — DeepSeek"};
+I18N["Default Model"] = {"zh-CN": "默认模型", ru: "Модель по умолчанию", ja: "デフォルトモデル", de: "Standardmodell"};
+I18N["Delete"] = {"zh-CN": "删除", ru: "Удалить", ja: "削除", de: "Löschen"};
+I18N["Delete Account"] = {"zh-CN": "删除账户", ru: "Удалить аккаунт", ja: "アカウントを削除", de: "Konto löschen"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
