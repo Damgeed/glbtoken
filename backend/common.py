@@ -146,10 +146,10 @@ def require_tier(user, tier: str, feature: str = ""):
 
 
 def ensure_public_id(user) -> str:
-    """Return the user's OpenRouter-style public ID (u_xxx), generating one if missing.
+    """Return the user's public ID (u_xxx), generating one if missing.
 
     Idempotent: existing users keep their ID; new users get a random one.
-    Format mirrors OpenRouter: lowercase 'u_' + 22 URL-safe random chars.
+    Format: lowercase 'u_' + 22 URL-safe random chars.
     """
     import secrets
 

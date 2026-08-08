@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):
                     conn.execute(sql)
                     print(f"✅ Added missing column: {col_name}")
             conn.commit()
-        # Backfill public_id for existing users (OpenRouter-style u_xxx)
+        # Backfill public_id for existing users (u_xxx format)
         try:
             from common import ensure_public_id
             from database import SessionLocal

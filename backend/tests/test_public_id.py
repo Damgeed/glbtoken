@@ -1,4 +1,4 @@
-"""Tests for OpenRouter-style public_id (u_xxx) on users."""
+"""Tests for public_id (u_xxx) on users."""
 import re
 from fastapi.testclient import TestClient
 
