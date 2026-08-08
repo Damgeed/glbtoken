@@ -1701,6 +1701,33 @@ I18N["Anthropic's Claude Sonnet 5"] = {"zh-CN": "Anthropic 的 Claude Sonnet 5",
 I18N["Appearance"] = {"zh-CN": "外观", ru: "Внешний вид", ja: "外観", de: "Darstellung"};
 I18N["Apple"] = {"zh-CN": "Apple", ru: "Apple", ja: "Apple", de: "Apple"};
 
+I18N["Apple User"] = {"zh-CN": "Apple 用户", ru: "Пользователь Apple", ja: "Appleユーザー", de: "Apple-Benutzer"};
+I18N["Argentina"] = {"zh-CN": "阿根廷", ru: "Аргентина", ja: "アルゼンチン", de: "Argentinien"};
+I18N["Armenia"] = {"zh-CN": "亚美尼亚", ru: "Армения", ja: "アルメニア", de: "Armenien"};
+I18N["Australia"] = {"zh-CN": "澳大利亚", ru: "Австралия", ja: "オーストラリア", de: "Australien"};
+I18N["Austria"] = {"zh-CN": "奥地利", ru: "Австрия", ja: "オーストリア", de: "Österreich"};
+I18N["Azerbaijan"] = {"zh-CN": "阿塞拜疆", ru: "Азербайджан", ja: "アゼルバイジャン", de: "Aserbaidschan"};
+I18N["Bahamas"] = {"zh-CN": "巴哈马", ru: "Багамские Острова", ja: "バハマ", de: "Bahamas"};
+I18N["Bahrain"] = {"zh-CN": "巴林", ru: "Бахрейн", ja: "バーレーン", de: "Bahrain"};
+I18N["Bangladesh"] = {"zh-CN": "孟加拉国", ru: "Бангладеш", ja: "バングラデシュ", de: "Bangladesch"};
+I18N["Barbados"] = {"zh-CN": "巴巴多斯", ru: "Барбадос", ja: "バルバドス", de: "Barbados"};
+I18N["Based on last 7 days"] = {"zh-CN": "基于最近 7 天", ru: "На основе последних 7 дней", ja: "直近7日間に基づく", de: "Basierend auf den letzten 7 Tagen"};
+I18N["Batch"] = {"zh-CN": "批量", ru: "Пакет", ja: "バッチ", de: "Stapel"};
+I18N["Batch API"] = {"zh-CN": "批量 API", ru: "Пакетный API", ja: "バッチ API", de: "Batch-API"};
+I18N["Belarus"] = {"zh-CN": "白俄罗斯", ru: "Беларусь", ja: "ベラルーシ", de: "Belarus"};
+I18N["Belgium"] = {"zh-CN": "比利时", ru: "Бельгия", ja: "ベルギー", de: "Belgien"};
+I18N["Benin"] = {"zh-CN": "贝宁", ru: "Бенин", ja: "ベナン", de: "Benin"};
+I18N["Bhutan"] = {"zh-CN": "不丹", ru: "Бутан", ja: "ブータン", de: "Bhutan"};
+I18N["Billing Engine"] = {"zh-CN": "计费引擎", ru: "Платёжный движок", ja: "課金エンジン", de: "Abrechnungs-Engine"};
+I18N["Billing — GlbTOKEN"] = {"zh-CN": "账单 — GlbTOKEN", ru: "Биллинг — GlbTOKEN", ja: "請求 — GlbTOKEN", de: "Abrechnung — GlbTOKEN"};
+I18N["Blog — GlbTOKEN"] = {"zh-CN": "博客 — GlbTOKEN", ru: "Блог — GlbTOKEN", ja: "ブログ — GlbTOKEN", de: "Blog — GlbTOKEN"};
+I18N["Bolivia"] = {"zh-CN": "玻利维亚", ru: "Боливия", ja: "ボリビア", de: "Bolivien"};
+I18N["Bosnia and Herzegovina"] = {"zh-CN": "波斯尼亚和黑塞哥维那", ru: "Босния и Герцеговина", ja: "ボスニア・ヘルツェゴビナ", de: "Bosnien und Herzegowina"};
+I18N["Botswana"] = {"zh-CN": "博茨瓦纳", ru: "Ботсвана", ja: "ボツワナ", de: "Botswana"};
+I18N["Brazil"] = {"zh-CN": "巴西", ru: "Бразилия", ja: "ブラジル", de: "Brasilien"};
+I18N["Brunei"] = {"zh-CN": "文莱", ru: "Бруней", ja: "ブルネイ", de: "Brunei"};
+I18N["Bulgaria"] = {"zh-CN": "保加利亚", ru: "Болгария", ja: "ブルガリア", de: "Bulgarien"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
