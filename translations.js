@@ -1855,6 +1855,19 @@ I18N["GPT-5.5 Pro: OpenAI's New Flagship"] = {"zh-CN": "GPT-5.5 Pro：OpenAI 全
 I18N["GSM-8K"] = {"zh-CN": "GSM-8K", ru: "GSM-8K", ja: "GSM-8K", de: "GSM-8K"};
 I18N["Gabon"] = {"zh-CN": "加蓬", ru: "Габон", ja: "ガボン", de: "Gabun"};
 
+I18N["Gambia"] = {"zh-CN": "冈比亚", ru: "Гамбия", ja: "ガンビア", de: "Gambia"};
+I18N["Gemini 2.0 Flash — Google"] = {"zh-CN": "Gemini 2.0 Flash — Google", ru: "Gemini 2.0 Flash — Google", ja: "Gemini 2.0 Flash — Google", de: "Gemini 2.0 Flash — Google"};
+I18N["Gemini 2.0 Pro — Google"] = {"zh-CN": "Gemini 2.0 Pro — Google", ru: "Gemini 2.0 Pro — Google", ja: "Gemini 2.0 Pro — Google", de: "Gemini 2.0 Pro — Google"};
+I18N["Gemini 3.5 Flash"] = {"zh-CN": "Gemini 3.5 Flash", ru: "Gemini 3.5 Flash", ja: "Gemini 3.5 Flash", de: "Gemini 3.5 Flash"};
+I18N["Gemini Ultra 3"] = {"zh-CN": "Gemini Ultra 3", ru: "Gemini Ultra 3", ja: "Gemini Ultra 3", de: "Gemini Ultra 3"};
+I18N["Generate My Referral Code"] = {"zh-CN": "生成我的推荐码", ru: "Сгенерировать мой реферальный код", ja: "自分の紹介コードを生成", de: "Meinen Empfehlungscode generieren"};
+I18N["Generate an API key"] = {"zh-CN": "生成 API 密钥", ru: "Создать API-ключ", ja: "APIキーを生成", de: "API-Schlüssel generieren"};
+I18N["Generate an API key."] = {"zh-CN": "生成 API 密钥。", ru: "Создайте API-ключ.", ja: "APIキーを生成してください。", de: "Generieren Sie einen API-Schlüssel."};
+I18N["Generate and manage your API keys for programmatic access."] = {"zh-CN": "生成并管理您的 API 密钥，以便以编程方式访问。", ru: "Создавайте и управляйте своими API-ключами для программного доступа.", ja: "プログラムによるアクセスのために、APIキーを生成・管理できます。", de: "Generieren und verwalten Sie Ihre API-Schlüssel für den programmatischen Zugriff."};
+I18N["Georgia"] = {"zh-CN": "格鲁吉亚", ru: "Грузия", ja: "ジョージア", de: "Georgien"};
+I18N["Germany"] = {"zh-CN": "德国", ru: "Германия", ja: "ドイツ", de: "Deutschland"};
+I18N["GitHub"] = {"zh-CN": "GitHub", ru: "GitHub", ja: "GitHub", de: "GitHub"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
