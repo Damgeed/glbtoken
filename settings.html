@@ -185,9 +185,9 @@
               <div style="flex:1"><div class="settings-item-name-sm">Total Spent</div><div class="settings-item-desc-sm" id="acctSpent">—</div></div>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <div style="flex:1"><div class="settings-item-name-sm">Email Verified</div><div class="settings-item-desc-sm" id="acctEmailVerified">—</div></div>
-              <button class="btn-secondary settings-btn-right" id="verifyEmailBtn" onclick="openEmailVerifyModal()" style="display:none">Verify</button>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
+              <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Email</div><div class="settings-item-desc-sm" id="acctEmail" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
+              <button class="btn-secondary settings-btn-right acct-copy-btn" onclick="copyAcctEmail()" title="Copy email" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
             <div class="settings-badge-card">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -1313,18 +1313,8 @@ function loadAccountOverview(){
     if(!p) return;
     var spentEl = document.getElementById('acctSpent');
     if(spentEl) spentEl.textContent = '$' + Number(p.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-    var verEl = document.getElementById('acctEmailVerified');
-    var verBtn = document.getElementById('verifyEmailBtn');
-    if(verEl){
-      var verified = !!p.email_verified;
-      var acctEmail = p.email || '';
-      // Synthetic addresses (phone signup / Apple hide-my-email / GitHub fallback)
-      // are not real mailboxes — they can never be email-verified, so show "—"
-      // instead of a misleading "Not verified" + Verify button.
-      var synthetic = /@(phone\.glbtoken\.io|privaterelay\.local|github\.com)$/i.test(acctEmail);
-      verEl.textContent = synthetic ? '—' : (verified ? '✅ Verified' : '⚠️ Not verified');
-      if(verBtn) verBtn.style.display = (verified || synthetic) ? 'none' : '';
-    }
+    var acctEmailEl = document.getElementById('acctEmail');
+    if(acctEmailEl) acctEmailEl.textContent = (p.email && p.email.trim()) ? p.email : '—';
     var uidEl = document.getElementById('acctUserId');
     if(uidEl && p.public_id) uidEl.textContent = p.public_id;
   });
@@ -1371,6 +1361,48 @@ function fallbackCopy(text){
   catch(e) { showToast('Copy failed', 'error'); }
   document.body.removeChild(ta);
 }
+
+// ── Account card: Email + Copy ──
+function acctCopyFeedback(){
+  var btn = document.querySelector('.acct-copy-btn');
+  if(!btn) return;
+  var sym = btn.querySelector('.uid-copy-symbol');
+  if(!sym) return;
+  var original = sym.innerHTML;
+  sym.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#4CAF50"><polyline points="20 6 9 17 4 12"/></svg>';
+  btn.classList.add('copied');
+  clearTimeout(btn._acctCopyT);
+  btn._acctCopyT = setTimeout(function(){
+    sym.innerHTML = original;
+    btn.classList.remove('copied');
+  }, 1600);
+}
+function fallbackCopyText(text, msg){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); acctCopyFeedback(); showToast(msg, 'success'); }
+  catch(e) { showToast('Copy failed', 'error'); }
+  document.body.removeChild(ta);
+}
+window.copyAcctEmail = function(){
+  var el = document.getElementById('acctEmail');
+  if(!el || !el.textContent || el.textContent === '—') return;
+  var em = el.textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(em).then(function(){
+      acctCopyFeedback();
+      showToast('Email copied', 'success');
+    }).catch(function(){
+      fallbackCopyText(em, 'Email copied');
+    });
+  } else {
+    fallbackCopyText(em, 'Email copied');
+  }
+};
 
 // ── Email Verification (real — /api/auth/send-verification + /api/auth/verify-email) ──
 var _emailVerifyStep = 'send'; // 'send' | 'code'
