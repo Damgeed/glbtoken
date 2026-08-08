@@ -298,6 +298,13 @@
 @media (max-width: 560px) {
   #invoicesTable th:nth-child(6),
   #invoicesTable td:nth-child(6) { display: none; }
+  /* Receipt (col 6) is hidden, so the shared td:last-child right radius
+     lands on an invisible cell — give the last VISIBLE cell (Status) the
+     right border + rounded corner so the row isn't square on the right. */
+  #invoicesTable td:nth-child(5) {
+    border-right: 1px solid var(--border);
+    border-radius: 0 10px 10px 0;
+  }
   /* Keep Amount/Tokens on ONE line so "25,000 GT" doesn't wrap number / GT.
      ID beats the shared tx-fit white-space:normal, so these stay nowrap. */
   #invoicesTable td.text-nowrap,

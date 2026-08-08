@@ -477,7 +477,12 @@ async function loadRecentTx(){
     var detail = escapeHtml(t.model_used || t.payment_method || '-');
     var amtCls = (t.type==='deposit'||t.type==='topup') ? 'gold' : 'red';
     var amt = ((t.type==='deposit'||t.type==='topup')?'+':'') + String(t.tokens||0);
-    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td class="tx-td-center"><span style="color:var(--success)">'+escapeHtml(t.status||'completed')+'</span></td></tr>';
+    var st = String(t.status||'completed').toLowerCase();
+    var stLabel = st.charAt(0).toUpperCase() + st.slice(1);
+    var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st;
+    if(st==='success') stLabel = 'Paid';
+    var stHtml = '<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';
+    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
   }).join('');
 }
 

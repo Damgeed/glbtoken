@@ -240,7 +240,7 @@
         body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions</td></tr>';
         return;
       }
-      body.innerHTML=d.items.map(t=>'<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center"><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>').join('');
+      body.innerHTML=d.items.map(t=>{var st=String(t.status||'completed').toLowerCase();var stLabel=st.charAt(0).toUpperCase()+st.slice(1);var stCls=(st==='completed'||st==='success')?'status-paid':'status-'+st;if(st==='success')stLabel='Paid';var stHtml='<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';}).join('');
     }
     async function loadActivity(){
       var container=document.getElementById('dashActivity');
@@ -313,7 +313,12 @@
 
     // ── Transactions ──
     function txDepositRow(t){
-      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td class="amount gold">'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="amount gold">+'+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center"><span style="color:var(--success)">'+escapeHtml(t.status)+'</span></td></tr>';
+      var st = String(t.status||'completed').toLowerCase();
+      var stLabel = st.charAt(0).toUpperCase() + st.slice(1);
+      var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st;
+      if(st==='success') stLabel = 'Paid';
+      var stHtml = '<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';
+      return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td class="amount gold">'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="amount gold">+'+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
     }
     function txConsumptionRow(t){
       return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.model_used||'-')+'</td><td class="amount red">-'+escapeHtml(String(t.tokens||0))+'</td><td>API</td></tr>';
