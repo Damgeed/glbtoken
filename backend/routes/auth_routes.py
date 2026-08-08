@@ -184,7 +184,7 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             "id": user.id, "name": user.name, "email": user.email,
             "token_balance": user.token_balance,
             "public_id": public_id,
-            "avatar": _user_setting(user, "avatar") or "",
+            "avatar": _user_setting(user, "avatar", ""),
         },
         "token": auth["token"],
         "refresh_token": auth["refresh_token"],
@@ -237,7 +237,7 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     from common import ensure_public_id
     public_id = ensure_public_id(user)
     db.commit()
-    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent, "country": user.country, "public_id": public_id, "avatar": _user_setting(user, "avatar") or ""}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
+    return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent, "country": user.country, "public_id": public_id, "avatar": _user_setting(user, "avatar", "")}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
 
 @router.get("/api/auth/google")
@@ -874,7 +874,7 @@ def get_me(user: User = Depends(get_current_user)):
         "email_verified": user.email_verified,
         "is_admin": bool(getattr(user, "is_admin", False)),
         "created_at": user.created_at.isoformat() if user.created_at else None,
-        "avatar": _user_setting(user, "avatar") or "",
+        "avatar": _user_setting(user, "avatar", ""),
     }
 
 
@@ -1018,7 +1018,7 @@ def get_profile(user: User = Depends(get_current_user), db: Session = Depends(ge
         "total_spent": user.total_spent,
         "email_verified": user.email_verified,
         "created_at": user.created_at.isoformat() if user.created_at else None,
-        "avatar": _user_setting(user, "avatar") or "",
+        "avatar": _user_setting(user, "avatar", ""),
     }
 
 
