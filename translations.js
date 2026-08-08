@@ -2296,6 +2296,47 @@ I18N["🇩🇰 Denmark"] = {"zh-CN": "🇩🇰 丹麦", ru: "🇩🇰 Дания
 I18N["🇩🇿 Algeria"] = {"zh-CN": "🇩🇿 阿尔及利亚", ru: "🇩🇿 Алжир", ja: "🇩🇿 アルジェリア", de: "🇩🇿 Algerien"};
 I18N["🇪🇬 Egypt"] = {"zh-CN": "🇪🇬 埃及", ru: "🇪🇬 Египет", ja: "🇪🇬 エジプト", de: "🇪🇬 Ägypten"};
 
+I18N["🇪🇸 Spain"] = {"zh-CN": "🇪🇸 西班牙", ru: "🇪🇸 Испания", ja: "🇪🇸 スペイン", de: "🇪🇸 Spanien"};
+I18N["🇪🇹 Ethiopia"] = {"zh-CN": "🇪🇹 埃塞俄比亚", ru: "🇪🇹 Эфиопия", ja: "🇪🇹 エチオピア", de: "🇪🇹 Äthiopien"};
+I18N["🇫🇮 Finland"] = {"zh-CN": "🇫🇮 芬兰", ru: "🇫🇮 Финляндия", ja: "🇫🇮 フィンランド", de: "🇫🇮 Finnland"};
+I18N["🇫🇷 France"] = {"zh-CN": "🇫🇷 法国", ru: "🇫🇷 Франция", ja: "🇫🇷 フランス", de: "🇫🇷 Frankreich"};
+I18N["🇬🇧 English"] = {"zh-CN": "🇬🇧 英语", ru: "🇬🇧 Английский", ja: "🇬🇧 英語", de: "🇬🇧 Englisch"};
+I18N["🇬🇧 United Kingdom"] = {"zh-CN": "🇬🇧 英国", ru: "🇬🇧 Великобритания", ja: "🇬🇧 イギリス", de: "🇬🇧 Vereinigtes Königreich"};
+I18N["🇬🇪 Georgia"] = {"zh-CN": "🇬🇪 格鲁吉亚", ru: "🇬🇪 Грузия", ja: "🇬🇪 ジョージア", de: "🇬🇪 Georgien"};
+I18N["🇬🇭 Ghana"] = {"zh-CN": "🇬🇭 加纳", ru: "🇬🇭 Гана", ja: "🇬🇭 ガーナ", de: "🇬🇭 Ghana"};
+I18N["🇬🇷 Greece"] = {"zh-CN": "🇬🇷 希腊", ru: "🇬🇷 Греция", ja: "🇬🇷 ギリシャ", de: "🇬🇷 Griechenland"};
+I18N["🇭🇰 Hong Kong"] = {"zh-CN": "🇭🇰 香港", ru: "🇭🇰 Гонконг", ja: "🇭🇰 香港", de: "🇭🇰 Hongkong"};
+I18N["🇮🇩 Indonesia"] = {"zh-CN": "🇮🇩 印度尼西亚", ru: "🇮🇩 Индонезия", ja: "🇮🇩 インドネシア", de: "🇮🇩 Indonesien"};
+I18N["🇮🇪 Ireland"] = {"zh-CN": "🇮🇪 爱尔兰", ru: "🇮🇪 Ирландия", ja: "🇮🇪 アイルランド", de: "🇮🇪 Irland"};
+I18N["🇮🇱 Israel"] = {"zh-CN": "🇮🇱 以色列", ru: "🇮🇱 Израиль", ja: "🇮🇱 イスラエル", de: "🇮🇱 Israel"};
+I18N["🇮🇳 India"] = {"zh-CN": "🇮🇳 印度", ru: "🇮🇳 Индия", ja: "🇮🇳 インド", de: "🇮🇳 Indien"};
+I18N["🇮🇶 Iraq"] = {"zh-CN": "🇮🇶 伊拉克", ru: "🇮🇶 Ирак", ja: "🇮🇶 イラク", de: "🇮🇶 Irak"};
+I18N["🇮🇷 Iran"] = {"zh-CN": "🇮🇷 伊朗", ru: "🇮🇷 Иран", ja: "🇮🇷 イラン", de: "🇮🇷 Iran"};
+I18N["🇮🇹 Italy"] = {"zh-CN": "🇮🇹 意大利", ru: "🇮🇹 Италия", ja: "🇮🇹 イタリア", de: "🇮🇹 Italien"};
+I18N["🇯🇴 Jordan"] = {"zh-CN": "🇯🇴 约旦", ru: "🇯🇴 Иордания", ja: "🇯🇴 ヨルダン", de: "🇯🇴 Jordanien"};
+I18N["🇯🇵 Japan"] = {"zh-CN": "🇯🇵 日本", ru: "🇯🇵 Япония", ja: "🇯🇵 日本", de: "🇯🇵 Japan"};
+I18N["🇰🇪 Kenya"] = {"zh-CN": "🇰🇪 肯尼亚", ru: "🇰🇪 Кения", ja: "🇰🇪 ケニア", de: "🇰🇪 Kenia"};
+I18N["🇰🇭 Cambodia"] = {"zh-CN": "🇰🇭 柬埔寨", ru: "🇰🇭 Камбоджа", ja: "🇰🇭 カンボジア", de: "🇰🇭 Kambodscha"};
+I18N["🇰🇷 South Korea"] = {"zh-CN": "🇰🇷 韩国", ru: "🇰🇷 Южная Корея", ja: "🇰🇷 韓国", de: "🇰🇷 Südkorea"};
+I18N["🇰🇼 Kuwait"] = {"zh-CN": "🇰🇼 科威特", ru: "🇰🇼 Кувейт", ja: "🇰🇼 クウェート", de: "🇰🇼 Kuwait"};
+I18N["🇰🇿 Kazakhstan"] = {"zh-CN": "🇰🇿 哈萨克斯坦", ru: "🇰🇿 Казахстан", ja: "🇰🇿 カザフスタン", de: "🇰🇿 Kasachstan"};
+I18N["🇱🇦 Laos"] = {"zh-CN": "🇱🇦 老挝", ru: "🇱🇦 Лаос", ja: "🇱🇦 ラオス", de: "🇱🇦 Laos"};
+I18N["🇱🇧 Lebanon"] = {"zh-CN": "🇱🇧 黎巴嫩", ru: "🇱🇧 Ливан", ja: "🇱🇧 レバノン", de: "🇱🇧 Libanon"};
+I18N["🇱🇰 Sri Lanka"] = {"zh-CN": "🇱🇰 斯里兰卡", ru: "🇱🇰 Шри-Ланка", ja: "🇱🇰 スリランカ", de: "🇱🇰 Sri Lanka"};
+I18N["🇱🇾 Libya"] = {"zh-CN": "🇱🇾 利比亚", ru: "🇱🇾 Ливия", ja: "🇱🇾 リビア", de: "🇱🇾 Libyen"};
+I18N["🇲🇦 Morocco"] = {"zh-CN": "🇲🇦 摩洛哥", ru: "🇲🇦 Марокко", ja: "🇲🇦 モロッコ", de: "🇲🇦 Marokko"};
+I18N["🇲🇱 Mali"] = {"zh-CN": "🇲🇱 马里", ru: "🇲🇱 Мали", ja: "🇲🇱 マリ", de: "🇲🇱 Mali"};
+I18N["🇲🇲 Myanmar"] = {"zh-CN": "🇲🇲 缅甸", ru: "🇲🇲 Мьянма", ja: "🇲🇲 ミャンマー", de: "🇲🇲 Myanmar"};
+I18N["🇲🇳 Mongolia"] = {"zh-CN": "🇲🇳 蒙古", ru: "🇲🇳 Монголия", ja: "🇲🇳 モンゴル", de: "🇲🇳 Mongolei"};
+I18N["🇲🇽 Mexico"] = {"zh-CN": "🇲🇽 墨西哥", ru: "🇲🇽 Мексика", ja: "🇲🇽 メキシコ", de: "🇲🇽 Mexiko"};
+I18N["🇲🇾 Malaysia"] = {"zh-CN": "🇲🇾 马来西亚", ru: "🇲🇾 Малайзия", ja: "🇲🇾 マレーシア", de: "🇲🇾 Malaysia"};
+I18N["🇲🇿 Mozambique"] = {"zh-CN": "🇲🇿 莫桑比克", ru: "🇲🇿 Мозамбик", ja: "🇲🇿 モザンビーク", de: "🇲🇿 Mosambik"};
+I18N["🇳🇪 Niger"] = {"zh-CN": "🇳🇪 尼日尔", ru: "🇳🇪 Нигер", ja: "🇳🇪 ニジェール", de: "🇳🇪 Niger"};
+I18N["🇳🇬 Nigeria"] = {"zh-CN": "🇳🇬 尼日利亚", ru: "🇳🇬 Нигерия", ja: "🇳🇬 ナイジェリア", de: "🇳🇬 Nigeria"};
+I18N["🇳🇱 Netherlands"] = {"zh-CN": "🇳🇱 荷兰", ru: "🇳🇱 Нидерланды", ja: "🇳🇱 オランダ", de: "🇳🇱 Niederlande"};
+I18N["🇳🇴 Norway"] = {"zh-CN": "🇳🇴 挪威", ru: "🇳🇴 Норвегия", ja: "🇳🇴 ノルウェー", de: "🇳🇴 Norwegen"};
+I18N["🇳🇵 Nepal"] = {"zh-CN": "🇳🇵 尼泊尔", ru: "🇳🇵 Непал", ja: "🇳🇵 ネパール", de: "🇳🇵 Nepal"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
