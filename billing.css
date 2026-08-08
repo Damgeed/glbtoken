@@ -326,5 +326,10 @@
      the auto layout gives Tokens enough room while Amount hugs Date. */
   #invoicesTable td.text-nowrap,
   #invoicesTable td.tx-td-right { white-space: nowrap; }
+  /* Reclaim the width the nowrap cells need: tighten cell + badge padding so
+     the 5 columns still fit the phone viewport without horizontal scroll. */
+  #invoicesTable th,
+  #invoicesTable td { padding-left: 0.15rem; padding-right: 0.15rem; }
+  #invoicesTable .status-badge { padding: 0.15rem 0.3rem; }
 }
 .pm-recharge:active { transform: scale(0.96); }
