@@ -2255,6 +2255,47 @@ I18N["— Upload your datasets and fine-tune models from your GlbTOKEN balance."
 I18N["— V3, V4 Pro, R1"] = {"zh-CN": "— V3、V4 Pro、R1", ru: "— V3, V4 Pro, R1", ja: "— V3、V4 Pro、R1", de: "— V3, V4 Pro, R1"};
 I18N["— Your balance is below 1,000 tokens. Top up to keep your API calls running."] = {"zh-CN": "— 您的余额低于 1,000 个令牌。请充值以保持 API 调用正常运行。", ru: "— Ваш баланс ниже 1 000 токенов. Пополните счёт, чтобы API-запросы продолжали работать.", ja: "— 残高が 1,000 トークンを下回っています。API 呼び出しを継続するにはチャージしてください。", de: "— Ihr Guthaben liegt unter 1.000 Tokens. Laden Sie auf, damit Ihre API-Aufrufe weiterlaufen."};
 
+I18N["USD' ?"] = {"zh-CN": "USD'？", ru: "USD' ?", ja: "USD'？", de: "USD' ?"};
+I18N["X-GlbTOKEN-Event"] = {"zh-CN": "X-GlbTOKEN-Event", ru: "X-GlbTOKEN-Event", ja: "X-GlbTOKEN-Event", de: "X-GlbTOKEN-Event"};
+I18N["X-GlbTOKEN-Signature"] = {"zh-CN": "X-GlbTOKEN-Signature", ru: "X-GlbTOKEN-Signature", ja: "X-GlbTOKEN-Signature", de: "X-GlbTOKEN-Signature"};
+I18N["gpt-5.5-pro"] = {"zh-CN": "gpt-5.5-pro", ru: "gpt-5.5-pro", ja: "gpt-5.5-pro", de: "gpt-5.5-pro"};
+I18N["header:"] = {"zh-CN": "标头：", ru: "Заголовок:", ja: "ヘッダー：", de: "Header:"};
+I18N["stream:"] = {"zh-CN": "流：", ru: "Поток:", ja: "ストリーム：", de: "Stream:"};
+I18N["— redirecting…"] = {"zh-CN": "— 正在重定向…", ru: "— перенаправление…", ja: "— リダイレクト中…", de: "— Weiterleitung…"};
+I18N["‹ Prev"] = {"zh-CN": "‹ 上一页", ru: "‹ Назад", ja: "‹ 前へ", de: "‹ Zurück"};
+I18N["ℹ️ Info"] = {"zh-CN": "ℹ️ 信息", ru: "ℹ️ Информация", ja: "ℹ️ 情報", de: "ℹ️ Info"};
+I18N["← Back to GlbTOKEN"] = {"zh-CN": "← 返回 GlbTOKEN", ru: "← Назад к GlbTOKEN", ja: "← GlbTOKEN に戻る", de: "← Zurück zu GlbTOKEN"};
+I18N["← Back to sign in"] = {"zh-CN": "← 返回登录", ru: "← Назад ко входу", ja: "← サインインに戻る", de: "← Zurück zur Anmeldung"};
+I18N["⚠️ Warning"] = {"zh-CN": "⚠️ 警告", ru: "⚠️ Предупреждение", ja: "⚠️ 警告", de: "⚠️ Warnung"};
+I18N["🇦🇪 United Arab Emirates"] = {"zh-CN": "🇦🇪 阿拉伯联合酋长国", ru: "🇦🇪 Объединённые Арабские Эмираты", ja: "🇦🇪 アラブ首長国連邦", de: "🇦🇪 Vereinigte Arabische Emirate"};
+I18N["🇦🇫 Afghanistan"] = {"zh-CN": "🇦🇫 阿富汗", ru: "🇦🇫 Афганистан", ja: "🇦🇫 アフガニスタン", de: "🇦🇫 Afghanistan"};
+I18N["🇦🇲 Armenia"] = {"zh-CN": "🇦🇲 亚美尼亚", ru: "🇦🇲 Армения", ja: "🇦🇲 アルメニア", de: "🇦🇲 Armenien"};
+I18N["🇦🇴 Angola"] = {"zh-CN": "🇦🇴 安哥拉", ru: "🇦🇴 Ангола", ja: "🇦🇴 アンゴラ", de: "🇦🇴 Angola"};
+I18N["🇦🇷 Argentina"] = {"zh-CN": "🇦🇷 阿根廷", ru: "🇦🇷 Аргентина", ja: "🇦🇷 アルゼンチン", de: "🇦🇷 Argentinien"};
+I18N["🇦🇹 Austria"] = {"zh-CN": "🇦🇹 奥地利", ru: "🇦🇹 Австрия", ja: "🇦🇹 オーストリア", de: "🇦🇹 Österreich"};
+I18N["🇦🇺 Australia"] = {"zh-CN": "🇦🇺 澳大利亚", ru: "🇦🇺 Австралия", ja: "🇦🇺 オーストラリア", de: "🇦🇺 Australien"};
+I18N["🇦🇿 Azerbaijan"] = {"zh-CN": "🇦🇿 阿塞拜疆", ru: "🇦🇿 Азербайджан", ja: "🇦🇿 アゼルバイジャン", de: "🇦🇿 Aserbaidschan"};
+I18N["🇧🇩 Bangladesh"] = {"zh-CN": "🇧🇩 孟加拉国", ru: "🇧🇩 Бангладеш", ja: "🇧🇩 バングラデシュ", de: "🇧🇩 Bangladesch"};
+I18N["🇧🇪 Belgium"] = {"zh-CN": "🇧🇪 比利时", ru: "🇧🇪 Бельгия", ja: "🇧🇪 ベルギー", de: "🇧🇪 Belgien"};
+I18N["🇧🇫 Burkina Faso"] = {"zh-CN": "🇧🇫 布基纳法索", ru: "🇧🇫 Буркина-Фасо", ja: "🇧🇫 ブルキナファソ", de: "🇧🇫 Burkina Faso"};
+I18N["🇧🇭 Bahrain"] = {"zh-CN": "🇧🇭 巴林", ru: "🇧🇭 Бахрейн", ja: "🇧🇭 バーレーン", de: "🇧🇭 Bahrain"};
+I18N["🇧🇷 Brazil"] = {"zh-CN": "🇧🇷 巴西", ru: "🇧🇷 Бразилия", ja: "🇧🇷 ブラジル", de: "🇧🇷 Brasilien"};
+I18N["🇧🇼 Botswana"] = {"zh-CN": "🇧🇼 博茨瓦纳", ru: "🇧🇼 Ботсвана", ja: "🇧🇼 ボツワナ", de: "🇧🇼 Botsuana"};
+I18N["🇨🇦 Canada"] = {"zh-CN": "🇨🇦 加拿大", ru: "🇨🇦 Канада", ja: "🇨🇦 カナダ", de: "🇨🇦 Kanada"};
+I18N["🇨🇩 DR Congo"] = {"zh-CN": "🇨🇩 刚果民主共和国", ru: "🇨🇩 ДР Конго", ja: "🇨🇩 コンゴ民主共和国", de: "🇨🇩 DR Kongo"};
+I18N["🇨🇭 Switzerland"] = {"zh-CN": "🇨🇭 瑞士", ru: "🇨🇭 Швейцария", ja: "🇨🇭 スイス", de: "🇨🇭 Schweiz"};
+I18N["🇨🇮 Ivory Coast"] = {"zh-CN": "🇨🇮 科特迪瓦", ru: "🇨🇮 Кот-д'Ивуар", ja: "🇨🇮 コートジボワール", de: "🇨🇮 Elfenbeinküste"};
+I18N["🇨🇱 Chile"] = {"zh-CN": "🇨🇱 智利", ru: "🇨🇱 Чили", ja: "🇨🇱 チリ", de: "🇨🇱 Chile"};
+I18N["🇨🇲 Cameroon"] = {"zh-CN": "🇨🇲 喀麦隆", ru: "🇨🇲 Камерун", ja: "🇨🇲 カメルーン", de: "🇨🇲 Kamerun"};
+I18N["🇨🇳 China"] = {"zh-CN": "🇨🇳 中国", ru: "🇨🇳 Китай", ja: "🇨🇳 中国", de: "🇨🇳 China"};
+I18N["🇨🇴 Colombia"] = {"zh-CN": "🇨🇴 哥伦比亚", ru: "🇨🇴 Колумбия", ja: "🇨🇴 コロンビア", de: "🇨🇴 Kolumbien"};
+I18N["🇨🇿 Czech Republic"] = {"zh-CN": "🇨🇿 捷克共和国", ru: "🇨🇿 Чехия", ja: "🇨🇿 チェコ共和国", de: "🇨🇿 Tschechische Republik"};
+I18N["🇩🇪 Deutsch"] = {"zh-CN": "🇩🇪 德语", ru: "🇩🇪 Немецкий", ja: "🇩🇪 ドイツ語", de: "🇩🇪 Deutsch"};
+I18N["🇩🇪 Germany"] = {"zh-CN": "🇩🇪 德国", ru: "🇩🇪 Германия", ja: "🇩🇪 ドイツ", de: "🇩🇪 Deutschland"};
+I18N["🇩🇰 Denmark"] = {"zh-CN": "🇩🇰 丹麦", ru: "🇩🇰 Дания", ja: "🇩🇰 デンマーク", de: "🇩🇰 Dänemark"};
+I18N["🇩🇿 Algeria"] = {"zh-CN": "🇩🇿 阿尔及利亚", ru: "🇩🇿 Алжир", ja: "🇩🇿 アルジェリア", de: "🇩🇿 Algerien"};
+I18N["🇪🇬 Egypt"] = {"zh-CN": "🇪🇬 埃及", ru: "🇪🇬 Египет", ja: "🇪🇬 エジプト", de: "🇪🇬 Ägypten"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
