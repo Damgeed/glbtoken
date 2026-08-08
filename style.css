@@ -4309,6 +4309,17 @@ html.light .star.white {
     white-space: nowrap;
     line-height: 1.35;
   }
+  /* Transaction History (deposits): nudge TOKENS + STATUS columns (titles &
+     contents) left so the table fits without horizontal scroll. Only position
+     changes — no font/color edits. Left columns (Date/Amount/Method) untouched. */
+  .tx-scroll.tx-fit #txDeposits th:nth-child(4),
+  .tx-scroll.tx-fit #txDeposits td:nth-child(4),
+  .tx-scroll.tx-fit #txDeposits th:nth-child(5),
+  .tx-scroll.tx-fit #txDeposits td:nth-child(5) {
+    text-align: left;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
   .tx-scroll.tx-fit::after {
     display: none !important;
   }

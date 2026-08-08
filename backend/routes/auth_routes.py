@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone, timedelta
-import secrets, json, random, re, hashlib
+import secrets, json, random, re, hashlib, time, threading
+import httpx
 
 from database import get_db, User, LoginEvent, Referral, RefreshToken
 from auth import (
@@ -82,6 +83,46 @@ def _client_ip(request: Request) -> str:
     return ""
 
 
+# ── Login location detection (IP → city/country, free ipwho.is GeoIP) ──
+_geo_cache = {}          # ip -> location string
+_geo_cache_ts = {}       # ip -> epoch seconds
+_GEO_CACHE_TTL = 86400   # 24h
+_geo_lock = threading.Lock()
+
+def _geo_lookup(ip: str) -> str:
+    """Resolve an IP to a short 'City, Country' label (or '' if unknown).
+
+    Uses the free ipwho.is GeoIP API (no key, HTTPS). Results are cached in
+    memory for 24h so login doesn't hammer the API. Failures return '' and the
+    event keeps its NULL location (frontend shows 'Unknown location').
+    """
+    if not ip or ip in ("127.0.0.1", "::1", "localhost"):
+        return ""
+    now = time.time()
+    with _geo_lock:
+        if ip in _geo_cache and now - _geo_cache_ts.get(ip, 0) < _GEO_CACHE_TTL:
+            return _geo_cache[ip]
+    try:
+        r = httpx.get(f"https://ipwho.is/{ip}", timeout=2.5)
+        if r.status_code == 200:
+            d = r.json()
+            if d.get("success"):
+                city = (d.get("city") or "").strip()
+                # Use the 2-letter country code (frontend getFlag() maps CC → flag)
+                cc = (d.get("country_code") or "").strip().upper()
+                parts = [p for p in (city, cc) if p]
+                loc = ", ".join(parts)
+                with _geo_lock:
+                    _geo_cache[ip] = loc
+                    _geo_cache_ts[ip] = now
+                return loc
+    except Exception as e:
+        print(f"⚠️ GeoIP lookup failed for {ip}: {e}")
+    with _geo_lock:
+        _geo_cache[ip] = ""
+        _geo_cache_ts[ip] = now
+    return ""
+
 def record_login_event(user_id: int, request: Request, success: bool, db: Session):
     """Record a login event for audit/history purposes."""
     try:
@@ -97,6 +138,25 @@ def record_login_event(user_id: int, request: Request, success: bool, db: Sessio
         )
         db.add(event)
         db.commit()
+        # Fire-and-forget location fill: never block the login response on a
+        # third-party GeoIP call. Update the row in a background thread.
+        if ip_address:
+            def _fill_location():
+                loc = _geo_lookup(ip_address)
+                if loc:
+                    try:
+                        from database import SessionLocal
+                        s = SessionLocal()
+                        try:
+                            ev = s.query(LoginEvent).filter(LoginEvent.id == event.id).first()
+                            if ev:
+                                ev.location = loc
+                                s.commit()
+                        finally:
+                            s.close()
+                    except Exception as e:
+                        print(f"⚠️ Failed to save login location: {e}")
+            threading.Thread(target=_fill_location, daemon=True).start()
     except Exception as e:
         print(f"⚠️ Failed to record login event: {e}")
         db.rollback()
