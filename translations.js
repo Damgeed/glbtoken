@@ -1926,6 +1926,15 @@ I18N["KES (Kenyan Shilling)"] = {"zh-CN": "KES（肯尼亚先令）", ru: "KES (
 I18N["KSh 0.13"] = {"zh-CN": "KSh 0.13", ru: "KSh 0.13", ja: "KSh 0.13", de: "KSh 0.13"};
 I18N["KSh 130"] = {"zh-CN": "KSh 130", ru: "KSh 130", ja: "KSh 130", de: "KSh 130"};
 
+I18N["Glb"] = {"zh-CN": "Glb", ru: "Glb", ja: "Glb", de: "Glb"};
+I18N["Key"] = {"zh-CN": "密钥", ru: "Ключ", ja: "キー", de: "Schlüssel"};
+I18N["Key created"] = {"zh-CN": "密钥已创建", ru: "Ключ создан", ja: "キーを作成しました", de: "Schlüssel erstellt"};
+I18N["Key improvements in Claude Sonnet 5:"] = {"zh-CN": "Claude Sonnet 5 的主要改进：", ru: "Ключевые улучшения в Claude Sonnet 5:", ja: "Claude Sonnet 5 の主な改善点：", de: "Die wichtigsten Verbesserungen in Claude Sonnet 5:"};
+I18N["Key improvements in GPT-5.5 Pro:"] = {"zh-CN": "GPT-5.5 Pro 的主要改进：", ru: "Ключевые улучшения в GPT-5.5 Pro:", ja: "GPT-5.5 Pro の主な改善点：", de: "Die wichtigsten Verbesserungen in GPT-5.5 Pro:"};
+I18N["Kazakhstan"] = {"zh-CN": "哈萨克斯坦", ru: "Казахстан", ja: "カザフスタン", de: "Kasachstan"};
+I18N["Kiribati"] = {"zh-CN": "基里巴斯", ru: "Кирибати", ja: "キリバス", de: "Kiribati"};
+I18N["Kuwait"] = {"zh-CN": "科威特", ru: "Кувейт", ja: "クウェート", de: "Kuwait"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
