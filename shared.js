@@ -166,6 +166,14 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     }
     let userData = {};
     try{ userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ userData = {}; }
+    // Avatar sanitize: legacy sessions (pre-2026-08 fix) can have avatar === true
+    // cached in gt_user from when /auth/me returned a truthy default. A non-string
+    // avatar renders <img src="true"> (broken/gold circle) on the nav. Drop it so
+    // the initial-letter fallback shows until a real avatar is uploaded.
+    if(userData && userData.avatar !== undefined && typeof userData.avatar !== 'string'){
+      try{ delete userData.avatar; }catch(e){ userData.avatar = ''; }
+      try{ (window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user', JSON.stringify(userData)); }catch(e){}
+    }
 
     // ── Usage Analytics State ──
     let usageDays = 7;
@@ -811,7 +819,7 @@ window.applyAuth = function applyAuth(){
     if(av){
       var dropdown = av.querySelector('.dropdown');
       av.textContent = '';
-      if(userData && userData.avatar){
+      if(userData && typeof userData.avatar === 'string' && userData.avatar){
         var avImg = document.createElement('img');
         avImg.src = userData.avatar;
         avImg.alt = '';
@@ -826,7 +834,7 @@ window.applyAuth = function applyAuth(){
     var da = document.getElementById('ddAvatar');
     if(da){
       da.textContent = '';
-      if(userData && userData.avatar){
+      if(userData && typeof userData.avatar === 'string' && userData.avatar){
         da.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+escapeAttr(initial)+'\')">';
       } else {
         da.textContent = initial;
@@ -838,7 +846,7 @@ window.applyAuth = function applyAuth(){
     var ma = document.getElementById('mAvatar');
     if(ma){
       ma.textContent = '';
-      if(userData && userData.avatar){
+      if(userData && typeof userData.avatar === 'string' && userData.avatar){
         ma.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+escapeAttr(initial)+'\')">';
       } else {
         ma.textContent = initial;
