@@ -1917,6 +1917,15 @@ I18N["June 15, 2026 · 5 min read"] = {"zh-CN": "2026年6月15日 · 5 分钟阅
 I18N["June 20, 2026"] = {"zh-CN": "2026年6月20日", ru: "20 июня 2026 г.", ja: "2026年6月20日", de: "20. Juni 2026"};
 I18N["June 20, 2026 · 6 min read"] = {"zh-CN": "2026年6月20日 · 6 分钟阅读", ru: "20 июня 2026 г. · 6 мин чтения", ja: "2026年6月20日 · 読了6分", de: "20. Juni 2026 · 6 Min. Lesezeit"};
 
+I18N["June 25, 2026"] = {"zh-CN": "2026年6月25日", ru: "25 июня 2026 г.", ja: "2026年6月25日", de: "25. Juni 2026"};
+I18N["June 25, 2026 · 5 min read"] = {"zh-CN": "2026年6月25日 · 5 分钟阅读", ru: "25 июня 2026 г. · 5 мин чтения", ja: "2026年6月25日 · 読了5分", de: "25. Juni 2026 · 5 Min. Lesezeit"};
+I18N["June 28, 2026"] = {"zh-CN": "2026年6月28日", ru: "28 июня 2026 г.", ja: "2026年6月28日", de: "28. Juni 2026"};
+I18N["June 28, 2026 · 4 min read"] = {"zh-CN": "2026年6月28日 · 4 分钟阅读", ru: "28 июня 2026 г. · 4 мин чтения", ja: "2026年6月28日 · 読了4分", de: "28. Juni 2026 · 4 Min. Lesezeit"};
+I18N["KES (KSh)"] = {"zh-CN": "KES (KSh)", ru: "KES (KSh)", ja: "KES (KSh)", de: "KES (KSh)"};
+I18N["KES (Kenyan Shilling)"] = {"zh-CN": "KES（肯尼亚先令）", ru: "KES (кенийский шиллинг)", ja: "KES（ケニアシリング）", de: "KES (Kenia-Schilling)"};
+I18N["KSh 0.13"] = {"zh-CN": "KSh 0.13", ru: "KSh 0.13", ja: "KSh 0.13", de: "KSh 0.13"};
+I18N["KSh 130"] = {"zh-CN": "KSh 130", ru: "KSh 130", ja: "KSh 130", de: "KSh 130"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
