@@ -1019,8 +1019,11 @@ document.addEventListener('change', function(e){
     if(file.size > 20 * 1024 * 1024){ showToast('Image too large (max 20 MB)','error'); return; }
     // Accept any browser-decodable image (PNG/JPG/WebP); HEIC/HEIF from iPhones
     // is decoded in Safari only, so on other browsers we convert it first.
-    if(!/^image\//.test(file.type)){ showToast('Please choose an image file','error'); return; }
-    var isHeic = /image\/(heic|heif)/.test(file.type) || /\.heic$/i.test(file.name);
+    // NOTE: Chrome/Android report HEIC files with an EMPTY file.type — check
+    // the filename extension BEFORE the MIME gate or real iPhone photos never
+    // get past this line (the classic "gold circle forever" bug).
+    var isHeic = /image\/(heic|heif)/.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+    if(!isHeic && !/^image\//.test(file.type)){ showToast('Please choose an image file','error'); return; }
     if(isHeic && !window.heic2any){
       showToast('Converting HEIC…');
       var s = document.createElement('script');
@@ -1038,7 +1041,7 @@ function processAvatarFile(file){
   var reader = new FileReader();
   reader.onload = function(ev){
     var blobOrUrl = ev.target.result;
-    var isHeic = /image\/(heic|heif)/.test(file.type) || /\.heic$/i.test(file.name);
+    var isHeic = /image\/(heic|heif)/.test(file.type) || /\.(heic|heif)$/i.test(file.name);
     var done = function(src){
       // Downscale to 128x128 before storing (keeps the settings blob small)
       var img = new Image();
