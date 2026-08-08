@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1245" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1051" />
+<link rel="stylesheet" href="settings.css?v=1052" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -181,6 +181,15 @@
         <div class="dash-card">
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
           <div class="settings-field-group">
+            <div class="settings-avatar-row">
+              <div class="settings-avatar-preview" id="avatarPreview"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div class="settings-avatar-actions">
+                <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+                <button class="btn-secondary settings-btn-avatar" onclick="document.getElementById('avatarFileInput').click()">Upload Photo</button>
+                <button class="btn-secondary settings-btn-avatar" id="avatarClearBtn" onclick="clearAvatar()" style="display:none">Remove</button>
+                <div class="settings-item-desc-sm" style="margin-top:0.35rem">PNG / JPG / WebP, max 300 KB</div>
+              </div>
+            </div>
             <div><label class="settings-field-label">Full Name</label><input type="text" id="settingsName" value="User" class="settings-input"></div>
             <div><label class="settings-field-label">Email</label><input type="email" id="settingsEmail" value="admin@glbtoken.com" disabled class="settings-input"></div>
             <div><label class="settings-field-label">Country</label><input type="text" id="settingsCountry" placeholder="e.g. Ghana, Kenya, Singapore" class="settings-input" autocomplete="country-name"></div>
@@ -196,6 +205,16 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Two-Factor Auth</div><div class="settings-item-desc-sm" id="twofaStatusDesc">Add an extra layer of security</div></div>
               <button class="btn-secondary settings-btn-right" id="twofaToggleBtn" onclick="toggleTwoFA()">Enable</button>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>
+              <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Login History</div><div class="settings-item-desc-sm" id="loginHistorySummary">Loading…</div></div>
+              <button class="btn-secondary settings-btn-right" onclick="openLoginHistoryModal()">View</button>
+            </div>
+            <div class="settings-badge-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Active Sessions</div><div class="settings-item-desc-sm" id="sessionsSummary">Loading…</div></div>
+              <button class="btn-secondary settings-btn-right" onclick="revokeAllSessions()">Sign Out All</button>
             </div>
             <div class="settings-btn-mt"><button class="settings-btn-full" onclick="updatePassword()">Update Password</button></div>
           </div>
@@ -503,6 +522,12 @@ function openTwoFAModal(mode){
     +     (isSetup ? 'Enable' : 'Disable 2FA')
     +   '</button>'
     + '</div>'
+    + '<div id="twofaRecoveryWrap" style="display:none;margin-top:0.9rem;padding-top:0.75rem;border-top:1px solid '+border+'">'
+    +   '<div style="font-size:0.78rem;font-weight:600;color:'+textClr+';margin-bottom:0.35rem">🔐 Recovery codes — save these now</div>'
+    +   '<div style="font-size:0.72rem;color:'+muted+';line-height:1.45;margin-bottom:0.5rem">Each code works <strong style="color:'+textClr+'">once</strong> if you lose your authenticator app. Store them somewhere safe — they will never be shown again.</div>'
+    +   '<div id="twofaRecoveryCodes" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.35rem">…</div>'
+    +   '<button onclick="copyRecoveryCodes()" style="margin-top:0.5rem;padding:0.4rem 0.8rem;border-radius:8px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.74rem;cursor:pointer">Copy codes</button>'
+    + '</div>'
     + '<div style="margin-top:0.9rem;padding-top:0.75rem;border-top:1px solid '+border+';display:flex;gap:0.5rem;justify-content:center">'
     +   '<a href="https://support.glbtoken.com" target="_blank" rel="noopener" style="color:#8b93a7;font-size:0.72rem;text-decoration:none">Need help? Contact support →</a>'
     + '</div>'
@@ -526,6 +551,19 @@ function openTwoFAModal(mode){
         // Render QR from otpauth_url (Google Charts-free: use api.qrserver.com)
         var otpauth = encodeURIComponent(d.otpauth_url || ('otpauth://totp/GlbTOKEN:' + (document.getElementById('settingsEmail') ? document.getElementById('settingsEmail').value : '') + '?secret=' + d.secret + '&issuer=GlbTOKEN'));
         document.getElementById('twofaQrBox').innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=4&data=' + otpauth + '" alt="2FA QR code" style="width:180px;height:180px;border-radius:6px">';
+        // Show one-time recovery codes
+        if(d.backup_codes && d.backup_codes.length){
+          var wrap = document.getElementById('twofaRecoveryWrap');
+          if(wrap){
+            wrap.style.display = 'block';
+            var box = document.getElementById('twofaRecoveryCodes');
+            if(box){
+              box.innerHTML = d.backup_codes.map(function(c){
+                return '<span style="font-family:monospace;font-size:0.72rem;background:rgba(244,180,0,0.07);border:1px solid rgba(244,180,0,0.22);border-radius:6px;padding:0.3rem 0.45rem;letter-spacing:0.5px">' + escapeHtml(c) + '</span>';
+              }).join('');
+            }
+          }
+        }
       } else {
         showToast((d && d.detail) || 'Failed to start 2FA setup','error');
       }
@@ -533,6 +571,23 @@ function openTwoFAModal(mode){
     .catch(function(){ showToast('Failed to start 2FA setup','error'); });
   }
 }
+
+window.copyRecoveryCodes = function(){
+  var box = document.getElementById('twofaRecoveryCodes');
+  if(!box) return;
+  var codes = [];
+  box.querySelectorAll('span').forEach(function(s){ codes.push(s.textContent.trim()); });
+  if(!codes.length) return;
+  var text = codes.join('\n');
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+    .then(function(){ showToast('Recovery codes copied','success'); })
+    .catch(function(){
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); showToast('Recovery codes copied','success'); }catch(e){ showToast('Copy failed — select codes manually','error'); }
+      document.body.removeChild(ta);
+    });
+};
 
 window.closeTwoFAModal = function(){
   var m = document.getElementById('twofaModal');
@@ -784,9 +839,276 @@ window.clearLocalCache = function(){
 
 // ── Danger Zone ──
 window.deleteAccount = function(){
-  showConfirm('Delete your account?', 'This permanently deletes your account, API keys, tokens and all associated data. This action cannot be undone. Please contact support@glbtoken.com if you need help.', function(){
-    showAlert('Account deletion requested', 'Please email support@glbtoken.com from your registered email address to confirm deletion. Our team will process it within 24 hours.');
-  }, 'I Understand');
+  var email = (document.getElementById('settingsEmail') ? document.getElementById('settingsEmail').value : '') || '';
+  var is2FA = document.getElementById('twofaToggleBtn') && document.getElementById('twofaToggleBtn').textContent === 'Disable';
+  // Custom modal: type email + (if 2FA on) authenticator/recovery code
+  var existing = document.getElementById('delAccountModal');
+  if(existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = 'delAccountModal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,14,0.72);backdrop-filter:blur(6px);animation:twofaFadeIn 0.18s ease;padding:1rem';
+  var theme = document.documentElement.className;
+  var isDark = theme === 'dark';
+  var cardBg = isDark ? '#171923' : '#ffffff';
+  var textClr = isDark ? '#f3f5f7' : '#1a1a2e';
+  var muted = isDark ? '#8b93a7' : '#666';
+  var border = isDark ? '#2c2f3d' : '#e2e2ea';
+  m.innerHTML =
+    '<div style="background:'+cardBg+';border:1px solid rgba(255,77,79,0.4);border-radius:18px;padding:1.75rem;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">'
+    +   '<h3 style="margin:0;font-size:1.05rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
+    +     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff4d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+    +     'Delete your account'
+    +   '</h3>'
+    +   '<button onclick="closeDelAccountModal()" style="background:none;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
+    + '</div>'
+    + '<p style="color:'+muted+';font-size:0.82rem;margin:0 0 1rem;line-height:1.5">This permanently deletes your account, API keys, tokens, transactions and all associated data. <strong style="color:#ff4d4f">This cannot be undone.</strong></p>'
+    + '<div style="margin-bottom:0.75rem"><label style="font-size:0.78rem;color:'+muted+';display:block;margin-bottom:0.3rem">Type your email to confirm</label>'
+    + '<input type="email" id="delAccountEmail" placeholder="'+escapeHtml(email)+'" autocomplete="off" style="width:100%;padding:0.7rem 0.85rem;border-radius:10px;background:rgba(255,77,79,0.05);border:1px solid '+border+';color:'+textClr+';font-size:0.9rem;outline:none;box-sizing:border-box"></div>'
+    + (is2FA ? '<div style="margin-bottom:0.75rem"><label style="font-size:0.78rem;color:'+muted+';display:block;margin-bottom:0.3rem">Authenticator or recovery code</label>'
+    + '<input type="text" id="delAccountCode" placeholder="6-digit code" maxlength="12" autocomplete="one-time-code" style="width:100%;padding:0.7rem 0.85rem;border-radius:10px;background:rgba(244,180,0,0.05);border:1px solid '+border+';color:'+textClr+';font-size:0.95rem;letter-spacing:0.15rem;font-family:monospace;outline:none;box-sizing:border-box"></div>' : '')
+    + '<button id="delAccountBtn" onclick="confirmDeleteAccount()" style="width:100%;padding:0.75rem;border-radius:10px;border:none;background:linear-gradient(135deg,#ff4d4f 0%,#d93636 100%);color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(255,77,79,0.3)">Delete my account</button>'
+    + '</div>';
+  document.body.appendChild(m);
+  if(!document.getElementById('delAccountModalStyle')){
+    var s = document.createElement('style'); s.id = 'delAccountModalStyle';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}';
+    document.head.appendChild(s);
+  }
+  m.onclick = function(e){ if(e.target === m) closeDelAccountModal(); };
+  var emailInput = document.getElementById('delAccountEmail');
+  if(emailInput) emailInput.focus();
+};
+
+window.closeDelAccountModal = function(){
+  var m = document.getElementById('delAccountModal');
+  if(m) m.remove();
+};
+
+window.confirmDeleteAccount = function(){
+  var emailInput = document.getElementById('delAccountEmail');
+  var email = emailInput ? emailInput.value.trim() : '';
+  var accountEmail = (document.getElementById('settingsEmail') ? document.getElementById('settingsEmail').value : '') || '';
+  if(!email || email.toLowerCase() !== accountEmail.toLowerCase()){
+    showToast('Email does not match your account','error');
+    return;
+  }
+  var codeEl = document.getElementById('delAccountCode');
+  var code = codeEl ? codeEl.value.trim() : '';
+  var btn = document.getElementById('delAccountBtn');
+  if(btn) btn.disabled = true;
+  fetch(API_URL + '/api/user/account', {
+    method: 'DELETE',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({email: email, code: code})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.status === 'deleted'){
+      try{ window.__secure.removeItem('gt_refresh_token'); }catch(e){}
+      try{ window.__secure.removeItem('gt_user'); }catch(e){}
+      try{ sessionStorage.removeItem('gt_token'); }catch(e){}
+      showToast('Account deleted','success');
+      setTimeout(function(){ window.location.href = 'index.html'; }, 1200);
+    } else {
+      if(btn) btn.disabled = false;
+      showToast((d && d.detail) || 'Failed to delete account','error');
+    }
+  })
+  .catch(function(){
+    if(btn) btn.disabled = false;
+    showToast('Failed to delete account','error');
+  });
+};
+
+// ── Avatar ──
+window._avatarDataUrl = '';
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id === 'avatarFileInput'){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    if(file.size > 300 * 1024){ showToast('Image too large (max 300 KB)','error'); return; }
+    if(!/^image\/(png|jpeg|webp)$/.test(file.type)){ showToast('Please choose a PNG, JPG or WebP image','error'); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev){
+      // Downscale to 128x128 before storing (keeps the settings blob small)
+      var img = new Image();
+      img.onload = function(){
+        var canvas = document.createElement('canvas');
+        var size = Math.min(img.width, img.height, 128);
+        canvas.width = size; canvas.height = size;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size);
+        var dataUrl = canvas.toDataURL('image/webp', 0.82);
+        window._avatarDataUrl = dataUrl;
+        renderAvatarPreview(dataUrl);
+        saveAvatar(dataUrl);
+      };
+      img.onerror = function(){ showToast('Could not read that image','error'); };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+function renderAvatarPreview(dataUrl){
+  var p = document.getElementById('avatarPreview');
+  if(!p) return;
+  p.innerHTML = '<img src="'+dataUrl+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  var clearBtn = document.getElementById('avatarClearBtn');
+  if(clearBtn) clearBtn.style.display = '';
+}
+
+function saveAvatar(dataUrl){
+  fetch(API_URL + '/api/user/avatar', {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({avatar: dataUrl})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.status === 'updated'){ showToast('Avatar updated','success'); }
+    else { showToast((d && d.detail) || 'Failed to update avatar','error'); }
+  })
+  .catch(function(){ showToast('Failed to update avatar','error'); });
+}
+
+window.clearAvatar = function(){
+  fetch(API_URL + '/api/user/avatar', {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+    body: JSON.stringify({avatar: ''})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d && d.status === 'updated'){
+      var p = document.getElementById('avatarPreview');
+      if(p) p.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      var clearBtn = document.getElementById('avatarClearBtn');
+      if(clearBtn) clearBtn.style.display = 'none';
+      showToast('Avatar removed','success');
+    } else { showToast((d && d.detail) || 'Failed to remove avatar','error'); }
+  })
+  .catch(function(){ showToast('Failed to remove avatar','error'); });
+};
+
+// ── Login History (modal) ──
+window.openLoginHistoryModal = function(){
+  var existing = document.getElementById('loginHistoryModal');
+  if(existing) existing.remove();
+  var m = document.createElement('div');
+  m.id = 'loginHistoryModal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,14,0.72);backdrop-filter:blur(6px);animation:twofaFadeIn 0.18s ease;padding:1rem';
+  var theme = document.documentElement.className;
+  var isDark = theme === 'dark';
+  var cardBg = isDark ? '#171923' : '#ffffff';
+  var textClr = isDark ? '#f3f5f7' : '#1a1a2e';
+  var muted = isDark ? '#8b93a7' : '#666';
+  var border = isDark ? '#2c2f3d' : '#e2e2ea';
+  m.innerHTML =
+    '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.5rem;max-width:720px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease;max-height:88dvh;display:flex;flex-direction:column">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">'
+    +   '<h3 style="margin:0;font-size:1.05rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
+    +     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>'
+    +     'Login History'
+    +   '</h3>'
+    +   '<button onclick="closeLoginHistoryModal()" style="background:none;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
+    + '</div>'
+    + '<div id="loginHistoryList" style="overflow-y:auto;flex:1;min-height:0">Loading…</div>'
+    + '</div>';
+  document.body.appendChild(m);
+  if(!document.getElementById('loginHistoryModalStyle')){
+    var s = document.createElement('style'); s.id = 'loginHistoryModalStyle';
+    s.textContent = '@keyframes twofaFadeIn{from{opacity:0}to{opacity:1}}@keyframes twofaSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}.lh-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.4rem;border-bottom:1px solid '+border+';font-size:0.82rem}.lh-row:last-child{border-bottom:none}.lh-icon{width:32px;height:32px;border-radius:8px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}.lh-main{flex:1;min-width:0}.lh-title{font-weight:600;color:'+textClr+';font-size:0.84rem}.lh-sub{color:'+muted+';font-size:0.74rem;margin-top:0.1rem}.lh-badge{flex-shrink:0;padding:0.2rem 0.55rem;border-radius:999px;font-size:0.7rem;font-weight:600}.lh-badge.ok{background:rgba(0,214,143,0.12);color:#00D68F}.lh-badge.fail{background:rgba(255,77,79,0.12);color:#ff4d4f}.lh-time{flex-shrink:0;color:'+muted+';font-size:0.72rem;white-space:nowrap}';
+    document.head.appendChild(s);
+  }
+  m.onclick = function(e){ if(e.target === m) closeLoginHistoryModal(); };
+  loadLoginHistoryInto(listEl());
+};
+
+function listEl(){
+  return document.getElementById('loginHistoryList');
+}
+function lhBrowser(ua){
+  if(!ua) return 'Unknown device';
+  var u = ua.toLowerCase();
+  if(u.indexOf('chrome/') !== -1 && u.indexOf('chromium') === -1) return 'Chrome';
+  if(u.indexOf('firefox/') !== -1) return 'Firefox';
+  if(u.indexOf('safari/') !== -1 && u.indexOf('chrome') === -1) return 'Safari';
+  if(u.indexOf('edg/') !== -1 || u.indexOf('edge/') !== -1) return 'Edge';
+  if(u.indexOf('opr/') !== -1) return 'Opera';
+  return 'Browser';
+}
+function lhDevice(deviceType){
+  if(deviceType === 'mobile') return '📱';
+  if(deviceType === 'tablet') return '📲';
+  return '💻';
+}
+function lhTime(iso){
+  if(!iso) return '';
+  var d = new Date(iso);
+  var diff = (Date.now() - d.getTime()) / 1000;
+  if(diff < 60) return 'Just now';
+  if(diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if(diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ' ' + d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+}
+function loadLoginHistoryInto(container){
+  if(!container) return;
+  container.innerHTML = 'Loading…';
+  safeApi('GET','/api/auth/login-history?offset=0&limit=20',null,null,true).then(function(d){
+    if(!d || !d.events || !d.events.length){
+      container.innerHTML = '<div style="text-align:center;color:'+ (document.documentElement.className === 'dark' ? '#8b93a7' : '#666') +';padding:2rem;font-size:0.85rem">No login history yet</div>';
+      return;
+    }
+    container.innerHTML = d.events.map(function(e){
+      var ok = !!e.success;
+      var loc = e.location || 'Unknown location';
+      return '<div class="lh-row">'
+        + '<div class="lh-icon">' + lhDevice(e.device_type) + '</div>'
+        + '<div class="lh-main">'
+        +   '<div class="lh-title">' + escapeHtml(lhBrowser(e.user_agent)) + ' · ' + escapeHtml(e.device_type || 'desktop') + '</div>'
+        +   '<div class="lh-sub">' + escapeHtml(loc) + ' · ' + escapeHtml(e.ip_address || '—') + '</div>'
+        + '</div>'
+        + '<span class="lh-badge ' + (ok ? 'ok' : 'fail') + '">' + (ok ? 'Success' : 'Failed') + '</span>'
+        + '<span class="lh-time">' + lhTime(e.created_at) + '</span>'
+        + '</div>';
+    }).join('');
+  }).catch(function(){
+    container.innerHTML = '<div style="text-align:center;color:'+ (document.documentElement.className === 'dark' ? '#8b93a7' : '#666') +';padding:2rem;font-size:0.85rem">Could not load login history</div>';
+  });
+}
+
+window.closeLoginHistoryModal = function(){
+  var m = document.getElementById('loginHistoryModal');
+  if(m) m.remove();
+};
+
+// ── Active Sessions ──
+window.loadSessions = function(){
+  var summary = document.getElementById('sessionsSummary');
+  if(!summary) return;
+  safeApi('GET','/api/auth/sessions',null,null,true).then(function(d){
+    if(!d || !d.sessions){ summary.textContent = '—'; return; }
+    var n = d.sessions.length;
+    summary.textContent = n + (n === 1 ? ' active session' : ' active sessions');
+  }).catch(function(){ summary.textContent = '—'; });
+};
+
+window.revokeAllSessions = function(){
+  showConfirm('Sign out all devices?', 'This will revoke every active session. You will need to log in again on other devices. This device stays signed in until your current token expires.', function(){
+    var btn = document.querySelector('[onclick="revokeAllSessions()"]');
+    if(btn){ btn.disabled = true; }
+    safeApi('POST','/api/auth/sessions/revoke-all',{},null,true).then(function(d){
+      if(btn) btn.disabled = false;
+      if(d && d.status === 'revoked'){
+        showToast('Signed out all other sessions','success');
+        window.loadSessions();
+      } else {
+        showToast((d && d.detail) || 'Failed to revoke sessions','error');
+      }
+    });
+  }, 'Sign Out All');
 };
 
 // ── Load extended settings (appearance, api defaults, product notif) ──
@@ -1201,7 +1523,22 @@ document.addEventListener('DOMContentLoaded', function(){
   // Load country from profile API (real field)
   safeApi('GET','/api/user/profile',null,null,true).then(function(p){
     if(p && p.country && document.getElementById('settingsCountry')) document.getElementById('settingsCountry').value = p.country;
+    // Avatar preview from profile
+    if(p && p.avatar){
+      var av = document.getElementById('avatarPreview');
+      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      var clearBtn = document.getElementById('avatarClearBtn');
+      if(clearBtn) clearBtn.style.display = '';
+    }
   });
+  // Login history summary + active sessions
+  safeApi('GET','/api/auth/login-history?offset=0&limit=1',null,null,true).then(function(d){
+    var s = document.getElementById('loginHistorySummary');
+    if(!s) return;
+    if(d && typeof d.total === 'number') s.textContent = d.total + (d.total === 1 ? ' login' : ' logins');
+    else s.textContent = '—';
+  }).catch(function(){});
+  window.loadSessions();
   loadNotifications();
   loadNotifSettings();
   loadSettingsExtras();

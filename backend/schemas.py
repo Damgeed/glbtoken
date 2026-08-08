@@ -51,6 +51,11 @@ class TwoFactorCodeRequest(BaseModel):
     code: str
 
 
+class DeleteAccountRequest(BaseModel):
+    email: str           # must match the logged-in user's email
+    code: str = ""       # TOTP 6-digit OR one-time recovery code (required if 2FA on)
+
+
 class TwoFactorConfirmRequest(BaseModel):
     pre_token: str
     code: str
@@ -213,6 +218,10 @@ class UpdatePresetRequest(BaseModel):
 class ProfileUpdateRequest(BaseModel):
     name: Optional[str] = None
     country: Optional[str] = None
+
+
+class AvatarUpdateRequest(BaseModel):
+    avatar: str = ""   # data:image/* URL (≤300KB) or https:// URL; empty = clear
 
 
 # ── Analytics / Response Models ──

@@ -31,6 +31,7 @@ from schemas import (
     Auth0SignupRequest, OptionalEmailRequest, VerifyEmailRequest,
     ForgotPasswordRequest, ChangePasswordRequest, ResetPasswordRequest,
     ProfileUpdateRequest, RefreshRequest, LogoutRequest,
+    DeleteAccountRequest, AvatarUpdateRequest,
 )
 
 router = APIRouter()
@@ -1015,6 +1016,7 @@ def get_profile(user: User = Depends(get_current_user), db: Session = Depends(ge
         "total_spent": user.total_spent,
         "email_verified": user.email_verified,
         "created_at": user.created_at.isoformat() if user.created_at else None,
+        "avatar": _user_setting(user, "avatar") or "",
     }
 
 
@@ -1134,6 +1136,44 @@ def _totp_secret(user) -> str:
     return _totp_settings(user).get("totp_secret", "")
 
 
+# ── 2FA recovery codes (backup codes) ──
+# Stored as SHA-256 hashes in user.settings["totp_backup_codes"] so a DB
+# leak never exposes usable codes. Each code is consumed on first use.
+
+_RECOVERY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # no 0/O/1/I
+
+def _generate_recovery_codes(n: int = 10) -> list:
+    """Return n random 10-char codes (plaintext — show ONCE to the user)."""
+    import secrets
+    return [
+        "".join(secrets.choice(_RECOVERY_ALPHABET) for _ in range(10))
+        for _ in range(n)
+    ]
+
+
+def _hash_recovery_codes(codes) -> list:
+    import hashlib
+    return [hashlib.sha256(c.encode()).hexdigest() for c in codes]
+
+
+def _verify_recovery_code(user, code: str, db) -> bool:
+    """Consume a recovery code if it matches. Returns True on success."""
+    import hashlib
+    s = _totp_settings(user)
+    hashes = s.get("totp_backup_codes") or []
+    if not hashes:
+        return False
+    code = (code or "").strip().upper()
+    h = hashlib.sha256(code.encode()).hexdigest()
+    if h in hashes:
+        hashes.remove(h)                      # one-time use
+        s["totp_backup_codes"] = hashes
+        user.settings = json.dumps(s)
+        db.commit()
+        return True
+    return False
+
+
 def _social_2fa_redirect(user):
     """If 2FA is enabled, redirect to the challenge page with a short-lived pre_token.
 
@@ -1165,13 +1205,17 @@ def twofa_setup(request: Request, user: User = Depends(get_current_user), db: Se
         _400("Two-factor auth is already enabled")
     from totp import generate_secret, otpauth_url
     secret = generate_secret()
+    codes = _generate_recovery_codes(10)
     s = _totp_settings(user)
     s["totp_pending_secret"] = secret
+    # Stage hashed recovery codes too — they become active on enable.
+    s["totp_pending_backup_codes"] = _hash_recovery_codes(codes)
     user.settings = json.dumps(s)
     db.commit()
     return {
         "secret": secret,
         "otpauth_url": otpauth_url(secret, user.email),
+        "backup_codes": codes,   # plaintext — shown once during setup
     }
 
 
@@ -1189,6 +1233,9 @@ def twofa_enable(request: Request, req: TwoFactorCodeRequest, user: User = Depen
     s["totp_secret"] = pending
     s["totp_enabled"] = True
     s.pop("totp_pending_secret", None)
+    # Activate the staged recovery codes (hashed).
+    if s.get("totp_pending_backup_codes"):
+        s["totp_backup_codes"] = s.pop("totp_pending_backup_codes")
     user.settings = json.dumps(s)
     db.commit()
     return {"status": "enabled"}
@@ -1208,6 +1255,8 @@ def twofa_disable(request: Request, req: TwoFactorCodeRequest, user: User = Depe
     s.pop("totp_secret", None)
     s.pop("totp_enabled", None)
     s.pop("totp_pending_secret", None)
+    s.pop("totp_backup_codes", None)          # recovery codes die with 2FA
+    s.pop("totp_pending_backup_codes", None)
     user.settings = json.dumps(s)
     db.commit()
     return {"status": "disabled"}
@@ -1226,7 +1275,9 @@ def twofa_confirm(req: TwoFactorConfirmRequest, request: Request, db: Session = 
     if not user:
         _401("User not found")
     if not verify(_totp_secret(user), req.code):
-        _401("Invalid authenticator code")
+        # Fall back to a one-time recovery code (consumed on use).
+        if not _verify_recovery_code(user, req.code, db):
+            _401("Invalid authenticator code")
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
     auth = _auth_response(user, db)
@@ -1241,3 +1292,134 @@ def twofa_confirm(req: TwoFactorConfirmRequest, request: Request, db: Session = 
             "country": user.country,
         },
     }
+
+
+# ── Self-Serve Account Deletion ──
+@router.delete("/api/user/account")
+@limiter.limit("3/minute")
+def delete_own_account(
+    req: DeleteAccountRequest,
+    request: Request,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Permanently delete the authenticated user's account and all data.
+
+    Requires the user's email to match (typing it confirms intent) and, when
+    2FA is enabled, a valid TOTP code or one-time recovery code (recovery code
+    is consumed). Mirrors the admin deletion order for FK safety.
+    """
+    if (req.email or "").strip().lower() != (user.email or "").strip().lower():
+        _400("Email does not match your account")
+
+    if _totp_enabled(user):
+        from totp import verify
+        code = (req.code or "").strip()
+        ok = verify(_totp_secret(user), code) or _verify_recovery_code(user, code, db)
+        if not ok:
+            _401("Invalid authenticator or recovery code")
+
+    from database import (
+        RefreshToken, ApiKey, Transaction, Preset, Referral,
+        ReferralRedemption, LoginEvent, Organization, OrgMember, Conversation,
+    )
+
+    uid = user.id
+    # FK-safe deletion order: children first, then the user (same as admin).
+    db.query(RefreshToken).filter(RefreshToken.user_id == uid).delete(synchronize_session=False)
+    db.query(LoginEvent).filter(LoginEvent.user_id == uid).delete(synchronize_session=False)
+    db.query(Conversation).filter(Conversation.user_id == uid).delete(synchronize_session=False)
+    db.query(OrgMember).filter(OrgMember.user_id == uid).delete(synchronize_session=False)
+    owned_org_ids = [
+        oid for (oid,) in db.query(Organization.id).filter(Organization.owner_id == uid).all()
+    ]
+    if owned_org_ids:
+        db.query(OrgMember).filter(OrgMember.org_id.in_(owned_org_ids)).delete(synchronize_session=False)
+    db.query(Organization).filter(Organization.owner_id == uid).delete(synchronize_session=False)
+    db.query(Preset).filter(Preset.user_id == uid).delete(synchronize_session=False)
+    db.query(Transaction).filter(Transaction.user_id == uid).delete(synchronize_session=False)
+    db.query(ApiKey).filter(ApiKey.user_id == uid).delete(synchronize_session=False)
+    db.query(ReferralRedemption).filter(ReferralRedemption.referred_user_id == uid).delete(synchronize_session=False)
+    db.query(Referral).filter(Referral.user_id == uid).delete(synchronize_session=False)
+    db.delete(user)
+    db.commit()
+
+    try:
+        send_alert_email(
+            user.email,
+            "GlbTOKEN account deleted",
+            "Your GlbTOKEN account and all associated data have been permanently deleted.\n\nIf this was a mistake, please contact support@glbtoken.com.",
+        )
+    except Exception:
+        pass
+    return {"status": "deleted"}
+
+
+# ── Session Management (list active refresh tokens / revoke all) ──
+@router.get("/api/auth/sessions")
+@limiter.limit("30/minute")
+def list_sessions(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """List the user's active (non-revoked, non-expired) refresh sessions."""
+    from database import RefreshToken
+    rows = db.query(RefreshToken).filter(
+        RefreshToken.user_id == user.id,
+        RefreshToken.revoked == False,
+        RefreshToken.expires_at > datetime.now(timezone.utc),
+    ).order_by(desc(RefreshToken.created_at)).all()
+    return {
+        "sessions": [
+            {
+                "id": r.id,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+                "expires_at": r.expires_at.isoformat() if r.expires_at else None,
+            }
+            for r in rows
+        ]
+    }
+
+
+@router.post("/api/auth/sessions/revoke-all")
+@limiter.limit("10/minute")
+def revoke_all_sessions(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Revoke every active refresh token for the user (sign out all devices).
+
+    The current access token remains valid until it expires (short-lived),
+    but no refresh token can mint new ones — the next refresh forces re-login.
+    """
+    from database import RefreshToken
+    n = db.query(RefreshToken).filter(
+        RefreshToken.user_id == user.id,
+        RefreshToken.revoked == False,
+    ).update({"revoked": True}, synchronize_session=False)
+    db.commit()
+    return {"status": "revoked", "revoked": n}
+
+
+# ── Avatar Upload (stored as a small data-URL in settings JSON) ──
+@router.put("/api/user/avatar")
+@limiter.limit("10/minute")
+def update_avatar(req: AvatarUpdateRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Set (or clear) the user's avatar.
+
+    Accepts a data: URL (image/*, ≤ 300 KB) or an https:// URL. Stored in the
+    user's settings JSON — no DB migration, no external storage dependency.
+    """
+    avatar = (req.avatar or "").strip()
+    if avatar:
+        if avatar.startswith("data:image/"):
+            # Validate size to stop the settings blob from ballooning.
+            if len(avatar) > 300 * 1024:
+                _400("Avatar image is too large (max 300 KB)")
+        elif avatar.startswith("https://"):
+            if len(avatar) > 2048:
+                _400("Avatar URL is too long")
+        else:
+            _400("Avatar must be a data:image URL or an https:// URL")
+    s = _totp_settings(user)
+    if avatar:
+        s["avatar"] = avatar
+    else:
+        s.pop("avatar", None)
+    user.settings = json.dumps(s)
+    db.commit()
+    return {"status": "updated", "avatar": avatar}
