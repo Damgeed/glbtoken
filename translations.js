@@ -1868,6 +1868,17 @@ I18N["Georgia"] = {"zh-CN": "格鲁吉亚", ru: "Грузия", ja: "ジョー�
 I18N["Germany"] = {"zh-CN": "德国", ru: "Германия", ja: "ドイツ", de: "Deutschland"};
 I18N["GitHub"] = {"zh-CN": "GitHub", ru: "GitHub", ja: "GitHub", de: "GitHub"};
 
+I18N["GlbTOKEN Developer API"] = {"zh-CN": "GlbTOKEN 开发者 API", ru: "API GlbTOKEN для разработчиков", ja: "GlbTOKEN 開発者 API", de: "GlbTOKEN-Entwickler-API"};
+I18N["GlbTOKEN looks best in the dark"] = {"zh-CN": "GlbTOKEN 在深色模式下效果最佳", ru: "GlbTOKEN лучше всего смотрится в тёмной теме", ja: "GlbTOKEN はダークモードで最も美しく表示されます", de: "GlbTOKEN sieht im Dunkelmodus am besten aus"};
+I18N["GlbTOKEN mobile web app"] = {"zh-CN": "GlbTOKEN 移动端网页应用", ru: "Мобильное веб-приложение GlbTOKEN", ja: "GlbTOKEN モバイル Web アプリ", de: "GlbTOKEN Mobile-Web-App"};
+I18N["GlbTOKEN — Global Token for AI Models"] = {"zh-CN": "GlbTOKEN — 面向 AI 模型的全球通证", ru: "GlbTOKEN — глобальный токен для ИИ-моделей", ja: "GlbTOKEN — AI モデルのためのグローバルトークン", de: "GlbTOKEN — Globaler Token für KI-Modelle"};
+I18N["Global Team:"] = {"zh-CN": "全球团队：", ru: "Глобальная команда:", ja: "グローバルチーム：", de: "Globales Team:"};
+I18N["Google"] = {"zh-CN": "Google", ru: "Google", ja: "Google", de: "Google"};
+I18N["Greece"] = {"zh-CN": "希腊", ru: "Греция", ja: "ギリシャ", de: "Griechenland"};
+I18N["Grok 4.20 — xAI"] = {"zh-CN": "Grok 4.20 — xAI", ru: "Grok 4.20 — xAI", ja: "Grok 4.20 — xAI", de: "Grok 4.20 — xAI"};
+I18N["Guatemala"] = {"zh-CN": "危地马拉", ru: "Гватемала", ja: "グアテマラ", de: "Guatemala"};
+I18N["Guinea"] = {"zh-CN": "几内亚", ru: "Гвинея", ja: "ギニア", de: "Guinea"};
+
 
 (function() {
   var saved = localStorage.getItem('gt_lang');
