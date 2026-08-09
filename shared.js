@@ -453,7 +453,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
 
     // ── API Helper ──
     let models = [], selectedAmount = 5, selectedPayment = 'stripe';
-    let chartInst = null, sortDir = 'price_asc';
+    let sortDir = 'price_asc';
 
     // Single-flight token refresh: when several API calls 401 at once (common on
     // dashboard load / chat send), they must share ONE /auth/refresh call.

@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════
    USAGE CHARTS — Usage analytics (dashboard.html)
    Extracted from filters.js — shared globals
-   (usageDays, usageMode, usageModel, chartInst,
+   (usageDays, usageMode, usageModel,
    safeApi) come from shared.js
    ══════════════════════════════════════════ */
     async function loadUsageAnalytics(days,model,mode){
@@ -106,21 +106,8 @@
             tags+
           '</div>';
         }).join('');
+    }
 
-    }
-    function initCharts(usage){
-      const canvas=document.getElementById('usageChart');
-      if(!canvas)return;
-      if(chartInst){chartInst.destroy();chartInst=null}
-      const labels=usage&&usage.length?usage.map(u=>u.model):['GPT-4o','Claude','DeepSeek','Llama','Other'];
-      const data=usage&&usage.length?usage.map(u=>u.tokens):[0,0,0,0,0];
-      const colors=['#FFB347','#00D68F','#7C3AED','#FF6B6B','#00B4D8'];
-      chartInst=new Chart(canvas,{
-        type:'doughnut',
-        data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderWidth:0}]},
-        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
-      });
-    }
     function initDailyChart(dailyData){
       var canvas=document.getElementById('dailyChart');
       if(!canvas||!dailyData||!dailyData.labels)return;

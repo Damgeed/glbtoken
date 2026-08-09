@@ -128,7 +128,6 @@
           var todayEl = document.getElementById('dashTotalConsumed');
           if(todayEl) todayEl.textContent = parseInt(newapiTotal).toLocaleString();
         }
-        initCharts(d.usage_by_model);
         initDailyChart(d.daily_usage);
         // ── Model ranking list ──
         var rankEl = document.getElementById('modelRanking');
