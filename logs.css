@@ -15,6 +15,15 @@
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+/* Tablet range (769–1000px): the dash-sidebar is visible and 2 columns
+   squeeze the log tables to ~289px cards, forcing heavy cell wrapping
+   (rows grow to 130px+) and card overflow. Single column until the content
+   area is wide enough for two stable tables (verified: fits at ≥1024px). */
+@media (min-width: 769px) and (max-width: 1000px) {
+  .logs-grid {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 768px) {
   .logs-grid {
     grid-template-columns: 1fr;

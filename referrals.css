@@ -45,8 +45,14 @@
   .chart-scroll-row>.dash-card{flex:0 0 calc(100vw - 4rem);min-width:280px;scroll-snap-align:start}
   #share-socials{display:grid!important;grid-template-columns:1fr 1fr 1fr;gap:0.4rem}
   #share-socials .btn-secondary{font-size:0.7rem;padding:0.4rem 0.25rem;justify-content:center}
-  .tx-table{min-width:500px}
-  .tx-table th,.tx-table td{white-space:nowrap}
+}
+/* Referrals table = 5 columns (Name, Email, Date Joined, Status, Reward).
+   On phones, the two wide unbreakable email-ish cells (Name/Email) force the
+   table past the viewport even with tx-fit. Hide the least-important column
+   (Date Joined) at ≤560px — same pattern as Login History hiding IP. */
+@media(max-width:560px){
+  #refTable th:nth-child(3),
+  #refTable td:nth-child(3){display:none}
 }
 
 /* ── Referrals inline style extraction ── */
@@ -194,6 +200,18 @@
 .chart-container-wide {
   height: 180px;
   min-width: 300px;
+}
+/* min-width:300 was designed for the desktop 2-col grid (cards ≥327px at
+   ≥1024px). Below that the cards are narrower than 300px — on mobile the
+   scroll-snap card (calc(100vw - 4rem), min 280px) governs width, and on
+   tablet the row drops to 1 column — so the chart container must be allowed
+   to shrink to its card or the chart gets clipped by the card's
+   overflow:hidden (measured: 28px clipped @360, 83px @820). */
+@media(max-width:1000px){
+  .chart-container-wide{min-width:0}
+}
+@media(min-width:769px) and (max-width:1000px){
+  .chart-scroll-row{grid-template-columns:1fr}
 }
 /* Pending/awaiting color */
 .refs-pending {

@@ -12,15 +12,17 @@
   background: var(--card);
   z-index: 1;
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   #loginTable td:nth-child(3) {
     max-width: 140px;
     white-space: normal;
     word-break: break-word;
   }
-  /* Login History = 5 visible columns on mobile (hide IP) so it fits the
-     viewport like Transaction History (tx-fit) — no horizontal scroll, clean
-     vertical scroll when the device list grows. Desktop keeps all 6 columns. */
+  /* Login History = 5 visible columns on mobile/tablet (hide IP) so it fits
+     the viewport like Transaction History (tx-fit) — no horizontal scroll,
+     clean vertical scroll when the device list grows. Desktop keeps all 6
+     columns. Breakpoint matches the shared tx-fit 900px so tablets (820px)
+     get the same stable fit as phones. */
   #loginTable th:nth-child(4),
   #loginTable td:nth-child(4) {
     display: none;

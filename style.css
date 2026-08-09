@@ -2617,6 +2617,15 @@ body.compact-cards .billing-stat-card {
     margin-left: auto;
   }
 }
+/* Tablet range (769–1000px): 2-column #keyList squeezes each card to ~240px
+   while the action footer (Usage/Edit/Pause/Delete + drag, flex-shrink:0)
+   needs ~320px → the footer clips/overflows the card. Single column until
+   the content area is wide enough for two stable cards (fits at ≥1024px). */
+@media (min-width: 769px) and (max-width: 1000px) {
+  #keyList {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 768px) {
   .api-key-card .key-actions { display: none; }
   .api-key-card { flex-wrap: nowrap; }
@@ -4295,6 +4304,18 @@ html.light .star.white {
   }
   .tx-scroll.tx-fit td.td-date {
     font-size: 0.66rem;
+  }
+  /* Tiny-phone tier (≤380px, iPhone SE / small Android): the status badge is
+     the widest cell (e.g. "Completed" ~82px). Shave its font/padding so a
+     realistic row (date + amount + "USDT TRC20" method + tokens + badge)
+     fits 318px without horizontal scroll — verified at 360px. Login History
+     badges (.badge-success/.badge-failed) get the same shrink so its 5
+     visible columns also fit at 360px. */
+  .tx-scroll.tx-fit .status-badge,
+  .tx-scroll.tx-fit .badge-success,
+  .tx-scroll.tx-fit .badge-failed {
+    font-size: 0.6rem;
+    padding: 0.12rem 0.22rem;
   }
 }
 .filter-row { display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin:0.75rem 0; }
