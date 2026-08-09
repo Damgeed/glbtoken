@@ -23,23 +23,19 @@ def get_config() -> dict:
 # ── PKCE Code Exchange (Social Login) ──
 
 def _auth0_token_request(payload: dict) -> dict:
-    """POST to Auth0 /oauth/token, tolerant of the application's client type.
+    """POST to Auth0 /oauth/token.
 
-    Auth0 application types differ in how the token endpoint authenticates:
-    - Single Page App (public client): PKCE only — sending client_secret is
-      REJECTED with access_denied/Unauthorized even when the secret is correct.
-    - Regular Web App (confidential): client_secret required in body ('Post'
-      method) or Authorization header ('Basic' method).
-
-    Strategy: try public PKCE first (no client_secret), then confidential
-    Post, then Basic — so either application type keeps working. Business
-    errors (invalid_grant = bad code/verifier) are NOT retried as auth errors.
+    STANDARD (preferred) flow: confidential client — client_secret in body
+    ('Post' method), matching Auth0's recommended Regular Web App setup with
+    RS256. Non-standard tenants (Single Page App / public client) reject
+    client_secret with access_denied even when correct — fall back to public
+    PKCE (no client_secret), then Basic auth header. Business errors
+    (invalid_grant = bad code/verifier) are never retried as auth errors.
     Raw Auth0 error is logged for diagnostics (never the secret).
     """
     url = f"https://{AUTH0_DOMAIN}/oauth/token"
-    # 1) Public client (SPA): omit client_secret, rely on PKCE code_verifier
-    pub_payload = {k: v for k, v in payload.items() if k != "client_secret"}
-    resp = requests.post(url, json=pub_payload, timeout=10)
+    # 1) STANDARD: confidential client, 'Post' method (client_secret in body)
+    resp = requests.post(url, json=payload, timeout=10)
     if resp.status_code == 200:
         return resp.json()
     try:
@@ -50,15 +46,19 @@ def _auth0_token_request(payload: dict) -> dict:
         err = resp.text
         err_code = ""
     # Business errors (invalid_grant etc.) mean the request was accepted and
-    # the code/verifier is bad — retrying with secret won't help.
+    # the code/verifier is bad — retrying another auth style won't help.
     if err_code in ("invalid_grant", "invalid_request"):
         print(f"⚠️ Auth0 token endpoint error (HTTP {resp.status_code}): {err}")
         raise ValueError(f"Auth0 token request failed: {err}")
-    # 2) Confidential client, 'Post' method (client_secret in body)
-    resp = requests.post(url, json=payload, timeout=10)
-    if resp.status_code == 200:
-        print("⚠️ Auth0: token endpoint used confidential Post auth (public PKCE was rejected)")
-        return resp.json()
+    # 2) Non-standard: public client (SPA) — retry WITHOUT client_secret.
+    #    Auth0 public clients reject any client_secret with access_denied.
+    if err_code in ("access_denied", "unauthorized_client", "unauthorized"):
+        pub_payload = {k: v for k, v in payload.items() if k != "client_secret"}
+        resp = requests.post(url, json=pub_payload, timeout=10)
+        if resp.status_code == 200:
+            print("⚠️ Auth0: token endpoint used public PKCE (app is a Single Page App — "
+                  "recommend switching to Regular Web App + RS256)")
+            return resp.json()
     # 3) Confidential client, 'Basic' method (Authorization header)
     try:
         resp2 = requests.post(
@@ -269,6 +269,11 @@ def verify_token(id_token: str) -> dict:
         unverified_header = jwt.get_unverified_header(id_token)
         alg = unverified_header.get("alg", "")
         if alg == "HS256":
+            # HS256 is non-standard for Auth0 (shared-secret signing). Support
+            # it for compatibility, but flag it — RS256 is the secure default.
+            print("⚠️ Auth0: id_token signed with HS256 — recommend switching the "
+                  "application's Signing Algorithm back to RS256 (public-key "
+                  "verification, no shared secret)")
             payload = jwt.decode(
                 id_token, AUTH0_CLIENT_SECRET,
                 algorithms=["HS256"],
