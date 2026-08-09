@@ -119,7 +119,8 @@ def seed_models():
 # ── Models Route ──
 
 @router.get("/api/models")
-def list_models(provider: Optional[str] = None, db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def list_models(request: Request, provider: Optional[str] = None, db: Session = Depends(get_db)):
     q = db.query(AIModel).filter(AIModel.is_active == True)
     if provider:
         q = q.filter(AIModel.provider == provider)
@@ -142,7 +143,8 @@ def list_models(provider: Optional[str] = None, db: Session = Depends(get_db)):
 
 
 @router.get("/api/models/providers")
-def list_providers(db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def list_providers(request: Request, db: Session = Depends(get_db)):
     results = db.query(
         AIModel.provider,
         func.count(AIModel.id),
