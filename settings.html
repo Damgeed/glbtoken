@@ -390,11 +390,19 @@
 <!-- ── Settings Scripts ── -->
 <script>
 /* ── Settings Functions ── */
+// Timeout wrapper: every fetch gets a 25s abort so a hung request can't block UI forever
+function _fetchT(url, opts){
+  var ctrl = new AbortController();
+  var t = setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 25000);
+  opts = opts || {};
+  if(!opts.signal) opts.signal = ctrl.signal;
+  return fetch(url, opts).then(function(r){ clearTimeout(t); return r; }, function(e){ clearTimeout(t); throw e; });
+}
 window.saveProfile = function(){
   var name = document.getElementById('settingsName').value.trim();
   var country = document.getElementById('settingsCountry').value.trim();
   if(!name){ showToast('Please enter your name','error'); return; }
-  fetch(API_URL + '/api/user/profile', {
+  _fetchT(API_URL + '/api/user/profile', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({name: name, country: country})
@@ -428,7 +436,7 @@ window.updatePassword = function(){
   var neu = document.getElementById('settingsNewPw').value;
   if(!cur || !neu){ showToast('Please fill in both password fields','error'); return; }
   if(neu.length < 8){ showToast('New password must be at least 8 characters','error'); return; }
-  fetch(API_URL + '/api/user/password', {
+  _fetchT(API_URL + '/api/user/password', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({current_password: cur, new_password: neu})
@@ -453,7 +461,7 @@ window.updatePassword = function(){
 var _twofaMode = 'setup'; // 'setup' | 'disable'
 
 window.checkTwoFAStatus = function(){
-  fetch(API_URL + '/api/auth/2fa/status', {headers:{'Authorization':'Bearer '+(token||'')}})
+  _fetchT(API_URL + '/api/auth/2fa/status', {headers:{'Authorization':'Bearer '+(token||'')}})
   .then(function(r){ return r.json(); })
   .then(function(d){
     var btn = document.getElementById('twofaToggleBtn');
@@ -547,7 +555,7 @@ function openTwoFAModal(mode){
   if(codeEl){ codeEl.focus(); codeEl.onkeydown = function(e){ if(e.key === 'Enter') confirmTwoFA(); }; }
   _twofaMode = mode;
   if(isSetup){
-    fetch(API_URL + '/api/auth/2fa/setup', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+(token||'')}})
+    _fetchT(API_URL + '/api/auth/2fa/setup', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+(token||'')}})
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d && d.secret){
@@ -651,7 +659,7 @@ window.confirmTwoFA = function(){
   var btn = document.getElementById('twofaConfirmBtn');
   var endpoint = _twofaMode === 'disable' ? '/api/auth/2fa/disable' : '/api/auth/2fa/enable';
   btn.disabled = true;
-  fetch(API_URL + endpoint, {
+  _fetchT(API_URL + endpoint, {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({code: code})
@@ -689,7 +697,7 @@ window.saveWebhookSettings = function(){
   // means "keep the existing secret" (it is never echoed back into the DOM).
   var sec = document.getElementById('webhookSecret').value.trim();
   if(sec) payload.webhook_secret = sec;
-  fetch(API_URL + '/api/user/settings', {
+  _fetchT(API_URL + '/api/user/settings', {
     method: 'PUT',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify(payload)
@@ -709,7 +717,7 @@ window.saveWebhookSettings = function(){
 };
 
 window.testWebhook = function(){
-  fetch(API_URL + '/api/user/webhook/test', {
+  _fetchT(API_URL + '/api/user/webhook/test', {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')}
   })
@@ -725,7 +733,7 @@ window.testWebhook = function(){
 };
 
 function loadWebhookSettings(){
-  fetch(API_URL + '/api/user/settings', {headers:{'Authorization':'Bearer '+(token||'')}})
+  _fetchT(API_URL + '/api/user/settings', {headers:{'Authorization':'Bearer '+(token||'')}})
   .then(function(r){ return r.json(); })
   .then(function(d){
     if(!d) return;
@@ -931,7 +939,7 @@ window.confirmDeleteAccount = function(){
   var password = pwEl ? pwEl.value : '';
   var btn = document.getElementById('delAccountBtn');
   if(btn) btn.disabled = true;
-  fetch(API_URL + '/api/user/account', {
+  _fetchT(API_URL + '/api/user/account', {
     method: 'DELETE',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({email: email, password: password, code: code})
@@ -1075,7 +1083,7 @@ document.addEventListener('change', function(e){
     var fd = new FormData();
     fd.append('file', file);
     var tok = sessionStorage.getItem('gt_token') || (window.__secure ? window.__secure.getItem('gt_token') : '') || '';
-    fetch(API_URL + '/api/user/avatar', {
+    _fetchT(API_URL + '/api/user/avatar', {
       method: 'POST',
       headers: {'Authorization': 'Bearer ' + tok},
       body: fd
@@ -1097,7 +1105,7 @@ document.addEventListener('change', function(e){
 
 window.clearAvatar = function(){
   var tok = sessionStorage.getItem('gt_token') || (window.__secure ? window.__secure.getItem('gt_token') : '') || '';
-  fetch(API_URL + '/api/user/avatar', {
+  _fetchT(API_URL + '/api/user/avatar', {
     method: 'DELETE',
     headers: {'Authorization': 'Bearer ' + tok}
   }).then(function(r){
@@ -1497,7 +1505,7 @@ window.closeEmailVerifyModal = function(){
 window.sendVerificationCode = function(){
   var status = document.getElementById('emailVerifyStatus');
   if(status) status.textContent = 'Sending code…';
-  fetch(API_URL + '/api/auth/send-verification', {
+  _fetchT(API_URL + '/api/auth/send-verification', {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({})
@@ -1523,7 +1531,7 @@ window.confirmEmailVerification = function(){
   if(!code || code.length < 6){ showToast('Enter the 6-digit code from your email','error'); return; }
   var btn = document.getElementById('emailVerifyConfirmBtn');
   btn.disabled = true;
-  fetch(API_URL + '/api/auth/verify-email', {
+  _fetchT(API_URL + '/api/auth/verify-email', {
     method: 'POST',
     headers: {'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
     body: JSON.stringify({otp: code})

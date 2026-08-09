@@ -256,13 +256,21 @@
 <!-- ── Billing Script ── -->
 <script>
 /* ── Billing Page Script ── */
+// Timeout wrapper: every fetch gets a 25s abort so a hung request can't block UI forever
+function _fetchT(url, opts){
+  var ctrl = new AbortController();
+  var t = setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 25000);
+  opts = opts || {};
+  if(!opts.signal) opts.signal = ctrl.signal;
+  return fetch(url, opts).then(function(r){ clearTimeout(t); return r; }, function(e){ clearTimeout(t); throw e; });
+}
 (function(){
   var loaded = false;
 
   // ── Live CSV export (invoices → real /api/billing/invoices) ──
   window.exportData = function(type){
     if(type !== 'billing'){ showToast('Unknown export type','error'); return; }
-    fetch(API_URL + '/api/billing/invoices',{
+    _fetchT(API_URL + '/api/billing/invoices',{
       method:'GET',
       headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/json'}
     })
@@ -305,7 +313,7 @@
       if(!tbody) return;
       tbody.innerHTML = '<tr><td colspan="6" class="empty-state-alt"><div class="spinner-btn"></div>Loading invoices...</td></tr>';
 
-      fetch(API_URL + '/api/billing/invoices',{
+      _fetchT(API_URL + '/api/billing/invoices',{
         method:'GET',
         headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/json'}
       })
@@ -475,7 +483,7 @@
     };
 
     window.downloadInvoicePdf = function(invId){
-      fetch(API_URL + '/api/billing/invoices/' + invId + '/pdf',{
+      _fetchT(API_URL + '/api/billing/invoices/' + invId + '/pdf',{
         method:'GET',
         headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/pdf'}
       })
@@ -501,7 +509,7 @@
     window.downloadStatementPdf = function(){
       var ac = new AbortController();
       var t = setTimeout(function(){ try{ ac.abort(); }catch(e){} }, 25000);
-      fetch(API_URL + '/api/billing/statement',{
+      _fetchT(API_URL + '/api/billing/statement',{
         method:'GET',
         headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/pdf'},
         signal: ac.signal

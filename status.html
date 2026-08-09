@@ -69,9 +69,17 @@ body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,sans
 <script>
 (function(){
   var API_URL = 'https://api.glbtoken.com';
+  // Timeout wrapper: health-check fetch gets a 25s abort so the status page can't hang
+  function _fetchT(url, opts){
+    var ctrl = new AbortController();
+    var t = setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, 25000);
+    opts = opts || {};
+    if(!opts.signal) opts.signal = ctrl.signal;
+    return fetch(url, opts).then(function(r){ clearTimeout(t); return r; }, function(e){ clearTimeout(t); throw e; });
+  }
   function setVal(id, text, cls){ var el = document.getElementById(id); el.textContent = text; el.className = 'val ' + (cls || 'mut'); }
   function check(){
-    fetch(API_URL + '/api/health', {cache:'no-store'})
+    _fetchT(API_URL + '/api/health', {cache:'no-store'})
       .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ return {status:r.status, d:d}; }); })
       .then(function(res){
         var d = res.d || {};
