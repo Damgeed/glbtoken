@@ -36,6 +36,17 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+/* ── Login History modal: mobile cap — same ~5-card vertical scroll pattern as
+   Transaction History / Recent Notifications (Bud 2026-08: "show 5+ cards then
+   the rest scroll up/down like the Transaction History. Don't touch the width
+   in the slightest."). Height cap ONLY — card widths/columns untouched. ── */
+@media (max-width: 767px) {
+  #loginHistoryList {
+    max-height: 380px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 .settings-card + .settings-card {
   margin-top: 1rem;
 }
