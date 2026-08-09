@@ -234,13 +234,14 @@
   transition: background 0.15s;
 }
 
-/* ── Login History mobile: taller scroll window ──
-   Login rows are ~2x taller than Transaction rows (Device/Location wrap on
-   narrow screens), so the shared 380px .tx-scroll cap only shows ~4 rows on
-   mobile. Bud's rule (2026-07): show 5+ rows then vertical scroll — raise the
-   cap on mobile only. WIDTH untouched. ID selector beats .dash-card .scroll-x. */
+/* ── Login History mobile: 5-7 rows visible, rest scrolls ──
+   Bud's rule (2026-08): show 5-7 cards then roll the rest in. Real mobile
+   row height ~57px (short device/location), so 380px shows ~6 rows with the
+   shared .tx-scroll cap — same scroll container spec as Transaction History
+   (cross-browser consistent, no browser-specific hacks). WIDTH untouched.
+   ID selector beats .dash-card .scroll-x so the shared 380px cap applies. */
 @media (max-width: 900px) {
   #loginScrollX {
-    max-height: 500px;
+    max-height: 380px;
   }
 }
