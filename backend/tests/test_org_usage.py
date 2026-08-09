@@ -2,10 +2,7 @@
 consumption rows (deposits are not calls), and total_spent must be the sum
 of members' canonical user.total_spent, not a deposit-row sum.
 """
-import pytest
-from fastapi.testclient import TestClient
-
-from database import User, Transaction, Organization, OrgMember
+from database import Transaction
 
 
 def _auth_headers(client, email, password):

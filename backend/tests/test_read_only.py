@@ -2,7 +2,7 @@
 import pytest
 from fastapi import HTTPException
 
-from database import ApiKey, User
+from database import ApiKey
 from routes.v1_gateway import _auth_user
 from auth import generate_api_key
 

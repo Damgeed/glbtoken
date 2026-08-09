@@ -2,7 +2,6 @@
 import pytest
 from fastapi import HTTPException
 
-from database import User
 from routes.chat import _atomic_deduct
 
 

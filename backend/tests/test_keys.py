@@ -1,5 +1,4 @@
 """API key CRUD + permission validation tests."""
-from database import ApiKey
 from auth import create_access_token
 
 

@@ -1,5 +1,4 @@
 """2FA (TOTP) endpoint + login-gate tests — real DB, no Auth0 dependency."""
-import json
 
 from auth import create_access_token
 from totp import totp_at

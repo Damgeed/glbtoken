@@ -1,5 +1,4 @@
 """Enterprise+ gate for Team/org features — non-enterprise users get 403."""
-import pytest
 
 
 def _auth_headers(client, email, password):

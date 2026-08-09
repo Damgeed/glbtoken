@@ -1,7 +1,5 @@
 """Security assessment Pass 2 regression tests — fixes for findings 1-7."""
 import json
-import pytest
-from fastapi.testclient import TestClient
 
 from database import User
 from common import SIGNUP_BONUS_TOKENS
@@ -15,7 +13,7 @@ def _auth(token):
 # ── Finding 1: SSRF via webhook_url ──
 
 def test_webhook_url_rejects_plain_http(client, make_user):
-    u = make_user()
+    make_user()
     r = client.put("/api/user/settings", json={"webhook_url": "http://example.com/hook"}, headers=_auth("t"))
     assert r.status_code == 401  # need real token
 

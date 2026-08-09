@@ -21,7 +21,7 @@ os.environ.setdefault("DATABASE_URL", "sqlite:///./test_glbtoken.db")
 
 import pytest
 from fastapi.testclient import TestClient
-from database import Base, engine, SessionLocal, get_db
+from database import get_db
 import main as app_module
 from common import limiter
 

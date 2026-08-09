@@ -1,6 +1,5 @@
 """Tests for public_id (u_xxx) on users."""
 import re
-from fastapi.testclient import TestClient
 
 
 def _register(client, email="pubid_user@test.com"):

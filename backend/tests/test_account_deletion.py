@@ -9,7 +9,6 @@ Covers the 3 build-agent fixes:
    crypto addresses endpoint returns a clean 400 instead of a 500 when no
    wallet is configured.
 """
-import pytest
 
 from auth import create_access_token
 import routes.misc as misc_module
