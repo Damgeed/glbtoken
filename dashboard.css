@@ -290,7 +290,7 @@
 .mini-chart-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 /* Legend/model label */
 .legend-label {
@@ -437,7 +437,7 @@
 .charts-side-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 /* Filter button row */
 .filter-btn-row {
