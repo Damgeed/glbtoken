@@ -122,8 +122,8 @@ async function loadReferralStats() {
         srcBody.innerHTML=sources.map(function(s){
           var label=s.source.charAt(0).toUpperCase()+s.source.slice(1);
           return '<div class="refs-source-row"><div class="refs-source-name">'+escapeHtml(label)+'</div>'+
-            '<div class="refs-source-bar"><div class="refs-source-fill" style="width:'+s.pct+'%"></div></div>'+
-            '<div class="refs-source-count">'+s.count+' · '+s.pct+'%</div></div>';
+            '<div class="refs-source-bar"><div class="refs-source-fill" style="width:'+(Number(s.pct)||0)+'%"></div></div>'+
+            '<div class="refs-source-count">'+escapeHtml(String(Number(s.count)||0))+' · '+(Number(s.pct)||0)+'%</div></div>';
         }).join('');
       }else{
         srcCard.style.display='none';
@@ -168,7 +168,7 @@ async function loadReferralStats() {
           var st=r.status||'pending';
           var stLabel=escapeHtml(st.charAt(0).toUpperCase()+st.slice(1));
           var stCls='refs-st-'+String(st).replace(/[^a-z0-9_-]/gi,'');
-          return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td class="td-date">'+(r.joined_at?fmtDTStack(r.joined_at):'<div class="td-date-strong">—</div>')+'</td><td class="tx-td-center"><span class="refs-status-badge '+stCls+'">'+stLabel+'</span></td><td class="tx-td-right">'+(r.reward>0?(r.reward+' GT'):'—')+'</td></tr>';
+          return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+escapeHtml(r.email||'—')+'</td><td class="td-date">'+(r.joined_at?fmtDTStack(r.joined_at):'<div class="td-date-strong">—</div>')+'</td><td class="tx-td-center"><span class="refs-status-badge '+stCls+'">'+stLabel+'</span></td><td class="tx-td-right">'+(Number(r.reward)>0?(escapeHtml(String(Number(r.reward)))+' GT'):'—')+'</td></tr>';
         }), 'refCollapse', 'refMoreBtn');
       }else{
         clearTableCollapse('refCollapse','refMoreBtn');
@@ -180,7 +180,7 @@ async function loadReferralStats() {
     if(rewardsBody){
       if(rewards.length){
         renderTableWithCollapse('refRewardsBody', rewards.map(function(r){
-          return '<tr><td class="td-date">'+fmtDTStack(r.created_at)+'</td><td>Referral Reward</td><td class="tx-td-right">'+(r.amount||0)+' GT</td><td class="tx-td-center"><span class="text-success-color">● Claimed</span></td></tr>';
+          return '<tr><td class="td-date">'+fmtDTStack(r.created_at)+'</td><td>Referral Reward</td><td class="tx-td-right">'+escapeHtml(String(Number(r.amount)||0))+' GT</td><td class="tx-td-center"><span class="text-success-color">● Claimed</span></td></tr>';
         }), 'refRewardsCollapse', 'refRewardsMoreBtn');
       }else{
         clearTableCollapse('refRewardsCollapse','refRewardsMoreBtn');

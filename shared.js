@@ -137,7 +137,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     try{
       var b64 = parts[1].replace(/-/g,'+').replace(/_/g,'/');
       while(b64.length % 4) b64 += '=';
-      var payload = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      var payload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b64), function(c){return c.charCodeAt(0);})));
       if(payload.exp && payload.exp * 1000 < Date.now()){ return false; }
     }catch(e){ return false; }
     // Freshness check: if the backend supplied _ts (ms), reject links older than 5 min
@@ -747,6 +747,7 @@ function clearSession(){
   try{ localStorage.removeItem('gt_ref'); localStorage.removeItem('gt_ref_ts'); localStorage.removeItem('gt_ref_src'); }catch(e){}
   try{ localStorage.removeItem('gt_chat_history'); }catch(e){}
   try{ sessionStorage.removeItem('gt_pending_org'); sessionStorage.removeItem('gt_pending_token'); }catch(e){}
+  try{ sessionStorage.removeItem('gt_pending_topup'); }catch(e){}
   try{ if(window.__secure && window.__secure.clear) window.__secure.clear(); }catch(e){}
   try{ if(window._dashPoll){ clearInterval(window._dashPoll); window._dashPoll=null; } }catch(e){}
 }
@@ -869,7 +870,7 @@ window.applyAuth = function applyAuth(){
     if(da){
       da.textContent = '';
       if(userData && typeof userData.avatar === 'string' && userData.avatar){
-        da.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+escapeAttr(initial)+'\')">';
+        da.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+safeJsStr(initial)+'\')">';
       } else {
         da.textContent = initial;
       }
@@ -881,7 +882,7 @@ window.applyAuth = function applyAuth(){
     if(ma){
       ma.textContent = '';
       if(userData && typeof userData.avatar === 'string' && userData.avatar){
-        ma.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+escapeAttr(initial)+'\')">';
+        ma.innerHTML = '<img src="'+escapeAttr(userData.avatar)+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block" onerror="navAvatarFallback(this,\''+safeJsStr(initial)+'\')">';
       } else {
         ma.textContent = initial;
       }

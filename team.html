@@ -391,7 +391,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1164"></script>
+<script data-cfasync="false" src="shared.js?v=1165"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 
@@ -810,7 +810,7 @@ async function loadOrgDetails(orgId){
   if(bulkBtn) bulkBtn.style.display = canManage ? '' : 'none';
   if(!canManage && memberBulkMode) exitMemberBulkMode();
   var roleEl = document.getElementById('orgRoleBadge');
-  roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+capRole(myRole);
+  roleEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-sm"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+escapeHtml(capRole(myRole));
   setOrgSectionsVisible(true);
   // Invite form — owner/admin only (backend 403s otherwise; don't show what you can't use)
   var inviteRow = document.getElementById('inviteFormRow');
@@ -910,7 +910,7 @@ function inviteRowHtml(iv, orgId, canManage){
     + '<div class="invite-main">'
     + '<div class="invite-top">'
     + '<span class="invite-email">'+escapeHtml(iv.email)+'</span>'
-    + '<span class="invite-role">'+capRole(iv.role||'member')+'</span>'
+    + '<span class="invite-role">'+escapeHtml(capRole(iv.role||'member'))+'</span>'
     + '</div>'
     + '<div class="invite-meta">'+exp+sent+'</div>'
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
@@ -1033,12 +1033,12 @@ function renderMembers(myRole, orgId){
       // and admin rows (when the viewer is an admin) are not selectable.
       var canSelect = !isOwner && !(role === 'admin' && m.role === 'admin');
       var checkStyle = memberBulkMode ? '' : 'display:none;';
-      var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+m.user_id+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
-      return '<tr data-member="'+m.user_id+'" onclick="openMemberDrawer('+safeJsId(m.user_id)+')" title="View member details">'+
-        '<td data-label="Member"><div class="flex-row">'+checkBox+'<div class="'+avatarClassFor(m.name)+'">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
+      var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+escapeAttr(String(m.user_id))+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
+      return '<tr data-member="'+escapeAttr(String(m.user_id))+'" onclick="openMemberDrawer('+safeJsId(m.user_id)+')" title="View member details">'+
+        '<td data-label="Member"><div class="flex-row">'+checkBox+'<div class="'+avatarClassFor(m.name)+'">'+escapeHtml(initial)+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
         '<td data-label="Email">'+escapeHtml(m.email||'—')+'</td>'+
         '<td data-label="Role">'+roleCell+'</td>'+
-        '<td data-label="Tokens Used" class="tx-td-right" id="tok-'+m.user_id+'">…</td>'+
+        '<td data-label="Tokens Used" class="tx-td-right" id="tok-'+escapeAttr(String(m.user_id))+'">…</td>'+
         '<td data-label="Actions"'+(hasActions?'':' class="no-actions"')+'>'+(actionsCell || '<span style="color:var(--text-muted);font-size:0.8rem">—</span>')+'</td></tr>';
     }).join('');
     tbody.innerHTML = rows;
@@ -1095,15 +1095,15 @@ function mobileMemberCardHtml(m, role, orgId){
   var swipeW = (transferBtn && removeBtn) ? 150 : 75;
   var canSelect = !isOwner && !(role === 'admin' && m.role === 'admin');
   var checkStyle = memberBulkMode ? '' : 'display:none;';
-  var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+m.user_id+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
-  var cardBody = '<div class="member-card" data-member="'+m.user_id+'" onclick="openMemberDrawer('+safeJsId(m.user_id)+')">'
+  var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+escapeAttr(String(m.user_id))+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
+  var cardBody = '<div class="member-card" data-member="'+escapeAttr(String(m.user_id))+'" onclick="openMemberDrawer('+safeJsId(m.user_id)+')">'
     + '<div class="member-card-top">'
     + checkBox
-    + '<div class="member-card-name"><div class="'+avatarClassFor(m.name)+'">'+initial+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
+    + '<div class="member-card-name"><div class="'+avatarClassFor(m.name)+'">'+escapeHtml(initial)+'</div><span>'+escapeHtml(m.name||'User')+'</span></div>'
     + '<div class="member-card-role">'+roleCell+'</div>'
     + '</div>'
     + '<div class="member-card-email">'+escapeHtml(m.email||'—')+'</div>'
-    + '<div class="member-card-tokens" id="tokm-'+m.user_id+'">…</div>'
+    + '<div class="member-card-tokens" id="tokm-'+escapeAttr(String(m.user_id))+'">…</div>'
     + '</div>';
   // Only wrap in a swipe container when there are actions to reveal —
   // otherwise a plain card (no pointless empty slide).

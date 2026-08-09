@@ -5,6 +5,18 @@
    in shared.js (global let) — do NOT redeclare here.
    ══════════════════════════════════════════ */
 
+    // Redirect to a server-provided checkout URL only when it is a real http(s)
+    // link — blocks javascript:/data:/vbscript: URLs a compromised/misconfigured
+    // API response could return (open-redirect / phish vector).
+    function safeRedirect(u){
+      try{
+        var p = new URL(String(u||''), window.location.href);
+        if(p.protocol === 'https:' || p.protocol === 'http:'){ window.location.href = p.href; return true; }
+      }catch(e){}
+      if(typeof showToast === 'function') showToast('Payment link unavailable — please try again','error');
+      return false;
+    }
+
     function updateCustomPricing(){
       var slider=document.getElementById('customSlider');
       if(!slider)return;
@@ -66,12 +78,12 @@
       // The direct /api/topup credit endpoint now requires a verified payment ref.
       if(method==='stripe'){
         const d=await safeApi('POST','/api/payments/stripe/create-checkout',payload);
-        if(d&&d.url){ window.location.href=d.url; }
+        if(d&&d.url){ safeRedirect(d.url); }
         return;
       }
       if(method==='paystack'){
         const d=await safeApi('POST','/api/payments/paystack/initialize',payload);
-        if(d&&d.authorization_url){ window.location.href=d.authorization_url; }
+        if(d&&d.authorization_url){ safeRedirect(d.authorization_url); }
         return;
       }
       if(method==='crypto'){

@@ -382,7 +382,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1164"></script>
+<script data-cfasync="false" src="shared.js?v=1165"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js" integrity="sha384-cI8+BKLfdjtgrKKCdtnwJ7lYjVnNZA9xQoJ8FD3NL5jbTPFBsh1EbcMk/CAaVi4C" crossorigin="anonymous"></script>
@@ -398,6 +398,10 @@ function _fetchT(url, opts){
   if(!opts.signal) opts.signal = ctrl.signal;
   return fetch(url, opts).then(function(r){ clearTimeout(t); return r; }, function(e){ clearTimeout(t); throw e; });
 }
+// Strip backend error prefixes like "[429] " / "400 " before showing toasts
+// (mirrors the sanitizer in shared.js api()) so users see the message, not noise.
+function _errMsg(v){ return String(v==null?'':v).replace(/^\[?\d{3}\]?\s*/,''); }
+window._errMsg = _errMsg;
 window.saveProfile = function(){
   var name = document.getElementById('settingsName').value.trim();
   var country = document.getElementById('settingsCountry').value.trim();
@@ -411,7 +415,7 @@ window.saveProfile = function(){
   .then(function(res){
     var data = res.d;
     if(!res.ok || !data || data.status !== 'updated'){
-      showToast((data && data.detail) || 'Failed to save profile','error');
+      showToast(_errMsg(data && data.detail) || 'Failed to save profile','error');
       return;
     }
     // Update cached user + in-memory state so the nav name updates immediately
@@ -448,7 +452,7 @@ window.updatePassword = function(){
       document.getElementById('settingsCurPw').value = '';
       document.getElementById('settingsNewPw').value = '';
     } else {
-      showToast(data.message || 'Failed to update password','error');
+      showToast(_errMsg(data.message) || 'Failed to update password','error');
     }
   })
   .catch(function(e){
@@ -592,7 +596,7 @@ function openTwoFAModal(mode){
           }
         }
       } else {
-        showToast((d && d.detail) || 'Failed to start 2FA setup','error');
+        showToast(_errMsg(d && d.detail) || 'Failed to start 2FA setup','error');
       }
     })
     .catch(function(){ showToast('Failed to start 2FA setup','error'); });
@@ -672,7 +676,7 @@ window.confirmTwoFA = function(){
       closeTwoFAModal();
       checkTwoFAStatus();
     } else {
-      showToast((d && d.detail) || 'Invalid code — try again','error');
+      showToast(_errMsg(d && d.detail) || 'Invalid code — try again','error');
     }
   })
   .catch(function(){ btn.disabled = false; showToast('Failed — try again','error'); });
@@ -710,7 +714,7 @@ window.saveWebhookSettings = function(){
       var secEl = document.getElementById('webhookSecret');
       if(secEl){ secEl.value = ''; secEl.placeholder = '•••••••• (saved — leave blank to keep)'; }
     } else {
-      showToast((d && d.detail) || 'Failed to save webhook','error');
+      showToast(_errMsg(d && d.detail) || 'Failed to save webhook','error');
     }
   })
   .catch(function(){ showToast('Failed to save webhook','error'); });
@@ -726,7 +730,7 @@ window.testWebhook = function(){
     if(d && d.status === 'sent'){
       showToast('Test webhook sent to ' + d.url,'success');
     } else {
-      showToast((d && d.detail) || 'No webhook URL configured','error');
+      showToast(_errMsg(d && d.detail) || 'No webhook URL configured','error');
     }
   })
   .catch(function(){ showToast('Failed to send test webhook','error'); });
@@ -766,7 +770,7 @@ window.saveNotificationSettings = function(){
     if(data && data.status === 'updated'){
       showToast('Notification preferences saved!','success');
     } else {
-      showToast((data && data.detail) || 'Failed to save notification preferences','error');
+      showToast(_errMsg(data && data.detail) || 'Failed to save notification preferences','error');
     }
   }).catch(function(e){
     showToast('Failed to save notification preferences','error');
@@ -952,7 +956,7 @@ window.confirmDeleteAccount = function(){
       setTimeout(function(){ window.location.href = 'index.html'; }, 1200);
     } else {
       if(btn) btn.disabled = false;
-      showToast((d && d.detail) || 'Failed to delete account','error');
+      showToast(_errMsg(d && d.detail) || 'Failed to delete account','error');
     }
   })
   .catch(function(){
@@ -984,7 +988,7 @@ window.openAvatarModal = function(){
   if(preview){
     var img = preview.querySelector('img');
     if(img && img.src){
-      curHtml = '<img src="' + img.src + '" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">';
+      curHtml = '<img src="' + escapeAttr(img.src) + '" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">';
     } else {
       var init = preview.querySelector('.settings-avatar-initial');
       var initial = init ? init.textContent : (window._userInitial || 'U');
@@ -1097,7 +1101,7 @@ document.addEventListener('change', function(e){
         window.updateAvatarModalPreview(res.d.avatar);
         showToast('Avatar updated','success');
       } else {
-        showToast((res.d && res.d.detail) || 'Failed to update avatar','error');
+        showToast(_errMsg(res.d && res.d.detail) || 'Failed to update avatar','error');
       }
     }).catch(function(){ showToast('Failed to update avatar','error'); });
   }
@@ -1114,9 +1118,9 @@ window.clearAvatar = function(){
     if(res.ok && res.d && res.d.status === 'updated'){
       if(typeof window.setUserAvatar === 'function') window.setUserAvatar(null);
       var p = document.getElementById('avatarPreview');
-      if(p) p.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+      if(p) p.innerHTML = '<span class="settings-avatar-initial">'+escapeHtml(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
       showToast('Avatar removed','success');
-    } else { showToast((res.d && res.d.detail) || 'Failed to remove avatar','error'); }
+    } else { showToast(_errMsg(res.d && res.d.detail) || 'Failed to remove avatar','error'); }
   }).catch(function(){ showToast('Failed to remove avatar','error'); });
 };
 
@@ -1293,7 +1297,7 @@ window.revokeAllSessions = function(){
         showToast('Signed out all other sessions','success');
         window.loadSessions();
       } else {
-        showToast((d && d.detail) || 'Failed to revoke sessions','error');
+        showToast(_errMsg(d && d.detail) || 'Failed to revoke sessions','error');
       }
     });
   }, 'Sign Out All');
@@ -1518,7 +1522,7 @@ window.sendVerificationCode = function(){
       var otpEl = document.getElementById('emailOtpInput');
       if(otpEl) otpEl.focus();
     } else {
-      if(status) status.textContent = (d && d.detail) || '⚠️ Could not send the code right now — try again in a minute.';
+      if(status) status.textContent = _errMsg(d && d.detail) || '⚠️ Could not send the code right now — try again in a minute.';
     }
   })
   .catch(function(){
@@ -1552,7 +1556,7 @@ window.confirmEmailVerification = function(){
         vEl.onclick = null;
       }
     } else {
-      showToast((d && d.detail) || 'Invalid code — try again','error');
+      showToast(_errMsg(d && d.detail) || 'Invalid code — try again','error');
     }
   })
   .catch(function(){ btn.disabled = false; showToast('Failed — try again','error'); });
@@ -1782,7 +1786,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(av) av.innerHTML = '<img src="'+escapeAttr(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="avatarImgFallback(this)"><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
     } else {
       var av2 = document.getElementById('avatarPreview');
-      if(av2) av2.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+      if(av2) av2.innerHTML = '<span class="settings-avatar-initial">'+escapeHtml(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
     }
     if(p && p.name){
       var nameEl2 = document.getElementById('avatarName');

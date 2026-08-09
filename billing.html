@@ -249,7 +249,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1164"></script>
+<script data-cfasync="false" src="shared.js?v=1165"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 
@@ -264,6 +264,9 @@ function _fetchT(url, opts){
   if(!opts.signal) opts.signal = ctrl.signal;
   return fetch(url, opts).then(function(r){ clearTimeout(t); return r; }, function(e){ clearTimeout(t); throw e; });
 }
+// Strip backend error prefixes like "[429] " before showing toasts (mirrors shared.js api()).
+function _errMsg(v){ return String(v==null?'':v).replace(/^\[?\d{3}\]?\s*/,''); }
+window._errMsg = _errMsg;
 (function(){
   var loaded = false;
 
@@ -639,7 +642,7 @@ function _fetchT(url, opts){
           if(typeof updateBalance === 'function') updateBalance();
         } else if(d && d.status === 'requires_action'){
           m.remove();
-          showToast(d.message || 'Card requires 3D Secure — use normal top-up.','error');
+          showToast(_errMsg(d.message) || 'Card requires 3D Secure — use normal top-up.','error');
         } else {
           showToast('Recharge failed','error');
         }
