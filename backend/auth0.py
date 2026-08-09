@@ -5,6 +5,7 @@ Gracefully disabled — falls back to custom auth if Auth0 not configured."""
 
 import os, requests, time, secrets
 import jwt  # PyJWT (replaces unmaintained python-jose; removes vulnerable ecdsa dep)
+from jwt.algorithms import RSAAlgorithm  # standard PyJWT JWK→RSA key conversion
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID", "")
@@ -285,10 +286,14 @@ def verify_token(id_token: str) -> dict:
         jwks = _fetch_jwks()
         if not jwks:
             raise ValueError("Could not fetch Auth0 JWKS")
-        rsa_key = {}
+        rsa_key = None
         for key in jwks.get("keys", []):
             if key["kid"] == unverified_header["kid"]:
-                rsa_key = {k: key[k] for k in ["kty", "kid", "use", "n", "e"] if k in key}
+                # PyJWT standard conversion — passing the raw JWK dict to
+                # jwt.decode() fails ('Expecting a PEM-formatted key' /
+                # 'Algorithm not supported') because PyJWT's dict handling is
+                # version-dependent. from_jwk() is the supported API.
+                rsa_key = RSAAlgorithm.from_jwk(key)
                 break
         if not rsa_key:
             raise ValueError("No matching RSA key found in JWKS")
