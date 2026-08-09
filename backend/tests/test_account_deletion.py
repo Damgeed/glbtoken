@@ -79,13 +79,10 @@ def test_delete_account_email_mismatch_rejected(client, make_user):
 
 # ── Finding: contact form CRLF / header injection ──
 
-def test_contact_strips_crlf(client, monkeypatch):
-    captured = {}
-
+def test_contact_rejects_crlf(client, monkeypatch):
+    """Fail-closed: any raw CR (0x0D) in a field → 400, nothing sent."""
     def fake_send_email(to, subject, body):
-        captured["to"] = to
-        captured["subject"] = subject
-        captured["body"] = body
+        raise AssertionError("should not send on rejected input")
 
     monkeypatch.setattr(misc_module, "send_email", fake_send_email)
     r = client.post("/api/contact", json={
@@ -93,13 +90,27 @@ def test_contact_strips_crlf(client, monkeypatch):
         "email": "tester@example.com",
         "message": "hello\r\nBcc: victim@example.com — this body is long enough to pass",
     })
+    assert r.status_code == 400, r.text
+    assert "Invalid characters" in r.json()["detail"]
+
+
+def test_contact_accepts_multiline_without_cr(client, monkeypatch):
+    """Plain \n multi-line messages are legitimate and still accepted."""
+    captured = {}
+
+    def fake_send_email(to, subject, body):
+        captured["subject"] = subject
+        captured["body"] = body
+
+    monkeypatch.setattr(misc_module, "send_email", fake_send_email)
+    r = client.post("/api/contact", json={
+        "name": "Test",
+        "email": "tester@example.com",
+        "message": "line one\nline two — this body is long enough to pass",
+    })
     assert r.status_code == 200, r.text
-    # CRLF is the injection primitive — after sanitization no \r or lone \n
-    # may survive in subject/body (the literal "Bcc" text is harmless once
-    # the newline is gone, so we only assert on control chars).
     assert "\r" not in captured["subject"]
-    assert "\r" not in captured["body"]
-    assert "\n" not in captured["subject"]
+    assert "\n" in captured["body"]  # multi-line body preserved
 
 
 def test_contact_rejects_oversized_message(client, monkeypatch):
@@ -130,5 +141,15 @@ def test_crypto_addresses_clean_400_when_unconfigured(client, make_user):
     u = make_user()
     tok = _direct_token(u)
     r = client.get("/api/payments/crypto/addresses", headers=_auth(tok))
+    assert r.status_code == 400, r.text
+    assert "not configured" in r.json()["detail"].lower()
+
+
+def test_crypto_create_clean_400_when_unconfigured(client, make_user):
+    u = make_user()
+    tok = _direct_token(u)
+    r = client.post("/api/payments/crypto/create",
+                    json={"payment_method": "USDT_TRC20", "amount": 50},
+                    headers=_auth(tok))
     assert r.status_code == 400, r.text
     assert "not configured" in r.json()["detail"].lower()

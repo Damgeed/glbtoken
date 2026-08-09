@@ -510,6 +510,8 @@ def get_crypto_addresses(user: User = Depends(get_current_user)):
 @router.post("/api/payments/crypto/create")
 @limiter.limit("10/minute")
 def create_crypto_payment(req: InitiatePaymentRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not any(CRYPTO_WALLET_ADDRESSES.values()):
+        _not_configured("Crypto payments")
     asset = req.payment_method.upper()  # USDT_TRC20, BTC, ETH
     address = CRYPTO_WALLET_ADDRESSES.get(asset)
     if not address:

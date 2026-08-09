@@ -45,12 +45,19 @@ def list_announcements(request: Request, db: Session = Depends(get_db)):
 @router.post("/api/contact")
 @limiter.limit("3/minute")
 async def contact_form(req: ContactRequest, request: Request):
-    # SMTP/header-injection guard: strip CR/LF from every user-supplied field.
-    # name/email also feed the subject line; message must never carry a raw
-    # CRLF either (normalize \r\n → \n keeps multi-line bodies readable).
-    name = re.sub(r"[\r\n]", "", (req.name or "").strip())
-    email = re.sub(r"[\r\n]", "", (req.email or "").strip())
-    message = (req.message or "").replace("\r", "").strip()
+    # SMTP/header-injection guard — FAIL CLOSED: a raw CR (0x0D) is the
+    # injection primitive, and browsers never send \r from a textarea, so any
+    # \r in a submitted field is rejected outright (400) rather than silently
+    # sanitized. name/email additionally feed the subject line, so \n is
+    # stripped there too; message keeps plain \n for readable multi-line bodies.
+    name = (req.name or "").strip()
+    email = (req.email or "").strip()
+    message = (req.message or "").strip()
+    for label, val in (("name", name), ("email", email), ("message", message)):
+        if "\r" in val:
+            _400(f"Invalid characters in {label}")
+    name = re.sub(r"[\r\n]", "", name)
+    email = re.sub(r"[\r\n]", "", email)
     if not name or not email or len(message) < 10:
         _400("Invalid form data")
     if len(message) > 5000:
