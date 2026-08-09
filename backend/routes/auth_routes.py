@@ -10,7 +10,7 @@ import httpx
 
 from database import get_db, User, LoginEvent, Referral, RefreshToken
 from auth import (
-    hash_password, verify_password, create_access_token, decode_token,
+    hash_password, verify_password, create_access_token,
     get_current_user,
     verify_google_token, verify_github_code, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GITHUB_CLIENT_ID,
     generate_refresh_token, validate_refresh_token, revoke_refresh_token
@@ -520,7 +520,6 @@ def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
             )
         except Exception as e:
             print(f"⚠️ Login alert failed: {e}")
-    token = create_access_token({"sub": str(user.id)})
     auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     from common import ensure_public_id
     public_id = ensure_public_id(user)
@@ -579,7 +578,6 @@ async def google_callback(req: GoogleAuthRequest, request: Request, db: Session 
     if _totp_enabled(user):
         pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
         return {"requires_2fa": True, "pre_token": pre_token}
-    token = create_access_token({"sub": str(user.id)})
     auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
@@ -616,7 +614,6 @@ async def github_callback(req: GithubAuthRequest, request: Request, db: Session 
     if _totp_enabled(user):
         pre_token = create_access_token({"sub": str(user.id), "scope": "2fa"}, expires_minutes=5)
         return {"requires_2fa": True, "pre_token": pre_token}
-    token = create_access_token({"sub": str(user.id)})
     auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))
     return {"user": {"id": user.id, "name": user.name, "email": user.email, "token_balance": user.token_balance, "total_spent": user.total_spent}, "token": auth["token"], "refresh_token": auth["refresh_token"]}
 
@@ -962,8 +959,7 @@ async def auth0_callback_redirect(request: Request, id_token: str = Query(...)):
         info = get_user_info(payload)
     except ValueError as e:
         return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Invalid+token:+{_safe_error(e)}")
-    from database import User, get_db
-    from sqlalchemy.orm import Session
+    from database import get_db
     db = next(get_db())
     try:
         user, _ = _resolve_social_user(db, info)
@@ -1022,8 +1018,7 @@ async def auth0_pkce_callback(request: Request, code: str = Query(...), code_ver
         info = get_user_info(payload)
     except ValueError as e:
         return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
-    from database import User, get_db
-    from sqlalchemy.orm import Session
+    from database import get_db
     db = next(get_db())
     try:
         user, _ = _resolve_social_user(db, info)

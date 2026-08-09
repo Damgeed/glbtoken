@@ -1,6 +1,6 @@
 import secrets, hashlib
 from datetime import datetime, timedelta, timezone
-from jose import jwt, JWTError
+import jwt  # PyJWT (replaces unmaintained python-jose; removes vulnerable ecdsa dep)
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -104,7 +104,7 @@ def revoke_refresh_token(raw: str, db: Session) -> bool:
 def decode_token(token: str) -> dict:
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
+    except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 async def get_current_user(

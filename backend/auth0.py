@@ -3,8 +3,8 @@ Handles password grant login, signup, social login, and JWT verification.
 All existing frontend buttons route through Auth0 behind the scenes.
 Gracefully disabled — falls back to custom auth if Auth0 not configured."""
 
-import os, json, requests, time, secrets
-from jose import jwt, JWTError
+import os, requests, time, secrets
+import jwt  # PyJWT (replaces unmaintained python-jose; removes vulnerable ecdsa dep)
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID", "")
@@ -234,10 +234,9 @@ def verify_token(id_token: str) -> dict:
             algorithms=["RS256"],
             audience=AUTH0_CLIENT_ID,
             issuer=f"https://{AUTH0_DOMAIN}/",
-            options={"verify_exp": True, "verify_at_hash": False},
         )
         return payload
-    except JWTError as e:
+    except jwt.PyJWTError as e:
         raise ValueError(f"Auth0 token verification failed: {e}")
 
 def get_user_info(payload: dict) -> dict:

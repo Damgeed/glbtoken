@@ -26,7 +26,6 @@ Environment:
 
 import os
 import sys
-import time
 import argparse
 from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
@@ -147,8 +146,8 @@ class SyncResult:
 
     def print_summary(self):
         print(f"\n{'='*60}")
-        print(f"  SYNC SUMMARY")
-        print(f"{'='*60}")
+        print("  SYNC SUMMARY")
+        print("=" * 60)
         print(f"  Total users in DB:  {self.total}")
         print(f"  Already synced:     {self.skipped}")
         print(f"  Newly created:      {self.created}")
@@ -197,7 +196,7 @@ def sync_user(user: User, dry_run: bool = False) -> Optional[str]:
                 break
 
     if not newapi_user_id:
-        return f"Could not find user in New API after registration"
+        return "Could not find user in New API after registration"
 
     # Step 2: Create API token
     token_resp = newapi_post(f"/api/user/{newapi_user_id}/key", {
@@ -238,7 +237,7 @@ def run_sync(dry_run: bool = False, batch_size: int = 50, verbose: bool = False)
 
         print(f"  📊 Found {unsynced} unsynced user(s) out of {total_users} total")
         if dry_run:
-            print(f"  🔍 DRY-RUN MODE — no changes will be made\n")
+            print("  🔍 DRY-RUN MODE — no changes will be made\n")
 
         # Process in batches
         offset = 0
@@ -332,9 +331,9 @@ Examples:
 
     args = parser.parse_args()
 
-    print(f"{'='*60}")
-    print(f"  GlbTOKEN — User Sync to New API")
-    print(f"{'='*60}")
+    print("=" * 60)
+    print("  GlbTOKEN — User Sync to New API")
+    print("=" * 60)
     print(f"  DB:        {DATABASE_URL[:60]}...")
     print(f"  New API:   {NEW_API_BASE or 'NOT CONFIGURED'}")
     print(f"  Admin key: {'✅ configured' if ADMIN_TOKEN else '❌ MISSING'}")
@@ -373,7 +372,7 @@ Examples:
     # Confirm for non-dry-run
     if not args.dry_run:
         print(f"  ⚠️  This will create {unsynced} user(s) in New API.")
-        print(f"  Pass --dry-run to preview first.\n")
+        print("  Pass --dry-run to preview first.\n")
 
     # Run sync
     result = run_sync(dry_run=args.dry_run, batch_size=args.batch, verbose=args.verbose)

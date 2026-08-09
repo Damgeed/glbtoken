@@ -13,7 +13,7 @@ import time as _time
 from database import get_db, User, Transaction
 from auth import get_current_user
 from newapi_integration import add_user_quota
-from common import _400, _404, _500, _not_configured, limiter, \
+from common import _400, _404, _not_configured, limiter, \
     PAYSTACK_SECRET_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, CRYPTO_WALLET_ADDRESSES, GHS_TO_USD_RATE
 from schemas import TopupRequest, InitiatePaymentRequest, CardConfirmRequest, CardRemoveRequest, CardDefaultRequest, PaystackVerifyRequest
 
