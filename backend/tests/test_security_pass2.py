@@ -195,7 +195,11 @@ def test_register_rate_limit_5_per_hour(client):
     # ranges are not global).
     limiter.enabled = True
     try:
-        h = {"X-Forwarded-For": "8.8.8.77"}
+        # cf-ray simulates real traffic through Cloudflare (the origin guard
+        # rejects direct-origin requests without it). XFF override → dedicated
+        # fake client IP bucket, isolated from other tests (must be a real
+        # global IP — TEST-NET/doc ranges are not global).
+        h = {"X-Forwarded-For": "8.8.8.77", "cf-ray": "abc123def456-SIN"}
         codes = []
         for i in range(6):
             r = client.post("/api/auth/register", json={

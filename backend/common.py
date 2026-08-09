@@ -213,6 +213,32 @@ def _in_networks(ipstr: str, nets) -> bool:
     return False
 
 
+def _is_cloudflare_peer(ipstr: str) -> bool:
+    """True if the direct peer is one of Cloudflare's published edge IPs."""
+    if not ipstr:
+        return False
+    return _in_networks(ipstr, CLOUDFLARE_IP_NETS)
+
+
+def _is_local_peer(request) -> bool:
+    """True for loopback / private-network peers (local dev, no Cloudflare)."""
+    direct = (getattr(getattr(request, "client", None), "host", None)) or ""
+    if not direct:
+        return False
+    try:
+        import ipaddress
+        ip = ipaddress.ip_address(direct.split("%")[0].strip())
+        # Loopback (127.0.0.1, ::1) and RFC1918 private (10/8, 172.16/12,
+        # 192.168/16) = developer machine / private network. NOTE: CGNAT
+        # 100.64.0.0/10 is deliberately NOT included — Railway's origin peer is
+        # CGNAT and must be treated as untrusted (forged-header vector).
+        if ip.is_loopback or ip.is_private:
+            return True
+    except Exception:
+        return False
+    return False
+
+
 def real_client_ip(request) -> str:
     """Resolve the REAL client IP for rate limiting / audit.
 

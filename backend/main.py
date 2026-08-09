@@ -275,6 +275,70 @@ from slowapi.middleware import SlowAPIMiddleware
 app.add_middleware(SlowAPIMiddleware)
 
 
+# ── Cloudflare Origin Guard ──
+# The Railway origin is DIRECTLY reachable (public URL). Rate limits that key
+# on CF-Connecting-IP are bypassable by forging that header (watchdog Round
+# 6/7). Since all real user traffic flows through Cloudflare (api.glbtoken.com),
+# we fail-closed on sensitive auth endpoints: no cf-ray header ⇒ reject 403.
+# cf-ray is added by Cloudflare to EVERY proxied request and cannot be forged
+# through Cloudflare itself (it overwrites client-supplied values); a direct
+# origin hit has no cf-ray. This closes the brute-force/signup-spam bypass at
+# the application layer, independent of network firewalling.
+#
+# Exemptions (checked before the guard):
+#   - non-sensitive paths (health, /v1 gateway, webhooks, static) — /v1 uses
+#     API-key auth, Stripe webhook uses signature verification
+#   - loopback / private peers (local dev: uvicorn on localhost)
+#   - test environment (limiter disabled in conftest)
+
+_CF_GUARD_PREFIXES = (
+    "/api/auth/", "/auth/", "/api/user/", "/api/payments/initiate",
+    "/api/payments/confirm", "/api/topup",
+)
+_CF_GUARD_ALWAYS_ALLOW = (
+    "/api/auth/auth0/config", "/api/auth/auth0/social-url", "/api/auth/me",
+)
+
+
+class CloudflareGuardMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        path = request.url.path
+
+        # Only guard sensitive prefixes
+        if not path.startswith(_CF_GUARD_PREFIXES) or path in _CF_GUARD_ALWAYS_ALLOW:
+            return await call_next(request)
+
+        # Local dev / tests: loopback or private peer is never a forged origin
+        # hit — it's the developer's machine. (Production peer behind Railway
+        # is CGNAT 100.64.0.0/10, which is NOT loopback/private-10 in the
+        # is_private sense on py3.11 — handled below by the cf-ray check.)
+        from common import _is_local_peer
+        if _is_local_peer(request):
+            return await call_next(request)
+
+        # Test environment: conftest disables the limiter; honor that so the
+        # test suite (which uses TestClient without Cloudflare headers) keeps
+        # working, while production always enforces the guard.
+        if getattr(limiter, "enabled", True) is False:
+            return await call_next(request)
+
+        # Fail-closed: require proof the request came through Cloudflare.
+        cf_ray = (request.headers.get("cf-ray", "") or "").strip()
+        direct = (getattr(getattr(request, "client", None), "host", None)) or ""
+        from common import _is_cloudflare_peer
+        if cf_ray or _is_cloudflare_peer(direct):
+            return await call_next(request)
+
+        from starlette.responses import JSONResponse
+        return JSONResponse(
+            status_code=403,
+            content={"detail": "Direct origin access is not allowed. Use https://api.glbtoken.com"}
+        )
+
+
+app.add_middleware(CloudflareGuardMiddleware)
+
+
 # ── Root Health ──
 
 @app.get("/")
