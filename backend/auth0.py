@@ -5,7 +5,10 @@ Gracefully disabled — falls back to custom auth if Auth0 not configured."""
 
 import os, requests, time, secrets
 import jwt  # PyJWT (replaces unmaintained python-jose; removes vulnerable ecdsa dep)
-from jwt.algorithms import RSAAlgorithm  # standard PyJWT JWK→RSA key conversion
+try:
+    from jwt.algorithms import RSAAlgorithm  # standard PyJWT JWK→RSA key conversion
+except ImportError:  # cryptography missing in prod — keep app alive, fail per-request
+    RSAAlgorithm = None
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID", "")
@@ -283,6 +286,8 @@ def verify_token(id_token: str) -> dict:
             )
             return payload
         # RS256 via JWKS
+        if RSAAlgorithm is None:
+            raise ValueError("Auth0 RS256 verification unavailable: cryptography package missing")
         jwks = _fetch_jwks()
         if not jwks:
             raise ValueError("Could not fetch Auth0 JWKS")
