@@ -233,3 +233,14 @@
 .history-row {
   transition: background 0.15s;
 }
+
+/* ── Login History mobile: taller scroll window ──
+   Login rows are ~2x taller than Transaction rows (Device/Location wrap on
+   narrow screens), so the shared 380px .tx-scroll cap only shows ~4 rows on
+   mobile. Bud's rule (2026-07): show 5+ rows then vertical scroll — raise the
+   cap on mobile only. WIDTH untouched. ID selector beats .dash-card .scroll-x. */
+@media (max-width: 900px) {
+  #loginScrollX {
+    max-height: 500px;
+  }
+}
