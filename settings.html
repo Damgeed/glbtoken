@@ -382,10 +382,10 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1163"></script>
+<script data-cfasync="false" src="shared.js?v=1164"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
-<script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js"></script>
+<script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js" integrity="sha384-cI8+BKLfdjtgrKKCdtnwJ7lYjVnNZA9xQoJ8FD3NL5jbTPFBsh1EbcMk/CAaVi4C" crossorigin="anonymous"></script>
 
 <!-- ── Settings Scripts ── -->
 <script>
@@ -1036,7 +1036,7 @@ window.openAvatarModal = function(){
       var box = document.getElementById('avatarModalPreview');
       if(!box) return;
       if(p && typeof p.avatar === 'string' && p.avatar){
-        box.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">';
+        box.innerHTML = '<img src="'+escapeAttr(p.avatar)+'" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">';
       } else {
         var initial = (p && p.name) ? (p.name.trim()[0] || 'U').toUpperCase() : (window._userInitial || 'U');
         box.innerHTML = '<div style="width:112px;height:112px;border-radius:50%;background:linear-gradient(135deg,#F4B400,#b8860b);display:flex;align-items:center;justify-content:center;font-size:2.4rem;font-weight:800;color:#0b0e14;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)">' + escapeHtml(initial) + '</div>';
@@ -1154,7 +1154,7 @@ window.updateAvatarModalPreview = function(src){
   }
   var theme = document.documentElement.className;
   var border = theme === 'dark' ? '#2c2f3d' : '#e2e2ea';
-  box.innerHTML = '<img src="'+escapeHtml(finalSrc)+'" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)" onerror="avatarModalImgError(this)">';
+  box.innerHTML = '<img src="'+escapeAttr(finalSrc)+'" alt="Avatar" style="width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid '+border+';box-shadow:0 8px 24px rgba(0,0,0,0.25)" onerror="avatarModalImgError(this)">';
 };
 
 window.avatarModalImgError = function(img){
@@ -1779,7 +1779,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(p && p.name){ window._userInitial = (p.name||'U').trim()[0] ? (p.name.trim()[0].toUpperCase()) : 'U'; }
     if(p && typeof p.avatar === 'string' && p.avatar){
       var av = document.getElementById('avatarPreview');
-      if(av) av.innerHTML = '<img src="'+escapeHtml(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="avatarImgFallback(this)"><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+      if(av) av.innerHTML = '<img src="'+escapeAttr(p.avatar)+'" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="avatarImgFallback(this)"><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
     } else {
       var av2 = document.getElementById('avatarPreview');
       if(av2) av2.innerHTML = '<span class="settings-avatar-initial">'+(window._userInitial || 'U')+'</span><span class="settings-avatar-cam" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';

@@ -391,7 +391,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1163"></script>
+<script data-cfasync="false" src="shared.js?v=1164"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 
@@ -728,7 +728,7 @@ async function loadTeamOrgs(){
   if(orgs.length){
     orgs.forEach(function(o){
       var active = (currentOrgId === String(o.id)) ? ' active' : '';
-      html += '<button class="sort-btn'+active+'" data-org="'+escapeHtml(String(o.id))+'" onclick="switchOrg(\''+safeJsId(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';
+      html += '<button class="sort-btn'+active+'" data-org="'+escapeAttr(String(o.id))+'" onclick="switchOrg(\''+safeJsId(String(o.id))+'\')">'+escapeHtml(o.name||('Org '+o.id))+'</button>';
     });
   }
   // Desktop + New Org (right-aligned; mobile uses the top-right button)
@@ -916,7 +916,7 @@ function inviteRowHtml(iv, orgId, canManage){
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link)+'</div>'
     + actions
     + '</div>'
-    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\', this)">Copy</button>'
+    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+safeJsStr(link)+'\', this)">Copy</button>'
     + '</div></div>';
 }
 
@@ -1023,7 +1023,7 @@ function renderMembers(myRole, orgId){
         : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>';
       // Transfer ownership: owner only, to a non-owner member
       var transferBtn = (role === 'owner' && !isOwner)
-        ? '<button class="btn-secondary btn-copy" onclick="event.stopPropagation();transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+encodeURIComponent(m.name||'User')+'\')">Transfer</button>'
+        ? '<button class="btn-secondary btn-copy" onclick="event.stopPropagation();transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+encodeURIComponent(m.name||'User').replace(/'/g,'%27')+'\')">Transfer</button>'
         : '';
       var hasActions = transferBtn || showRemove;
       var actionsCell = hasActions
@@ -1086,7 +1086,7 @@ function mobileMemberCardHtml(m, role, orgId){
   }
   var showRemove = (role === 'owner' || role === 'admin') && !isOwner && !(role === 'admin' && m.role === 'admin');
   var transferBtn = (role === 'owner' && !isOwner)
-    ? '<button class="swipe-action swipe-transfer" onclick="transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+encodeURIComponent(m.name||'User')+'\')">Transfer</button>'
+    ? '<button class="swipe-action swipe-transfer" onclick="transferOwnership('+safeJsId(orgId)+','+safeJsId(m.user_id)+',\''+encodeURIComponent(m.name||'User').replace(/'/g,'%27')+'\')">Transfer</button>'
     : '';
   var removeBtn = showRemove
     ? '<button class="swipe-action swipe-remove" onclick="removeMember('+safeJsId(orgId)+','+safeJsId(m.user_id)+')">Remove</button>'
@@ -1275,7 +1275,7 @@ function addPendingInviteRow(email, role, link, expiresAt, createdAt, inviteId){
     + '<div class="invite-link text-xs-gold">'+escapeHtml(link || 'Token active')+'</div>'
     + actions
     + '</div>'
-    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+escapeHtml(link)+'\', this)">Copy</button>'
+    + '<button class="btn-secondary btn-copy" onclick="copyInviteLink(\''+safeJsStr(link)+'\', this)">Copy</button>'
     + '</div>';
   list.prepend(div);
   refreshInviteMoreBtn();

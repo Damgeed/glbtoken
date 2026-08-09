@@ -249,7 +249,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1163"></script>
+<script data-cfasync="false" src="shared.js?v=1164"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 
@@ -351,7 +351,7 @@ function _fetchT(url, opts){
           tokens = parseInt(tokens).toLocaleString();
           var status = (invItem.status || 'completed').toLowerCase();
           var statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
-          var statusClass = 'status-' + status;
+          var statusClass = 'status-' + String(status).replace(/[^a-z0-9_-]/gi,'');
           if(status === 'completed') statusClass = 'status-paid';
           if(status === 'success'){ statusClass = 'status-paid'; statusLabel = 'Paid'; }
 
@@ -359,7 +359,7 @@ function _fetchT(url, opts){
           if(invItem.pdf_url){
             receiptHtml = '<a href="javascript:void(0)" data-invoice-id="' + escapeAttr(invItem.id) + '" onclick="downloadInvoicePdf(this.dataset.invoiceId)" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> PDF</a>';
           } else if(invItem.receipt_url || invItem.receipt){
-            var rUrl = escapeHtml(invItem.receipt_url || invItem.receipt);
+            var rUrl = escapeAttr(invItem.receipt_url || invItem.receipt);
             receiptHtml = '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>';
           }
 
@@ -451,9 +451,9 @@ function _fetchT(url, opts){
             '<span class="pm-num">•••• '+escapeHtml(c.last4||'')+'</span>' +
             '<span class="pm-exp">'+escapeHtml(exp)+'</span>' +
             '<span class="pm-actions">' +
-            '<button class="pm-star' + (isDefault ? ' active' : '') + '" onclick="setDefaultCard(\''+escapeHtml(c.id)+'\')" title="' + (isDefault ? 'Default card' : 'Set as default') + '">' + (isDefault ? '★' : '☆') + '</button>' +
-            '<button class="pm-recharge" onclick="quickRecharge(\''+escapeHtml(c.id)+'\',\''+escapeHtml(c.last4||'')+'\')">⚡ Recharge</button>' +
-            '<button class="pm-remove" onclick="removeCard(\''+escapeHtml(c.id)+'\')" title="Remove card">✕</button>' +
+            '<button class="pm-star' + (isDefault ? ' active' : '') + '" onclick="setDefaultCard(\''+safeJsStr(c.id)+'\')" title="' + (isDefault ? 'Default card' : 'Set as default') + '">' + (isDefault ? '★' : '☆') + '</button>' +
+            '<button class="pm-recharge" onclick="quickRecharge(\''+safeJsStr(c.id)+'\',\''+safeJsStr(c.last4||'')+'\')">⚡ Recharge</button>' +
+            '<button class="pm-remove" onclick="removeCard(\''+safeJsStr(c.id)+'\')" title="Remove card">✕</button>' +
             '</span>' +
           '</div>';
         }).join('');

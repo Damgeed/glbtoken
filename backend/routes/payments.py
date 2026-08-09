@@ -435,7 +435,11 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         tx = db.query(Transaction).filter(Transaction.payment_ref == session["id"]).first()
         if not tx or tx.status == "completed":
             return {"status": "ok"}
-        user_id = int(session["metadata"]["user_id"])
+        meta = session.get("metadata") or {}
+        user_id = int(meta.get("user_id") or 0)
+        if not user_id:
+            print(f"⚠️ Stripe checkout.session.completed missing metadata.user_id (payment_ref={session.get('id')})")
+            return {"status": "ok"}
         # Derive tokens from the REAL charged amount, not client-supplied metadata.
         amount = session["amount_total"] / 100
         tokens = int(amount * 1000)
@@ -464,9 +468,16 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     if event["type"] == "payment_intent.succeeded":
         # Safety net for one-click recharge — endpoint already credits, so skip if present.
         pi = event["data"]["object"]
+        # Normalize StripeObject → dict (same as the checkout branch above) so
+        # optional-field reads via .get() are safe on stripe-python v15+.
+        pi = pi.to_dict() if hasattr(pi, "to_dict") else pi
         tx = db.query(Transaction).filter(Transaction.payment_ref == pi["id"]).first()
         if tx and tx.status != "completed":
-            user_id = int(pi["metadata"]["user_id"])
+            meta = pi.get("metadata") or {}
+            user_id = int(meta.get("user_id") or 0)
+            if not user_id:
+                print(f"⚠️ Stripe payment_intent.succeeded missing metadata.user_id (payment_ref={pi.get('id')})")
+                return {"status": "ok"}
             amount = pi["amount"] / 100
             tokens = int(amount * 1000)
             # Conditional UPDATE guards against racing the quick-recharge endpoint.

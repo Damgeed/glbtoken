@@ -378,17 +378,26 @@ def _grant_pending_bonus(user, db) -> bool:
     pending = s.get("pending_bonus", 0)
     if not pending:
         return False
-    # SECURITY: SQL-side atomic increment — a Python read-modify-write can
-    # double-credit when two grant paths race (email verify vs verified social
-    # login both releasing the same held bonus).
-    db.execute(
-        update(User).where(User.id == user.id).values(
-            token_balance=User.token_balance + float(pending)
-        )
-    )
     s.pop("pending_bonus", None)
     s["bonus_granted"] = True
-    user.settings = json.dumps(s)
+    new_settings = json.dumps(s)
+    # SECURITY: gate the credit on settings STILL containing pending_bonus.
+    # Two grant paths can race (email verify vs verified social login both
+    # release the same held bonus); the SQL-side increment prevents lost
+    # updates but NOT double-credit. The conditional WHERE makes the second
+    # caller a no-op (rowcount == 0 → rollback, no bonus twice).
+    res = db.execute(
+        update(User)
+        .where(User.id == user.id)
+        .where(User.settings.like("%pending_bonus%"))
+        .values(
+            token_balance=User.token_balance + float(pending),
+            settings=new_settings,
+        )
+    )
+    if res.rowcount == 0:
+        db.rollback()
+        return False
     db.commit()
     db.refresh(user)
     return True
@@ -1651,8 +1660,16 @@ def twofa_enable(request: Request, req: TwoFactorCodeRequest, user: User = Depen
     pending = s.get("totp_pending_secret", "")
     if not pending:
         _400("No pending 2FA setup — call setup first")
+    # Per-account failed-attempt cap (same counter as 2fa/confirm) — prevents
+    # brute-force of the 6-digit TOTP even when the IP limiter is spoofed.
+    key = f"2fa:{user.id}"
+    attempts = _twofa_attempts.get(key, 0)
+    if attempts >= 5:
+        _401("Too many attempts. Sign in again.")
     if not verify(pending, req.code):
+        _twofa_attempts[key] = attempts + 1
         _400("Invalid authenticator code")
+    _twofa_attempts.pop(key, None)
     s["totp_secret"] = pending
     s["totp_enabled"] = True
     s.pop("totp_pending_secret", None)
@@ -1672,8 +1689,17 @@ def twofa_disable(request: Request, req: TwoFactorCodeRequest, user: User = Depe
     secret = _totp_secret(user)
     if not secret:
         _400("Two-factor auth is not enabled")
+    # Per-account failed-attempt cap — brute-forcing the TOTP to DISABLE 2FA
+    # (and thereby weaken the account) must be throttled per account, not just
+    # per IP.
+    key = f"2fa:{user.id}"
+    attempts = _twofa_attempts.get(key, 0)
+    if attempts >= 5:
+        _401("Too many attempts. Sign in again.")
     if not verify(secret, req.code):
+        _twofa_attempts[key] = attempts + 1
         _400("Invalid authenticator code")
+    _twofa_attempts.pop(key, None)
     s = _totp_settings(user)
     s.pop("totp_secret", None)
     s.pop("totp_enabled", None)
@@ -1892,7 +1918,15 @@ async def upload_avatar(
     try:
         from io import BytesIO
         from PIL import Image, UnidentifiedImageError
+        # Decompression-bomb guard: a tiny 5MB file can declare huge dimensions
+        # (e.g. 50000×50000) and exhaust memory during decode. Cap the pixel
+        # count and also raise Pillow's own hard ceiling so a malicious header
+        # can never trigger a multi-GB allocation.
+        Image.MAX_IMAGE_PIXELS = 40_000_000  # ~40MP ceiling
         img = Image.open(BytesIO(raw))
+        w0, h0 = img.size
+        if w0 * h0 > Image.MAX_IMAGE_PIXELS:
+            _400("Image dimensions too large")
         img.load()
     except UnidentifiedImageError:
         _400("Could not read that image — try JPG, PNG or WebP")

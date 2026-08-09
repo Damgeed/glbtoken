@@ -443,12 +443,27 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     // Export for page scripts that interpolate API values into HTML (e.g. settings.html avatar render)
     window.escapeHtml = escapeHtml;
     window.escapeAttr = escapeAttr;
+    window.safeJsStr = safeJsStr;
 
     // Whitelist for IDs interpolated into inline onclick handlers.
     // Server-assigned ids are numeric/alphanumeric — strip anything else so a
     // hostile value can never break out of the JS string/attribute context.
     function safeJsId(v){
       return String(v==null?'':v).replace(/[^A-Za-z0-9_-]/g,'');
+    }
+
+    // For interpolating values into SINGLE-QUOTED JS string literals inside
+    // inline onclick attributes. escapeHtml() is NOT safe there: &#39; is
+    // decoded back to ' by the HTML parser before the JS engine runs, so a
+    // hostile value could terminate the JS string (XSS). Escape & and " as
+    // entities (attribute context) and backslash-escape \ and ' (JS string
+    // context) so the value survives both parse layers intact.
+    function safeJsStr(v){
+      return String(v==null?'':v)
+        .replace(/&/g,'&amp;')
+        .replace(/"/g,'&quot;')
+        .replace(/\\/g,'\\\\')
+        .replace(/'/g,"\\'");
     }
 
     // ── API Helper ──
@@ -727,6 +742,11 @@ function clearSession(){
   try{ sessionStorage.removeItem('gt_oauth_cancel'); }catch(e){}
   try{ sessionStorage.removeItem('gt_code_verifier'); }catch(e){}
   try{ sessionStorage.removeItem('gt_oauth_state'); }catch(e){}
+  // Auth-adjacent / privacy keys that previously survived logout
+  try{ localStorage.removeItem('gt_session_shown'); }catch(e){}
+  try{ localStorage.removeItem('gt_ref'); localStorage.removeItem('gt_ref_ts'); localStorage.removeItem('gt_ref_src'); }catch(e){}
+  try{ localStorage.removeItem('gt_chat_history'); }catch(e){}
+  try{ sessionStorage.removeItem('gt_pending_org'); sessionStorage.removeItem('gt_pending_token'); }catch(e){}
   try{ if(window.__secure && window.__secure.clear) window.__secure.clear(); }catch(e){}
   try{ if(window._dashPoll){ clearInterval(window._dashPoll); window._dashPoll=null; } }catch(e){}
 }
