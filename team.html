@@ -1143,7 +1143,7 @@ function fillTokens(){
     var el = document.getElementById('tok-'+m.user_id);
     if(el) el.textContent = (m.tokens_used||0).toLocaleString();
     var el2 = document.getElementById('tokm-'+m.user_id);
-    if(el2) el2.innerHTML = '<b>'+((m.tokens_used||0).toLocaleString())+'</b><span>tokens used</span>';
+    if(el2) el2.innerHTML = '<b>'+escapeHtml((m.tokens_used||0).toLocaleString())+'</b><span>tokens used</span>';
   });
 }
 function onMemberSearch(val){
