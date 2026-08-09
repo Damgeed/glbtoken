@@ -2062,8 +2062,7 @@ body.compact-cards .dash-card {
 body.compact-cards .dash-card .dash-section-title {
   margin-bottom: 0.6rem;
 }
-body.compact-cards .dash-card .settings-field-group,
-body.compact-cards .dash-card .field-group {
+body.compact-cards .dash-card .settings-field-group {
   gap: 0.5rem;
 }
 body.compact-cards .toggle-row {
@@ -4003,38 +4002,6 @@ html.light .star.white {
   transform: translateY(-2px);
 }
 /* ── Skeleton Loading ── */
-/* ── Page Loading Progress Bar ── */
-.page-loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  z-index: 9999;
-  background: transparent;
-  pointer-events: none;
-  display: none;
-}
-.page-loader.active {
-  display: block;
-}
-.page-loader .loader-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--primary), #00d68f);
-  border-radius: 0 2px 2px 0;
-  transition: width 0.3s ease;
-  animation: loaderPulse 1s ease-in-out infinite;
-}
-@keyframes loaderPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
 /* ── Price Calculator ── */
 .calculator-card {
   background: var(--card);
@@ -4154,24 +4121,8 @@ html.light .star.white {
 .toggle-switch input:focus-visible + .toggle-slider {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
-}/* ── Loading Indicator ── */
-.loading-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  gap: 6px;
 }
-.loading-indicator .spin {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--border);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: btnSpin 0.6s linear infinite;
-}.playground-main {
+.playground-main {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -4794,8 +4745,6 @@ body {
 .form-wrap { max-width:500px;margin:0 auto; }
 .quick-links-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;font-size:0.9rem; }
 .mb-2-5 { margin-bottom:1.25rem; }
-.balance-label { font-size:0.8rem;color:var(--text-secondary); }
-.balance-amount { font-size:1.25rem;font-weight:700;color:var(--primary); }
 .section-center-text { text-align:center;margin-bottom:1.5rem; }
 .mt-2 { margin-top:2rem; }
 .section-sub-center { margin:0 auto; }
