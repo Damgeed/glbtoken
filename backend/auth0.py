@@ -260,32 +260,23 @@ def _fetch_jwks() -> dict:
     return JWKS_CACHE or {}
 
 def verify_token(id_token: str) -> dict:
-    """Verify an Auth0 ID token. Returns decoded payload on success.
+    """Verify an Auth0 ID token — RS256 ONLY (Auth0 industry standard).
 
-    Supports both Auth0 signing algorithms:
-    - RS256 (default): verified against the tenant JWKS public keys.
-    - HS256: signed with the application's client_secret (Auth0 lets the app
-      switch Signing Algorithm to HS256; token header alg then says HS256).
+    RS256 (public-key / JWKS) is the Auth0-recommended signing algorithm.
+    HS256 (shared-secret) is intentionally NOT accepted: verifying with the
+    shared client_secret would weaken the trust model (anyone holding the
+    secret could forge tokens). If the tenant is ever misconfigured to HS256,
+    this fails closed with a clear error instead of silently downgrading.
     """
     if not is_configured():
         raise ValueError("Auth0 not configured")
     try:
         unverified_header = jwt.get_unverified_header(id_token)
         alg = unverified_header.get("alg", "")
-        if alg == "HS256":
-            # HS256 is non-standard for Auth0 (shared-secret signing). Support
-            # it for compatibility, but flag it — RS256 is the secure default.
-            print("⚠️ Auth0: id_token signed with HS256 — recommend switching the "
-                  "application's Signing Algorithm back to RS256 (public-key "
-                  "verification, no shared secret)")
-            payload = jwt.decode(
-                id_token, AUTH0_CLIENT_SECRET,
-                algorithms=["HS256"],
-                audience=AUTH0_CLIENT_ID,
-                issuer=f"https://{AUTH0_DOMAIN}/",
+        if alg != "RS256":
+            raise ValueError(
+                f"Auth0 id_token algorithm '{alg}' is not allowed — only RS256 is accepted"
             )
-            return payload
-        # RS256 via JWKS
         if RSAAlgorithm is None:
             raise ValueError("Auth0 RS256 verification unavailable: cryptography package missing")
         jwks = _fetch_jwks()
