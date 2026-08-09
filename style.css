@@ -4233,6 +4233,21 @@ html.light .star.white {
   z-index: 1;
 }
 .scroll-x.tx-scroll table { min-width: 500px; }
+/* Firefox (Gecko) mobile touch-scroll fix: inside an overflow:auto table
+   container, finger scrolling can be swallowed by the page and a sticky
+   thead can break the scroll in Firefox Android. Applied Firefox-only via
+   @supports so Safari/Chrome keep current behavior. */
+@supports (-moz-appearance: none) {
+  @media (max-width: 900px) {
+    .scroll-x.tx-scroll {
+      touch-action: pan-x pan-y;
+      overscroll-behavior: contain;
+    }
+    .scroll-x.tx-scroll thead th {
+      position: static;
+    }
+  }
+}
 .scroll-x table th,
 .scroll-x table td { white-space:nowrap; }
 .scroll-x table td button { white-space:nowrap; }
