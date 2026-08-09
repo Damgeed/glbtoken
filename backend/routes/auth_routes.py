@@ -1708,6 +1708,14 @@ def delete_own_account(
     if (req.email or "").strip().lower() != (user.email or "").strip().lower():
         _400("Email does not match your account")
 
+    # Re-authentication: password-backed accounts must confirm the current
+    # password — a stolen session token alone must not be enough to
+    # permanently destroy an account. OAuth-only accounts (no password set)
+    # fall through to the 2FA check below.
+    if user.password_hash:
+        if not req.password or not verify_password(req.password, user.password_hash):
+            _401("Current password is required to delete your account")
+
     if _totp_enabled(user):
         from totp import verify
         code = (req.code or "").strip()

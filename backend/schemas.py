@@ -53,6 +53,7 @@ class TwoFactorCodeRequest(BaseModel):
 
 class DeleteAccountRequest(BaseModel):
     email: str           # must match the logged-in user's email
+    password: str = ""   # current password (required if the account has one)
     code: str = ""       # TOTP 6-digit OR one-time recovery code (required if 2FA on)
 
 

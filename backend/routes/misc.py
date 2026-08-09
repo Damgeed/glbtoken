@@ -45,12 +45,16 @@ def list_announcements(request: Request, db: Session = Depends(get_db)):
 @router.post("/api/contact")
 @limiter.limit("3/minute")
 async def contact_form(req: ContactRequest, request: Request):
-    name = req.name.strip()
-    name = re.sub(r"[\r\n]", "", name)  # SMTP header injection guard (subject)
-    email = req.email.strip()
-    message = req.message.strip()
+    # SMTP/header-injection guard: strip CR/LF from every user-supplied field.
+    # name/email also feed the subject line; message must never carry a raw
+    # CRLF either (normalize \r\n → \n keeps multi-line bodies readable).
+    name = re.sub(r"[\r\n]", "", (req.name or "").strip())
+    email = re.sub(r"[\r\n]", "", (req.email or "").strip())
+    message = (req.message or "").replace("\r", "").strip()
     if not name or not email or len(message) < 10:
         _400("Invalid form data")
+    if len(message) > 5000:
+        _400("Message too long (max 5000 characters)")
     if not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', email):
         _400("Invalid email")
     try:

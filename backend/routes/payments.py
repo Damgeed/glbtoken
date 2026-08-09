@@ -30,7 +30,10 @@ def payment_methods_config():
     return {
         "stripe": bool(STRIPE_SECRET_KEY),
         "paystack": bool(PAYSTACK_SECRET_KEY),
-        "crypto": bool(CRYPTO_WALLET_ADDRESSES),
+        # any(...values()) — not bool(dict): the dict always has 4 keys, so a
+        # plain truthiness check would report crypto as wired even when every
+        # wallet address env var is empty (leaving users on a dead rail).
+        "crypto": any(CRYPTO_WALLET_ADDRESSES.values()),
     }
 
 
@@ -495,7 +498,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 @router.get("/api/payments/crypto/addresses")
 def get_crypto_addresses(user: User = Depends(get_current_user)):
     if not any(CRYPTO_WALLET_ADDRESSES.values()):
-        _500("Crypto payment not configured")
+        _not_configured("Crypto payments")
     return {
         "addresses": [
             {"asset": k, "network": k.split("_")[1] if "_" in k else k, "address": v}
