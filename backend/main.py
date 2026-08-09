@@ -299,8 +299,10 @@ app.add_middleware(SlowAPIMiddleware)
 #   - test environment (limiter disabled in conftest)
 
 _CF_GUARD_PREFIXES = (
-    "/api/auth/", "/auth/", "/api/user/", "/api/payments/initiate",
-    "/api/payments/confirm", "/api/topup",
+    "/api/auth/", "/auth/", "/api/user/",
+    "/api/payments/paystack/initialize", "/api/payments/stripe/create-checkout",
+    "/api/payments/stripe/quick-recharge", "/api/payments/cards/setup",
+    "/api/payments/cards/confirm", "/api/topup",
 )
 _CF_GUARD_ALWAYS_ALLOW = (
     "/api/auth/auth0/config", "/api/auth/auth0/social-url", "/api/auth/me",

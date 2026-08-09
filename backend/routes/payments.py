@@ -425,6 +425,12 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         # and raises AttributeError on missing attrs. Normalize to a plain dict
         # so optional-field reads (setup_future_usage / payment_method) are safe.
         session = session.to_dict() if hasattr(session, "to_dict") else session
+        # SECURITY: only credit sessions that are actually PAID. Async /
+        # delayed-notification methods (bank transfer, SEPA, ...) fire
+        # checkout.session.completed BEFORE funds arrive — minting tokens for
+        # unpaid checkouts would be free money. Mirrors the /api/topup path.
+        if session.get("payment_status") != "paid":
+            return {"status": "ok"}
         # Save the card if the user checked "Save my card for future purchases".
         if session.get("setup_future_usage") == "off_session" and session.get("payment_method"):
             try:
@@ -834,10 +840,18 @@ def _stripe_customer_for(user):
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     email = (user.email or "").strip()
+    # SECURITY: never return a customer owned by ANOTHER account. Emails are
+    # unique per active account but get REUSED after deletion / email change —
+    # an email-keyed lookup would hand the new registrant the previous
+    # owner's saved cards (list cards, then quick-recharge on their card).
+    # Match metadata.user_id first; only adopt an email match when it was
+    # created FOR this user (metadata.user_id present and equal).
     if email:
-        existing = stripe_lib.Customer.list(email=email, limit=1)
-        if existing.data:
-            return existing.data[0]
+        existing = stripe_lib.Customer.list(email=email, limit=20)
+        for cus in existing.data:
+            meta = cus.get("metadata") if hasattr(cus, "get") else (cus.metadata or {})
+            if str((meta or {}).get("user_id") or "") == str(user.id):
+                return cus
     return stripe_lib.Customer.create(
         email=email or None,
         metadata={"user_id": str(user.id)},

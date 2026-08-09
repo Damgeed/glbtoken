@@ -150,7 +150,7 @@ def provider_status(user: User = Depends(get_current_user), db: Session = Depend
 
 @router.post("/api/admin/sync-users")
 @limiter.limit("2/minute")
-async def admin_sync_users(
+def admin_sync_users(
     req: SyncUsersRequest,
     request: Request,
     user: Optional[User] = Depends(get_optional_user),
@@ -287,7 +287,7 @@ def admin_delete_user(
 
     from database import (
         RefreshToken, ApiKey, Transaction, Preset, Referral,
-        ReferralRedemption, LoginEvent, Organization, OrgMember, Conversation,
+        ReferralRedemption, LoginEvent, Organization, OrgMember, OrgInvite, Conversation,
     )
 
     uid = target.id
@@ -304,6 +304,10 @@ def admin_delete_user(
     ]
     if owned_org_ids:
         db.query(OrgMember).filter(OrgMember.org_id.in_(owned_org_ids)).delete(synchronize_session=False)
+        # No FK cascade on org_invites — delete owned orgs' invites first or the
+        # org DELETE fails on Postgres and invites issued to this email stay
+        # usable if the address is re-registered.
+        db.query(OrgInvite).filter(OrgInvite.org_id.in_(owned_org_ids)).delete(synchronize_session=False)
     db.query(Organization).filter(Organization.owner_id == uid).delete(synchronize_session=False)
     db.query(Preset).filter(Preset.user_id == uid).delete(synchronize_session=False)
     db.query(Transaction).filter(Transaction.user_id == uid).delete(synchronize_session=False)

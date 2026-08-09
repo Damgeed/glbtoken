@@ -389,7 +389,12 @@ def _grant_pending_bonus(user, db) -> bool:
     res = db.execute(
         update(User)
         .where(User.id == user.id)
-        .where(User.settings.like("%pending_bonus%"))
+        # SECURITY: gate on the exact JSON key, not a substring. settings is
+        # partially user-writable (theme, webhook_url, ...); a user setting
+        # theme="pending_bonus" would make a %pending_bonus% LIKE match true
+        # AFTER the flag was already popped, defeating the rowcount gate and
+        # double-crediting the bonus under a concurrent verify-email race.
+        .where(User.settings.like('%"pending_bonus":%'))
         .values(
             token_balance=User.token_balance + float(pending),
             settings=new_settings,
@@ -1786,7 +1791,7 @@ def delete_own_account(
 
     from database import (
         RefreshToken, ApiKey, Transaction, Preset, Referral,
-        ReferralRedemption, LoginEvent, Organization, OrgMember, Conversation,
+        ReferralRedemption, LoginEvent, Organization, OrgMember, OrgInvite, Conversation,
     )
 
     uid = user.id
@@ -1800,7 +1805,14 @@ def delete_own_account(
     ]
     if owned_org_ids:
         db.query(OrgMember).filter(OrgMember.org_id.in_(owned_org_ids)).delete(synchronize_session=False)
+        # No FK cascade on org_invites — delete owned orgs' invites first or the
+        # org DELETE fails on Postgres (GDPR deletion → 500) and invites issued
+        # to this email stay usable if the address is re-registered.
+        db.query(OrgInvite).filter(OrgInvite.org_id.in_(owned_org_ids)).delete(synchronize_session=False)
     db.query(Organization).filter(Organization.owner_id == uid).delete(synchronize_session=False)
+    # Also revoke invites issued TO this user's email (token still valid after
+    # re-registration would let the new account join orgs via old links).
+    db.query(OrgInvite).filter(OrgInvite.email == user.email).delete(synchronize_session=False)
     db.query(Preset).filter(Preset.user_id == uid).delete(synchronize_session=False)
     db.query(Transaction).filter(Transaction.user_id == uid).delete(synchronize_session=False)
     db.query(ApiKey).filter(ApiKey.user_id == uid).delete(synchronize_session=False)

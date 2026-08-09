@@ -77,6 +77,7 @@ def _checkout_completed_event(session_id, user_id, amount_cents, customer="cus_t
                 "currency": "usd",
                 "customer": customer,
                 "payment_method": None,
+                "payment_status": "paid",
                 "setup_future_usage": None,
                 "metadata": {"user_id": str(user_id), "tokens": str(int(amount_cents / 100 * 1000))},
             }
