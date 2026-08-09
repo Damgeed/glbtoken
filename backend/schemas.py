@@ -82,10 +82,6 @@ class Auth0SignupRequest(BaseModel):
     password: str
 
 
-class SendVerificationRequest(BaseModel):
-    email: str = ""
-
-
 class OptionalEmailRequest(BaseModel):
     email: str = ""
 
@@ -263,10 +259,6 @@ class CostProjectionResponse(BaseModel):
 
 # ── Referral Schemas ──
 
-class ReferralCodeResponse(BaseModel):
-    referral_code: str
-
-
 class ReferralStatsResponse(BaseModel):
     referral_code: Optional[str] = None
     total_referrals: int = 0
@@ -283,10 +275,6 @@ class ReferralRewardItem(BaseModel):
 class ReferralRewardsResponse(BaseModel):
     rewards: list[ReferralRewardItem] = []
     total: float = 0.0
-
-
-class ClaimReferralRequest(BaseModel):
-    pass
 
 
 # ── Organization Schemas ──

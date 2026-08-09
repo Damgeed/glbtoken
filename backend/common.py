@@ -219,6 +219,14 @@ def real_client_ip(request) -> str:
             return False
 
     try:
+        # SECURITY: only trust proxy-provided headers (CF-Connecting-IP /
+        # X-Forwarded-For) when the direct peer is NOT a public IP. A public
+        # direct peer means the client reached the origin directly (no platform
+        # ingress in between), so any such header is client-forged and must be
+        # ignored. Behind Railway/Cloudflare the peer is private/CGNAT (10.x,
+        # 100.64.0.0/10) — the trusted-ingress case.
+        if direct and _public(direct):
+            return direct
         # 1) Cloudflare edge header (production path via api.glbtoken.com)
         cf = (request.headers.get("cf-connecting-ip", "") or "").strip()
         if cf and _public(cf):

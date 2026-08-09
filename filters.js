@@ -149,7 +149,7 @@
           actCount.textContent=d.recent_activity.length+' items';
           act.innerHTML=d.recent_activity.map(a=>{
             const isDeposit=a.type==='deposit';
-            return `<div class="dash-activity-item"><div class="icon ${isDeposit?'gold':'green'}" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:${isDeposit?'var(--primary-subtle)':'var(--success-subtle)'}">${isDeposit?'💰':'🤖'}</div><div class="info" style="flex:1"><div class="title" style="font-size:0.85rem;font-weight:500">${escapeHtml(a.model||a.payment_method||a.type)}</div><div class="time" style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(a.created_at?fmtDT(a.created_at):'')}</div></div><div class="val" style="font-size:0.85rem;font-weight:600;color:${isDeposit?'var(--primary)':'var(--destructive)'}">${isDeposit?'+':''}${a.tokens||0}</div></div>`
+            return `<div class="dash-activity-item"><div class="icon ${isDeposit?'gold':'green'}" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:${isDeposit?'var(--primary-subtle)':'var(--success-subtle)'}">${isDeposit?'💰':'🤖'}</div><div class="info" style="flex:1"><div class="title" style="font-size:0.85rem;font-weight:500">${escapeHtml(a.model||a.payment_method||a.type)}</div><div class="time" style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(a.created_at?fmtDT(a.created_at):'')}</div></div><div class="val" style="font-size:0.85rem;font-weight:600;color:${isDeposit?'var(--primary)':'var(--destructive)'}">${isDeposit?'+':''}${escapeHtml(String(a.tokens||0))}</div></div>`
           }).join('');
         }else{
           actCount.textContent='0 items';
@@ -201,7 +201,7 @@
         body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:0.85rem">No transactions</td></tr>';
         return;
       }
-      body.innerHTML=d.items.map(t=>{var st=String(t.status||'completed').toLowerCase();var stLabel=st.charAt(0).toUpperCase()+st.slice(1);var stCls=(st==='completed'||st==='success')?'status-paid':'status-'+st;if(st==='success')stLabel='Paid';var stHtml='<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';}).join('');
+      body.innerHTML=d.items.map(t=>{var st=String(t.status||'completed').toLowerCase();var stLabel=st.charAt(0).toUpperCase()+st.slice(1);var stCls=(st==='completed'||st==='success')?'status-paid':'status-'+st.replace(/[^a-z0-9_-]/gi,'');if(st==='success')stLabel='Paid';var stHtml='<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td>'+escapeHtml(t.type)+'</td><td>'+escapeHtml(t.model_used||t.payment_method||'-')+'</td><td class="amount '+(t.type==='deposit'?'gold':'red')+'">'+(t.type==='deposit'?'+':'')+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';}).join('');
     }
     async function loadActivity(){
       var container=document.getElementById('dashActivity');
@@ -228,7 +228,7 @@
           }
           var dt=a.created_at?new Date((typeof window.parseUTCDate==='function')?window.parseUTCDate(a.created_at):new Date(a.created_at).getTime()).toLocaleString():'';
           var expandId='act-expand-'+i;
-          var hasLog=a.type==='api_call'&&a.log_id?' data-log-id="'+escapeAttr(String(a.log_id))+'" data-model="'+escapeAttr(a.model||'')+'" data-tokens="'+(a.tokens||0)+'" data-cost="'+(a.cost||0)+'"':'';
+          var hasLog=a.type==='api_call'&&a.log_id?' data-log-id="'+escapeAttr(String(a.log_id))+' " data-model="'+escapeAttr(a.model||'')+'" data-tokens="'+escapeAttr(String(a.tokens||0))+'" data-cost="'+escapeAttr(String(a.cost||0))+'"':'';
           return '<div class="dash-activity-item" style="cursor:'+(hasLog?'pointer':'default')+'"'+(hasLog?' onclick="toggleLogContent(this,'+"'"+expandId+"'"+')"':'')+'>'+
             '<div class="icon" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:'+colorCls+'">'+icon+'</div>'+
             '<div class="info" style="flex:1;min-width:0"><div class="title" style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+desc+'</div><div class="time" style="font-size:0.75rem;color:var(--text-muted)">'+escapeHtml(dt)+'</div></div>'+
@@ -276,7 +276,7 @@
     function txDepositRow(t){
       var st = String(t.status||'completed').toLowerCase();
       var stLabel = st.charAt(0).toUpperCase() + st.slice(1);
-      var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st;
+      var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st.replace(/[^a-z0-9_-]/gi,'');
       if(st==='success') stLabel = 'Paid';
       var stHtml = '<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';
       return '<tr><td class="td-date">'+(t.created_at?fmtDTStack(t.created_at):'<div class="td-date-strong">—</div>')+'</td><td class="amount gold">'+escapeHtml(fmtUSD(t.amount))+'</td><td>'+escapeHtml(t.payment_method||'-')+'</td><td class="amount gold">+'+escapeHtml(String(t.tokens||0))+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';

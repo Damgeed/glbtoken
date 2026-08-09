@@ -18,145 +18,6 @@
     // ── Advanced Analytics Dashboard Functions ──
 
 
-/* ══════════════════════════════════════════
-   CHARTS — Cost breakdown, error rate, response times
-   ══════════════════════════════════════════ */
-    async function loadCostBreakdown(days){
-      try{
-        var container=document.getElementById('costBreakdownSection');
-        if(container){
-          var s=container.querySelector('.loading-indicator');
-          if(s)s.style.display='flex';
-        }
-        var el=document.getElementById('costByModelChart');
-        if(!el)return;
-        var data=await safeApi('GET','/api/analytics/cost-by-model?days='+(days||7));
-        if(!data) return;
-        if(!data.models||!data.models.length){
-          if(window.costChartInst){window.costChartInst.destroy();window.costChartInst=null}
-          el.parentNode.innerHTML+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No cost data available.</p>';
-          return;
-        }
-        if(window.costChartInst){window.costChartInst.destroy()}
-        var labels=data.models.map(function(m){return m.model||'Unknown'});
-        var costs=data.models.map(function(m){return m.cost||0});
-        var tokens=data.models.map(function(m){return m.tokens||0});
-        window.costChartInst=new Chart(el,{
-          type:'bar',
-          data:{
-            labels:labels,
-            datasets:[
-              {label:'Cost ($)',data:costs,backgroundColor:'rgba(244,180,0,0.7)',borderColor:'#F4B400',borderWidth:1,borderRadius:4},
-              {label:'Tokens',data:tokens,backgroundColor:'rgba(0,214,143,0.5)',borderColor:'#00D68F',borderWidth:1,borderRadius:4}
-            ]
-          },
-          options:{
-            indexAxis:'y',responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{labels:{color:'#94A3B8',font:{size:10}}}},
-            scales:{
-              x:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94A3B8',font:{size:10}}},
-              y:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:10}}}
-            }
-          }
-        });
-        var totalCostEl=document.getElementById('costBreakdownTotal');
-        if(totalCostEl)totalCostEl.textContent='$'+(data.total_cost||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-        var modelCountEl=document.getElementById('costBreakdownModels');
-        if(modelCountEl)modelCountEl.textContent=data.models.length+' models';
-      }finally{
-        if(container){
-          var s2=container.querySelector('.loading-indicator');
-          if(s2)s2.style.display='none';
-        }
-      }
-    }
-
-    async function loadErrorRate(days){
-      try{
-        var el=document.getElementById('errorRateChart');
-        if(!el)return;
-        var data=await safeApi('GET','/api/analytics/error-rate?days='+(days||7));
-        if(!data) return;
-        if(!data.labels||!data.labels.length){
-          if(window.errorChartInst){window.errorChartInst.destroy();window.errorChartInst=null}
-          el.parentNode.innerHTML+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No error rate data available.</p>';
-          return;
-        }
-        if(window.errorChartInst){window.errorChartInst.destroy()}
-        window.errorChartInst=new Chart(el,{
-          type:'line',
-          data:{
-            labels:data.labels,
-            datasets:[
-              {label:'Success',data:data.success||[],borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,0.1)',fill:true,tension:0.3,pointRadius:3},
-              {label:'Errors',data:data.errors||[],borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.3,pointRadius:3}
-            ]
-          },
-          options:{
-            responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{labels:{color:'#94A3B8',font:{size:10}}}},
-            scales:{
-              y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94A3B8',font:{size:10}}},
-              x:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:10}}}
-            }
-          }
-        });
-        var errRateEl=document.getElementById('errorRatePct');
-        if(errRateEl)errRateEl.textContent=((data.error_rate||0)*100).toFixed(1)+'%';
-        var totalErrEl=document.getElementById('errorTotal');
-        if(totalErrEl)totalErrEl.textContent=(data.total_errors||0).toLocaleString();
-      }catch(e){
-        // Silently fail for error rate
-      }
-    }
-
-    async function loadResponseTimes(days){
-      var body=document.getElementById('responseTimeBody');
-      if(!body)return;
-      body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--text-muted)">Loading...</td></tr>';
-      var data=await safeApi('GET','/api/analytics/response-times?days='+(days||7),null,null,true); if(!data){ body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Failed to load response times.</td></tr>';return}
-        if(!data||!data.items||!data.items.length){
-          body.innerHTML='<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No response time data available.</td></tr>';
-          return;
-        }
-        body.innerHTML=data.items.map(function(item){
-          var ms=item.response_time_ms||0;
-          var cls=ms<500?'speed-fast':ms<2000?'speed-medium':'speed-slow';
-          return '<tr><td>'+escapeHtml(item.model||'-')+'</td><td>'+escapeHtml(item.provider||'-')+'</td><td class="'+cls+'">'+ms.toFixed(0)+' ms</td><td>'+escapeHtml(item.date||'')+'</td></tr>';
-        }).join('');
-
-    }
-
-    async function loadKeyUsage(days){
-      var body=document.getElementById('keyUsageBody');
-      if(!body)return;
-      body.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1rem;color:var(--text-muted)">Loading...</td></tr>';
-      var data=await safeApi('GET','/api/analytics/key-usage?days='+(days||7),null,null,true); if(!data){ body.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted)">Failed to load key usage.</td></tr>';return}
-        if(!data||!data.keys||!data.keys.length){
-          body.innerHTML='<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No key usage data available.</td></tr>';
-          return;
-        }
-        body.innerHTML=data.keys.map(function(k){
-          return '<tr><td>'+escapeHtml(k.name||'Key '+k.id)+'</td><td>'+escapeHtml(k.key_prefix||'')+'...</td><td>'+(k.request_count||0).toLocaleString()+'</td><td>'+(k.tokens||0).toLocaleString()+'</td><td class="td-date">'+(k.last_used?fmtDTStack(k.last_used):'<div class="td-date-strong">Never</div>')+'</td></tr>';
-        }).join('');
-
-    }
-
-    async function loadCostProjection(){
-      var last30El=document.getElementById('projLast30');
-      var monthlyEl=document.getElementById('projMonthly');
-      var dailyEl=document.getElementById('projDailyAvg');
-      if(!last30El&&!monthlyEl&&!dailyEl)return;
-      var data=await safeApi('GET','/api/analytics/cost-projection',null,null,true); if(!data||data.error){
-        if(last30El)last30El.textContent='$0.00';
-        if(monthlyEl)monthlyEl.textContent='$0.00';
-        if(dailyEl)dailyEl.textContent='$0.00';
-        return;
-      }
-      if(last30El)last30El.textContent='$'+(data.last_30_days||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-      if(monthlyEl)monthlyEl.textContent='$'+(data.projected_monthly||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-      if(dailyEl)dailyEl.textContent='$'+(data.daily_average||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-    }
 
 /* ══════════════════════════════════════════
    DASHBOARD REAL-DATA WIRING (2026-08)
@@ -482,10 +343,12 @@ async function loadRecentTx(){
     var amt = ((t.type==='deposit'||t.type==='topup')?'+':'') + String(t.tokens||0);
     var st = String(t.status||'completed').toLowerCase();
     var stLabel = st.charAt(0).toUpperCase() + st.slice(1);
-    var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st;
+    // Sanitize before interpolating into class="" (attribute context) — the
+    // sibling label is escapeHtml'd, the class suffix must be too.
+    var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st.replace(/[^a-z0-9_-]/gi,'');
     if(st==='success') stLabel = 'Paid';
     var stHtml = '<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';
-    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+amt+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
+    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+escapeHtml(amt)+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
   }).join('');
 }
 

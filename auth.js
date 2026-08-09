@@ -57,7 +57,7 @@
         }
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
-        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
         afterLoginRedirect();
       } catch(e){
@@ -78,7 +78,7 @@
         _login2faPreToken=null;
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
-        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Welcome back!','success');
         afterLoginRedirect();
       } catch(e){
@@ -158,7 +158,7 @@
         _clearReferralAttribution();
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
-        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
         applyAuth();showToast('Account created! Welcome.','success');
         afterLoginRedirect();
       }finally{
@@ -307,7 +307,7 @@
         if(!data) return;
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
-        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);window.__secure.setItem('gt_user',JSON.stringify(userData));
+        if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
         applyAuth();
         showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
         afterLoginRedirect();

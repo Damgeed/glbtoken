@@ -18,7 +18,7 @@ import httpx
 from fastapi import APIRouter, Depends, Header, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from sqlalchemy import update
+from sqlalchemy import func, update
 
 from common import (
     _400, _401, _402, _403, _429, _502, limiter,
@@ -70,6 +70,12 @@ _key_rate = {}
 
 def _check_key_rate(key_id: int, rpm: int):
     now = time.time()
+    if len(_key_rate) > 10000:
+        # Evict idle keys (no activity in the last 60s) to bound memory growth
+        # as the key population grows over time.
+        cutoff = now - 60
+        for k in [k for k, v in _key_rate.items() if not v or v[-1] < cutoff]:
+            del _key_rate[k]
     arr = _key_rate.setdefault(key_id, [])
     while arr and arr[0] < now - 60:
         arr.pop(0)
@@ -179,7 +185,13 @@ def _bill(db: Session, user: User, api_key: ApiKey, model: str,
         db.rollback()
         _402("Insufficient balance")
     db.refresh(user)
-    api_key.request_count = (api_key.request_count or 0) + 1
+    # Atomic SQL-side increment — a Python read-modify-write would lose counts
+    # under concurrent /v1 calls (the row is shared across all of a user's keys).
+    db.execute(
+        update(ApiKey).where(ApiKey.id == api_key.id).values(
+            request_count=func.coalesce(ApiKey.request_count, 0) + 1
+        )
+    )
     api_key.last_used = datetime.now(timezone.utc)
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,

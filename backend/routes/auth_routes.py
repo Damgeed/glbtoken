@@ -397,6 +397,10 @@ def _grant_pending_bonus(user, db) -> bool:
 @router.post("/api/auth/register")
 @limiter.limit("5/hour")
 async def register(req: RegisterRequest, request: Request, db: Session = Depends(get_db)):
+    # Normalize email the same way login does (case-insensitive accounts) —
+    # otherwise a user registering "Foo@Bar.com" can never log in with
+    # "foo@bar.com" (login lowercases the input before lookup).
+    req.email = (req.email or "").strip().lower()
     try:
         if db.query(User).filter(User.email == req.email).first():
             # Generic message — do not confirm whether an email is registered
@@ -426,6 +430,11 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         if user.id == 1:
             user.is_admin = True
             db.commit()
+    except IntegrityError:
+        # Email unique-constraint race (two concurrent registers with the same
+        # email both passed the pre-check) → clean generic 400, not a 500.
+        db.rollback()
+        _400("Registration failed. Please check your details and try again.")
     except HTTPException:
         raise
     except Exception as e:
@@ -844,12 +853,17 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
         # Verified social login → release any held signup bonus.
         _grant_pending_bonus(user, db)
     else:
+        _ev = bool(info.get("email_verified"))
+        _bonus = float(SIGNUP_BONUS_TOKENS or 0)
         user = User(
             name=info["name"],
             email=info["email"],
             google_id=info["sub"],
-            token_balance=SIGNUP_BONUS_TOKENS,
-            email_verified=info["email_verified"],
+            # Anti-farming: hold the bonus until the email is verified
+            # (mirrors the email/password register path).
+            token_balance=(_bonus if _ev else 0),
+            settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not _ev else None),
+            email_verified=_ev,
         )
         db.add(user)
         db.commit()
@@ -915,12 +929,18 @@ def _resolve_social_user(db, info, id_field="google_id"):
         db_email = email
         if not db_email and sub:
             db_email = "apple-" + hashlib.sha256(sub.encode()).hexdigest()[:16] + "@privaterelay.local"
+        _bonus = float(SIGNUP_BONUS_TOKENS or 0)
         user = User(
             name=info.get("name") or (db_email.split("@")[0] if db_email else "User"),
             email=db_email,
             google_id=(sub or None) if id_field != "github_id" else None,
             github_id=(sub or None) if id_field == "github_id" else None,
-            token_balance=SIGNUP_BONUS_TOKENS,
+            # Anti-farming: hold the bonus until the email is verified
+            # (mirrors the email/password register path). Synthetic/private
+            # emails (Apple relay, GitHub login@) can never verify — the bonus
+            # stays parked instead of being minted for throwaway accounts.
+            token_balance=(_bonus if email_verified else 0),
+            settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not email_verified else None),
             email_verified=email_verified,
         )
         db.add(user)
@@ -1079,14 +1099,25 @@ async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLog
 
     user = db.query(User).filter(User.email == info["email"]).first()
     if user:
+        # SECURITY: same gate as auth0_login — only link an existing account
+        # when Auth0 verified the email. Otherwise an attacker who registers
+        # the victim's email (unverified) in Auth0 could take over the account.
+        if not info.get("email_verified"):
+            _401("Email verification required to sign in with this account")
         if not user.google_id:
             user.google_id = info["sub"]
         db.commit()
     else:
+        _ev = bool(info.get("email_verified"))
+        _bonus = float(SIGNUP_BONUS_TOKENS or 0)
         user = User(
             name=info["name"], email=info["email"],
-            google_id=info["sub"], token_balance=SIGNUP_BONUS_TOKENS,
-            email_verified=info["email_verified"],
+            google_id=info["sub"],
+            # Anti-farming: hold the bonus until the email is verified
+            # (mirrors the email/password register path).
+            token_balance=(_bonus if _ev else 0),
+            settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not _ev else None),
+            email_verified=_ev,
         )
         db.add(user); db.commit(); db.refresh(user)
         try:
@@ -1134,14 +1165,19 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
         print(f"❌ Auth0 auto-login error: {e}")
         _401("Account created but login failed.")
 
+    _ev = bool(info.get("email_verified"))
+    _bonus = float(SIGNUP_BONUS_TOKENS or 0)
     user = User(
         # Use the name the user actually typed — reading it back from the
         # Auth0 id_token can yield the random `sub` when the token has no
         # name claim, which is what made "full name switch to random code".
         name=name or info["name"] or info["email"].split("@")[0],
         email=info["email"],
-        google_id=info["sub"], token_balance=SIGNUP_BONUS_TOKENS,
-        email_verified=info["email_verified"],
+        google_id=info["sub"],
+        # Anti-farming: hold the bonus until the email is verified.
+        token_balance=(_bonus if _ev else 0),
+        settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not _ev else None),
+        email_verified=_ev,
     )
     db.add(user); db.commit(); db.refresh(user)
     try:
@@ -1192,6 +1228,10 @@ def get_me(user: User = Depends(get_current_user)):
 
 # In-memory OTP guess limiter per account (resets when a new code is sent)
 _email_otp_attempts = {}
+# Per-account 2FA (TOTP/recovery) failed-attempt counter — locks the account
+# after 5 failures so a distributed brute-force of the 6-digit code can't
+# succeed (the IP-based limiter alone is spoofable behind proxies).
+_twofa_attempts = {}
 
 # In-memory login failure lockout per email+IP: 5 failures → 429 for 15 min.
 _login_failures = {}
@@ -1665,10 +1705,18 @@ def twofa_confirm(req: TwoFactorConfirmRequest, request: Request, db: Session = 
     user = db.query(User).filter(User.id == int(payload["sub"])).first()
     if not user:
         _401("User not found")
+    # Per-account failed-attempt cap (resets on success) — prevents brute-force
+    # of the 6-digit TOTP / recovery codes even when the IP limiter is spoofed.
+    key = f"2fa:{user.id}"
+    attempts = _twofa_attempts.get(key, 0)
+    if attempts >= 5:
+        _401("Too many attempts. Sign in again.")
     if not verify(_totp_secret(user), req.code):
         # Fall back to a one-time recovery code (consumed on use).
         if not _verify_recovery_code(user, req.code, db):
+            _twofa_attempts[key] = attempts + 1
             _401("Invalid authenticator code")
+    _twofa_attempts.pop(key, None)
     token = create_access_token({"sub": str(user.id)})
     record_login_event(user.id, request, True, db)
     auth = _issue_auth_response(user, db, request.headers.get("user-agent", ""))

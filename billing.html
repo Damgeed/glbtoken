@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1261" />
+  <link rel="stylesheet" href="style.css?v=1262" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="billing.css?v=1042" />
   </head>
@@ -234,7 +234,6 @@
 </div>
 
 
-<!-- FOOTER: Injected by footer.js -->
 
 <button class="chat-fab" onclick="toggleChat()">💬</button>
   <div class="chat-window" id="chatWindow">
@@ -249,11 +248,10 @@
   </div>
 
 <script src="nav.js?v=19"></script>
-<script src="footer.js?v=27"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1162"></script>
+<script data-cfasync="false" src="shared.js?v=1163"></script>
 <script>requireAuth()</script>
-<script data-cfasync="false" src="ui.js?v=1235"></script>
+<script data-cfasync="false" src="ui.js?v=1236"></script>
 
 <!-- ── Billing Script ── -->
 <script>
@@ -501,15 +499,19 @@
     };
 
     window.downloadStatementPdf = function(){
+      var ac = new AbortController();
+      var t = setTimeout(function(){ try{ ac.abort(); }catch(e){} }, 25000);
       fetch(API_URL + '/api/billing/statement',{
         method:'GET',
-        headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/pdf'}
+        headers:{'Authorization':'Bearer '+(token||''),'Accept':'application/pdf'},
+        signal: ac.signal
       })
       .then(function(r){
         if(!r.ok) throw new Error('Download failed');
         return r.blob();
       })
       .then(function(blob){
+        clearTimeout(t);
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;

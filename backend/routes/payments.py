@@ -354,8 +354,8 @@ def stripe_quick_recharge(req: InitiatePaymentRequest, request: Request, user: U
     if not req.payment_method_id:
         _400("payment_method_id is required")
     import math
-    if req.amount is None or not math.isfinite(float(req.amount)) or float(req.amount) < 1.0:
-        _400("Minimum recharge is $1")
+    if req.amount is None or not math.isfinite(float(req.amount)) or float(req.amount) < 1.0 or float(req.amount) > 2000.0:
+        _400("Amount must be between $1 and $2000")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
     cus = _stripe_customer_for(user)

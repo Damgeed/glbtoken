@@ -148,8 +148,10 @@ def test_webhook(request: Request, user: User = Depends(get_current_user)):
 
 
 @router.put("/api/user/settings")
+@limiter.limit("10/minute")
 def update_user_settings(
     req: UserSettingsUpdate,
+    request: Request,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

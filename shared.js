@@ -726,6 +726,7 @@ function clearSession(){
   try{ localStorage.removeItem('gt_keys'); }catch(e){}
   try{ sessionStorage.removeItem('gt_oauth_cancel'); }catch(e){}
   try{ sessionStorage.removeItem('gt_code_verifier'); }catch(e){}
+  try{ sessionStorage.removeItem('gt_oauth_state'); }catch(e){}
   try{ if(window.__secure && window.__secure.clear) window.__secure.clear(); }catch(e){}
   try{ if(window._dashPoll){ clearInterval(window._dashPoll); window._dashPoll=null; } }catch(e){}
 }

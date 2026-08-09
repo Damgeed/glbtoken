@@ -60,18 +60,6 @@ async def _get(path: str, admin: bool = False) -> dict:
             return {"error": "New API request failed", "status": r.status_code}
         return r.json()
 
-async def health_check() -> bool:
-    """Check if New API is reachable."""
-    if not NEW_API_BASE:
-        return False
-    try:
-        async with httpx.AsyncClient(timeout=5) as client:
-            r = await client.get(f"{NEW_API_BASE.rstrip('/')}/api/status", headers=HEADERS)
-            return r.status_code < 500
-    except Exception as e:
-        print(f"⚠️ New API health check failed: {e}")
-        return False
-
 async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
     """
     Create a user in New API.
@@ -107,10 +95,6 @@ async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
         # Fallback: just return what we have
         return {"id": 0, "email": email, "name": name, "quota": quota, "username": username}
     return resp or {"id": 0}
-
-async def update_user_quota(user_id: int, quota: int) -> dict:
-    """Set a user's remaining quota in New API."""
-    return await _post(f"/api/user/{user_id}", {"quota": quota}, admin=True)
 
 async def add_user_quota(user_id: int, tokens: int) -> dict:
     """Add tokens (GlbTOKEN units) to a user's quota in New API (converted to quota units)."""
