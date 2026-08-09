@@ -1,8 +1,12 @@
 """Unit tests for common.real_client_ip — Railway CGNAT proxy scenarios.
 
 Empirical: Railway's internal proxy presents a VARYING 100.64.0.0/10 (CGNAT)
-peer per request; the real client IP must come from CF-Connecting-IP or the
-FIRST public (is_global) X-Forwarded-For entry (the edge-appended value).
+peer per request; the real client IP must come from the FIRST public
+(is_global) X-Forwarded-For entry (the edge-appended value). CF-Connecting-IP
+is ONLY trusted when the direct peer is a genuine Cloudflare edge IP — never
+on Railway's CGNAT peer, because the origin is directly reachable and a
+forged CF-CIP (with or without a forged cf-ray) would bypass every rate limit
+(watchdog Round 6/7).
 
 NOTE: 100.64.0.0/10 is NOT flagged is_private on Python 3.11 (is_global=False
 is the reliable discriminator), and TEST-NET documentation ranges
@@ -27,11 +31,35 @@ class FakeReq:
         self.headers = FakeHeaders(headers or {})
 
 
-# 1. Through Cloudflare: CF-Connecting-IP is the authoritative client IP.
-def test_cf_connecting_ip_preferred():
+# 1. SECURITY-CRITICAL: forged CF-Connecting-IP on a CGNAT Railway peer is NOT
+#    trusted even when an XFF is present. Real traffic's client IP comes from
+#    the FIRST public XFF entry (Cloudflare-appended). CF-CIP is ONLY trusted
+#    when the direct peer is a genuine Cloudflare edge IP — never on Railway's
+#    100.64.0.0/10 CGNAT (watchdog Round 6/7).
+def test_forged_cf_cip_on_cgnat_not_trusted():
     r = FakeReq("100.64.0.17", {"cf-connecting-ip": "8.8.8.8",
-                                "x-forwarded-for": "8.8.8.8, 172.70.10.1, 100.64.0.12"})
-    assert real_client_ip(r) == "8.8.8.8"
+                                "x-forwarded-for": "1.1.1.1, 172.70.10.1, 100.64.0.12"})
+    # CF-CIP ignored (CGNAT peer is not a CF edge IP) → XFF first public wins
+    assert real_client_ip(r) == "1.1.1.1"
+
+
+# 1b. SECURITY-CRITICAL (the exact Round 7 bypass): forged cf-ray + forged
+#     CF-Connecting-IP, direct origin hit, NO XFF. cf-ray must NOT be treated
+#     as proof of Cloudflare — it is client-controlled on a direct hit. The
+#     forged CF-CIP must be ignored → fall back to the peer.
+def test_forged_cf_ray_and_cf_cip_direct_origin():
+    r = FakeReq("100.64.0.15", {"cf-connecting-ip": "93.3.3.3",
+                                "cf-ray": "deadbeefdeadbeef-SIN"})
+    assert real_client_ip(r) == "100.64.0.15"
+
+
+# 1c. Forged cf-ray does NOT unlock CF-CIP trust even when an XFF is present —
+#     XFF first-public is honored, the forged CF-CIP is not.
+def test_forged_cf_ray_does_not_trust_cf_cip():
+    r = FakeReq("100.64.0.5", {"cf-connecting-ip": "8.8.8.8",
+                               "cf-ray": "abc123def456-SIN",
+                               "x-forwarded-for": "1.1.1.1, 100.64.0.5"})
+    assert real_client_ip(r) == "1.1.1.1"
 
 
 # 2. No CF header (direct Railway origin): first PUBLIC XFF entry = client IP;
@@ -61,31 +89,22 @@ def test_private_peer_no_headers():
 
 # 6. Spoof attempt: attacker sets CF-Connecting-IP via direct origin — MUST be
 #    REJECTED. The Railway origin is directly reachable (peer is CGNAT
-#    100.64.x, not a Cloudflare edge IP, and no cf-ray), so a forged CF-CIP
-#    would bypass every rate limit (watchdog Round 6 finding).
+#    100.64.x, not a Cloudflare edge IP), so a forged CF-CIP would bypass every
+#    rate limit (watchdog Round 6 finding).
 def test_forged_cf_header_direct_origin():
     r = FakeReq("100.64.0.15", {"cf-connecting-ip": "1.1.1.1"})
-    # Not a Cloudflare peer + no cf-ray → CF-CIP ignored → no public XFF → peer
+    # Not a Cloudflare peer → CF-CIP ignored → no public XFF → peer
     assert real_client_ip(r) == "100.64.0.15"
 
 
 # 6b. Forged CF-CIP with a spoofed public XFF entry: XFF first-public is still
 #     honored (rate limiter keys on the attacker-chosen value, which still
-#     isolates each attacker), but CF-CIP itself is never trusted without
-#     Cloudflare proof.
+#     isolates each attacker), but CF-CIP itself is never trusted without a
+#     genuine Cloudflare edge peer.
 def test_forged_cf_header_with_xff_direct_origin():
     r = FakeReq("100.64.0.15", {"cf-connecting-ip": "1.1.1.1",
                                 "x-forwarded-for": "9.9.9.9"})
     assert real_client_ip(r) == "9.9.9.9"
-
-
-# 6c. Legitimate Cloudflare traffic via CGNAT Railway peer: cf-ray present
-#     (Cloudflare adds it to every proxied request) → CF-Connecting-IP trusted.
-def test_cf_cip_trusted_with_cf_ray():
-    r = FakeReq("100.64.0.5", {"cf-connecting-ip": "8.8.8.8",
-                               "cf-ray": "abc123def456-SIN",
-                               "x-forwarded-for": "8.8.8.8, 100.64.0.5"})
-    assert real_client_ip(r) == "8.8.8.8"
 
 
 # 6d. Direct Cloudflare edge peer (no CGNAT): peer IS a CF edge IP AND public.

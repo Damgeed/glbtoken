@@ -252,10 +252,12 @@ def real_client_ip(request) -> str:
 
     Correct sources, in order of trust:
       1. CF-Connecting-IP — Cloudflare sets this to the real client IP at the
-         edge. ONLY trusted when the direct peer is a Cloudflare edge IP
-         (CLOUDFLARE_IP_NETS) — never for private/CGNAT peers, because the
+         edge. ONLY trusted when the direct peer is a genuine Cloudflare edge
+         IP (CLOUDFLARE_IP_NETS) — never for private/CGNAT peers, because the
          Railway origin is directly reachable and a forged CF-Connecting-IP
-         would bypass every rate limit (watchdog Round 6).
+         would bypass every rate limit (watchdog Round 6/7). cf-ray presence
+         is NOT a trust signal (it is equally client-forgeable on a direct
+         origin hit).
       2. FIRST public entry in X-Forwarded-For — the edge proxy (Cloudflare or
          Railway's public edge) prepends the real client IP; Railway's own
          private proxy entries (100.64.0.x, 10.x…) are skipped. Client-supplied
@@ -287,18 +289,16 @@ def real_client_ip(request) -> str:
         if direct and _public(direct):
             return direct
         # 1) Cloudflare edge header (production path via api.glbtoken.com).
-        #    Trust ONLY when the request provably came through Cloudflare:
-        #    either the direct peer is a Cloudflare edge IP (non-CGNAT
-        #    deployments), OR the cf-ray header is present (Cloudflare adds
-        #    cf-ray to every proxied request — an attacker hitting the origin
-        #    directly must actively forge it). A bare CF-Connecting-IP on a
-        #    private/CGNAT peer is NOT sufficient: the Railway origin is
-        #    directly reachable and a forged CF-CIP would bypass every rate
-        #    limit (watchdog Round 6).
+        #    SECURITY (watchdog Round 6/7): CF-Connecting-IP is ONLY trusted
+        #    when the direct peer is a genuine Cloudflare edge IP
+        #    (CLOUDFLARE_IP_NETS). The presence of a cf-ray header is NOT a
+        #    trust signal: cf-ray is client-controlled when the origin is hit
+        #    directly (the attacker simply sends one), exactly like CF-CIP.
+        #    On Railway the peer is CGNAT 100.64.0.0/10 — never a CF edge IP —
+        #    so a forged CF-CIP is never honored here.
         cf = (request.headers.get("cf-connecting-ip", "") or "").strip()
-        cf_ray = (request.headers.get("cf-ray", "") or "").strip()
         cf_peer = _in_networks(direct, CLOUDFLARE_IP_NETS)
-        if cf and _public(cf) and (cf_ray or cf_peer):
+        if cf and _public(cf) and cf_peer:
             return cf
         # 2) X-Forwarded-For — first public entry (edge-appended client IP).
         #    This is safe even for directly-reached origins: an attacker can

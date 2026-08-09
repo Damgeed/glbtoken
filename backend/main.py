@@ -276,14 +276,21 @@ app.add_middleware(SlowAPIMiddleware)
 
 
 # ── Cloudflare Origin Guard ──
-# The Railway origin is DIRECTLY reachable (public URL). Rate limits that key
-# on CF-Connecting-IP are bypassable by forging that header (watchdog Round
-# 6/7). Since all real user traffic flows through Cloudflare (api.glbtoken.com),
-# we fail-closed on sensitive auth endpoints: no cf-ray header ⇒ reject 403.
-# cf-ray is added by Cloudflare to EVERY proxied request and cannot be forged
-# through Cloudflare itself (it overwrites client-supplied values); a direct
-# origin hit has no cf-ray. This closes the brute-force/signup-spam bypass at
-# the application layer, independent of network firewalling.
+# DEFENSE-IN-DEPTH heuristic, NOT a security boundary.
+#
+# The Railway origin is DIRECTLY reachable (public URL), and rate limits that
+# key on CF-Connecting-IP are bypassable by forging that header (watchdog
+# Round 6/7). This middleware rejects sensitive auth endpoints that present NO
+# cf-ray header at all — a cheap barrier against naive direct-origin hits.
+#
+# IMPORTANT (honest limitation): cf-ray is client-controlled when the origin
+# is hit directly — an attacker can simply send a forged cf-ray and pass this
+# guard. The REAL closure is network-layer: make the origin unreachable except
+# through Cloudflare (Cloudflare Tunnel, or restrict Railway ingress to
+# Cloudflare IP ranges / Authenticated Origin Pulls). See
+# docs/railway-cloudflare-hardening.md. The app-layer IP trust rules in
+# common.real_client_ip are the actual anti-bypass control: CF-Connecting-IP
+# is only trusted when the direct peer is a genuine Cloudflare edge IP.
 #
 # Exemptions (checked before the guard):
 #   - non-sensitive paths (health, /v1 gateway, webhooks, static) — /v1 uses

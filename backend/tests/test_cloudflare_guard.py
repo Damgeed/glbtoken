@@ -1,11 +1,12 @@
 """Tests for the Cloudflare origin guard middleware (watchdog Round 6/7 fix).
 
-The Railway origin is directly reachable; rate limits keyed on
-CF-Connecting-IP were bypassable by forging that header. All real user traffic
-flows through Cloudflare (api.glbtoken.com), which adds cf-ray to every
-proxied request. The guard fails closed: sensitive auth endpoints reject
-requests with no cf-ray (403) unless the peer is loopback/private (local dev)
-or the test limiter is disabled (conftest).
+DEFENSE-IN-DEPTH only — NOT a security boundary. The middleware rejects
+sensitive auth endpoints with NO cf-ray header (403), which stops naive
+direct-origin hits. However, cf-ray is client-controlled on a direct hit, so
+an attacker can forge it and pass the guard — the REAL anti-bypass control is
+common.real_client_ip (CF-Connecting-IP trusted ONLY for genuine Cloudflare
+edge peers). See docs/railway-cloudflare-hardening.md for the network-layer
+closure (Cloudflare Tunnel / IP allowlist).
 
 These tests enable the limiter + guard explicitly to exercise the 403 path,
 then restore the conftest defaults.
