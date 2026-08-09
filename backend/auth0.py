@@ -22,11 +22,43 @@ def get_config() -> dict:
 
 # ── PKCE Code Exchange (Social Login) ──
 
+def _auth0_token_request(payload: dict) -> dict:
+    """POST to Auth0 /oauth/token, tolerant of the tenant's token-endpoint
+    authentication method.
+
+    Auth0 default is 'Post' (client_secret in body). If the tenant was
+    switched to 'Basic' (client_id:client_secret in Authorization header),
+    body-only Post returns access_denied/Unauthorized — retry with Basic
+    auth. Raw Auth0 error is logged for diagnostics (never the secret).
+    """
+    url = f"https://{AUTH0_DOMAIN}/oauth/token"
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code == 200:
+        return resp.json()
+    try:
+        err = resp.json().get("error_description") or resp.json().get("error") or resp.text
+    except Exception:
+        err = resp.text
+    # Basic-auth fallback for tenants using the 'Basic' authentication method
+    if resp.status_code in (400, 401, 403):
+        try:
+            resp2 = requests.post(
+                url, json=payload, timeout=10,
+                auth=(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET),
+            )
+            if resp2.status_code == 200:
+                print(f"⚠️ Auth0: token endpoint fell back to Basic auth (Post got: {err})")
+                return resp2.json()
+        except Exception as e:
+            print(f"⚠️ Auth0 Basic auth fallback failed: {e}")
+    print(f"⚠️ Auth0 token endpoint error (HTTP {resp.status_code}): {err}")
+    raise ValueError(f"Auth0 token request failed: {err}")
+
+
 def exchange_pkce_code(code: str, code_verifier: str, redirect_uri: str) -> dict:
     """Exchange an Auth0 authorization code for tokens using PKCE (server-side)."""
     if not is_configured():
         raise ValueError("Auth0 not configured")
-    url = f"https://{AUTH0_DOMAIN}/oauth/token"
     payload = {
         "grant_type": "authorization_code",
         "client_id": AUTH0_CLIENT_ID,
@@ -35,11 +67,7 @@ def exchange_pkce_code(code: str, code_verifier: str, redirect_uri: str) -> dict
         "code_verifier": code_verifier,
         "redirect_uri": redirect_uri,
     }
-    resp = requests.post(url, json=payload, timeout=10)
-    if resp.status_code != 200:
-        err = resp.json().get("error_description", resp.text)
-        raise ValueError(f"PKCE exchange failed: {err}")
-    return resp.json()
+    return _auth0_token_request(payload)
 
 # ── Password Grant (Email/Password Login) ──
 
@@ -47,7 +75,6 @@ def password_login(email: str, password: str) -> dict:
     """Exchange email+password for Auth0 tokens via Resource Owner Password Grant."""
     if not is_configured():
         raise ValueError("Auth0 not configured")
-    url = f"https://{AUTH0_DOMAIN}/oauth/token"
     payload = {
         "grant_type": "password",
         "username": email,
@@ -56,11 +83,7 @@ def password_login(email: str, password: str) -> dict:
         "client_secret": AUTH0_CLIENT_SECRET,
         "scope": "openid email profile",
     }
-    resp = requests.post(url, json=payload, timeout=10)
-    if resp.status_code != 200:
-        err = resp.json().get("error_description", resp.text)
-        raise ValueError(f"Auth0 login failed: {err}")
-    return resp.json()
+    return _auth0_token_request(payload)
 
 # ── Signup (Database Connection) ──
 
