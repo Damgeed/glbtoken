@@ -42,8 +42,23 @@ function getFlag(location) {
   // Non-ISO country codes that appear in provider data (UK is the main one —
   // ISO code is GB, but ipwho.is/ip-api sometimes return UK).
   var special = { 'UK': '🇬🇧' };
+  // Country full-name → ISO code fallback (some GeoIP providers return
+  // "China"/"United States" instead of CN/US).
+  var names = {
+    'CHINA':'CN','UNITED STATES':'US','USA':'US','UNITED KINGDOM':'GB','ENGLAND':'GB',
+    'GERMANY':'DE','JAPAN':'JP','SOUTH KOREA':'KR','KOREA':'KR','CANADA':'CA','AUSTRALIA':'AU',
+    'FRANCE':'FR','INDIA':'IN','SINGAPORE':'SG','RUSSIA':'RU','BRAZIL':'BR','ITALY':'IT',
+    'SPAIN':'ES','MEXICO':'MX','NETHERLANDS':'NL','SWEDEN':'SE','NORWAY':'NO','FINLAND':'FI',
+    'DENMARK':'DK','POLAND':'PL','UKRAINE':'UA','TURKEY':'TR','INDONESIA':'ID','MALAYSIA':'MY',
+    'THAILAND':'TH','VIETNAM':'VN','PHILIPPINES':'PH','PAKISTAN':'PK','BANGLADESH':'BD',
+    'SAUDI ARABIA':'SA','UAE':'AE','ISRAEL':'IL','EGYPT':'EG','SOUTH AFRICA':'ZA','NIGERIA':'NG',
+    'KENYA':'KE','ARGENTINA':'AR','CHILE':'CL','COLOMBIA':'CO','NEW ZEALAND':'NZ','IRELAND':'IE',
+    'PORTUGAL':'PT','GREECE':'GR','CZECHIA':'CZ','CZECH REPUBLIC':'CZ','ROMANIA':'RO','HUNGARY':'HU',
+    'AUSTRIA':'AT','SWITZERLAND':'CH','BELGIUM':'BE','TAIWAN':'TW','HONG KONG':'HK','MACAU':'MO'
+  };
   var parts = location.split(', ');
-  var code = ((parts[parts.length - 1] || '').trim() || '').toUpperCase();
+  var raw = ((parts[parts.length - 1] || '').trim() || '').toUpperCase();
+  var code = names[raw] || raw;
   if (special[code]) return special[code];
   // Any 2-letter ISO country code → regional-indicator flag emoji
   // (CN→🇨🇳, SG→🇸🇬, US→🇺🇸, DE→🇩🇪, JP→🇯🇵, …). No manual map to maintain.

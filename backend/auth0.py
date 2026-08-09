@@ -256,14 +256,30 @@ def _fetch_jwks() -> dict:
     return JWKS_CACHE or {}
 
 def verify_token(id_token: str) -> dict:
-    """Verify an Auth0 ID token. Returns decoded payload on success."""
+    """Verify an Auth0 ID token. Returns decoded payload on success.
+
+    Supports both Auth0 signing algorithms:
+    - RS256 (default): verified against the tenant JWKS public keys.
+    - HS256: signed with the application's client_secret (Auth0 lets the app
+      switch Signing Algorithm to HS256; token header alg then says HS256).
+    """
     if not is_configured():
         raise ValueError("Auth0 not configured")
-    jwks = _fetch_jwks()
-    if not jwks:
-        raise ValueError("Could not fetch Auth0 JWKS")
     try:
         unverified_header = jwt.get_unverified_header(id_token)
+        alg = unverified_header.get("alg", "")
+        if alg == "HS256":
+            payload = jwt.decode(
+                id_token, AUTH0_CLIENT_SECRET,
+                algorithms=["HS256"],
+                audience=AUTH0_CLIENT_ID,
+                issuer=f"https://{AUTH0_DOMAIN}/",
+            )
+            return payload
+        # RS256 via JWKS
+        jwks = _fetch_jwks()
+        if not jwks:
+            raise ValueError("Could not fetch Auth0 JWKS")
         rsa_key = {}
         for key in jwks.get("keys", []):
             if key["kid"] == unverified_header["kid"]:
