@@ -39,10 +39,18 @@ async function loadLoginHistory(offset) {
 
 function getFlag(location) {
   if (!location) return '🌍';
-  var map = { 'US': '🇺🇸', 'UK': '🇬🇧', 'DE': '🇩🇪', 'JP': '🇯🇵', 'KR': '🇰🇷', 'CA': '🇨🇦', 'AU': '🇦🇺', 'FR': '🇫🇷', 'IN': '🇮🇳', 'SG': '🇸🇬' };
+  // Non-ISO country codes that appear in provider data (UK is the main one —
+  // ISO code is GB, but ipwho.is/ip-api sometimes return UK).
+  var special = { 'UK': '🇬🇧' };
   var parts = location.split(', ');
-  var code = parts[parts.length - 1];
-  return map[code] || '🌍';
+  var code = ((parts[parts.length - 1] || '').trim() || '').toUpperCase();
+  if (special[code]) return special[code];
+  // Any 2-letter ISO country code → regional-indicator flag emoji
+  // (CN→🇨🇳, SG→🇸🇬, US→🇺🇸, DE→🇩🇪, JP→🇯🇵, …). No manual map to maintain.
+  if (/^[A-Z]{2}$/.test(code)) {
+    return String.fromCodePoint(code.charCodeAt(0) + 0x1F1E6 - 65, code.charCodeAt(1) + 0x1F1E6 - 65);
+  }
+  return '🌍';
 }
 
 function getBrowserShort(ua) {

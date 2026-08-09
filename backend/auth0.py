@@ -23,34 +23,53 @@ def get_config() -> dict:
 # ── PKCE Code Exchange (Social Login) ──
 
 def _auth0_token_request(payload: dict) -> dict:
-    """POST to Auth0 /oauth/token, tolerant of the tenant's token-endpoint
-    authentication method.
+    """POST to Auth0 /oauth/token, tolerant of the application's client type.
 
-    Auth0 default is 'Post' (client_secret in body). If the tenant was
-    switched to 'Basic' (client_id:client_secret in Authorization header),
-    body-only Post returns access_denied/Unauthorized — retry with Basic
-    auth. Raw Auth0 error is logged for diagnostics (never the secret).
+    Auth0 application types differ in how the token endpoint authenticates:
+    - Single Page App (public client): PKCE only — sending client_secret is
+      REJECTED with access_denied/Unauthorized even when the secret is correct.
+    - Regular Web App (confidential): client_secret required in body ('Post'
+      method) or Authorization header ('Basic' method).
+
+    Strategy: try public PKCE first (no client_secret), then confidential
+    Post, then Basic — so either application type keeps working. Business
+    errors (invalid_grant = bad code/verifier) are NOT retried as auth errors.
+    Raw Auth0 error is logged for diagnostics (never the secret).
     """
     url = f"https://{AUTH0_DOMAIN}/oauth/token"
-    resp = requests.post(url, json=payload, timeout=10)
+    # 1) Public client (SPA): omit client_secret, rely on PKCE code_verifier
+    pub_payload = {k: v for k, v in payload.items() if k != "client_secret"}
+    resp = requests.post(url, json=pub_payload, timeout=10)
     if resp.status_code == 200:
         return resp.json()
     try:
-        err = resp.json().get("error_description") or resp.json().get("error") or resp.text
+        err_body = resp.json()
+        err = err_body.get("error_description") or err_body.get("error") or resp.text
+        err_code = err_body.get("error", "")
     except Exception:
         err = resp.text
-    # Basic-auth fallback for tenants using the 'Basic' authentication method
-    if resp.status_code in (400, 401, 403):
-        try:
-            resp2 = requests.post(
-                url, json=payload, timeout=10,
-                auth=(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET),
-            )
-            if resp2.status_code == 200:
-                print(f"⚠️ Auth0: token endpoint fell back to Basic auth (Post got: {err})")
-                return resp2.json()
-        except Exception as e:
-            print(f"⚠️ Auth0 Basic auth fallback failed: {e}")
+        err_code = ""
+    # Business errors (invalid_grant etc.) mean the request was accepted and
+    # the code/verifier is bad — retrying with secret won't help.
+    if err_code in ("invalid_grant", "invalid_request"):
+        print(f"⚠️ Auth0 token endpoint error (HTTP {resp.status_code}): {err}")
+        raise ValueError(f"Auth0 token request failed: {err}")
+    # 2) Confidential client, 'Post' method (client_secret in body)
+    resp = requests.post(url, json=payload, timeout=10)
+    if resp.status_code == 200:
+        print("⚠️ Auth0: token endpoint used confidential Post auth (public PKCE was rejected)")
+        return resp.json()
+    # 3) Confidential client, 'Basic' method (Authorization header)
+    try:
+        resp2 = requests.post(
+            url, json=payload, timeout=10,
+            auth=(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET),
+        )
+        if resp2.status_code == 200:
+            print(f"⚠️ Auth0: token endpoint fell back to Basic auth (Post got: {err})")
+            return resp2.json()
+    except Exception as e:
+        print(f"⚠️ Auth0 Basic auth fallback failed: {e}")
     print(f"⚠️ Auth0 token endpoint error (HTTP {resp.status_code}): {err}")
     raise ValueError(f"Auth0 token request failed: {err}")
 
