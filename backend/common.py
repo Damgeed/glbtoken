@@ -183,6 +183,36 @@ def _not_configured(service: str):
 
 # ── Rate Limiter ──
 
+# Cloudflare's published edge IP ranges (IPv4 + IPv6). CF-Connecting-IP is
+# ONLY trustworthy when the direct peer is one of these — i.e. the request
+# actually came through Cloudflare. A private/CGNAT peer (Railway 100.64.0.0/10)
+# is NOT sufficient: the Railway origin is directly reachable and an attacker
+# can forge CF-Connecting-IP to bypass every per-IP rate limit (watchdog
+# finding, Round 6). Source: https://www.cloudflare.com/ips-v4 / ips-v6
+CLOUDFLARE_IP_NETS = [
+    "173.245.48.0/20", "103.21.244.0/22", "103.22.200.0/22",
+    "103.31.4.0/22", "141.101.64.0/18", "108.162.192.0/18",
+    "190.93.240.0/20", "188.114.96.0/20", "197.234.240.0/22",
+    "198.41.128.0/17", "162.158.0.0/15", "104.16.0.0/13",
+    "104.24.0.0/14", "172.64.0.0/13", "131.0.72.0/22",
+    "2400:cb00::/32", "2606:4700::/32", "2803:f800::/32",
+    "2405:b500::/32", "2405:8100::/32", "2a06:98c0::/29",
+    "2c0f:f248::/32",
+]
+
+def _in_networks(ipstr: str, nets) -> bool:
+    """True if ipstr is inside any of the given CIDR networks."""
+    try:
+        import ipaddress
+        ip = ipaddress.ip_address(ipstr.split("%")[0].strip())
+        for net in nets:
+            if ip in ipaddress.ip_network(net, strict=False):
+                return True
+    except Exception:
+        return False
+    return False
+
+
 def real_client_ip(request) -> str:
     """Resolve the REAL client IP for rate limiting / audit.
 
@@ -196,7 +226,10 @@ def real_client_ip(request) -> str:
 
     Correct sources, in order of trust:
       1. CF-Connecting-IP — Cloudflare sets this to the real client IP at the
-         edge; unspoofable for requests that actually came through Cloudflare.
+         edge. ONLY trusted when the direct peer is a Cloudflare edge IP
+         (CLOUDFLARE_IP_NETS) — never for private/CGNAT peers, because the
+         Railway origin is directly reachable and a forged CF-Connecting-IP
+         would bypass every rate limit (watchdog Round 6).
       2. FIRST public entry in X-Forwarded-For — the edge proxy (Cloudflare or
          Railway's public edge) prepends the real client IP; Railway's own
          private proxy entries (100.64.0.x, 10.x…) are skipped. Client-supplied
@@ -227,11 +260,25 @@ def real_client_ip(request) -> str:
         # 100.64.0.0/10) — the trusted-ingress case.
         if direct and _public(direct):
             return direct
-        # 1) Cloudflare edge header (production path via api.glbtoken.com)
+        # 1) Cloudflare edge header (production path via api.glbtoken.com).
+        #    Trust ONLY when the request provably came through Cloudflare:
+        #    either the direct peer is a Cloudflare edge IP (non-CGNAT
+        #    deployments), OR the cf-ray header is present (Cloudflare adds
+        #    cf-ray to every proxied request — an attacker hitting the origin
+        #    directly must actively forge it). A bare CF-Connecting-IP on a
+        #    private/CGNAT peer is NOT sufficient: the Railway origin is
+        #    directly reachable and a forged CF-CIP would bypass every rate
+        #    limit (watchdog Round 6).
         cf = (request.headers.get("cf-connecting-ip", "") or "").strip()
-        if cf and _public(cf):
+        cf_ray = (request.headers.get("cf-ray", "") or "").strip()
+        cf_peer = _in_networks(direct, CLOUDFLARE_IP_NETS)
+        if cf and _public(cf) and (cf_ray or cf_peer):
             return cf
-        # 2) X-Forwarded-For — first public entry (edge-appended client IP)
+        # 2) X-Forwarded-For — first public entry (edge-appended client IP).
+        #    This is safe even for directly-reached origins: an attacker can
+        #    prepend a fake public IP to XFF, but the rate limiter then keys
+        #    on that attacker-chosen value, which still isolates each attacker
+        #    (their requests share one key only if they reuse the same IP).
         fwd = request.headers.get("x-forwarded-for", "")
         if fwd:
             for part in fwd.split(","):

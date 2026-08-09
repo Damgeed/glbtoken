@@ -59,11 +59,43 @@ def test_private_peer_no_headers():
     assert real_client_ip(r) == "100.64.0.20"
 
 
-# 6. Spoof attempt: attacker sets CF-Connecting-IP via direct origin — the
-#    documented limitation (mitigated by not exposing the direct origin).
+# 6. Spoof attempt: attacker sets CF-Connecting-IP via direct origin — MUST be
+#    REJECTED. The Railway origin is directly reachable (peer is CGNAT
+#    100.64.x, not a Cloudflare edge IP, and no cf-ray), so a forged CF-CIP
+#    would bypass every rate limit (watchdog Round 6 finding).
 def test_forged_cf_header_direct_origin():
     r = FakeReq("100.64.0.15", {"cf-connecting-ip": "1.1.1.1"})
-    assert real_client_ip(r) == "1.1.1.1"
+    # Not a Cloudflare peer + no cf-ray → CF-CIP ignored → no public XFF → peer
+    assert real_client_ip(r) == "100.64.0.15"
+
+
+# 6b. Forged CF-CIP with a spoofed public XFF entry: XFF first-public is still
+#     honored (rate limiter keys on the attacker-chosen value, which still
+#     isolates each attacker), but CF-CIP itself is never trusted without
+#     Cloudflare proof.
+def test_forged_cf_header_with_xff_direct_origin():
+    r = FakeReq("100.64.0.15", {"cf-connecting-ip": "1.1.1.1",
+                                "x-forwarded-for": "9.9.9.9"})
+    assert real_client_ip(r) == "9.9.9.9"
+
+
+# 6c. Legitimate Cloudflare traffic via CGNAT Railway peer: cf-ray present
+#     (Cloudflare adds it to every proxied request) → CF-Connecting-IP trusted.
+def test_cf_cip_trusted_with_cf_ray():
+    r = FakeReq("100.64.0.5", {"cf-connecting-ip": "8.8.8.8",
+                               "cf-ray": "abc123def456-SIN",
+                               "x-forwarded-for": "8.8.8.8, 100.64.0.5"})
+    assert real_client_ip(r) == "8.8.8.8"
+
+
+# 6d. Direct Cloudflare edge peer (no CGNAT): peer IS a CF edge IP AND public.
+#     A public peer means the client reached the origin directly with no
+#     platform ingress — the first guard returns the peer itself, which is
+#     correct (a public peer is the real client; headers are not trusted).
+def test_cf_public_peer_returns_peer():
+    r = FakeReq("172.64.0.5", {"cf-connecting-ip": "8.8.8.8",
+                               "x-forwarded-for": "8.8.8.8, 172.64.0.5"})
+    assert real_client_ip(r) == "172.64.0.5"
 
 
 # 7. IPv6 loopback / ULA / CGNAT entries are never picked as the client IP.
