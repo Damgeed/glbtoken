@@ -4794,9 +4794,6 @@ body {
 .form-wrap { max-width:500px;margin:0 auto; }
 .quick-links-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;font-size:0.9rem; }
 .mb-2-5 { margin-bottom:1.25rem; }
-/* ── Home Page ── */
-.home-model-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem; }
-.home-model-header h3 { font-size:1.05rem;font-weight:600;margin:0; }
 .balance-label { font-size:0.8rem;color:var(--text-secondary); }
 .balance-amount { font-size:1.25rem;font-weight:700;color:var(--primary); }
 .section-center-text { text-align:center;margin-bottom:1.5rem; }
