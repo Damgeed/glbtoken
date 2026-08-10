@@ -919,7 +919,7 @@ def _make_invoice_pdf(tx, user):
     st_w = st_tw + 20
     pill_x = 562 - st_w
     _rrect(ops, pill_x, 706, st_w, 16, 8, GOLD)
-    text(pill_x + (st_w - st_tw) / 2, 713, st_txt, "F2", 8, NAVY)
+    text(pill_x + (st_w - st_tw) / 2, 712, st_txt, "F2", 8, NAVY)
     text(562 - width_est(f"Method: {method}", 9), 694, f"Method: {method}", "F1", 9, GRAY_TXT)
     # ── Table ──
     text(50, 600, "Description", "F2", 10, NAVY)
@@ -931,11 +931,14 @@ def _make_invoice_pdf(tx, user):
     ops.append(f"q {GRAY_LINE} rg 50 556 512 0.5 re f Q")
     text(50, 538, f"Payment method: {method}", "F1", 9, GRAY_TXT)
     text(50, 522, f"Tokens credited: {tokens_str}", "F1", 9, GRAY_TXT)
-    # Total — gold band (rounded)
-    _rrect(ops, 50, 492, 512, 30, 6, GOLD)
-    # baseline 502 centers the 12pt text vertically in the 492-522 band
-    text(64, 502, "TOTAL", "F2", 12, NAVY)
-    text(562 - width_est(amount_str, 12), 502, amount_str, "F2", 12, NAVY)
+    # Total — gold band (rounded). Band pushed down 10pt (y 492 -> 482) so
+    # it clears the "Tokens credited" line above (was starting right at its
+    # baseline). Amount right-aligned at 548 (14pt right padding) so long
+    # amounts stay inside the yellow band instead of touching its edge.
+    _rrect(ops, 50, 482, 512, 30, 6, GOLD)
+    # baseline 492 centers the 12pt text vertically in the 482-512 band
+    text(64, 492, "TOTAL", "F2", 12, NAVY)
+    text(548 - width_est(amount_str, 12), 492, amount_str, "F2", 12, NAVY)
     # Footer
     ops.append(f"q {GRAY_LINE} rg 50 96 512 0.8 re f Q")
     text(50, 76, "Thank you for your business!", "F1", 9, GRAY_TXT)
