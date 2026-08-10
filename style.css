@@ -5449,6 +5449,36 @@ body {
   /* .stars-bg intentionally NOT hidden on mobile — stars are a brand
      element on every page (see .stars-bg static field rules above).
      The old display:none here made stars vanish on phones. */
+  /* Mobile keeps the starfield subtle: the full ~80-star static field is
+     too dense on small screens, so swap in a light ~20-star field and
+     show only 8 slow shooting stars instead of 20. */
+  .stars-bg::before {
+    box-shadow:
+      8.3vw 5.2vh 0 0.5px rgba(255, 200, 80, 0.8),
+      22.6vw 18.4vh 0 0.5px rgba(255, 200, 80, 0.8),
+      41.9vw 8.7vh 0 0.5px rgba(255, 200, 80, 0.8),
+      58.2vw 27.3vh 0 0.5px rgba(255, 200, 80, 0.8),
+      74.5vw 12.9vh 0 0.5px rgba(255, 200, 80, 0.8),
+      88.1vw 34.6vh 0 0.5px rgba(255, 200, 80, 0.8),
+      12.4vw 44.8vh 0 0.5px rgba(255, 200, 80, 0.8),
+      31.7vw 58.2vh 0 0.5px rgba(255, 200, 80, 0.8),
+      47.3vw 72.6vh 0 0.5px rgba(255, 200, 80, 0.8),
+      63.8vw 49.5vh 0 0.5px rgba(255, 200, 80, 0.8),
+      81.2vw 78.4vh 0 0.5px rgba(255, 200, 80, 0.8),
+      6.9vw 88.9vh 0 0.5px rgba(255, 200, 80, 0.8);
+  }
+  .stars-bg::after {
+    box-shadow:
+      16.2vw 9.7vh 0 0.5px rgba(150, 200, 255, 0.7),
+      35.4vw 21.5vh 0 0.5px rgba(150, 200, 255, 0.7),
+      52.7vw 40.3vh 0 0.5px rgba(150, 200, 255, 0.7),
+      69.8vw 61.8vh 0 0.5px rgba(150, 200, 255, 0.7),
+      87.4vw 26.9vh 0 0.5px rgba(150, 200, 255, 0.7),
+      25.1vw 67.4vh 0 0.5px rgba(150, 200, 255, 0.7),
+      44.6vw 88.2vh 0 0.5px rgba(150, 200, 255, 0.7),
+      93.2vw 54.1vh 0 0.5px rgba(150, 200, 255, 0.7);
+  }
+  .star:nth-child(n+9) { display: none; }
   .pricing-card {
     padding: 1.25rem;
   }

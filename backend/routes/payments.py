@@ -706,6 +706,42 @@ def _build_pdf(pages):
     return bytes(out)
 
 
+def _pdf_ascii(s):
+    """Translate non-ASCII characters to ASCII-safe equivalents so the
+    standard Helvetica fonts render cleanly (raw em-dash/middle-dot bytes
+    otherwise show up as '?' or garbage in PDF viewers)."""
+    repl = {
+        "\u2014": "-", "\u2013": "-",            # em/en dash
+        "\u00b7": "|",                          # middle dot
+        "\u2026": "...",                        # ellipsis
+        "\u2018": "'", "\u2019": "'",           # curly single quotes
+        "\u201c": '"', "\u201d": '"',           # curly double quotes
+        "\u2022": "-",                          # bullet
+        "\u00d7": "x",                          # multiplication sign
+        "\u20ac": "EUR", "\u00a3": "GBP", "\u00a5": "JPY", "\u20a6": "NGN",
+        "\u00a9": "(c)", "\u00ae": "(r)", "\u2122": "(TM)",
+    }
+    out = []
+    for ch in str(s):
+        if ord(ch) < 128:
+            out.append(ch)
+        else:
+            out.append(repl.get(ch, ""))
+    return "".join(out)
+
+
+def _rrect(ops, x, y, w, h, r, color):
+    """Append a filled rounded-rectangle path (PDF bottom-left coords)."""
+    k = 0.5523  # cubic-bezier magic constant for a circular corner
+    ops.append(f"q {color} rg")
+    ops.append(f"{x + r:.1f} {y:.1f} m")
+    ops.append(f"{x + w - r:.1f} {y:.1f} l")
+    ops.append(f"{x + w:.1f} {y + r:.1f} {x + w:.1f} {y + h - r:.1f} {x + w - r:.1f} {y + h:.1f} c")
+    ops.append(f"{x + r:.1f} {y + h:.1f} l")
+    ops.append(f"{x:.1f} {y + h - r:.1f} {x:.1f} {y + r:.1f} {x + r:.1f} {y:.1f} c")
+    ops.append("h f Q")
+
+
 def _make_statement_pdf(txs, user):
     """Generate a combined multi-page statement PDF (stdlib only)."""
     name = (user.name or "").strip() or "GlbTOKEN Customer"
@@ -714,7 +750,8 @@ def _make_statement_pdf(txs, user):
     total_tokens = sum(int(t.tokens or 0) for t in txs)
 
     def esc(s):
-        return str(s).replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        s = _pdf_ascii(s)
+        return s.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
 
     def width_est(s, size):
         # Helvetica: digits are 0.556em wide, most other chars ~0.5em
@@ -740,16 +777,15 @@ def _make_statement_pdf(txs, user):
         # ── Dark navy header band (full width) — matches the site nav ──
         ops.append(f"q {NAVY} rg 0 746 612 46 re f Q")
         ops.append(f"q {GOLD} rg 0 744 612 2.5 re f Q")  # gold underline accent
-        # Logo: gold square mark + white wordmark
-        ops.append(f"q {GOLD} rg 50 766 14 14 re f Q")
+        # Logo: gold rounded-square mark + white wordmark
+        _rrect(ops, 50, 766, 14, 14, 3, GOLD)
         text(72, 769, "GlbTOKEN", "F2", 19, WHITE)
         text(50, 754, "PAYMENT STATEMENT", "F2", 9, GOLD)
         # Right side: brand domain + page marker
         text(562 - width_est("glbtoken.com", 9), 769, "glbtoken.com", "F1", 9, "0.62 0.63 0.7")
         text(562 - width_est(f"Page {p + 1} / {total_pages}", 8), 754, f"Page {p + 1} / {total_pages}", "F1", 8, "0.62 0.63 0.7")
-        # ── Billed-to card (light card block) ──
-        ops.append(f"q 0.965 0.965 0.97 rg 50 688 512 52 re f Q")
-        ops.append(f"q {GRAY_LINE} rg 50 686 512 0.8 re f Q")
+        # ── Billed-to card (light card block, rounded corners) ──
+        _rrect(ops, 50, 688, 512, 52, 8, "0.965 0.965 0.97")
         text(64, 720, "BILLED TO", "F2", 8, GOLD_DK)
         text(64, 704, f"{name}" + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
         text(64, 690, f"{len(txs)} payment(s)", "F1", 8, GRAY_TXT)
@@ -796,11 +832,11 @@ def _make_statement_pdf(txs, user):
             # so y-5.5 sits in the whitespace between the two text blocks)
             ops.append(f"q {GRAY_LINE} rg 50 {y - 5.5:.1f} 512 0.5 re f Q")
             y -= 18
-        # TOTAL row on last page — gold band like the site's CTA
+        # TOTAL row on last page — gold band like the site's CTA (rounded)
         if p == total_pages - 1:
             amt_total = f"${total_amount:,.2f}"
             toks_total = f"{int(total_tokens):,}"
-            ops.append(f"q {GOLD} rg 50 132 512 26 re f Q")
+            _rrect(ops, 50, 132, 512, 26, 6, GOLD)
             text(64, 144, "TOTAL", "F2", 12, NAVY)
             text(391 - width_est(toks_total, 11), 144, toks_total, "F2", 11, NAVY)
             text(562 - width_est(amt_total, 11), 144, amt_total, "F2", 11, NAVY)
@@ -827,7 +863,8 @@ def _make_invoice_pdf(tx, user):
     email = (user.email or "").strip()
 
     def esc(s):
-        return str(s).replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        s = _pdf_ascii(s)
+        return s.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
 
     def width_est(s, size):
         # Rough Helvetica advance (~0.5em per char) — good enough for alignment
@@ -848,21 +885,20 @@ def _make_invoice_pdf(tx, user):
     # ── Dark navy header band (full width) ──
     ops.append(f"q {NAVY} rg 0 746 612 46 re f Q")
     ops.append(f"q {GOLD} rg 0 744 612 2.5 re f Q")
-    ops.append(f"q {GOLD} rg 50 766 14 14 re f Q")
+    _rrect(ops, 50, 766, 14, 14, 3, GOLD)
     text(72, 769, "GlbTOKEN", "F2", 19, WHITE)
     text(50, 754, "INVOICE", "F2", 9, GOLD)
     text(562 - width_est("glbtoken.com", 9), 769, "glbtoken.com", "F1", 9, "0.62 0.63 0.7")
     inv_label = f"Invoice #{tx.id}"
     text(562 - width_est(inv_label, 9), 754, inv_label, "F1", 8, "0.62 0.63 0.7")
-    # ── Meta card: date / status / billed to ──
-    ops.append(f"q 0.965 0.965 0.97 rg 50 690 512 60 re f Q")
-    ops.append(f"q {GRAY_LINE} rg 50 688 512 0.8 re f Q")
+    # ── Meta card: date / status / billed to (rounded corners) ──
+    _rrect(ops, 50, 690, 512, 60, 8, "0.965 0.965 0.97")
     text(64, 724, "BILLED TO", "F2", 8, GOLD_DK)
     text(64, 708, name + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
     text(64, 694, f"Date: {date_str}", "F1", 9, "0.2 0.2 0.25")
-    # Status pill on the right
+    # Status pill on the right (rounded)
     st_w = width_est(status.upper(), 8) + 24
-    ops.append(f"q {GOLD} rg {562 - st_w:.1f} 706 {st_w:.1f} 16 re f Q")
+    _rrect(ops, 562 - st_w, 706, st_w, 16, 8, GOLD)
     text(562 - st_w + 12, 713, status.upper(), "F2", 8, NAVY)
     text(562 - width_est(f"Method: {method}", 9), 694, f"Method: {method}", "F1", 9, GRAY_TXT)
     # ── Table ──
@@ -875,8 +911,8 @@ def _make_invoice_pdf(tx, user):
     ops.append(f"q {GRAY_LINE} rg 50 556 512 0.5 re f Q")
     text(50, 538, f"Payment method: {method}", "F1", 9, GRAY_TXT)
     text(50, 522, f"Tokens credited: {tokens_str}", "F1", 9, GRAY_TXT)
-    # Total — gold band
-    ops.append(f"q {GOLD} rg 50 492 512 30 re f Q")
+    # Total — gold band (rounded)
+    _rrect(ops, 50, 492, 512, 30, 6, GOLD)
     text(64, 505, "TOTAL", "F2", 12, NAVY)
     text(562 - width_est(amount_str, 12), 505, amount_str, "F2", 12, NAVY)
     # Footer
