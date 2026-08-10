@@ -3629,6 +3629,9 @@ html.light .star.white {
 .star.trail.blue {
   --star-color: hsl(211 82% 57%);
 }
+.star.trail.white {
+  --star-color: hsl(210 22% 96%);
+}
 /* Diag 1: top-left to bottom-right (↘) */
 @keyframes shootDR {
   0% {

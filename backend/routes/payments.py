@@ -931,14 +931,14 @@ def _make_invoice_pdf(tx, user):
     ops.append(f"q {GRAY_LINE} rg 50 556 512 0.5 re f Q")
     text(50, 538, f"Payment method: {method}", "F1", 9, GRAY_TXT)
     text(50, 522, f"Tokens credited: {tokens_str}", "F1", 9, GRAY_TXT)
-    # Total — gold band (rounded). Band pushed down 10pt (y 492 -> 482) so
-    # it clears the "Tokens credited" line above (was starting right at its
-    # baseline). Amount right-aligned at 548 (14pt right padding) so long
+    # Total — gold band (rounded). Band pushed down further (y 492 -> 482
+    # -> 470) so it clears the "Tokens credited" line above and sits lower
+    # on the page. Amount right-aligned at 548 (14pt right padding) so long
     # amounts stay inside the yellow band instead of touching its edge.
-    _rrect(ops, 50, 482, 512, 30, 6, GOLD)
-    # baseline 492 centers the 12pt text vertically in the 482-512 band
-    text(64, 492, "TOTAL", "F2", 12, NAVY)
-    text(548 - width_est(amount_str, 12), 492, amount_str, "F2", 12, NAVY)
+    _rrect(ops, 50, 470, 512, 30, 6, GOLD)
+    # baseline 480 centers the 12pt text vertically in the 470-500 band
+    text(64, 480, "TOTAL", "F2", 12, NAVY)
+    text(548 - width_est(amount_str, 12), 480, amount_str, "F2", 12, NAVY)
     # Footer
     ops.append(f"q {GRAY_LINE} rg 50 96 512 0.8 re f Q")
     text(50, 76, "Thank you for your business!", "F1", 9, GRAY_TXT)
