@@ -143,6 +143,22 @@
   }
 }
 
+/* ── Transaction History + Login History: 2-col grid on desktop ── */
+.usage-history-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+@media (min-width: 768px) {
+  .usage-history-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .usage-history-grid .dash-card {
+    min-width: 0; /* allow the .scroll-x tables to scroll inside half-width */
+  }
+}
+
 /* ── Login History (shared login-history.js — same styling as settings) ── */
 .login-hint {
   display: flex;
