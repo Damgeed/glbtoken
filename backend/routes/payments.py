@@ -731,14 +731,25 @@ def _pdf_ascii(s):
 
 
 def _rrect(ops, x, y, w, h, r, color):
-    """Append a filled rounded-rectangle path (PDF bottom-left coords)."""
+    """Append a filled rounded-rectangle path (PDF bottom-left coords).
+
+    Matches the site's button look (--radius-sm: 10px ≈ 7.5pt). Uses the
+    standard quarter-circle bezier (k = 0.5523) so every corner is a true
+    circular arc — a plain cubic from edge to edge would bulge the whole
+    side into a capsule instead of rounding just the corners."""
     k = 0.5523  # cubic-bezier magic constant for a circular corner
     ops.append(f"q {color} rg")
+    # bottom edge → bottom-right corner → right edge → top-right corner →
+    # top edge → top-left corner → left edge → bottom-left corner → close
     ops.append(f"{x + r:.1f} {y:.1f} m")
     ops.append(f"{x + w - r:.1f} {y:.1f} l")
-    ops.append(f"{x + w:.1f} {y + r:.1f} {x + w:.1f} {y + h - r:.1f} {x + w - r:.1f} {y + h:.1f} c")
+    ops.append(f"{x + w - r + k * r:.1f} {y:.1f} {x + w:.1f} {y + r - k * r:.1f} {x + w:.1f} {y + r:.1f} c")
+    ops.append(f"{x + w:.1f} {y + h - r:.1f} l")
+    ops.append(f"{x + w:.1f} {y + h - r + k * r:.1f} {x + w - r + k * r:.1f} {y + h:.1f} {x + w - r:.1f} {y + h:.1f} c")
     ops.append(f"{x + r:.1f} {y + h:.1f} l")
-    ops.append(f"{x:.1f} {y + h - r:.1f} {x:.1f} {y + r:.1f} {x + r:.1f} {y:.1f} c")
+    ops.append(f"{x + r - k * r:.1f} {y + h:.1f} {x:.1f} {y + h - r + k * r:.1f} {x:.1f} {y + h - r:.1f} c")
+    ops.append(f"{x:.1f} {y + r:.1f} l")
+    ops.append(f"{x:.1f} {y + r - k * r:.1f} {x + r - k * r:.1f} {y:.1f} {x + r:.1f} {y:.1f} c")
     ops.append("h f Q")
 
 
@@ -785,7 +796,8 @@ def _make_statement_pdf(txs, user):
         text(562 - width_est("glbtoken.com", 9), 769, "glbtoken.com", "F1", 9, "0.62 0.63 0.7")
         text(562 - width_est(f"Page {p + 1} / {total_pages}", 8), 754, f"Page {p + 1} / {total_pages}", "F1", 8, "0.62 0.63 0.7")
         # ── Billed-to card (light card block, rounded corners) ──
-        _rrect(ops, 50, 688, 512, 52, 8, "0.965 0.965 0.97")
+        # pushed down from y=688 so it clears the gold header rule by ~6pt
+        _rrect(ops, 50, 682, 512, 56, 8, "0.965 0.965 0.97")
         text(64, 720, "BILLED TO", "F2", 8, GOLD_DK)
         text(64, 704, f"{name}" + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
         text(64, 690, f"{len(txs)} payment(s)", "F1", 8, GRAY_TXT)
@@ -892,7 +904,9 @@ def _make_invoice_pdf(tx, user):
     inv_label = f"Invoice #{tx.id}"
     text(562 - width_est(inv_label, 9), 754, inv_label, "F1", 8, "0.62 0.63 0.7")
     # ── Meta card: date / status / billed to (rounded corners) ──
-    _rrect(ops, 50, 690, 512, 60, 8, "0.965 0.965 0.97")
+    # pushed down from y=690 so it clears the gold header rule (was
+    # overlapping it: card top at 42pt top-down, gold rule at 45.5-48)
+    _rrect(ops, 50, 674, 512, 64, 8, "0.965 0.965 0.97")
     text(64, 724, "BILLED TO", "F2", 8, GOLD_DK)
     text(64, 708, name + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
     text(64, 694, f"Date: {date_str}", "F1", 9, "0.2 0.2 0.25")
