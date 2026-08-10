@@ -232,7 +232,7 @@ async function renderSpendingDonut(days){
   var entries = Object.keys(provMap).map(function(k){ return {provider:k, cost:provMap[k]}; })
     .sort(function(a,b){ return b.cost-a.cost; });
   var totalCost = entries.reduce(function(a,e){ return a+e.cost; },0);
-  var colors = ['var(--primary)','#00D68F','#7C4DFF','#4FC3F7','#FF6B6B','var(--primary-hover)','#39C6F4','#A78BFA'];
+  var colors = [cssVar('--primary'),'#00D68F','#7C4DFF','#4FC3F7','#FF6B6B',cssVar('--primary-hover'),'#39C6F4','#A78BFA'];
   if(sl){
     sl.innerHTML = entries.slice(0,5).map(function(e,i){
       var pct = totalCost>0 ? Math.round(e.cost/totalCost*100) : 0;
@@ -251,13 +251,13 @@ async function renderSpendingDonut(days){
         datasets:[{
           data: entries.slice(0,6).map(function(e){ return totalCost>0 ? Math.round(e.cost/totalCost*100) : 0; }),
           backgroundColor: colors.slice(0,6),
-          borderColor: ['var(--primary-soft)','rgba(0,214,143,0.3)','rgba(124,77,255,0.3)','rgba(79,195,247,0.3)','rgba(255,107,107,0.3)','rgba(255,179,71,0.3)'],
+          borderColor: [cssVar('--primary-soft'),'rgba(0,214,143,0.3)','rgba(124,77,255,0.3)','rgba(79,195,247,0.3)','rgba(255,107,107,0.3)','rgba(255,179,71,0.3)'],
           borderWidth:2, hoverBorderWidth:3, hoverOffset:8
         }]
       },
       options:{
         responsive:true, maintainAspectRatio:false, cutout:'65%',
-        plugins:{ legend:{display:false}, tooltip:{ position:'nearest', backgroundColor:'rgba(10,11,20,0.9)', titleColor:'var(--primary)', bodyColor:'#fff', borderColor:'var(--primary-soft)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(ctx){ return ctx.label+': '+ctx.parsed+'%'; } } } },
+        plugins:{ legend:{display:false}, tooltip:{ position:'nearest', backgroundColor:'rgba(10,11,20,0.9)', titleColor:cssVar('--primary'), bodyColor:'#fff', borderColor:cssVar('--primary-soft'), borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(ctx){ return ctx.label+': '+ctx.parsed+'%'; } } } },
         animation:{ animateRotate:true, duration:1000 }
       }
     });

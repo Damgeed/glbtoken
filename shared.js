@@ -1081,3 +1081,66 @@ window.clearTableCollapse = function clearTableCollapse(collapseId,btnId){
   window.addEventListener('orientationchange', function(){ setTimeout(initHScrollHints, 300); });
   window.addEventListener('resize', function(){ setTimeout(initHScrollHints, 300); });
 })();
+
+/* ══════════════════════════════════════════
+   ACCENT COLOR SYSTEM (global, all pages)
+   Persisted in localStorage 'gt_accent'. Applied on every page load
+   so the chosen accent follows the user across the whole site.
+   ══════════════════════════════════════════ */
+window.ACCENTS = {
+  gold:   {h:44,  s:'96%', l:'52%'},
+  teal:   {h:162, s:'100%',l:'42%'},
+  blue:   {h:217, s:'91%', l:'60%'},
+  purple: {h:271, s:'91%', l:'65%'},
+  red:    {h:0,   s:'84%', l:'60%'},
+  pink:   {h:330, s:'81%', l:'60%'},
+  orange: {h:25,  s:'95%', l:'53%'},
+  green:  {h:142, s:'71%', l:'45%'},
+  cyan:   {h:189, s:'94%', l:'43%'},
+  lime:   {h:84,  s:'80%', l:'44%'},
+  indigo: {h:239, s:'84%', l:'67%'}
+};
+
+// Resolve a CSS custom property to its computed color string.
+// Needed for canvas (Chart.js) which does NOT understand var().
+window.cssVar = function(name){
+  try{
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return (v || '').trim() || '#F4B400';
+  }catch(e){ return '#F4B400'; }
+};
+
+window.applyAccent = function(name){
+  var a = window.ACCENTS[name] || window.ACCENTS.gold;
+  var H = a.h, S = a.s, L = a.l;
+  var Lh = Math.min(100, parseInt(L,10) + 6);
+  var Ld = Math.max(0, parseInt(L,10) - 12);
+  var h = document.documentElement;
+  h.style.setProperty('--primary', 'hsl(' + H + ' ' + S + ' ' + L + ')');
+  h.style.setProperty('--primary-hover', 'hsl(' + H + ' ' + S + ' ' + Lh + '%)');
+  h.style.setProperty('--primary-deep', 'hsl(' + H + ' ' + S + ' ' + Ld + '%)');
+  h.style.setProperty('--primary-subtle', 'hsla(' + H + ' ' + S + ' ' + L + ' / 0.1)');
+  h.style.setProperty('--primary-soft', 'hsla(' + H + ' ' + S + ' ' + L + ' / 0.15)');
+  h.style.setProperty('--primary-glow',
+    '0 0 20px hsla(' + H + ' ' + S + ' ' + L + ' / 0.18), 0 0 40px hsla(' + H + ' ' + S + ' ' + L + ' / 0.08)');
+  h.style.setProperty('--primary-glow-strong',
+    '0 0 24px hsla(' + H + ' ' + S + ' ' + L + ' / 0.28), 0 0 48px hsla(' + H + ' ' + S + ' ' + L + ' / 0.12)');
+  var sw = document.querySelectorAll('.accent-swatch');
+  for(var i=0;i<sw.length;i++){
+    sw[i].classList.toggle('active', sw[i].getAttribute('data-accent') === name);
+  }
+};
+
+window.setAccent = function(name){
+  if(!window.ACCENTS[name]) return;
+  try{ localStorage.setItem('gt_accent', name); }catch(e){}
+  window.applyAccent(name);
+  if(typeof showToast === 'function') showToast('Accent color updated','success');
+};
+
+// Apply persisted accent on every page (runs early; safe before DOM ready)
+(function(){
+  var saved = 'gold';
+  try{ saved = localStorage.getItem('gt_accent') || 'gold'; }catch(e){}
+  window.applyAccent(saved);
+})();

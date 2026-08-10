@@ -24,7 +24,7 @@
         var values=isCost?(data.costs||data.tokens.map(function(){return 0})):data.tokens;
         var label=isCost?'Cost ($)':'Tokens';
         var color=isCost?'rgba(0,214,143,0.7)':'rgba(255,179,71,0.6)';
-        var border=isCost?'#00D68F':'var(--primary-hover)';
+        var border=isCost?'#00D68F':cssVar('--primary-hover');
         window.dailyChartInst=new Chart(canvas,{
           type:'bar',
           data:{

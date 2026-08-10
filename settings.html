@@ -152,7 +152,7 @@
       </div>
       <div class="settings-grid">
         <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
           <div class="settings-field-group">
             <div class="settings-avatar-row">
               <div class="settings-avatar-preview clickable" id="avatarPreview" onclick="pickAvatar()" title="Change avatar"><span class="settings-avatar-initial" id="avatarInitial">U</span>
@@ -179,49 +179,49 @@
           </div>
         </div>
         <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</h3>
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</h3>
           <div class="settings-field-group">
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Total Spent</div><div class="settings-item-desc-sm" id="acctSpent">—</div></div>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="12" x2="12" y2="6"/><line x1="12" y1="12" x2="16" y2="14"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="12" x2="12" y2="6"/><line x1="12" y1="12" x2="16" y2="14"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Token Balance</div><div class="settings-item-desc-sm" id="acctBalance">—</div></div>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Member Since</div><div class="settings-item-desc-sm" id="acctSince">—</div></div>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Email</div><div class="settings-item-desc-sm" id="acctEmail" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
               <button class="btn-secondary settings-btn-right uid-copy-btn" id="acctCopyBtn" onclick="copyAcctEmail()" title="Copy email" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">User ID</div><div class="settings-item-desc-sm" id="acctUserId" style="font-family:monospace;font-size:0.82rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div></div>
               <button class="btn-secondary settings-btn-right uid-copy-btn" id="uidCopyBtn" onclick="copyUserId()" title="Copy User ID" style="white-space:nowrap"><span class="uid-copy-symbol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span><span class="uid-copy-label">Copy</span></button>
             </div>
           </div>
         </div>
         <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Security</h3>
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Security</h3>
           <div class="settings-field-group">
             <div><label class="settings-field-label">Current Password</label><input type="password" id="settingsCurPw" placeholder="Enter current password" class="settings-input" autocomplete="current-password"></div>
             <div><label class="settings-field-label">New Password</label><input type="password" id="settingsNewPw" placeholder="Enter new password" class="settings-input" autocomplete="new-password"></div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
               <div style="flex:1"><div class="settings-item-name-sm">Two-Factor Auth</div><div class="settings-item-desc-sm" id="twofaStatusDesc">Add an extra layer of security</div></div>
               <button class="btn-secondary settings-btn-right" id="twofaToggleBtn" onclick="toggleTwoFA()">Enable</button>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Login History</div><div class="settings-item-desc-sm" id="loginHistorySummary">Loading…</div></div>
               <button class="btn-secondary settings-btn-right" onclick="openLoginHistoryModal()">View</button>
             </div>
             <div class="settings-badge-card">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
               <div style="flex:1;min-width:0"><div class="settings-item-name-sm">Active Sessions</div><div class="settings-item-desc-sm" id="sessionsSummary">Loading…</div></div>
               <button class="btn-secondary settings-btn-right" onclick="revokeAllSessions()">Sign Out All</button>
             </div>
@@ -229,7 +229,7 @@
           </div>
         </div>
         <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</h3>
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</h3>
           <div class="settings-field-group">
             <div class="toggle-row">
               <div><div class="toggle-label">Email Notifications</div><div class="toggle-desc">Receive account &amp; marketing emails</div></div>
@@ -251,7 +251,7 @@
           </div>
         </div>
         <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9 2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9 2.83-2.83"/></svg> Appearance</h3>
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9 2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9 2.83-2.83"/></svg> Appearance</h3>
           <div class="settings-field-group">
             <div class="toggle-row">
               <div><div class="toggle-label">Dark Mode</div><div class="toggle-desc">GlbTOKEN looks best in the dark</div></div>
@@ -284,12 +284,15 @@
                 <button type="button" data-accent="pink" class="accent-swatch" style="background:#EC4899" onclick="setAccent('pink')" title="Pink"></button>
                 <button type="button" data-accent="orange" class="accent-swatch" style="background:#F97316" onclick="setAccent('orange')" title="Orange"></button>
                 <button type="button" data-accent="green" class="accent-swatch" style="background:#22C55E" onclick="setAccent('green')" title="Green"></button>
+                <button type="button" data-accent="cyan" class="accent-swatch" style="background:#06B6D4" onclick="setAccent('cyan')" title="Cyan"></button>
+                <button type="button" data-accent="lime" class="accent-swatch" style="background:#84CC16" onclick="setAccent('lime')" title="Lime"></button>
+                <button type="button" data-accent="indigo" class="accent-swatch" style="background:#6366F1" onclick="setAccent('indigo')" title="Indigo"></button>
               </div>
             </div>
           </div>
         </div>
         <div class="dash-card">
-          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> API Defaults</h3>
+          <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> API Defaults</h3>
           <div class="settings-field-group">
             <div><label class="settings-field-label">Default Model</label>
               <select id="setDefaultModel" class="settings-input"><option value="">— Platform default —</option></select>
@@ -312,7 +315,7 @@
       <div class="settings-grid-notif">
       <!-- Webhooks -->
       <div class="settings-card">
-        <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Webhooks</h3>
+        <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Webhooks</h3>
         <div class="settings-field-group">
           <div><label class="settings-field-label">Webhook URL</label><input type="url" id="webhookUrl" placeholder="https://your-app.com/hook" class="settings-input" autocomplete="off" spellcheck="false"></div>
           <div><label class="settings-field-label">Signing Secret <span class="text-muted text-xs">(optional — used for X-GlbTOKEN-Signature HMAC)</span></label><input type="password" id="webhookSecret" placeholder="Shared secret" class="settings-input" autocomplete="new-password"></div>
@@ -340,7 +343,7 @@
       <!-- Recent Notifications -->
       <div class="settings-card">
         <div class="dash-section-title">
-          <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Recent Notifications</span>
           <button class="notif-mark-read-btn" onclick="markAllRead()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Mark All as Read</button>
         </div>
@@ -356,17 +359,17 @@
       <!-- Data & Privacy -->
       <div class="settings-card">
         <div class="dash-section-title">
-          <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
           Data &amp; Privacy</span>
         </div>
         <div class="settings-field-group">
           <div class="settings-badge-card">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <div style="flex:1"><div class="settings-item-name-sm">Export My Data</div><div class="settings-item-desc-sm">Download your profile, transactions, keys and usage as JSON</div></div>
             <button class="btn-secondary settings-btn-right" onclick="exportUserData()">Export</button>
           </div>
           <div class="settings-badge-card">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
             <div style="flex:1"><div class="settings-item-name-sm">Clear Local Cache</div><div class="settings-item-desc-sm">Remove locally cached data (theme, language, dismissed notifications)</div></div>
             <button class="btn-secondary settings-btn-right" onclick="clearLocalCache()">Clear</button>
           </div>
@@ -410,9 +413,9 @@
 
 <script src="nav.js?v=20"></script>
 <script src="translations.js?v=1113"></script>
-<script data-cfasync="false" src="shared.js?v=1167"></script>
+<script data-cfasync="false" src="shared.js?v=1168"></script>
 <script>requireAuth()</script>
-<script data-cfasync="false" src="ui.js?v=1237"></script>
+<script data-cfasync="false" src="ui.js?v=1238"></script>
 <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js" integrity="sha384-cI8+BKLfdjtgrKKCdtnwJ7lYjVnNZA9xQoJ8FD3NL5jbTPFBsh1EbcMk/CAaVi4C" crossorigin="anonymous"></script>
 
 <!-- ── Settings Scripts ── -->
@@ -540,7 +543,7 @@ function openTwoFAModal(mode){
     '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.75rem;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease;max-height:92dvh;overflow-y:auto">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem">'
     +   '<h3 style="margin:0;font-size:1.05rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
-    +     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
+    +     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
     +     (isSetup ? 'Set up Two-Factor Auth' : 'Disable Two-Factor Auth')
     +   '</h3>'
     +   '<button onclick="closeTwoFAModal()" style="background:none;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
@@ -862,42 +865,11 @@ window.saveAppearance = function(){
   showToast('Appearance saved!','success');
 };
 
-// ── Accent color (CSS variable override, persisted) ──
-// H S L triplets — the full page accent is driven by these via CSS vars.
-var ACCENTS = {
-  gold:   {h:44,  s:'96%', l:'52%'},
-  teal:   {h:162, s:'100%',l:'42%'},
-  blue:   {h:217, s:'91%', l:'60%'},
-  purple: {h:271, s:'91%', l:'65%'},
-  red:    {h:0,   s:'84%', l:'60%'},
-  pink:   {h:330, s:'81%', l:'60%'},
-  orange: {h:25,  s:'95%', l:'53%'},
-  green:  {h:142, s:'71%', l:'45%'}
-};
-window.setAccent = function(name){
-  if(!ACCENTS[name]) return;
-  localStorage.setItem('gt_accent', name);
-  applyAccent(name);
-  showToast('Accent color updated','success');
-};
-function applyAccent(name){
-  var h = document.documentElement;
-  var a = ACCENTS[name] || ACCENTS.gold;
-  var H = a.h, S = a.s, L = a.l;
-  var Lh = Math.min(100, parseInt(L,10) + 6);      // hover: lighter
-  var Ld = Math.max(0, parseInt(L,10) - 12);       // deep: darker (gradients)
-  h.style.setProperty('--primary', 'hsl(' + H + ' ' + S + ' ' + L + ')');
-  h.style.setProperty('--primary-hover', 'hsl(' + H + ' ' + S + ' ' + Lh + '%)');
-  h.style.setProperty('--primary-deep', 'hsl(' + H + ' ' + S + ' ' + Ld + '%)');
-  h.style.setProperty('--primary-subtle', 'hsla(' + H + ' ' + S + ' ' + L + ' / 0.1)');
-  h.style.setProperty('--primary-soft', 'hsla(' + H + ' ' + S + ' ' + L + ' / 0.15)');
-  h.style.setProperty('--primary-glow',
-    '0 0 20px hsla(' + H + ' ' + S + ' ' + L + ' / 0.18), 0 0 40px hsla(' + H + ' ' + S + ' ' + L + ' / 0.08)');
-  h.style.setProperty('--primary-glow-strong',
-    '0 0 24px hsla(' + H + ' ' + S + ' ' + L + ' / 0.28), 0 0 48px hsla(' + H + ' ' + S + ' ' + L + ' / 0.12)');
-  var sw = document.querySelectorAll('.accent-swatch');
-  sw.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-accent') === name); });
-}
+// ── Accent color ──
+// Global ACCENTS/applyAccent/setAccent live in shared.js (11 colors, all pages).
+// settings.html only renders the swatches; the swatch <button> onclick handlers
+// call the global window.setAccent(name) defined there.
+// (Deliberately no local redefinition — it would shadow the 11-color global.)
 
 // ── API Defaults (localStorage — used by Playground/API clients) ──
 window.saveApiDefaults = function(){
@@ -1075,7 +1047,7 @@ window.openAvatarModal = function(){
     '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.5rem;width:100%;max-width:340px;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">'
     +   '<h3 style="margin:0;font-size:1.02rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
-    +     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+    +     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
     +     'Profile Picture'
     +   '</h3>'
     +   '<button onclick="closeAvatarModal()" style="background:none;border:none;color:'+muted+';font-size:1.15rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
@@ -1261,7 +1233,7 @@ window.openLoginHistoryModal = function(){
     '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.5rem;max-width:720px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease;max-height:88dvh;display:flex;flex-direction:column">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">'
     +   '<h3 style="margin:0;font-size:1.05rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
-    +     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>'
+    +     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>'
     +     'Login History'
     +   '</h3>'
     +   '<button onclick="closeLoginHistoryModal()" style="background:none;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
@@ -1583,7 +1555,7 @@ window.openEmailVerifyModal = function(){
     '<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:18px;padding:1.75rem;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);animation:twofaSlideUp 0.22s ease;max-height:92dvh;overflow-y:auto">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem">'
     +   '<h3 style="margin:0;font-size:1.05rem;font-weight:700;color:'+textClr+';display:flex;align-items:center;gap:0.5rem">'
-    +     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+    +     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
     +     'Verify your email'
     +   '</h3>'
     +   '<button onclick="closeEmailVerifyModal()" style="background:none;border:none;color:'+muted+';font-size:1.1rem;cursor:pointer;line-height:1;padding:0.25rem">✕</button>'
@@ -1743,9 +1715,9 @@ function loadNotifications(){
   var read = getNotifArr(NOTIF_READ_KEY).map(normalizeNotifId);
   var dismissed = getNotifArr(NOTIF_DISMISS_KEY).map(normalizeNotifId);
   var ICONS = {
-    primary: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
-    destructive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-    success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+    primary: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
+    destructive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="stroke:var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="settings-avatar-block"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
   };
   function fmtAmount(t){
     if(t.currency && t.currency !== 'USD') return t.currency+' '+Number(t.amount||0).toLocaleString();
