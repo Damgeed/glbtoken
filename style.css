@@ -4309,7 +4309,9 @@ body {
   background: var(--bg);
 }
 .dash-content {
-  background: var(--bg);
+  /* transparent so the fixed .stars-bg shows through (matches browse pages);
+     individual cards carry their own var(--card) background */
+  background: transparent;
 }
 .dash-header {
   display: flex;
