@@ -13,7 +13,7 @@
         var p = new URL(String(u||''), window.location.href);
         if(p.protocol === 'https:' || p.protocol === 'http:'){ window.location.href = p.href; return true; }
       }catch(e){}
-      if(typeof showToast === 'function') showToast('Payment link unavailable — please try again','error');
+      if(typeof showToast === 'function') showToast(t('Payment link unavailable — please try again'),'error');
       return false;
     }
 
@@ -60,12 +60,12 @@
           return '<option value="'+escapeAttr(a.asset)+'">'+escapeHtml(label)+'</option>';
         }).join('');
         var hint=document.getElementById('cryptoAssetHint');
-        if(hint&&assets.length>1) hint.textContent='Select the network you want to pay with.';
+        if(hint&&assets.length>1) hint.textContent=t('Select the network you want to pay with.');
       }catch(e){ /* fall back to default USDT_TRC20 */ }
     }
     function onCryptoAssetChange(sel){
       var hint=document.getElementById('cryptoAssetHint');
-      if(hint) hint.textContent='Selected: '+String(sel.value||'').replace(/_/g,' ');
+      if(hint) hint.textContent=t('Selected: ')+String(sel.value||'').replace(/_/g,' ');
     }
     async function processTopup(){
       if(!token){showToast('Please login first','error');return}
@@ -104,24 +104,24 @@
       var isDark=document.documentElement.className==='dark';
       var cardBg=isDark?'#1e1f29':'#ffffff', textClr=isDark?'#f8f8f2':'#1a1a2e', muted=isDark?'#6272a4':'#666', border=isDark?'#3a3a4e':'#ddd';
       m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:1.75rem;max-width:400px;width:92%;box-shadow:0 16px 48px rgba(0,0,0,0.3);animation:slideUp 0.2s ease">'
-        +'<h3 style="color:'+textClr+';font-size:1.05rem;font-weight:700;margin:0 0 0.75rem">Send Crypto</h3>'
-        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1rem;line-height:1.5">Send exactly <strong style="color:'+textClr+'">'+escapeHtml(d.crypto_amount)+' '+escapeHtml(d.asset)+'</strong> to the address below. Tokens are credited after confirmation.</p>'
+        +'<h3 style="color:'+textClr+';font-size:1.05rem;font-weight:700;margin:0 0 0.75rem">'+t('Send Crypto')+'</h3>'
+        +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1rem;line-height:1.5">'+t('Send exactly ')+'<strong style="color:'+textClr+'">'+escapeHtml(d.crypto_amount)+' '+escapeHtml(d.asset)+'</strong>'+t(' to the address below. Tokens are credited after confirmation.')+'</p>'
         +'<div style="background:rgba(244,180,0,0.08);border:1px solid '+border+';border-radius:10px;padding:0.75rem;margin-bottom:0.5rem;word-break:break-all;font-size:0.8rem;color:'+textClr+'" id="cryptoAddr">'+escapeHtml(d.address)+'</div>'
-        +'<button id="cryptoCopyBtn" style="width:100%;margin-bottom:0.5rem;padding:0.55rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.8rem;cursor:pointer">📋 Copy address</button>'
-        +'<p style="color:'+muted+';font-size:0.75rem;margin:0 0 1rem">Ref: <span style="color:'+textClr+'">'+escapeHtml(d.reference)+'</span></p>'
-        +'<button id="cryptoConfirmBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">I\'ve sent it — Credit my account</button>'
-        +'<button id="cryptoCancelBtn" style="width:100%;margin-top:0.5rem;padding:0.6rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+muted+';font-size:0.82rem;cursor:pointer">Cancel</button>'
+        +'<button id="cryptoCopyBtn" style="width:100%;margin-bottom:0.5rem;padding:0.55rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+textClr+';font-size:0.8rem;cursor:pointer">'+t('📋 Copy address')+'</button>'
+        +'<p style="color:'+muted+';font-size:0.75rem;margin:0 0 1rem">'+t('Ref: ')+'<span style="color:'+textClr+'">'+escapeHtml(d.reference)+'</span></p>'
+        +'<button id="cryptoConfirmBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">'+t("I've sent it — Credit my account")+'</button>'
+        +'<button id="cryptoCancelBtn" style="width:100%;margin-top:0.5rem;padding:0.6rem;border-radius:10px;border:1px solid '+border+';background:transparent;color:'+muted+';font-size:0.82rem;cursor:pointer">'+t('Cancel')+'</button>'
         +'</div>';
       document.body.appendChild(m);
       m.querySelector('#cryptoCopyBtn').onclick=function(){
         var addr=document.getElementById('cryptoAddr');
         var text=addr?addr.textContent:d.address;
-        function done(){ var b=m.querySelector('#cryptoCopyBtn'); if(b){b.textContent='✔ Copied'; setTimeout(function(){b.textContent='📋 Copy address';},1800);} showToast('Address copied','success'); }
+        function done(){ var b=m.querySelector('#cryptoCopyBtn'); if(b){b.textContent=t('✔ Copied'); setTimeout(function(){b.textContent=t('📋 Copy address');},1800);} showToast(t('Address copied'),'success'); }
         if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(done); }
         else { done(); }
       };
       m.querySelector('#cryptoConfirmBtn').onclick=async function(){
-        m.querySelector('#cryptoConfirmBtn').disabled=true;m.querySelector('#cryptoConfirmBtn').textContent='Confirming...';
+        m.querySelector('#cryptoConfirmBtn').disabled=true;m.querySelector('#cryptoConfirmBtn').textContent=t('Confirming...');
         const r=await safeApi('POST','/api/topup',{amount:d.usd_amount,currency:d.asset||'USDT_TRC20',payment_method:'crypto',payment_ref:d.reference});
         if(r&&r.status==='success'){
           m.remove();

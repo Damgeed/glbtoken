@@ -30,7 +30,7 @@
           '<a href="apikeys.html" id="navApiLink"' + (activePage === 'docs' ? ' class="active"' : '') + '>Docs</a>' +
         '</div>' +
         '<div class="nav-right">' +
-          '<a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</a>' +
+          '<a class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="'+t('Toggle theme')+'">🌙</a>' +
           '<div class="lang-selector notranslate">' +
             '<button class="lang-btn notranslate" onclick="toggleLangMenu()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1"/><path d="M9.5 17a5 5 0 004-4.5"/><path d="M14.5 17a5 5 0 01-4-4.5"/></svg> <span class="notranslate" id="currentLangLabel">EN</span></button>' +
           '</div>' +

@@ -162,19 +162,39 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     return true;
   }catch(e){ return false; }
 };
-    let token = sessionStorage.getItem('gt_token') || '';  // Access token: per-tab sessionStorage cache (never localStorage)
-    // Drop expired cached access tokens so the silent restore mints a fresh one
-    if(token){
-      try{
-        var _p = token.split('.')[1];
-        var _b64 = _p.replace(/-/g,'+').replace(/_/g,'/');
-        while(_b64.length % 4) _b64 += '=';
-        var _payload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(_b64), function(c){return c.charCodeAt(0);})));
-        if(_payload.exp && _payload.exp * 1000 < Date.now()){
-          token = ''; sessionStorage.removeItem('gt_token');
-        }
-      }catch(e){ token = ''; sessionStorage.removeItem('gt_token'); }
+    // ── Protected page helper (pages that require a live session) ──
+    function isProtectedPage(){
+      var page = window.location.pathname.split('/').pop();
+      return ['dashboard.html','settings.html','logs.html','billing.html','usage.html','manage-keys.html','team.html','referrals.html','playground.html','apikeys.html','topup.html'].indexOf(page) !== -1;
     }
+    // Access token: per-tab sessionStorage cache (never localStorage).
+    // Drop expired cached access tokens so the silent restore mints a fresh one.
+    let token = (function(){
+      var t = sessionStorage.getItem('gt_token') || '';
+      var valid = true;
+      if(t){
+        try{
+          var _p = t.split('.')[1];
+          var _b64 = _p.replace(/-/g,'+').replace(/_/g,'/');
+          while(_b64.length % 4) _b64 += '=';
+          var _payload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(_b64), function(c){return c.charCodeAt(0);})));
+          if(_payload.exp && _payload.exp * 1000 < Date.now()) valid = false;
+        }catch(e){ valid = false; }
+      }
+      if(!valid){
+        sessionStorage.removeItem('gt_token');
+        // Access token dead AND no refresh token → session is over. Redirect
+        // immediately on protected pages instead of rendering an empty shell
+        // (every API call would 401 → 10s refresh timeout → slow redirect).
+        var _rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+        if(!_rt && isProtectedPage()){
+          try{ (window.__secure||{removeItem:function(k){localStorage.removeItem(k)}}).removeItem('gt_user'); }catch(e){}
+          window.location.replace('login.html');
+        }
+        return '';
+      }
+      return t;
+    })();
     let userData = {};
     try{ userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ userData = {}; }
     // Avatar sanitize: legacy sessions (pre-2026-08 fix) can have avatar === true
@@ -516,7 +536,18 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     (function(){
       var cached = sessionStorage.getItem('gt_token');
       var rt = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
-      if(!cached && rt){ refreshSession().catch(function(){}); }
+      if(!cached && rt){
+        refreshSession().catch(function(){
+          // Refresh token is dead too — stop rendering an empty shell on
+          // protected pages. Redirect immediately (previously this was silent,
+          // so users stared at "Hello, User" + empty cards until an API 401
+          // eventually tripped the slow 10s-refresh → modal path).
+          if(isProtectedPage()){
+            clearSession();
+            window.location.replace('login.html');
+          }
+        });
+      }
     })();
 
     async function api(method, path, body, timeoutMs){
@@ -571,15 +602,12 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
               throw e3;
             }
             // Session genuinely expired (had a token but refresh failed):
-            // show modal on dash pages, silently redirect elsewhere
-            var page = window.location.pathname.split('/').pop();
-            var isDashPage = page === '' || page === 'dashboard.html' || page === 'settings.html' || page === 'logs.html' || page === 'billing.html' || page === 'usage.html' || page === 'manage-keys.html' || page === 'team.html' || page === 'referrals.html';
-            if(isDashPage){
-              showSessionExpired();
-            } else {
-              clearSession();
-              window.location.href = 'login.html';
-            }
+            // redirect immediately on ALL pages. The old behaviour showed a
+            // modal on dash pages, letting users stare at an empty shell and
+            // wait for another 10s refresh cycle. Instant redirect is the
+            // industry-standard dead-session behaviour.
+            clearSession();
+            window.location.replace('login.html');
             throw new Error('Session expired');
           }
           // Non-401 error (402 insufficient balance, 4xx validation, 5xx): surface the real message
@@ -774,18 +802,18 @@ function logoutUser(){
       var contactName=document.getElementById('contactName');
       var email=document.getElementById('contactEmail');
       var msg=document.getElementById('contactMsg');
-      if(!contactName||!email||!msg){showToast('Contact form not found','error');return}
+      if(!contactName||!email||!msg){showToast(t('Contact form not found'),'error');return}
       var n=contactName.value.trim(), e=email.value.trim(), m=msg.value.trim();
-      if(!n){showToast('Please enter your name','error');contactName.focus();return}
-      if(!e||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast('Please enter a valid email','error');email.focus();return}
-      if(!m||m.length<10){showToast('Message must be at least 10 characters','error');msg.focus();return}
+      if(!n){showToast(t('Please enter your name'),'error');contactName.focus();return}
+      if(!e||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){showToast(t('Please enter a valid email'),'error');email.focus();return}
+      if(!m||m.length<10){showToast(t('Message must be at least 10 characters'),'error');msg.focus();return}
       var btn=document.querySelector('.info-card button.btn-primary');
-      setBtnLoading(btn, true, 'Sending');
+      setBtnLoading(btn, true, t('Sending'));
       try {
         await safeApi('POST','/api/contact',{name:n,email:e,message:m});
-        showToast('Message sent successfully','success');
+        showToast(t('Message sent successfully'),'success');
       } finally {
-        if(btn){btn.disabled=false;btn.textContent='Send Message'}
+        if(btn){btn.disabled=false;btn.textContent=t('Send Message')}
       }
     }
     async function refreshMe(){

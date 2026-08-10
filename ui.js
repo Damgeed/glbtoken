@@ -27,7 +27,7 @@
       if(!container)return;
       // Save current HTML to restore on API failure
       var fallbackHtml = container.innerHTML;
-      container.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-muted);font-size:0.8rem">Loading models...</div>';
+      container.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-muted);font-size:0.8rem">'+t('Loading models...')+'</div>';
       var all=await safeApi('GET','/api/models',null,8000,true); if(!all){container.innerHTML=fallbackHtml;return}
         if(!all||!all.length){container.innerHTML=fallbackHtml;return;}
         var featured=all.filter(function(m){return m.category==='Flagship'||m.category==='Flash';});
@@ -118,13 +118,13 @@
     var container = document.getElementById('priceCalculator');
     if(!container) return;
     var fallbackRates = {USD:1,NGN:1540,GHS:15.2,KES:129,GBP:0.79};
-    container.innerHTML = '<div class="calculator-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Token Price Calculator</h3><p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">How many tokens for your money?</p>' +
-      '<div class="calc-row"><input type="number" id="calcAmount" placeholder="Enter amount" min="1" value="100" oninput="window.calcUpdate()">' +
+    container.innerHTML = '<div class="calculator-card"><h3 style="font-size:1rem;font-weight:600;margin-bottom:0.5rem;color:var(--text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> '+t('Token Price Calculator')+'</h3><p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">'+t('How many tokens for your money?')+'</p>' +
+      '<div class="calc-row"><input type="number" id="calcAmount" placeholder="'+t('Enter amount')+'" min="1" value="100" oninput="window.calcUpdate()">' +
       '<select id="calcCurrency" onchange="window.calcUpdate()" style="padding:0.7rem 1rem;border-radius:var(--radius-sm);background:var(--bg-alt);border:1px solid var(--border);color:var(--text);font-size:0.9rem">' +
       Object.keys(fallbackRates).map(function(c){return '<option value="' + c + '">' + c + '</option>'}).join('') + '</select>' +
-      '<span style="font-size:0.85rem;color:var(--text-muted);white-space:nowrap">= <span id="calcTokenResult" style="font-weight:700;color:var(--primary)">—</span> tokens</span></div>' +
+      '<span style="font-size:0.85rem;color:var(--text-muted);white-space:nowrap">= <span id="calcTokenResult" style="font-weight:700;color:var(--primary)">—</span> '+t('tokens')+'</span></div>' +
       '<div class="calc-result" id="calcResult"></div>' +
-      '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;text-align:center" id="calcRateSource">Loading live rates...</div></div>';
+      '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;text-align:center" id="calcRateSource">'+t('Loading live rates...')+'</div></div>';
     // Fetch live exchange rates with timeout; fall back to hardcoded rates on any failure
     window.calcRates = JSON.parse(JSON.stringify(fallbackRates));
     var sourceEl = document.getElementById('calcRateSource');
@@ -151,12 +151,12 @@
           window.calcRates.GHS = data.rates.GHS || fallbackRates.GHS;
           window.calcRates.KES = data.rates.KES || fallbackRates.KES;
         }
-        if(sourceEl) sourceEl.textContent = '💰 Live rates • 1 GT = $0.001 USD';
+        if(sourceEl) sourceEl.textContent = t('💰 Live rates • 1 GT = $0.001 USD');
         window.calcUpdate();
       }).catch(function(){
         // Fallback to hardcoded rates (timeout, abort, or any fetch error)
         window.calcRates = fallbackRates;
-        if(sourceEl) sourceEl.textContent = '💰 Rates updated periodically • 1 GT = $0.001 USD';
+        if(sourceEl) sourceEl.textContent = t('💰 Rates updated periodically • 1 GT = $0.001 USD');
         window.calcUpdate();
       });
     window.calcUpdate = function(){
@@ -237,7 +237,7 @@
           document.getElementById('aiTyping').remove();
           const aiDiv = document.createElement('div');
           aiDiv.className = 'chat-msg ai';
-          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble">'+escapeHtml(data.response || data.choices?.[0]?.message?.content || 'No response')+'</div>';
+          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble">'+escapeHtml(data.response || data.choices?.[0]?.message?.content || t('No response'))+'</div>';
           msgs.appendChild(aiDiv);
           msgs.scrollTop = msgs.scrollHeight;
           // Refocus on mobile so the keyboard stays up after the AI response arrives
@@ -907,55 +907,6 @@ function showConfirm(title, msg, onConfirm, confirmText){
   document.getElementById('confirmCancelBtn').onclick=function(){m.remove()};
   document.getElementById('confirmOkBtn').onclick=function(){m.remove();if(onConfirm)onConfirm()};
   m.onclick=function(e){if(e.target===m)m.remove()};
-}
-var _sessionExpiredShown = false;
-function showSessionExpired(){
-  if(_sessionExpiredShown) return;
-  _sessionExpiredShown = true;
-  var existing=document.getElementById('sessionExpiredModal');
-  if(existing)return;
-  document.body.style.overflow = 'hidden';
-  var m=document.createElement('div');
-  m.id='sessionExpiredModal';
-  m.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);animation:fadeIn 0.15s ease';
-  var theme=document.documentElement.className;
-  var isDark=theme==='dark';
-  var cardBg=isDark?'#1e1f29':'#ffffff';
-  var textClr=isDark?'#f8f8f2':'#1a1a2e';
-  var muted=isDark?'#6272a4':'#666';
-  var border=isDark?'#3a3a4e':'#ddd';
-  m.innerHTML='<div style="background:'+cardBg+';border:1px solid '+border+';border-radius:16px;padding:2rem;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);text-align:center;animation:slideUp 0.2s ease">'
-    +'<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#F4B400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
-    +'<h3 style="color:'+textClr+';font-size:1.1rem;font-weight:700;margin:0 0 0.5rem">Session Expired</h3>'
-    +'<p style="color:'+muted+';font-size:0.85rem;margin:0 0 1.5rem;line-height:1.5">Your session has expired. Please log in again to continue using GlbTOKEN.</p>'
-    +'<button id="sessionLoginBtn" style="width:100%;padding:0.65rem;border-radius:10px;border:none;background:#F4B400;color:#0A0B14;font-size:0.85rem;font-weight:600;cursor:pointer">Log In</button>'
-    +'<a href="#" id="sessionDismissBtn" style="display:inline-block;margin-top:1rem;color:'+muted+';font-size:0.85rem;text-decoration:none;cursor:pointer">Continue browsing →</a>'
-    +'</div></div>';
-  document.body.appendChild(m);
-  document.getElementById('sessionLoginBtn').onclick=function(){
-    m.remove();
-    document.body.style.overflow = '';
-    _sessionExpiredShown=false;
-    clearSession();
-    window.location.href='login.html';
-  };
-  function _onPopState(){ window.location.href='login.html'; }
-  window.addEventListener('popstate',_onPopState);
-  var _origBtn=m.querySelector('#sessionLoginBtn').onclick;
-  m.querySelector('#sessionLoginBtn').onclick=function(){
-    window.removeEventListener('popstate',_onPopState);
-    _origBtn.call(this);
-  };
-  document.getElementById('sessionDismissBtn').onclick=function(e){
-    e.preventDefault();
-    window.removeEventListener('popstate',_onPopState);
-    clearSession();
-    applyAuth();
-    m.remove();
-    document.body.style.overflow = '';
-    _sessionExpiredShown=false;
-    window.location.href='/';
-  };
 }
 function showPrompt(title, placeholder, onSubmit, initialValue){
   var existing=document.getElementById('promptModal');

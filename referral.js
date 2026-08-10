@@ -2,6 +2,15 @@
    REFERRAL
    ══════════════════════════════════════════ */
 
+// Language-aware claim-threshold message (word order differs per language)
+function refClaimMsg(remaining, threshold) {
+  if (curLang === 'zh-CN') return '再赚取 ' + remaining + ' GT 即可达到 ' + threshold + ' GT 的领取门槛';
+  if (curLang === 'ru') return 'Заработайте ещё ' + remaining + ' GT, чтобы достичь минимума ' + threshold + ' GT';
+  if (curLang === 'ja') return 'あと ' + remaining + ' GT で ' + threshold + ' GT の受取最低額に到達';
+  if (curLang === 'de') return 'Verdienen Sie ' + remaining + ' GT mehr, um das Mindestlimit von ' + threshold + ' GT zu erreichen';
+  return 'Earn ' + remaining + ' more GT to reach the ' + threshold + ' GT claim minimum';
+}
+
 async function loadReferralStats() {
   if(!token)return;
   const d=await safeApi('GET','/api/referral/stats');
@@ -46,7 +55,7 @@ async function loadReferralStats() {
         monthEl.textContent=(up?'↑ +':'↓ ')+Math.abs(rAvg-pAvg).toFixed(1)+'/day vs prev';
         monthEl.className='chg '+(up?'up':'down');
       } else {
-        monthEl.textContent='No referrals yet';
+        monthEl.textContent=t('No referrals yet');
         monthEl.className='chg text-muted';
       }
     }
@@ -86,7 +95,7 @@ async function loadReferralStats() {
         valEl.textContent=(eUp?'↑ +':'↓ ')+fmtUSD(Math.abs(rAvgE-pAvgE)*0.001)+'/day vs prev';
         valEl.className='chg '+(eUp?'up':'down');
       } else {
-        valEl.textContent='Value: '+fmtUSD(lifetime*0.001);
+        valEl.textContent=t('Value: ')+fmtUSD(lifetime*0.001);
         valEl.className='chg text-muted';
       }
     }
@@ -103,11 +112,11 @@ async function loadReferralStats() {
       if(pendingAmt>=threshold){
         thrWrap.style.display='';
         thrFill.style.width='100%';
-        thrTxt.textContent='Ready to claim!';
+        thrTxt.textContent=t('Ready to claim!');
       }else if(pendingAmt>0){
         thrWrap.style.display='';
         thrFill.style.width=Math.min(100,Math.round(100*pendingAmt/threshold))+'%';
-        thrTxt.textContent='Earn '+(threshold-pendingAmt).toFixed(1)+' more GT to reach the '+threshold.toFixed(1)+' GT claim minimum';
+        thrTxt.textContent=refClaimMsg((threshold-pendingAmt).toFixed(1), threshold.toFixed(1));
       }else{
         thrWrap.style.display='none';
       }
@@ -172,7 +181,7 @@ async function loadReferralStats() {
         }), 'refCollapse', 'refMoreBtn');
       }else{
         clearTableCollapse('refCollapse','refMoreBtn');
-        tableBody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">No referrals yet</td></tr>';
+        tableBody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">'+t('No referrals yet')+'</td></tr>';
       }
     }
     // Reward History table (real, /api/referral/rewards — fmtDT timestamps)
@@ -219,11 +228,11 @@ function drawReferralCharts(history){
 async function generateRefCode(){
   if(!token) return;
   var btn=document.querySelector('.ref-generate-btn');
-  if(btn){ btn.disabled=true; btn.innerHTML='<span class="btn-spinner"></span> Generating…'; }
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="btn-spinner"></span> '+t('Generating…'); }
   var d=await safeApi('POST','/api/referral/code',null,25000);
-  if(btn){ btn.disabled=false; btn.innerHTML='Generate My Referral Code'; }
+  if(btn){ btn.disabled=false; btn.innerHTML=t('Generate My Referral Code'); }
   if(d&&d.referral_code){
-    showToast('Referral code created: '+d.referral_code,'success');
+    showToast(t('Referral code created: ')+d.referral_code,'success');
     loadReferralStats();
   }
 }

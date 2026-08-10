@@ -422,12 +422,12 @@ async function createAnnouncement(){
   var title = (document.getElementById('annTitle').value||'').trim();
   var message = (document.getElementById('annMessage').value||'').trim();
   var priority = document.getElementById('annPriority').value;
-  if(!message){ showToast('Message is required','error'); return; }
+  if(!message){ showToast(t('Message is required'),'error'); return; }
   var res = await safeApi('POST','/api/admin/announcements',{title:title,message:message,priority:priority});
   if(!res) return;
   document.getElementById('annTitle').value = '';
   document.getElementById('annMessage').value = '';
-  showToast('Announcement published','success');
+  showToast(t('Announcement published'),'success');
   refreshAnnouncements(false);
   loadAnnouncements();
 }
@@ -442,7 +442,7 @@ async function deleteAnnouncement(id){
   showConfirm('Delete this announcement?','This cannot be undone.',function(){
     safeApi('DELETE','/api/admin/announcements/'+id).then(function(res){
       if(!res) return;
-      showToast('Announcement deleted','success');
+      showToast(t('Announcement deleted'),'success');
       refreshAnnouncements(true);
       loadAnnouncements();
     });

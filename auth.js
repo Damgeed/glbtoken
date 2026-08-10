@@ -13,12 +13,12 @@
     async function sendLoginCode(){
       const email=document.getElementById('loginEmail').value.trim();
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-        const m='Please enter a valid email address';
+        const m=t('Please enter a valid email address');
         showToast(m,'error');
         return
       }
       const btn=document.getElementById('loginSendBtn');
-      setBtnLoading(btn, true, 'Continue');
+      setBtnLoading(btn, true, t('Continue'));
       try{
         if(!await safeApi('POST','/api/auth/send-code',{email:email})) return;
         document.getElementById('loginEmailGroup').style.display='none';
@@ -26,9 +26,9 @@
         document.getElementById('loginSendBtn').style.display='none';
         document.getElementById('loginVerifyBtn').style.display='block';
         document.getElementById('loginCode').focus();
-        showToast('Code sent to '+email,'success');
+        showToast(t('Code sent to ')+email,'success');
       }finally{
-        btn.disabled=false;btn.textContent='Continue';
+        btn.disabled=false;btn.textContent=t('Continue');
       }
     }
     var _login2faPreToken = null;
@@ -37,41 +37,41 @@
       const email=document.getElementById('loginEmail').value.trim();
       const code=document.getElementById('loginCode').value.trim();
       if(!code||code.length<4){
-        showToast('Please enter the verification code from your email','error');
+        showToast(t('Please enter the verification code from your email'),'error');
         return
       }
       const btn=document.getElementById('loginVerifyBtn');
-      setBtnLoading(btn, true, 'Verifying');
+      setBtnLoading(btn, true, t('Verifying'));
       try{
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code});
         if(!data) return;
         if(data.requires_2fa){
           _login2faPreToken = data.pre_token;
           var lbl=document.querySelector('#loginCodeGroup label');
-          if(lbl) lbl.textContent='Authenticator Code';
+          if(lbl) lbl.textContent=t('Authenticator Code');
           var inp=document.getElementById('loginCode');
-          if(inp){ inp.value=''; inp.placeholder='Enter 6-digit code from your app'; inp.focus(); }
-          setBtnLoading(btn, false, 'Verify 2FA');
-          showToast('Enter your authenticator code','info');
+          if(inp){ inp.value=''; inp.placeholder=t('Enter 6-digit code from your app'); inp.focus(); }
+          setBtnLoading(btn, false, t('Verify 2FA'));
+          showToast(t('Enter your authenticator code'),'info');
           return;
         }
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
-        applyAuth();showToast('Welcome back!','success');
+        applyAuth();showToast(t('Welcome back!'),'success');
         afterLoginRedirect();
       } catch(e){
-        showToast('Login failed','error');
+        showToast(t('Login failed'),'error');
       }
     }
     async function verifyTwoFA(){
       const code=document.getElementById('loginCode').value.trim();
       if(!code||code.length<6){
-        showToast('Enter the 6-digit code from your authenticator app','error');
+        showToast(t('Enter the 6-digit code from your authenticator app'),'error');
         return
       }
       const btn=document.getElementById('loginVerifyBtn');
-      setBtnLoading(btn, true, 'Verifying');
+      setBtnLoading(btn, true, t('Verifying'));
       try{
         var data=await safeApi('POST','/api/auth/2fa/confirm',{pre_token:_login2faPreToken,code:code});
         if(!data) return;
@@ -79,21 +79,21 @@
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
-        applyAuth();showToast('Welcome back!','success');
+        applyAuth();showToast(t('Welcome back!'),'success');
         afterLoginRedirect();
       } catch(e){
-        showToast('2FA verification failed','error');
+        showToast(t('2FA verification failed'),'error');
       }
     }
     async function sendRegisterCode(){
       const email=document.getElementById('regEmail').value.trim();
       if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-        const m='Please enter a valid email address';
+        const m=t('Please enter a valid email address');
         showToast(m,'error');
         return
       }
       const btn=document.getElementById('regSendBtn');
-      setBtnLoading(btn, true, 'Continue');
+      setBtnLoading(btn, true, t('Continue'));
       try{
         if(!await safeApi('POST','/api/auth/send-code',{email:email})) return;
         document.getElementById('regEmailGroup').style.display='none';
@@ -101,9 +101,9 @@
         document.getElementById('regSendBtn').style.display='none';
         document.getElementById('regVerifyBtn').style.display='block';
         document.getElementById('regCode').focus();
-        showToast('Code sent to '+email,'success');
+        showToast(t('Code sent to ')+email,'success');
       }finally{
-        btn.disabled=false;btn.textContent='Continue';
+        btn.disabled=false;btn.textContent=t('Continue');
       }
     }
     function _getReferralAttribution(){
@@ -145,12 +145,12 @@
       const email=document.getElementById('regEmail').value.trim();
       const code=document.getElementById('regCode').value.trim();
       if(!code||code.length<4){
-        const m='Please enter the verification code from your email';
+        const m=t('Please enter the verification code from your email');
         showToast(m,'error');
         return
       }
       const btn=document.getElementById('regVerifyBtn');
-      setBtnLoading(btn, true, 'Verifying');
+      setBtnLoading(btn, true, t('Verifying'));
       try{
         var att=_getReferralAttribution();
         var data=await safeApi('POST','/api/auth/verify-code',{email:email,code:code,ref:att.ref,src:att.src});
@@ -159,10 +159,10 @@
         token=data.token;userData=data.user;
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
-        applyAuth();showToast('Account created! Welcome.','success');
+        applyAuth();showToast(t('Account created! Welcome.'),'success');
         afterLoginRedirect();
       }finally{
-        btn.disabled=false;btn.textContent='Verify & Create Account';
+        btn.disabled=false;btn.textContent=t('Verify & Create Account');
       }
     }
 
@@ -246,22 +246,22 @@
       phoneRaw = phoneRaw.replace(/^0+/,'');
       var phone = dial + phoneRaw;
       if(!phone || phone.length < 5){
-        var m = 'Please enter a valid phone number';
+        var m = t('Please enter a valid phone number');
         showToast(m,'error');
         return;
       }
       var btn = document.getElementById(prefix + 'PhoneSendBtn');
-      setBtnLoading(btn, true, 'Send Message');
+      setBtnLoading(btn, true, t('Send Message'));
       try{
         if(!await safeApi('POST','/api/auth/send-sms-code',{phone:phone})) return;
         document.getElementById(prefix + 'SmsCodeGroup').style.display='block';
         btn.style.display='none';
         document.getElementById(prefix + 'PhoneVerifyBtn').style.display='block';
         document.getElementById(prefix + 'SmsCode').focus();
-        showToast('Code sent to ' + phone,'success');
+        showToast(t('Code sent to ') + phone,'success');
         startResendTimer(prefix);
       }finally{
-        btn.disabled=false; btn.textContent='Send Code';
+        btn.disabled=false; btn.textContent=t('Send Code');
       }
     }
     function startResendTimer(prefix){
@@ -282,7 +282,7 @@
         }
         var m = Math.floor(seconds / 60);
         var s = seconds % 60;
-        label.textContent = 'Resend code in ' + m + ':' + (s < 10 ? '0' : '') + s;
+        label.textContent = t('Resend code in ') + m + ':' + (s < 10 ? '0' : '') + s;
         seconds--;
         setTimeout(tick, 1000);
       }
@@ -296,12 +296,12 @@
       var phone = dial + phoneRaw;
       var code = document.getElementById(prefix + 'SmsCode').value.trim();
       if(!code || code.length < 4){
-        var m = 'Please enter the verification code from SMS';
+        var m = t('Please enter the verification code from SMS');
         showToast(m,'error');
         return;
       }
       var btn = document.getElementById(prefix + 'PhoneVerifyBtn');
-      setBtnLoading(btn, true, 'Verifying');
+      setBtnLoading(btn, true, t('Verifying'));
       try{
         var data = await safeApi('POST','/api/auth/verify-sms-code',{phone:phone,code:code});
         if(!data) return;
@@ -309,7 +309,7 @@
         try{sessionStorage.setItem('gt_token',data.token);}catch(e){}
         if(data&&data.refresh_token)(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_refresh_token',data.refresh_token);(window.__secure||{setItem:function(k,v){localStorage.setItem(k,v)}}).setItem('gt_user',JSON.stringify(userData));
         applyAuth();
-        showToast(prefix === 'login' ? 'Welcome back!' : 'Account created! Welcome.','success');
+        showToast(prefix === 'login' ? t('Welcome back!') : t('Account created! Welcome.'),'success');
         afterLoginRedirect();
       }finally{
         setBtnLoading(btn, false);
@@ -323,7 +323,7 @@
     function oauthRegister(provider, btn){ startOAuth(provider, btn); }
     function startOAuth(provider, btn){
       if (oauthTimeout) clearTimeout(oauthTimeout);
-      setBtnLoading(btn, true, 'Connecting...');
+      setBtnLoading(btn, true, t('Connecting...'));
       // Get Auth0 config from Railway (client ID stays hidden server-side)
       api('GET', '/api/auth/auth0/config').then(function(cfg){
         if (!cfg || !cfg.configured) {

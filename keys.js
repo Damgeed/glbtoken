@@ -58,8 +58,8 @@
       const list=document.getElementById('keyList');
       if(!k||!k.length){
         list.innerHTML='<div style="text-align:center;padding:2.5rem 1rem">'
-          + '<div style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem">No API keys yet. Create one to start building.</div>'
-          + '<button class="btn-primary" onclick="showCreateKeyModal()">+ Create your first key</button>'
+          + '<div style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem">'+t('No API keys yet. Create one to start building.')+'</div>'
+          + '<button class="btn-primary" onclick="showCreateKeyModal()">'+t('+ Create your first key')+'</button>'
           + '</div>';
         return;
       }
@@ -67,26 +67,26 @@
       const cards=ordered.map(key=>`
         <div class="key-swipe" data-swipe-id="${escapeAttr(String(key.id))}">
           <div class="key-swipe-actions">
-            <button class="swipe-action swipe-edit" data-key-id="${escapeAttr(String(key.id))}" onclick="openEditKeyModal(${safeJsId(key.id)})">Edit</button>
-            <button class="swipe-action ${key.is_active?'swipe-pause':'swipe-activate'}" data-key-id="${escapeAttr(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
-            <button class="swipe-action swipe-delete" data-key-id="${escapeAttr(String(key.id))}" data-action="delete">Delete</button>
+            <button class="swipe-action swipe-edit" data-key-id="${escapeAttr(String(key.id))}" onclick="openEditKeyModal(${safeJsId(key.id)})">${t('Edit')}</button>
+            <button class="swipe-action ${key.is_active?'swipe-pause':'swipe-activate'}" data-key-id="${escapeAttr(String(key.id))}" data-action="toggle">${key.is_active?t('Pause'):t('Activate')}</button>
+            <button class="swipe-action swipe-delete" data-key-id="${escapeAttr(String(key.id))}" data-action="delete">${t('Delete')}</button>
           </div>
           <div class="api-key-card">
-            <input type="checkbox" class="key-check" data-key-id="${escapeAttr(String(key.id))}" onchange="updateBulkCount()" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select key" />
+            <input type="checkbox" class="key-check" data-key-id="${escapeAttr(String(key.id))}" onchange="updateBulkCount()" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="${t('Select key')}" />
             <div class="key-info">
-              <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${safeJsId(key.id)})" title="Edit key" aria-label="Edit key">✎</button></div>
-              <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeAttr(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="Copy key prefix" aria-label="Copy key prefix">⧉</button></div>
-              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' used</span>':''} · Created ${key.created_at?fmtDT(key.created_at):'—'} · ${escapeHtml(key.request_count)} requests · ${key.last_used?'Last used '+fmtDT(key.last_used):'Never used'}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+escapeHtml(key.rate_limit_rpm)+' req/min':''}${key.ip_allowlist?' · <span class="ip-allow" title="Allowed IPs">IPs: '+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">Active</span>':'<span class="badge inactive">Inactive</span>'}</div>
-              <div class="key-spark" id="spark-${safeJsId(key.id)}" data-key-id="${escapeAttr(String(key.id))}" title="Token usage — last 7 days"><span class="spark-empty">—</span></div>
+              <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${safeJsId(key.id)})" title="${t('Edit key')}" aria-label="${t('Edit key')}">✎</button></div>
+              <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeAttr(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="${t('Copy key prefix')}" aria-label="${t('Copy key prefix')}">⧉</button></div>
+              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' '+t('used')+'</span>':''} · ${t('Created ')}${key.created_at?fmtDT(key.created_at):'—'} · ${escapeHtml(key.request_count)} ${t('requests')} · ${key.last_used?t('Last used ')+fmtDT(key.last_used):t('Never used')}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+escapeHtml(key.rate_limit_rpm)+' '+t('req/min'):''}${key.ip_allowlist?' · <span class="ip-allow" title="'+t('Allowed IPs')+'">'+t('IPs: ')+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">'+t('Active')+'</span>':'<span class="badge inactive">'+t('Inactive')+'</span>'}</div>
+              <div class="key-spark" id="spark-${safeJsId(key.id)}" data-key-id="${escapeAttr(String(key.id))}" title="${t('Token usage — last 7 days')}"><span class="spark-empty">—</span></div>
             </div>
             <div class="key-card-footer">
               <div class="key-actions">
-                <a class="sort-btn btn-usage" href="logs.html">Usage</a>
-                <button class="sort-btn btn-edit" onclick="openEditKeyModal(${safeJsId(key.id)})">Edit</button>
-                <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeAttr(String(key.id))}" data-action="toggle">${key.is_active?'Pause':'Activate'}</button>
-                <button class="sort-btn btn-delete" data-key-id="${escapeAttr(String(key.id))}" data-action="delete">Delete</button>
+                <a class="sort-btn btn-usage" href="logs.html">${t('Usage')}</a>
+                <button class="sort-btn btn-edit" onclick="openEditKeyModal(${safeJsId(key.id)})">${t('Edit')}</button>
+                <button class="sort-btn ${key.is_active?'btn-pause':'btn-activate'}" data-key-id="${escapeAttr(String(key.id))}" data-action="toggle">${key.is_active?t('Pause'):t('Activate')}</button>
+                <button class="sort-btn btn-delete" data-key-id="${escapeAttr(String(key.id))}" data-action="delete">${t('Delete')}</button>
               </div>
-              <div class="key-drag" title="Drag to reorder" aria-label="Drag to reorder">⠿</div>
+              <div class="key-drag" title="${t('Drag to reorder')}" aria-label="${t('Drag to reorder')}">⠿</div>
             </div>
           </div>
         </div>
@@ -271,7 +271,7 @@
         done();
       }
     }
-    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value='My API Key';document.getElementById('newKeyExpiry').value='';document.getElementById('newKeyRpm').value='';document.getElementById('newKeyIps').value=''}
+    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value=t('My API Key');document.getElementById('newKeyExpiry').value='';document.getElementById('newKeyRpm').value='';document.getElementById('newKeyIps').value=''}
     function closeCreateKeyModal(){document.getElementById('createKeyModal').classList.remove('open')}
     async function createApiKey(){
       const name=document.getElementById('newKeyName').value;
@@ -290,7 +290,7 @@
         document.getElementById('newKeyResult').style.display='block';
         loadKeys();
         if(typeof loadDashKeys==='function')loadDashKeys();
-        showToast('Key created! Copy it now.','success');
+        showToast(t('Key created! Copy it now.'),'success');
       }catch(e){}
     }
     async function toggleKeyStatus(id){
@@ -348,7 +348,7 @@
         if(!d) return;
         closeEditKeyModal();
         loadKeys();
-        showToast('Key updated','success');
+        showToast(t('Key updated'),'success');
       }catch(e){}
     }
 
@@ -401,7 +401,7 @@
     }
     async function bulkSetActive(active){
       var ids=selectedKeyIds();
-      if(!ids.length){ showToast('Select at least one key','error'); return; }
+      if(!ids.length){ showToast(t('Select at least one key'),'error'); return; }
       var label=active?'activate':'pause';
       showConfirm(active?'Activate keys?':'Pause keys?', active?'Re-enable access for '+ids.length+' key(s)?':'Stop '+ids.length+' key(s) immediately?', async function(){
         for(var i=0;i<ids.length;i++){
@@ -413,7 +413,7 @@
     }
     async function bulkDelete(){
       var ids=selectedKeyIds();
-      if(!ids.length){ showToast('Select at least one key','error'); return; }
+      if(!ids.length){ showToast(t('Select at least one key'),'error'); return; }
       showConfirm('Delete keys?','Delete '+ids.length+' API key(s)? This cannot be undone.', async function(){
         for(var i=0;i<ids.length;i++){
           await safeApi('DELETE','/api/keys/'+ids[i]);
@@ -429,7 +429,7 @@
       return /^[=+\-@]/.test(v) ? "'"+v : v;
     }
     function exportKeysCsv(){
-      if(!keys||!keys.length){ showToast('No keys to export','error'); return; }
+      if(!keys||!keys.length){ showToast(t('No keys to export'),'error'); return; }
       // Export ONLY selected keys when in bulk mode with a selection;
       // otherwise export all keys (matches "export everything" default).
       var ids = _bulkMode ? selectedKeyIds() : [];
@@ -438,7 +438,7 @@
         var idSet = {};
         ids.forEach(function(id){ idSet[id] = true; });
         toExport = keys.filter(function(k){ return idSet[k.id]; });
-        if(!toExport.length){ showToast('Select at least one key to export','error'); return; }
+        if(!toExport.length){ showToast(t('Select at least one key to export'),'error'); return; }
       }
       var header=['name','key_prefix','permissions','created_at','last_used','requests','tokens_spent','expires_at','rate_limit_rpm','ip_allowlist','status'];
       var rows=[header];

@@ -18,7 +18,9 @@
 
 var I18N = {};                                    // THE dictionary (data below)
 
-var curLang = localStorage.getItem('gt_lang') || 'en';
+var SUPPORTED_LANGS = ['en', 'zh-CN', 'ru', 'ja', 'de'];
+var _rawLang = localStorage.getItem('gt_lang');
+var curLang = SUPPORTED_LANGS.indexOf(_rawLang) >= 0 ? _rawLang : 'en';
 
 function t(key, fallback) {
   if (I18N[key] && I18N[key][curLang]) return I18N[key][curLang];
@@ -32,6 +34,7 @@ function t(key, fallback) {
 }
 
 function switchLanguage(lang) {
+  if (SUPPORTED_LANGS.indexOf(lang) < 0) lang = 'en';   // whitelist guard (stale/malformed localStorage)
   curLang = lang;
   localStorage.setItem('gt_lang', lang);
   location.reload();                              // full re-render in new language
@@ -67,6 +70,21 @@ function translatePage() {
       }
     }
   }
+  // 3) attribute translation: placeholder / title / aria-label (exact dictionary match)
+  var ATTRS = ['placeholder', 'title', 'aria-label'];
+  var attrSkip = '.notranslate,[translate="no"],script,style,svg,code,pre,option,.lang-selector,.lang-menu,.lang-option,.lang-btn,.lang-btn-mobile,.nav-logo,.logo-glb,.logo-token,.trust-badge,.copying';
+  document.querySelectorAll('input[placeholder],textarea[placeholder],[title],[aria-label]').forEach(function (el) {
+    if (el.closest && el.closest(attrSkip)) return;
+    for (var a = 0; a < ATTRS.length; a++) {
+      var attr = ATTRS[a];
+      if (!el.hasAttribute(attr)) continue;
+      var val = el.getAttribute(attr).trim();
+      if (!val || val.length < 2 || val.length > 200) continue;
+      if (I18N[val] && I18N[val][curLang]) el.setAttribute(attr, I18N[val][curLang]);
+    }
+  });
+  // 4) keep <html lang> in sync (SEO + screen readers)
+  document.documentElement.lang = curLang;
 }
 
 function updateLangUI(lang) {
@@ -2424,3 +2442,146 @@ window.addEventListener('pageshow', function(e) {
 
 
 
+
+// ---- i18n hardening: attribute + JS-rendered copy (round 2) ----
+I18N["Announcement message…"] = {"zh-CN": "公告内容…", ru: "Сообщение объявления…", ja: "お知らせメッセージ…", de: "Ankündigungstext…"};
+I18N["Custom amount"] = {"zh-CN": "自定义金额", ru: "Своя сумма", ja: "カスタム金額", de: "Eigener Betrag"};
+I18N["Enter 6-digit code"] = {"zh-CN": "输入 6 位验证码", ru: "Введите 6-значный код", ja: "6桁のコードを入力", de: "6-stelligen Code eingeben"};
+I18N["Enter current password"] = {"zh-CN": "输入当前密码", ru: "Введите текущий пароль", ja: "現在のパスワードを入力", de: "Aktuelles Passwort eingeben"};
+I18N["Enter email address..."] = {"zh-CN": "输入邮箱地址...", ru: "Введите адрес эл. почты...", ja: "メールアドレスを入力...", de: "E-Mail-Adresse eingeben..."};
+I18N["Enter new password"] = {"zh-CN": "输入新密码", ru: "Введите новый пароль", ja: "新しいパスワードを入力", de: "Neues Passwort eingeben"};
+I18N["Filter by date"] = {"zh-CN": "按日期筛选", ru: "Фильтр по дате", ja: "日付で絞り込み", de: "Nach Datum filtern"};
+I18N["How can we help?"] = {"zh-CN": "我们能帮您什么？", ru: "Чем можем помочь?", ja: "どのようにお手伝いしましょうか？", de: "Wie können wir helfen?"};
+I18N["Message GlbTOKEN..."] = {"zh-CN": "给 GlbTOKEN 发消息...", ru: "Сообщение GlbTOKEN...", ja: "GlbTOKEN にメッセージ...", de: "GlbTOKEN eine Nachricht senden..."};
+I18N["Phone number"] = {"zh-CN": "电话号码", ru: "Номер телефона", ja: "電話番号", de: "Telefonnummer"};
+I18N["Search by name, ID, or provider..."] = {"zh-CN": "按名称、ID 或提供商搜索...", ru: "Поиск по имени, ID или провайдеру...", ja: "名前、ID、プロバイダーで検索...", de: "Nach Name, ID oder Anbieter suchen..."};
+I18N["Search keys…"] = {"zh-CN": "搜索密钥…", ru: "Поиск ключей…", ja: "キーを検索…", de: "Schlüssel suchen…"};
+I18N["Search members by name or email..."] = {"zh-CN": "按姓名或邮箱搜索成员...", ru: "Поиск участников по имени или эл. почте...", ja: "名前またはメールでメンバーを検索...", de: "Mitglieder nach Name oder E-Mail suchen..."};
+I18N["Send a message..."] = {"zh-CN": "发送消息...", ru: "Отправить сообщение...", ja: "メッセージを送信...", de: "Nachricht senden..."};
+I18N["Shared secret"] = {"zh-CN": "共享密钥", ru: "Общий секрет", ja: "共有シークレット", de: "Gemeinsames Geheimnis"};
+I18N["Title (optional)"] = {"zh-CN": "标题（可选）", ru: "Название (необязательно)", ja: "タイトル（任意）", de: "Titel (optional)"};
+I18N["Your email"] = {"zh-CN": "您的邮箱", ru: "Ваша эл. почта", ja: "あなたのメール", de: "Ihre E-Mail"};
+I18N["Your name"] = {"zh-CN": "您的姓名", ru: "Ваше имя", ja: "あなたの名前", de: "Ihr Name"};
+I18N["e.g. 1.2.3.4, 203.0.113.0/24"] = {"zh-CN": "例如 1.2.3.4、203.0.113.0/24", ru: "напр. 1.2.3.4, 203.0.113.0/24", ja: "例: 1.2.3.4, 203.0.113.0/24", de: "z. B. 1.2.3.4, 203.0.113.0/24"};
+I18N["e.g. 4096"] = {"zh-CN": "例如 4096", ru: "напр. 4096", ja: "例: 4096", de: "z. B. 4096"};
+I18N["e.g. 60"] = {"zh-CN": "例如 60", ru: "напр. 60", ja: "例: 60", de: "z. B. 60"};
+I18N["e.g. Creative Writing"] = {"zh-CN": "例如：创意写作", ru: "напр. «Креативное письмо»", ja: "例: クリエイティブライティング", de: "z. B. Kreatives Schreiben"};
+I18N["e.g. gpt-4o, claude-sonnet-4"] = {"zh-CN": "例如 gpt-4o、claude-sonnet-4", ru: "напр. gpt-4o, claude-sonnet-4", ja: "例: gpt-4o, claude-sonnet-4", de: "z. B. gpt-4o, claude-sonnet-4"};
+I18N["https://your-app.com/hook"] = {"zh-CN": "https://your-app.com/hook", ru: "https://your-app.com/hook", ja: "https://your-app.com/hook", de: "https://your-app.com/hook"};
+I18N["you@example.com"] = {"zh-CN": "you@example.com", ru: "you@example.com", ja: "you@example.com", de: "you@example.com"};
+I18N["Activate selected keys"] = {"zh-CN": "激活选中的密钥", ru: "Активировать выбранные ключи", ja: "選択したキーを有効化", de: "Ausgewählte Schlüssel aktivieren"};
+I18N["Back to top"] = {"zh-CN": "返回顶部", ru: "Наверх", ja: "トップへ戻る", de: "Nach oben"};
+I18N["Change avatar"] = {"zh-CN": "更换头像", ru: "Сменить аватар", ja: "アバターを変更", de: "Avatar ändern"};
+I18N["Change picture"] = {"zh-CN": "更换图片", ru: "Сменить изображение", ja: "画像を変更", de: "Bild ändern"};
+I18N["Change role of selected members"] = {"zh-CN": "更改选中成员的角色", ru: "Изменить роль выбранных участников", ja: "選択したメンバーの役割を変更", de: "Rolle ausgewählter Mitglieder ändern"};
+I18N["Close"] = {"zh-CN": "关闭", ru: "Закрыть", ja: "閉じる", de: "Schließen"};
+I18N["Copy User ID"] = {"zh-CN": "复制用户 ID", ru: "Копировать ID пользователя", ja: "ユーザー ID をコピー", de: "Benutzer-ID kopieren"};
+I18N["Copy code"] = {"zh-CN": "复制代码", ru: "Копировать код", ja: "コードをコピー", de: "Code kopieren"};
+I18N["Copy email"] = {"zh-CN": "复制邮箱", ru: "Копировать эл. почту", ja: "メールをコピー", de: "E-Mail kopieren"};
+I18N["Copy link"] = {"zh-CN": "复制链接", ru: "Копировать ссылку", ja: "リンクをコピー", de: "Link kopieren"};
+I18N["Copy secret"] = {"zh-CN": "复制密钥", ru: "Копировать секрет", ja: "シークレットをコピー", de: "Geheimnis kopieren"};
+I18N["Delete organization"] = {"zh-CN": "删除组织", ru: "Удалить организацию", ja: "組織を削除", de: "Organisation löschen"};
+I18N["Delete selected keys"] = {"zh-CN": "删除选中的密钥", ru: "Удалить выбранные ключи", ja: "選択したキーを削除", de: "Ausgewählte Schlüssel löschen"};
+I18N["Done selecting"] = {"zh-CN": "完成选择", ru: "Готово", ja: "選択完了", de: "Auswahl abgeschlossen"};
+I18N["Export current page as CSV"] = {"zh-CN": "将当前页导出为 CSV", ru: "Экспорт текущей страницы в CSV", ja: "現在のページを CSV としてエクスポート", de: "Aktuelle Seite als CSV exportieren"};
+I18N["Export invoices as CSV"] = {"zh-CN": "将发票导出为 CSV", ru: "Экспорт счетов в CSV", ja: "請求書を CSV としてエクスポート", de: "Rechnungen als CSV exportieren"};
+I18N["Export keys as CSV (all, or selected in select mode)"] = {"zh-CN": "将密钥导出为 CSV（全部，或选择模式下的选中项）", ru: "Экспорт ключей в CSV (все или выбранные в режиме выбора)", ja: "キーを CSV としてエクスポート（すべて、または選択モードの選択項目）", de: "Schlüssel als CSV exportieren (alle oder im Auswahlmodus ausgewählte)"};
+I18N["Export member list as CSV"] = {"zh-CN": "将成员列表导出为 CSV", ru: "Экспорт списка участников в CSV", ja: "メンバー一覧を CSV としてエクスポート", de: "Mitgliederliste als CSV exportieren"};
+I18N["Next month"] = {"zh-CN": "下个月", ru: "Следующий месяц", ja: "翌月", de: "Nächster Monat"};
+I18N["Open menu"] = {"zh-CN": "打开菜单", ru: "Открыть меню", ja: "メニューを開く", de: "Menü öffnen"};
+I18N["Pause selected keys"] = {"zh-CN": "暂停选中的密钥", ru: "Приостановить выбранные ключи", ja: "選択したキーを一時停止", de: "Ausgewählte Schlüssel pausieren"};
+I18N["Previous month"] = {"zh-CN": "上个月", ru: "Предыдущий месяц", ja: "前月", de: "Vorheriger Monat"};
+I18N["Remove card"] = {"zh-CN": "移除卡片", ru: "Удалить карту", ja: "カードを削除", de: "Karte entfernen"};
+I18N["Remove selected members"] = {"zh-CN": "移除选中的成员", ru: "Удалить выбранных участников", ja: "選択したメンバーを削除", de: "Ausgewählte Mitglieder entfernen"};
+I18N["Rename organization"] = {"zh-CN": "重命名组织", ru: "Переименовать организацию", ja: "組織名を変更", de: "Organisation umbenennen"};
+I18N["Scroll organizations"] = {"zh-CN": "滚动组织列表", ru: "Прокрутка организаций", ja: "組織をスクロール", de: "Organisationen scrollen"};
+I18N["Select all keys"] = {"zh-CN": "全选密钥", ru: "Выбрать все ключи", ja: "すべてのキーを選択", de: "Alle Schlüssel auswählen"};
+I18N["Select all visible members"] = {"zh-CN": "全选可见成员", ru: "Выбрать всех видимых участников", ja: "表示中のメンバーをすべて選択", de: "Alle sichtbaren Mitglieder auswählen"};
+I18N["Select multiple keys"] = {"zh-CN": "多选密钥", ru: "Выбрать несколько ключей", ja: "複数のキーを選択", de: "Mehrere Schlüssel auswählen"};
+I18N["Select multiple members"] = {"zh-CN": "多选成员", ru: "Выбрать несколько участников", ja: "複数のメンバーを選択", de: "Mehrere Mitglieder auswählen"};
+I18N["Share on LinkedIn"] = {"zh-CN": "分享到 LinkedIn", ru: "Поделиться в LinkedIn", ja: "LinkedIn で共有", de: "Auf LinkedIn teilen"};
+I18N["Share on Twitter"] = {"zh-CN": "分享到 Twitter", ru: "Поделиться в Twitter", ja: "Twitter で共有", de: "Auf Twitter teilen"};
+I18N["Sort members"] = {"zh-CN": "成员排序", ru: "Сортировать участников", ja: "メンバーを並べ替え", de: "Mitglieder sortieren"};
+I18N["View member details"] = {"zh-CN": "查看成员详情", ru: "Просмотр данных участника", ja: "メンバー詳細を表示", de: "Mitgliederdetails anzeigen"};
+I18N["Authenticator code"] = {"zh-CN": "身份验证器代码", ru: "Код аутентификатора", ja: "認証アプリのコード", de: "Authentifizierungscode"};
+I18N["Export keys"] = {"zh-CN": "导出密钥", ru: "Экспорт ключей", ja: "キーをエクスポート", de: "Schlüssel exportieren"};
+I18N["Next"] = {"zh-CN": "下一页", ru: "Далее", ja: "次へ", de: "Weiter"};
+I18N["Previous"] = {"zh-CN": "上一页", ru: "Назад", ja: "前へ", de: "Zurück"};
+I18N["Scroll left"] = {"zh-CN": "向左滚动", ru: "Прокрутить влево", ja: "左へスクロール", de: "Nach links scrollen"};
+I18N["Scroll right"] = {"zh-CN": "向右滚动", ru: "Прокрутить вправо", ja: "右へスクロール", de: "Nach rechts scrollen"};
+I18N["Search API keys"] = {"zh-CN": "搜索 API 密钥", ru: "Поиск API-ключей", ja: "API キーを検索", de: "API-Schlüssel suchen"};
+I18N["Select keys"] = {"zh-CN": "选择密钥", ru: "Выбрать ключи", ja: "キーを選択", de: "Schlüssel auswählen"};
+I18N["Select member"] = {"zh-CN": "选择成员", ru: "Выбрать участника", ja: "メンバーを選択", de: "Mitglied auswählen"};
+I18N["Select members"] = {"zh-CN": "选择成员", ru: "Выбрать участников", ja: "メンバーを選択", de: "Mitglieder auswählen"};
+I18N["Token Price Calculator"] = {"zh-CN": "Token 价格计算器", ru: "Калькулятор цены токенов", ja: "トークン価格計算機", de: "Token-Preisrechner"};
+I18N["How many tokens for your money?"] = {"zh-CN": "您的钱能买多少 Token？", ru: "Сколько токенов вы получите за свои деньги?", ja: "あなたの資金で何トークン？", de: "Wie viele Token für Ihr Geld?"};
+I18N["No response"] = {"zh-CN": "无响应", ru: "Нет ответа", ja: "応答なし", de: "Keine Antwort"};
+I18N["Resend code in "] = {"zh-CN": "重新发送验证码 ", ru: "Повторная отправка кода через ", ja: "コード再送信まで ", de: "Code erneut senden in "};
+I18N["Show More ("] = {"zh-CN": "显示更多（", ru: "Показать ещё (", ja: "さらに表示（", de: "Mehr anzeigen ("};
+I18N["Value: "] = {"zh-CN": "价值：", ru: "Сумма: ", ja: "価値：", de: "Wert: "};
+I18N["Ready to claim!"] = {"zh-CN": "可领取！", ru: "Готово к получению!", ja: "受け取り可能！", de: "Bereit zum Einlösen!"};
+I18N["Earn "] = {"zh-CN": "再赚取 ", ru: "Заработайте ещё ", ja: "あと ", de: "Verdienen Sie "};
+I18N["Last "] = {"zh-CN": "最近 ", ru: "За последние ", ja: "直近 ", de: "Letzte "};
+I18N["Selected: "] = {"zh-CN": "已选择：", ru: "Выбрано: ", ja: "選択中：", de: "Ausgewählt: "};
+I18N["Authenticator Code"] = {"zh-CN": "身份验证器代码", ru: "Код аутентификатора", ja: "認証アプリのコード", de: "Authentifizierungscode"};
+I18N["Enter 6-digit code from your app"] = {"zh-CN": "输入应用中的 6 位验证码", ru: "Введите 6-значный код из приложения", ja: "アプリの6桁コードを入力", de: "6-stelligen Code aus Ihrer App eingeben"};
+
+// ---- i18n hardening: toasts + dynamic attrs (round 3) ----
+I18N["Loading live rates..."] = {"zh-CN": "正在加载实时汇率...", ru: "Загрузка актуальных курсов...", ja: "リアルタイムレートを読み込み中...", de: "Live-Kurse werden geladen..."};
+I18N["💰 Live rates • 1 GT = $0.001 USD"] = {"zh-CN": "💰 实时汇率 • 1 GT = $0.001 USD", ru: "💰 Актуальные курсы • 1 GT = $0.001 USD", ja: "💰 リアルタイムレート • 1 GT = $0.001 USD", de: "💰 Live-Kurse • 1 GT = $0.001 USD"};
+I18N["💰 Rates updated periodically • 1 GT = $0.001 USD"] = {"zh-CN": "💰 汇率定期更新 • 1 GT = $0.001 USD", ru: "💰 Курсы обновляются периодически • 1 GT = $0.001 USD", ja: "💰 レートは定期的に更新 • 1 GT = $0.001 USD", de: "💰 Kurse werden regelmäßig aktualisiert • 1 GT = $0.001 USD"};
+I18N["Connecting..."] = {"zh-CN": "连接中...", ru: "Подключение...", ja: "接続中...", de: "Verbinden..."};
+I18N["Verifying"] = {"zh-CN": "验证中", ru: "Проверка...", ja: "検証中", de: "Wird verifiziert"};
+I18N["Please enter a valid phone number"] = {"zh-CN": "请输入有效的电话号码", ru: "Введите корректный номер телефона", ja: "有効な電話番号を入力してください", de: "Bitte geben Sie eine gültige Telefonnummer ein"};
+I18N["Please enter the verification code from SMS"] = {"zh-CN": "请输入短信中的验证码", ru: "Введите код подтверждения из SMS", ja: "SMS の認証コードを入力してください", de: "Bitte geben Sie den Bestätigungscode aus der SMS ein"};
+I18N["2FA verification failed"] = {"zh-CN": "双重验证失败", ru: "Ошибка двухфакторной проверки", ja: "2FA 認証に失敗しました", de: "2FA-Verifizierung fehlgeschlagen"};
+I18N["Code sent to "] = {"zh-CN": "验证码已发送至 ", ru: "Код отправлен на ", ja: "コードを送信しました：", de: "Code gesendet an "};
+I18N["Enter the 6-digit code from your authenticator app"] = {"zh-CN": "输入身份验证器应用中的 6 位代码", ru: "Введите 6-значный код из приложения-аутентификатора", ja: "認証アプリの6桁コードを入力してください", de: "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein"};
+I18N["Enter your authenticator code"] = {"zh-CN": "输入您的身份验证器代码", ru: "Введите код аутентификатора", ja: "認証コードを入力してください", de: "Geben Sie Ihren Authentifizierungscode ein"};
+I18N["Address copied"] = {"zh-CN": "地址已复制", ru: "Адрес скопирован", ja: "アドレスをコピーしました", de: "Adresse kopiert"};
+I18N["I've sent it — Credit my account"] = {"zh-CN": "我已转账 — 请充值到我的账户", ru: "Я отправил — зачислите на мой счёт", ja: "送金しました — アカウントに入金してください", de: "Ich habe gesendet — meinem Konto gutschreiben"};
+I18N["Payment link unavailable — please try again"] = {"zh-CN": "支付链接不可用 — 请重试", ru: "Ссылка на оплату недоступна — попробуйте ещё раз", ja: "支払いリンクを利用できません — 再試行してください", de: "Zahlungslink nicht verfügbar — bitte erneut versuchen"};
+I18N["📋 Copy address"] = {"zh-CN": "📋 复制地址", ru: "📋 Копировать адрес", ja: "📋 アドレスをコピー", de: "📋 Adresse kopieren"};
+I18N["Announcement deleted"] = {"zh-CN": "公告已删除", ru: "Объявление удалено", ja: "お知らせを削除しました", de: "Ankündigung gelöscht"};
+I18N["Announcement published"] = {"zh-CN": "公告已发布", ru: "Объявление опубликовано", ja: "お知らせを公開しました", de: "Ankündigung veröffentlicht"};
+I18N["Message is required"] = {"zh-CN": "消息内容为必填", ru: "Требуется сообщение", ja: "メッセージが必要です", de: "Nachricht ist erforderlich"};
+I18N["Allowed IPs"] = {"zh-CN": "允许的 IP", ru: "Разрешённые IP", ja: "許可 IP", de: "Erlaubte IPs"};
+I18N["Copy key prefix"] = {"zh-CN": "复制密钥前缀", ru: "Копировать префикс ключа", ja: "キー接頭辞をコピー", de: "Schlüsselpräfix kopieren"};
+I18N["Edit key"] = {"zh-CN": "编辑密钥", ru: "Редактировать ключ", ja: "キーを編集", de: "Schlüssel bearbeiten"};
+I18N["Key created! Copy it now."] = {"zh-CN": "密钥已创建！请立即复制。", ru: "Ключ создан! Скопируйте его сейчас.", ja: "キーを作成しました！今すぐコピーしてください。", de: "Schlüssel erstellt! Jetzt kopieren."};
+I18N["Key updated"] = {"zh-CN": "密钥已更新", ru: "Ключ обновлён", ja: "キーを更新しました", de: "Schlüssel aktualisiert"};
+I18N["My API Key"] = {"zh-CN": "我的 API 密钥", ru: "Мой API-ключ", ja: "マイ API キー", de: "Mein API-Schlüssel"};
+I18N["No keys to export"] = {"zh-CN": "没有可导出的密钥", ru: "Нет ключей для экспорта", ja: "エクスポートするキーがありません", de: "Keine Schlüssel zum Exportieren"};
+I18N["Select at least one key"] = {"zh-CN": "请至少选择一个密钥", ru: "Выберите хотя бы один ключ", ja: "少なくとも 1 つのキーを選択してください", de: "Wählen Sie mindestens einen Schlüssel"};
+I18N["Select at least one key to export"] = {"zh-CN": "请至少选择一个要导出的密钥", ru: "Выберите хотя бы один ключ для экспорта", ja: "エクスポートするキーを少なくとも 1 つ選択してください", de: "Wählen Sie mindestens einen Schlüssel zum Exportieren"};
+I18N["Select key"] = {"zh-CN": "选择密钥", ru: "Выбрать ключ", ja: "キーを選択", de: "Schlüssel auswählen"};
+I18N["Token usage — last 7 days"] = {"zh-CN": "Token 用量 — 最近 7 天", ru: "Использование токенов — за 7 дней", ja: "トークン使用量 — 直近7日間", de: "Token-Nutzung — letzte 7 Tage"};
+I18N["Toggle theme"] = {"zh-CN": "切换主题", ru: "Переключить тему", ja: "テーマ切替", de: "Design umschalten"};
+I18N["Referral code created: "] = {"zh-CN": "推荐码已创建：", ru: "Код приглашения создан: ", ja: "紹介コードを作成しました：", de: "Empfehlungscode erstellt: "};
+
+// ---- i18n hardening: keys.js render template (round 4) ----
+I18N["No API keys yet. Create one to start building."] = {"zh-CN": "还没有 API 密钥。创建第一个即可开始构建。", ru: "Пока нет API-ключей. Создайте первый, чтобы начать.", ja: "API キーがまだありません。最初のキーを作成して始めましょう。", de: "Noch keine API-Schlüssel. Erstellen Sie Ihren ersten, um loszulegen."};
+I18N["+ Create your first key"] = {"zh-CN": "+ 创建您的第一个密钥", ru: "+ Создать первый ключ", ja: "+ 最初のキーを作成", de: "+ Ersten Schlüssel erstellen"};
+I18N["Edit"] = {"zh-CN": "编辑", ru: "Изменить", ja: "編集", de: "Bearbeiten"};
+I18N["Pause"] = {"zh-CN": "暂停", ru: "Пауза", ja: "一時停止", de: "Pausieren"};
+I18N["Activate"] = {"zh-CN": "激活", ru: "Активировать", ja: "有効化", de: "Aktivieren"};
+I18N["Delete"] = {"zh-CN": "删除", ru: "Удалить", ja: "削除", de: "Löschen"};
+I18N["Usage"] = {"zh-CN": "用量", ru: "Использование", ja: "使用量", de: "Nutzung"};
+I18N["used"] = {"zh-CN": "已用", ru: "использовано", ja: "使用済み", de: "verwendet"};
+I18N["Created "] = {"zh-CN": "创建于 ", ru: "Создан: ", ja: "作成：", de: "Erstellt: "};
+I18N["requests"] = {"zh-CN": "次请求", ru: "запросов", ja: "リクエスト", de: "Anfragen"};
+I18N["Last used "] = {"zh-CN": "上次使用 ", ru: "Последнее использование: ", ja: "最終使用：", de: "Zuletzt verwendet: "};
+I18N["Never used"] = {"zh-CN": "从未使用", ru: "Не использовался", ja: "未使用", de: "Nie verwendet"};
+I18N["req/min"] = {"zh-CN": "请求/分", ru: "запр./мин", ja: "回/分", de: "Anfr./min"};
+I18N["IPs: "] = {"zh-CN": "IP：", ru: "IP: ", ja: "IP：", de: "IPs: "};
+I18N["Active"] = {"zh-CN": "启用", ru: "Активен", ja: "有効", de: "Aktiv"};
+I18N["Inactive"] = {"zh-CN": "停用", ru: "Неактивен", ja: "無効", de: "Inaktiv"};
+I18N["Drag to reorder"] = {"zh-CN": "拖动排序", ru: "Перетащите для изменения порядка", ja: "ドラッグで並べ替え", de: "Zum Sortieren ziehen"};
+I18N["tokens"] = {"zh-CN": "个 Token", ru: "токенов", ja: "トークン", de: "Token"};
+I18N["Verify 2FA"] = {"zh-CN": "验证双重认证", ru: "Подтвердить 2FA", ja: "2FA を検証", de: "2FA verifizieren"};
+I18N["✔ Copied"] = {"zh-CN": "✔ 已复制", ru: "✔ Скопировано", ja: "✔ コピーしました", de: "✔ Kopiert"};
+I18N["Send Crypto"] = {"zh-CN": "发送加密货币", ru: "Отправить криптовалюту", ja: "暗号通貨を送金", de: "Krypto senden"};
+I18N["Send exactly "] = {"zh-CN": "请准确发送 ", ru: "Отправьте ровно ", ja: "正確に送金：", de: "Senden Sie genau "};
+I18N[" to the address below. Tokens are credited after confirmation."] = {"zh-CN": " 到以下地址。确认后 Token 将计入账户。", ru: " на указанный ниже адрес. Токены зачисляются после подтверждения.", ja: " を下記のアドレスへ送金してください。確認後トークンが入金されます。", de: " an die folgende Adresse. Token werden nach Bestätigung gutgeschrieben."};
+I18N["Ref: "] = {"zh-CN": "参考号：", ru: "Ссылка: ", ja: "参照：", de: "Ref: "};
+I18N["Generating…"] = {"zh-CN": "生成中…", ru: "Создание…", ja: "生成中…", de: "Wird generiert…"};
