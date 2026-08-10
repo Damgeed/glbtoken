@@ -215,6 +215,7 @@ class UpdatePresetRequest(BaseModel):
 class ProfileUpdateRequest(BaseModel):
     name: Optional[str] = None
     country: Optional[str] = None
+    phone: Optional[str] = None
 
 
 # ── Analytics / Response Models ──

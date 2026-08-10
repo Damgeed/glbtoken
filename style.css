@@ -3444,6 +3444,10 @@ html.light .modal-overlay {
   z-index: 0;
   overflow: hidden;
 }
+/* Reduce Motion (Settings → Appearance): hide the animated star field */
+body.reduce-motion .stars-bg {
+  display: none;
+}
 .star {
   position: absolute;
   border-radius: 50%;

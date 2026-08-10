@@ -441,6 +441,25 @@ button.settings-save-btn:hover {
   }
 }
 
+/* ── Accent color swatches ── */
+.accent-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+.accent-swatch:hover {
+  transform: scale(1.12);
+}
+.accent-swatch.active {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--primary);
+}
+
 /* ── Avatar ── */
 .settings-avatar-row {
   display: flex;

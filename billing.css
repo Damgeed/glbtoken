@@ -89,6 +89,10 @@
   #invoicesCard {
     min-width: 0;
   }
+  /* Desktop: swap — Invoices on the left, Payment Methods on the right.
+     Mobile keeps the HTML order (Payment Methods first). */
+  #paymentMethodsCard { order: 2; }
+  #invoicesCard { order: 1; }
 }
 .billing-summary-grid {
   display: grid;

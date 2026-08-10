@@ -1231,6 +1231,7 @@ def get_me(user: User = Depends(get_current_user)):
         "name": user.name,
         "email": user.email,
         "country": user.country,
+        "phone": getattr(user, "phone", "") or "",
         "token_balance": user.token_balance,
         "total_spent": user.total_spent,
         "email_verified": user.email_verified,
@@ -1442,6 +1443,7 @@ def get_profile(user: User = Depends(get_current_user), db: Session = Depends(ge
         "name": user.name,
         "email": user.email,
         "country": user.country,
+        "phone": getattr(user, "phone", "") or "",
         "token_balance": user.token_balance,
         "total_spent": user.total_spent,
         "email_verified": user.email_verified,
@@ -1454,8 +1456,9 @@ def get_profile(user: User = Depends(get_current_user), db: Session = Depends(ge
 def update_profile(req: ProfileUpdateRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if req.name is not None: user.name = req.name
     if req.country is not None: user.country = req.country
+    if req.phone is not None: user.phone = req.phone
     db.commit()
-    return {"status": "updated", "name": user.name, "country": user.country}
+    return {"status": "updated", "name": user.name, "country": user.country, "phone": getattr(user, "phone", "") or ""}
 
 # ── Refresh Token ──
 @router.post("/auth/refresh")

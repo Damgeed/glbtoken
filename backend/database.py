@@ -59,6 +59,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=True)
     country = Column(String, default="")
+    phone = Column(String, default="")
     google_id = Column(String, unique=True, nullable=True)
     github_id = Column(String, unique=True, nullable=True)
     token_balance = Column(Float, default=0.0)
