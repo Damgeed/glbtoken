@@ -415,6 +415,9 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       const t=localStorage.getItem('gt_theme')||'dark';
       document.documentElement.className=t;
       document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️';
+      // Keep Appearance toggle in sync when theme is applied globally
+      var d=document.getElementById('setDarkMode');
+      if(d) d.checked = (t!=='light');
     }catch(e){}})();
 
     // ── Compact cards (persisted across all dash pages) ──
@@ -433,6 +436,9 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
       document.getElementById('themeBtn').textContent=h.classList.contains('dark')?'🌙':'☀️';
       var m=document.getElementById('themeBtnMobile');
       if(m)m.textContent=h.classList.contains('dark')?'🌙':'☀️';
+      // Keep Appearance toggle in sync (prevents saveAppearance from reverting theme)
+      var d=document.getElementById('setDarkMode');
+      if(d) d.checked = h.classList.contains('dark');
     }
     
     // ── Escape HTML (XSS prevention) ──
@@ -1097,7 +1103,6 @@ window.ACCENTS = {
   orange: {h:25,  s:'95%', l:'53%'},
   green:  {h:142, s:'71%', l:'45%'},
   cyan:   {h:189, s:'94%', l:'43%'},
-  lime:   {h:84,  s:'80%', l:'44%'},
   indigo: {h:239, s:'84%', l:'67%'}
 };
 
@@ -1143,4 +1148,15 @@ window.setAccent = function(name){
   var saved = 'gold';
   try{ saved = localStorage.getItem('gt_accent') || 'gold'; }catch(e){}
   window.applyAccent(saved);
+})();
+
+// Apply persisted Reduce Motion on every page (hides shooting stars site-wide)
+(function(){
+  try{
+    if(localStorage.getItem('gt_reduce_motion') === '1'){
+      document.body.classList.add('reduce-motion');
+      var rm = document.getElementById('setReduceMotion');
+      if(rm) rm.checked = true;
+    }
+  }catch(e){}
 })();

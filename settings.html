@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1273" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1071" />
+<link rel="stylesheet" href="settings.css?v=1072" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -275,7 +275,7 @@
               <label class="toggle-switch"><input type="checkbox" id="setReduceMotion" onchange="saveAppearance()" /><span class="toggle-slider"></span></label>
             </div>
             <div><label class="settings-field-label">Accent Color</label>
-              <div style="display:flex;gap:0.5rem;margin-top:0.35rem;flex-wrap:wrap">
+              <div style="display:flex;gap:0.5rem;margin-top:0.35rem;flex-wrap:wrap;justify-content:center">
                 <button type="button" data-accent="gold" class="accent-swatch" style="background:#F4B400" onclick="setAccent('gold')" title="Gold"></button>
                 <button type="button" data-accent="teal" class="accent-swatch" style="background:#00D68F" onclick="setAccent('teal')" title="Teal"></button>
                 <button type="button" data-accent="blue" class="accent-swatch" style="background:#3B82F6" onclick="setAccent('blue')" title="Blue"></button>
@@ -285,7 +285,6 @@
                 <button type="button" data-accent="orange" class="accent-swatch" style="background:#F97316" onclick="setAccent('orange')" title="Orange"></button>
                 <button type="button" data-accent="green" class="accent-swatch" style="background:#22C55E" onclick="setAccent('green')" title="Green"></button>
                 <button type="button" data-accent="cyan" class="accent-swatch" style="background:#06B6D4" onclick="setAccent('cyan')" title="Cyan"></button>
-                <button type="button" data-accent="lime" class="accent-swatch" style="background:#84CC16" onclick="setAccent('lime')" title="Lime"></button>
                 <button type="button" data-accent="indigo" class="accent-swatch" style="background:#6366F1" onclick="setAccent('indigo')" title="Indigo"></button>
               </div>
             </div>
@@ -413,7 +412,7 @@
 
 <script src="nav.js?v=20"></script>
 <script src="translations.js?v=1113"></script>
-<script data-cfasync="false" src="shared.js?v=1168"></script>
+<script data-cfasync="false" src="shared.js?v=1169"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js" integrity="sha384-cI8+BKLfdjtgrKKCdtnwJ7lYjVnNZA9xQoJ8FD3NL5jbTPFBsh1EbcMk/CAaVi4C" crossorigin="anonymous"></script>
@@ -848,9 +847,14 @@ window.markAllRead = function(){
 window.saveAppearance = function(){
   var dark = document.getElementById('setDarkMode').checked;
   var h = document.documentElement;
-  h.classList.remove('dark','light');
-  h.classList.add(dark ? 'dark' : 'light');
-  localStorage.setItem('gt_theme', dark ? 'dark' : 'light');
+  var curDark = h.classList.contains('dark');
+  // Only flip theme when the toggle actually changed — never let saving
+  // Reduce Motion / Compact accidentally revert the current theme.
+  if(dark !== curDark){
+    h.classList.remove('dark','light');
+    h.classList.add(dark ? 'dark' : 'light');
+    localStorage.setItem('gt_theme', dark ? 'dark' : 'light');
+  }
   var compact = document.getElementById('setCompact').checked;
   localStorage.setItem('gt_compact', compact ? '1' : '0');
   document.body.classList.toggle('compact-cards', compact);
@@ -859,9 +863,11 @@ window.saveAppearance = function(){
     var rm = rmEl.checked;
     localStorage.setItem('gt_reduce_motion', rm ? '1' : '0');
     document.body.classList.toggle('reduce-motion', rm);
+    // Apply the same reduce-motion preference immediately on the html root too
+    // (stars hide via body.reduce-motion rule in style.css)
   }
   // persist theme to backend (supported field)
-  safeApi('PUT','/api/user/settings', {theme: dark ? 'dark' : 'light'}, null, true);
+  safeApi('PUT','/api/user/settings', {theme: h.classList.contains('dark') ? 'dark' : 'light'}, null, true);
   showToast('Appearance saved!','success');
 };
 
