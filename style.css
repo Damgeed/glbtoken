@@ -2094,16 +2094,6 @@ body.compact-cards .billing-stat-card {
 .tx-table .red {
   color: var(--destructive);
 }
-.dash-activity-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: var(--radius-sm);
-  background: var(--bg-alt);
-  border: 1px solid var(--border-light);
-  font-size: 0.85rem;
-}
 /* ══════════════════════════════════════════
    MODELS & CATEGORIES
    ══════════════════════════════════════════ */

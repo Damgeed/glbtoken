@@ -1244,6 +1244,13 @@ def get_me(user: User = Depends(get_current_user)):
 
 # In-memory OTP guess limiter per account (resets when a new code is sent)
 _email_otp_attempts = {}
+
+def _hash_token(value: str) -> str:
+    """Store one-time secrets (email OTP / password-reset token) as SHA-256
+    hashes — never plaintext. A DB dump must not yield usable verification
+    codes or reset tokens (OWASP forgot-password guidance; same pattern as
+    refresh tokens and 2FA backup codes)."""
+    return hashlib.sha256(value.encode()).hexdigest()
 # Per-account 2FA (TOTP/recovery) failed-attempt counter — locks the account
 # after 5 failures so a distributed brute-force of the 6-digit code can't
 # succeed (the IP-based limiter alone is spoofable behind proxies).
@@ -1287,7 +1294,7 @@ def send_verification(req: OptionalEmailRequest, request: Request, user: User = 
     if not email:
         _400("No email on this account")
     otp = str(random.randint(100000, 999999))
-    user.email_otp = otp
+    user.email_otp = _hash_token(otp)
     user.email_otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
     db.commit()
     _email_otp_attempts.pop(f"otp:{user.id}", None)
@@ -1305,7 +1312,7 @@ def verify_email(req: VerifyEmailRequest, request: Request, user: User = Depends
     attempts = _email_otp_attempts.get(key, 0)
     if attempts >= 5:
         _400("Too many attempts. Request a new code.")
-    if user.email_otp != req.otp:
+    if user.email_otp != _hash_token(req.otp):
         _email_otp_attempts[key] = attempts + 1
         _400("Invalid OTP")
     if not _aware(user.email_otp_expiry) or now > _aware(user.email_otp_expiry):
@@ -1347,7 +1354,7 @@ def forgot_password(request: Request, req: ForgotPasswordRequest, db: Session = 
     if not user:
         return {"status": "sent"}  # indistinguishable from a real reset
     token = secrets.token_urlsafe(32)
-    user.reset_token = token
+    user.reset_token = _hash_token(token)
     user.reset_token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
     db.commit()
     try:
@@ -1364,7 +1371,7 @@ def forgot_password(request: Request, req: ForgotPasswordRequest, db: Session = 
 @router.post("/api/auth/reset-password")
 @limiter.limit("5/minute")
 def reset_password(request: Request, req: ResetPasswordRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.reset_token == req.token).first()
+    user = db.query(User).filter(User.reset_token == _hash_token(req.token)).first()
     if not user:
         _400("Invalid or expired reset token")
     now = datetime.now(timezone.utc)

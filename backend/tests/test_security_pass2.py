@@ -1,5 +1,6 @@
 """Security assessment Pass 2 regression tests — fixes for findings 1-7."""
 import json
+import hashlib
 
 from database import User
 from common import SIGNUP_BONUS_TOKENS
@@ -84,7 +85,7 @@ def test_secret_roundtrip():
 
 # ── Finding 2: free-credit farming — bonus held until email verified ──
 
-def test_register_holds_bonus_until_verified(client, db):
+def test_register_holds_bonus_until_verified(client, db, monkeypatch):
     r = client.post("/api/auth/register", json={
         "name": "New User", "email": "fresh@example.com", "password": "strongpass1",
     })
@@ -96,13 +97,18 @@ def test_register_holds_bonus_until_verified(client, db):
     assert user is not None
     assert json.loads(user.settings)["pending_bonus"] == SIGNUP_BONUS_TOKENS
 
-    # Request verification OTP, then verify with the stored OTP
+    # Request verification OTP (pin random so the plaintext is known to the
+    # test), then verify with the PLAINTEXT code — the DB stores only the
+    # SHA-256 hash (OWASP: one-time codes must not be recoverable from a dump).
+    monkeypatch.setattr("routes.auth_routes.random.randint", lambda a, b: 123456)
     r = client.post("/api/auth/send-verification", json={}, headers=_auth(tok))
     assert r.status_code == 200, r.text
     db.refresh(user)
-    otp = user.email_otp
-    assert otp
-    r = client.post("/api/auth/verify-email", json={"otp": otp}, headers=_auth(tok))
+    otp_hash = user.email_otp
+    assert otp_hash                      # stored
+    assert otp_hash != "123456"          # hashed, never plaintext
+    assert otp_hash == hashlib.sha256(b"123456").hexdigest()
+    r = client.post("/api/auth/verify-email", json={"otp": "123456"}, headers=_auth(tok))
     assert r.status_code == 200, r.text
     db.refresh(user)
     assert user.email_verified is True
