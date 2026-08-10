@@ -748,14 +748,14 @@ def _make_statement_pdf(txs, user):
         text(562 - width_est("glbtoken.com", 9), 769, "glbtoken.com", "F1", 9, "0.62 0.63 0.7")
         text(562 - width_est(f"Page {p + 1} / {total_pages}", 8), 754, f"Page {p + 1} / {total_pages}", "F1", 8, "0.62 0.63 0.7")
         # ── Billed-to card (light card block) ──
-        ops.append(f"q 0.965 0.965 0.97 rg 50 690 512 44 re f Q")
-        ops.append(f"q {GRAY_LINE} rg 50 688 512 0.8 re f Q")
-        text(64, 716, "BILLED TO", "F2", 8, GOLD_DK)
-        text(64, 700, f"{name}" + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
-        text(64, 686, f"{len(txs)} payment(s)", "F1", 8, GRAY_TXT)
+        ops.append(f"q 0.965 0.965 0.97 rg 50 688 512 52 re f Q")
+        ops.append(f"q {GRAY_LINE} rg 50 686 512 0.8 re f Q")
+        text(64, 720, "BILLED TO", "F2", 8, GOLD_DK)
+        text(64, 704, f"{name}" + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
+        text(64, 690, f"{len(txs)} payment(s)", "F1", 8, GRAY_TXT)
         # Generated date on the right inside the card
         gen = f"Generated {datetime.now(timezone.utc).strftime('%b %d, %Y')}"
-        text(562 - width_est(gen, 9), 700, gen, "F1", 9, GRAY_TXT)
+        text(562 - width_est(gen, 9), 704, gen, "F1", 9, GRAY_TXT)
         # ── Table header — 6 columns evenly spread across the 512pt table ──
         # (50..562). Left 3 columns (#, Date, Description) left-aligned to
         # their column start; right 3 (Tokens, Status, Amount) right-aligned
@@ -766,7 +766,7 @@ def _make_statement_pdf(txs, user):
         text(391 - width_est("Tokens", 9), 638, "Tokens", "F2", 9, NAVY)
         text(477 - width_est("Status", 9), 638, "Status", "F2", 9, NAVY)
         text(562 - width_est("Amount", 9), 638, "Amount", "F2", 9, NAVY)
-        ops.append(f"q {GOLD} rg 50 630 512 1.6 re f Q")  # gold rule under header
+        ops.append(f"q {GOLD} rg 50 626 512 1.6 re f Q")  # gold rule under header
         start = p * rows_per_page
         chunk = txs[start:start + rows_per_page]
         y = 612
@@ -780,17 +780,21 @@ def _make_statement_pdf(txs, user):
             status = (t.status or "completed").title()
             amt = f"{sym}{float(t.amount or 0):,.2f}"
             toks = f"{int(t.tokens or 0):,}"
-            # zebra striping — light fill on even rows for scanability
+            # zebra striping — centered on the 18pt row (baseline y, 9pt text
+            # spans roughly y-2.7..y+9.7, so a 16pt band from y-4.5..y+11.5
+            # frames the text with ~2pt padding above and below)
             if i % 2 == 1:
-                ops.append(f"q 0.973 0.973 0.98 rg 50 {y - 11:.1f} 512 16 re f Q")
+                ops.append(f"q 0.973 0.973 0.98 rg 50 {y - 4.5:.1f} 512 16 re f Q")
             text(50, y, str(start + i + 1), "F1", 9, GRAY_TXT)
             text(135, y, date_str, "F1", 9, "0.2 0.2 0.25")
             text(221, y, f"{method} #{t.id}", "F1", 9, "0.2 0.2 0.25")
             text(391 - width_est(toks, 9), y, toks, "F1", 9, "0.2 0.2 0.25")
             text(477 - width_est(status, 9), y, status, "F1", 9, "0.2 0.2 0.25")
             text(562 - width_est(amt, 9), y, amt, "F1", 9, NAVY)
-            # thin separator line between rows
-            ops.append(f"q {GRAY_LINE} rg 50 {y - 13:.1f} 512 0.5 re f Q")
+            # separator between rows — at the vertical midpoint of the 18pt
+            # gap (row baseline y, next row y-18; text occupies ~y-2.7..y+9.7
+            # so y-5.5 sits in the whitespace between the two text blocks)
+            ops.append(f"q {GRAY_LINE} rg 50 {y - 5.5:.1f} 512 0.5 re f Q")
             y -= 18
         # TOTAL row on last page — gold band like the site's CTA
         if p == total_pages - 1:

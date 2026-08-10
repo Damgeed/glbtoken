@@ -5228,7 +5228,14 @@ body {
   }
   .pricing-grid {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.9rem;
+  }
+  /* On mobile the cards stack; the featured "Best Value" badge is
+     absolutely positioned above the card (top:-0.5rem) which would
+     overlap the card above. Keep it inside the card on small screens. */
+  .pricing-card.featured::after {
+    top: 0.75rem;
+    right: 0.75rem;
   }
   .pricing-card .plan-price {
     font-size: 1.5rem;
@@ -5439,9 +5446,9 @@ body {
     grid-template-columns: 1fr !important;
     margin-bottom: 0.75rem;
   }
-  .stars-bg {
-    display: none;
-  }
+  /* .stars-bg intentionally NOT hidden on mobile — stars are a brand
+     element on every page (see .stars-bg static field rules above).
+     The old display:none here made stars vanish on phones. */
   .pricing-card {
     padding: 1.25rem;
   }
