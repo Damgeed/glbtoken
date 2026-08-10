@@ -722,6 +722,14 @@ def _make_statement_pdf(txs, user):
 
     rows_per_page = 25
     total_pages = max(1, (len(txs) + rows_per_page - 1) // rows_per_page)
+    # Brand palette (matches the GlbTOKEN web UI: dark navy + datasika gold)
+    NAVY = "0.039 0.043 0.078"      # #0A0B14
+    NAVY2 = "0.118 0.122 0.161"     # #1E1F29 (card)
+    GOLD = "0.957 0.706 0"          # #F4B400
+    GOLD_DK = "0.71 0.47 0.02"      # darker gold for small text
+    GRAY_LINE = "0.85 0.85 0.88"
+    GRAY_TXT = "0.45 0.45 0.5"
+    WHITE = "1 1 1"
     pages = []
     for p in range(total_pages):
         ops = []
@@ -729,26 +737,39 @@ def _make_statement_pdf(txs, user):
         def text(x, y, s, font="F1", size=10, color="0 0 0"):
             ops.append(f"BT /{font} {size} Tf {color} rg {x:.1f} {y:.1f} Td ({esc(s)}) Tj ET")
 
-        ops.append("q 0.957 0.706 0 rg 50 742 512 3 re f Q")
-        text(50, 700, "GlbTOKEN", "F2", 22)
-        text(50, 680, "PAYMENT STATEMENT", "F2", 12, "0.71 0.47 0.02")
-        ops.append("q 0.85 0.85 0.88 rg 50 668 512 0.8 re f Q")
-        text(50, 648, f"Billed to: {name}" + (f"  ({email})" if email else ""))
-        text(50, 634, f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y')}  |  {len(txs)} payment(s)")
-        # Table header — 6 columns evenly spread across the 512pt table
+        # ── Dark navy header band (full width) — matches the site nav ──
+        ops.append(f"q {NAVY} rg 0 746 612 46 re f Q")
+        ops.append(f"q {GOLD} rg 0 744 612 2.5 re f Q")  # gold underline accent
+        # Logo: gold square mark + white wordmark
+        ops.append(f"q {GOLD} rg 50 766 14 14 re f Q")
+        text(72, 769, "GlbTOKEN", "F2", 19, WHITE)
+        text(50, 754, "PAYMENT STATEMENT", "F2", 9, GOLD)
+        # Right side: brand domain + page marker
+        text(562 - width_est("glbtoken.com", 9), 769, "glbtoken.com", "F1", 9, "0.62 0.63 0.7")
+        text(562 - width_est(f"Page {p + 1} / {total_pages}", 8), 754, f"Page {p + 1} / {total_pages}", "F1", 8, "0.62 0.63 0.7")
+        # ── Billed-to card (light card block) ──
+        ops.append(f"q 0.965 0.965 0.97 rg 50 690 512 44 re f Q")
+        ops.append(f"q {GRAY_LINE} rg 50 688 512 0.8 re f Q")
+        text(64, 716, "BILLED TO", "F2", 8, GOLD_DK)
+        text(64, 700, f"{name}" + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
+        text(64, 686, f"{len(txs)} payment(s)", "F1", 8, GRAY_TXT)
+        # Generated date on the right inside the card
+        gen = f"Generated {datetime.now(timezone.utc).strftime('%b %d, %Y')}"
+        text(562 - width_est(gen, 9), 700, gen, "F1", 9, GRAY_TXT)
+        # ── Table header — 6 columns evenly spread across the 512pt table ──
         # (50..562). Left 3 columns (#, Date, Description) left-aligned to
         # their column start; right 3 (Tokens, Status, Amount) right-aligned
         # to their column end so every column has identical width/spacing.
-        text(50, 600, "#", "F2", 9)
-        text(135, 600, "Date", "F2", 9)
-        text(221, 600, "Description", "F2", 9)
-        text(391 - width_est("Tokens", 9), 600, "Tokens", "F2", 9)
-        text(477 - width_est("Status", 9), 600, "Status", "F2", 9)
-        text(562 - width_est("Amount", 9), 600, "Amount", "F2", 9)
-        ops.append("q 0.85 0.85 0.88 rg 50 592 512 0.8 re f Q")
+        text(50, 638, "#", "F2", 9, NAVY)
+        text(135, 638, "Date", "F2", 9, NAVY)
+        text(221, 638, "Description", "F2", 9, NAVY)
+        text(391 - width_est("Tokens", 9), 638, "Tokens", "F2", 9, NAVY)
+        text(477 - width_est("Status", 9), 638, "Status", "F2", 9, NAVY)
+        text(562 - width_est("Amount", 9), 638, "Amount", "F2", 9, NAVY)
+        ops.append(f"q {GOLD} rg 50 630 512 1.6 re f Q")  # gold rule under header
         start = p * rows_per_page
         chunk = txs[start:start + rows_per_page]
-        y = 574
+        y = 612
         for i, t in enumerate(chunk):
             sym = "NGN " if (t.currency or "USD") == "NGN" else "$"
             created = t.created_at or datetime.now(timezone.utc)
@@ -759,25 +780,30 @@ def _make_statement_pdf(txs, user):
             status = (t.status or "completed").title()
             amt = f"{sym}{float(t.amount or 0):,.2f}"
             toks = f"{int(t.tokens or 0):,}"
-            text(50, y, str(start + i + 1), "F1", 9)
-            text(135, y, date_str, "F1", 9)
-            text(221, y, f"{method} #{t.id}", "F1", 9)
-            text(391 - width_est(toks, 9), y, toks, "F1", 9)
-            text(477 - width_est(status, 9), y, status, "F1", 9)
-            text(562 - width_est(amt, 9), y, amt, "F1", 9)
+            # zebra striping — light fill on even rows for scanability
+            if i % 2 == 1:
+                ops.append(f"q 0.973 0.973 0.98 rg 50 {y - 11:.1f} 512 16 re f Q")
+            text(50, y, str(start + i + 1), "F1", 9, GRAY_TXT)
+            text(135, y, date_str, "F1", 9, "0.2 0.2 0.25")
+            text(221, y, f"{method} #{t.id}", "F1", 9, "0.2 0.2 0.25")
+            text(391 - width_est(toks, 9), y, toks, "F1", 9, "0.2 0.2 0.25")
+            text(477 - width_est(status, 9), y, status, "F1", 9, "0.2 0.2 0.25")
+            text(562 - width_est(amt, 9), y, amt, "F1", 9, NAVY)
+            # thin separator line between rows
+            ops.append(f"q {GRAY_LINE} rg 50 {y - 13:.1f} 512 0.5 re f Q")
             y -= 18
-        # TOTAL row on last page
+        # TOTAL row on last page — gold band like the site's CTA
         if p == total_pages - 1:
             amt_total = f"${total_amount:,.2f}"
             toks_total = f"{int(total_tokens):,}"
-            ops.append("q 0.957 0.706 0 rg 50 126 512 0.8 re f Q")
-            text(50, 108, "TOTAL", "F2", 11)
-            text(391 - width_est(toks_total, 11), 108, toks_total, "F2", 11)
-            text(562 - width_est(amt_total, 11), 108, amt_total, "F2", 11)
+            ops.append(f"q {GOLD} rg 50 132 512 26 re f Q")
+            text(64, 144, "TOTAL", "F2", 12, NAVY)
+            text(391 - width_est(toks_total, 11), 144, toks_total, "F2", 11, NAVY)
+            text(562 - width_est(amt_total, 11), 144, amt_total, "F2", 11, NAVY)
         # Footer
-        ops.append("q 0.85 0.85 0.88 rg 50 90 512 0.8 re f Q")
-        text(50, 70, f"Page {p + 1} of {total_pages}", "F1", 9, "0.45 0.45 0.5")
-        text(50, 54, "Generated by GlbTOKEN - glbtoken.com", "F1", 8, "0.6 0.6 0.65")
+        ops.append(f"q {GRAY_LINE} rg 50 96 512 0.8 re f Q")
+        text(50, 76, "GlbTOKEN — AI tokens & API gateway", "F1", 8, GRAY_TXT)
+        text(562 - width_est("glbtoken.com · support@glbtoken.com", 8), 76, "glbtoken.com · support@glbtoken.com", "F1", 8, GRAY_TXT)
         pages.append("\n".join(ops))
     return _build_pdf(pages)
 
@@ -803,40 +829,56 @@ def _make_invoice_pdf(tx, user):
         # Rough Helvetica advance (~0.5em per char) — good enough for alignment
         return len(s) * size * 0.5
 
-    # content stream: gold accent bar, header, meta rows, table, total, footer
+    # content stream: dark navy header band, gold accents, card blocks
+    # Brand palette (matches the GlbTOKEN web UI: dark navy + datasika gold)
+    NAVY = "0.039 0.043 0.078"      # #0A0B14
+    GOLD = "0.957 0.706 0"          # #F4B400
+    GOLD_DK = "0.71 0.47 0.02"
+    GRAY_LINE = "0.85 0.85 0.88"
+    GRAY_TXT = "0.45 0.45 0.5"
+    WHITE = "1 1 1"
     ops = []
     def text(x, y, s, font="F1", size=10, color="0 0 0"):
         ops.append(f"BT /{font} {size} Tf {color} rg {x:.1f} {y:.1f} Td ({esc(s)}) Tj ET")
 
-    # Gold top rule
-    ops.append("q 0.957 0.706 0 rg 50 742 512 3 re f Q")
-    # Header
-    text(50, 700, "GlbTOKEN", "F2", 22)
-    text(50, 680, "INVOICE", "F2", 12, "0.71 0.47 0.02")
-    ops.append("q 0.85 0.85 0.88 rg 50 668 512 0.8 re f Q")
-    # Meta
-    text(50, 648, f"Invoice #{tx.id}", "F1", 10)
-    text(50, 634, f"Date: {date_str}")
-    text(50, 620, f"Status: {status}")
-    text(50, 600, f"Billed to: {name}" + (f"  ({email})" if email else ""))
-    # Table header
-    text(50, 566, "Description", "F2", 10)
-    amt_x = 512 - width_est(amount_str, 10)
-    text(amt_x, 566, "Amount", "F2", 10)
-    ops.append("q 0.85 0.85 0.88 rg 50 558 512 0.8 re f Q")
+    # ── Dark navy header band (full width) ──
+    ops.append(f"q {NAVY} rg 0 746 612 46 re f Q")
+    ops.append(f"q {GOLD} rg 0 744 612 2.5 re f Q")
+    ops.append(f"q {GOLD} rg 50 766 14 14 re f Q")
+    text(72, 769, "GlbTOKEN", "F2", 19, WHITE)
+    text(50, 754, "INVOICE", "F2", 9, GOLD)
+    text(562 - width_est("glbtoken.com", 9), 769, "glbtoken.com", "F1", 9, "0.62 0.63 0.7")
+    inv_label = f"Invoice #{tx.id}"
+    text(562 - width_est(inv_label, 9), 754, inv_label, "F1", 8, "0.62 0.63 0.7")
+    # ── Meta card: date / status / billed to ──
+    ops.append(f"q 0.965 0.965 0.97 rg 50 690 512 60 re f Q")
+    ops.append(f"q {GRAY_LINE} rg 50 688 512 0.8 re f Q")
+    text(64, 724, "BILLED TO", "F2", 8, GOLD_DK)
+    text(64, 708, name + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
+    text(64, 694, f"Date: {date_str}", "F1", 9, "0.2 0.2 0.25")
+    # Status pill on the right
+    st_w = width_est(status.upper(), 8) + 24
+    ops.append(f"q {GOLD} rg {562 - st_w:.1f} 706 {st_w:.1f} 16 re f Q")
+    text(562 - st_w + 12, 713, status.upper(), "F2", 8, NAVY)
+    text(562 - width_est(f"Method: {method}", 9), 694, f"Method: {method}", "F1", 9, GRAY_TXT)
+    # ── Table ──
+    text(50, 600, "Description", "F2", 10, NAVY)
+    text(562 - width_est("Amount", 10), 600, "Amount", "F2", 10, NAVY)
+    ops.append(f"q {GOLD} rg 50 592 512 1.6 re f Q")
     # Rows
-    text(50, 538, f"GlbTOKEN tokens ({tokens_str} GT)")
-    text(amt_x, 538, amount_str)
-    text(50, 522, f"Payment method: {method}")
-    text(50, 506, f"Tokens credited: {tokens_str}")
-    # Total
-    ops.append("q 0.957 0.706 0 rg 50 492 512 0.8 re f Q")
-    text(50, 474, "TOTAL", "F2", 11)
-    text(amt_x, 474, amount_str, "F2", 11)
+    text(50, 570, f"GlbTOKEN tokens ({tokens_str} GT)", "F1", 10, "0.2 0.2 0.25")
+    text(562 - width_est(amount_str, 10), 570, amount_str, "F1", 10, NAVY)
+    ops.append(f"q {GRAY_LINE} rg 50 556 512 0.5 re f Q")
+    text(50, 538, f"Payment method: {method}", "F1", 9, GRAY_TXT)
+    text(50, 522, f"Tokens credited: {tokens_str}", "F1", 9, GRAY_TXT)
+    # Total — gold band
+    ops.append(f"q {GOLD} rg 50 492 512 30 re f Q")
+    text(64, 505, "TOTAL", "F2", 12, NAVY)
+    text(562 - width_est(amount_str, 12), 505, amount_str, "F2", 12, NAVY)
     # Footer
-    ops.append("q 0.85 0.85 0.88 rg 50 90 512 0.8 re f Q")
-    text(50, 70, "Thank you for your business!", "F1", 9, "0.45 0.45 0.5")
-    text(50, 54, "Generated by GlbTOKEN - glbtoken.com", "F1", 8, "0.6 0.6 0.65")
+    ops.append(f"q {GRAY_LINE} rg 50 96 512 0.8 re f Q")
+    text(50, 76, "Thank you for your business!", "F1", 9, GRAY_TXT)
+    text(562 - width_est("glbtoken.com · support@glbtoken.com", 8), 76, "glbtoken.com · support@glbtoken.com", "F1", 8, GRAY_TXT)
 
     content = "\n".join(ops)
     return _build_pdf([content])
