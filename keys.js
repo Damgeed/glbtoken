@@ -72,7 +72,7 @@
             <button class="swipe-action swipe-delete" data-key-id="${escapeAttr(String(key.id))}" data-action="delete">${t('Delete')}</button>
           </div>
           <div class="api-key-card">
-            <input type="checkbox" class="key-check" data-key-id="${escapeAttr(String(key.id))}" onchange="updateBulkCount()" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="${t('Select key')}" />
+            <input type="checkbox" class="key-check" data-key-id="${escapeAttr(String(key.id))}" onchange="updateBulkCount()" style="display:none;flex-shrink:0;width:16px;height:16px;accent-color:var(--primary)" aria-label="${t('Select key')}" />
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${safeJsId(key.id)})" title="${t('Edit key')}" aria-label="${t('Edit key')}">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeAttr(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="${t('Copy key prefix')}" aria-label="${t('Copy key prefix')}">⧉</button></div>
@@ -114,9 +114,9 @@
       const line=pts.map(function(p,i){return (i?'L':'M')+p[0]+','+p[1];}).join(' ');
       const area=line+' L'+pts[pts.length-1][0]+','+(H-P)+' L'+pts[0][0]+','+(H-P)+' Z';
       return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'
-        +'<path d="'+area+'" fill="rgba(244,180,0,0.12)" stroke="none"/>'
-        +'<path d="'+line+'" fill="none" stroke="#F4B400" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
-        +'<circle cx="'+pts[pts.length-1][0]+'" cy="'+pts[pts.length-1][1]+'" r="2.2" fill="#F4B400"/>'
+        +'<path d="'+area+'" fill="var(--primary-subtle)" stroke="none"/>'
+        +'<path d="'+line+'" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
+        +'<circle cx="'+pts[pts.length-1][0]+'" cy="'+pts[pts.length-1][1]+'" r="2.2" fill="var(--primary)"/>'
         +'</svg>';
     }
     function loadSparklines(){

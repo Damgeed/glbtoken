@@ -209,7 +209,7 @@ function drawReferralCharts(history){
     if(window._refChartInst)window._refChartInst.destroy();
     window._refChartInst=new Chart(ctx1,{
       type:'line',
-      data:{labels:labels,datasets:[{label:'Referrals',data:refData,borderColor:'#F4B400',backgroundColor:'rgba(244,180,0,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#F4B400',pointBorderColor:'#F4B400'}]},
+      data:{labels:labels,datasets:[{label:'Referrals',data:refData,borderColor:'var(--primary)',backgroundColor:'var(--primary-subtle)',fill:true,tension:0.4,pointBackgroundColor:'var(--primary)',pointBorderColor:'var(--primary)'}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6B7280',maxTicksLimit:5}}}}
     });
   }

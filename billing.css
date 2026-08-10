@@ -5,10 +5,10 @@
   gap: 0.6rem;
   padding: 0.7rem 0.9rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(244, 180, 0, 0.4);
-  background: rgba(244, 180, 0, 0.1);
+  border: 1px solid var(--primary-soft);
+  background: var(--primary-subtle);
   border-radius: 10px;
-  color: #F4B400;
+  color: var(--primary);
   font-size: 0.85rem;
 }
 .low-balance-banner .low-balance-text {
@@ -17,7 +17,7 @@
   line-height: 1.45;
 }
 .low-balance-banner .low-balance-text strong {
-  color: #F4B400;
+  color: var(--primary);
 }
 .low-balance-banner .low-balance-cta {
   flex-shrink: 0;
@@ -39,15 +39,15 @@
 .pm-default-badge {
   font-size: 0.68rem;
   font-weight: 700;
-  color: #F4B400;
-  background: rgba(244, 180, 0, 0.14);
-  border: 1px solid rgba(244, 180, 0, 0.35);
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-soft);
   padding: 0.12rem 0.4rem;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
 .pm-row-default {
-  border-color: rgba(244, 180, 0, 0.45);
+  border-color: var(--primary-soft);
 }
 .pm-star {
   background: none;
@@ -60,8 +60,8 @@
   line-height: 1;
   flex-shrink: 0;
 }
-.pm-star:hover { color: #F4B400; background: rgba(244, 180, 0, 0.12); }
-.pm-star.active { color: #F4B400; }
+.pm-star:hover { color: var(--primary); background: var(--primary-subtle); }
+.pm-star.active { color: var(--primary); }
 .qr-amounts {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -243,8 +243,8 @@
   font-weight: 700;
   font-size: 0.72rem;
   letter-spacing: 0.04em;
-  color: #F4B400;
-  background: rgba(244, 180, 0, 0.12);
+  color: var(--primary);
+  background: var(--primary-subtle);
   padding: 0.18rem 0.45rem;
   border-radius: 6px;
   flex-shrink: 0;
@@ -280,9 +280,9 @@
   flex-shrink: 0;
 }
 .pm-recharge {
-  background: rgba(244, 180, 0, 0.12);
-  border: 1px solid rgba(244, 180, 0, 0.35);
-  color: #F4B400;
+  background: var(--primary-subtle);
+  border: 1px solid var(--primary-soft);
+  color: var(--primary);
   font-size: 0.72rem;
   font-weight: 600;
   padding: 0.22rem 0.55rem;
@@ -291,7 +291,7 @@
   white-space: nowrap;
   transition: background 0.15s ease, transform 0.1s ease;
 }
-.pm-recharge:hover { background: rgba(244, 180, 0, 0.22); }
+.pm-recharge:hover { background: var(--primary-soft); }
 
 /* ── Invoices table: inherits the shared .tx-table card design — same fonts,
    colors, spacing as Transaction History (usage.html). No fixed layout or

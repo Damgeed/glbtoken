@@ -61,14 +61,14 @@
   /* breathing room between the sort/select row above and the bulk actions */
   margin-top: 0.75rem;
   padding: 0.45rem 0.6rem;
-  background: rgba(244, 180, 0, 0.06);
-  border: 1px solid rgba(244, 180, 0, 0.22);
+  background: var(--primary-subtle);
+  border: 1px solid var(--primary-soft);
   border-radius: 10px;
 }
 .keys-bulk-row #bulkCount {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--primary, #F4B400);
+  color: var(--primary, var(--primary));
   white-space: nowrap;
 }
 .keys-controls-row {

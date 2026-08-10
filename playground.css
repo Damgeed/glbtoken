@@ -69,8 +69,8 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  background: rgba(244, 180, 0, 0.12);
-  color: #F4B400;
+  background: var(--primary-subtle);
+  color: var(--primary);
   border: none;
   border-radius: 6px;
   padding: 0.3rem 0.6rem;
@@ -82,11 +82,11 @@
   flex-shrink: 0;
 }
 .playground-code-copy:hover {
-  background: rgba(244, 180, 0, 0.22);
-  color: #FFC733;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 .playground-code-copy.copied {
-  background: rgba(244, 180, 0, 0.22);
+  background: var(--primary-soft);
   color: #00D68F;
 }
 .playground-code-body {

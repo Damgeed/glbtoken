@@ -179,18 +179,18 @@ button.settings-save-btn:hover {
 }
 /* User ID copy button: uniform gold gradient like referrals, desktop shows "Copy" label, mobile shows larger symbol */
 .btn-secondary.uid-copy-btn {
-  background: linear-gradient(135deg, rgba(244, 180, 0, 0.14) 0%, rgba(224, 142, 39, 0.10) 100%);
-  border: 1px solid rgba(244, 180, 0, 0.35);
-  color: #F4B400;
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(224, 142, 39, 0.10) 100%);
+  border: 1px solid var(--primary-soft);
+  color: var(--primary);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(244, 180, 0, 0.10);
+  box-shadow: 0 2px 8px var(--primary-subtle);
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, color 0.18s ease;
 }
 .btn-secondary.uid-copy-btn:hover {
-  background: linear-gradient(135deg, rgba(244, 180, 0, 0.22) 0%, rgba(224, 142, 39, 0.16) 100%);
-  border-color: rgba(244, 180, 0, 0.6);
-  color: #FFC733;
-  box-shadow: 0 4px 14px rgba(244, 180, 0, 0.22);
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(224, 142, 39, 0.16) 100%);
+  border-color: var(--primary-soft);
+  color: var(--primary);
+  box-shadow: 0 4px 14px var(--primary-soft);
   transform: translateY(-1px);
 }
 .btn-secondary.uid-copy-btn:active { transform: translateY(0); }
@@ -245,7 +245,7 @@ button.settings-save-btn:hover {
 }
 .notif-item.dash-card:hover {
   background: var(--bg-alt);
-  border-color: rgba(244, 180, 0, 0.45);
+  border-color: var(--primary-soft);
 }
 /* Notification cards: slightly reduced height on desktop + mobile */
 .notif-item.dash-card.settings-row {
@@ -322,18 +322,18 @@ button.settings-save-btn:hover {
   padding: 0.38rem 0.85rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--primary, #F4B400);
-  background: rgba(244, 180, 0, 0.1);
-  border: 1px solid rgba(244, 180, 0, 0.35);
+  color: var(--primary, var(--primary));
+  background: var(--primary-subtle);
+  border: 1px solid var(--primary-soft);
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.18s;
 }
 .notif-mark-read-btn:hover {
-  background: rgba(244, 180, 0, 0.18);
-  border-color: rgba(244, 180, 0, 0.6);
-  box-shadow: 0 2px 10px rgba(244, 180, 0, 0.18);
+  background: var(--primary-subtle);
+  border-color: var(--primary-soft);
+  box-shadow: 0 2px 10px var(--primary-subtle);
   transform: translateY(-1px);
 }
 .notif-mark-read-btn:active {
@@ -371,21 +371,21 @@ button.settings-save-btn:hover {
   flex-shrink: 0;
 }
 .webhook-btn-save {
-  background: linear-gradient(135deg, #F4B400 0%, #E08E27 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #E08E27 100%);
   color: #0A0B14;
-  box-shadow: 0 4px 14px rgba(244, 180, 0, 0.25);
+  box-shadow: 0 4px 14px var(--primary-soft);
 }
 .webhook-btn-save:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(244, 180, 0, 0.35);
+  box-shadow: 0 6px 18px var(--primary-soft);
 }
 .webhook-btn-test {
   background: transparent;
   color: var(--primary);
-  border: 1px solid rgba(244, 180, 0, 0.45);
+  border: 1px solid var(--primary-soft);
 }
 .webhook-btn-test:hover {
-  background: rgba(244, 180, 0, 0.08);
+  background: var(--primary-subtle);
   border-color: var(--primary);
 }
 
@@ -471,7 +471,7 @@ button.settings-save-btn:hover {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), hsl(44 96% 40%));
+  background: linear-gradient(135deg, var(--primary), var(--primary-deep));
   border: 1px solid var(--border-light);
   display: flex;
   align-items: center;
@@ -485,8 +485,8 @@ button.settings-save-btn:hover {
   transition: border-color 0.18s, box-shadow 0.18s;
 }
 .settings-avatar-preview.clickable:hover {
-  border-color: rgba(244, 180, 0, 0.55);
-  box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.12);
+  border-color: var(--primary-soft);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
 }
 /* Default avatar: username initial on the gold gradient (matches nav avatar) */
 .settings-avatar-initial {
@@ -505,11 +505,11 @@ button.settings-save-btn:hover {
   height: 20px;
   border-radius: 50%;
   background: rgba(10, 11, 20, 0.72);
-  color: #F4B400;
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid rgba(244, 180, 0, 0.55);
+  border: 1.5px solid var(--primary-soft);
   opacity: 0;
   transition: opacity 0.18s ease, transform 0.18s ease;
   pointer-events: none;
@@ -588,11 +588,11 @@ button.settings-save-btn:hover {
   color: #00D68F;
 }
 .settings-avatar-verified.no {
-  background: rgba(244, 180, 0, 0.14);
-  color: #F4B400;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 .settings-avatar-verified.no:hover {
-  background: rgba(244, 180, 0, 0.24);
+  background: var(--primary-soft);
   color: #FFC53D;
 }
 .settings-avatar-verified.no:active {
@@ -611,7 +611,7 @@ button.settings-save-btn:hover {
 }
 .settings-avatar-tokens-num {
   font-weight: 700;
-  color: #F4B400;
+  color: var(--primary);
 }
 .settings-avatar-tokens-label {
   font-weight: 400;

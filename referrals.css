@@ -67,7 +67,7 @@
   font-size: 1.1rem;
   font-family: monospace;
   letter-spacing: 2px;
-  color: #F4B400;
+  color: var(--primary);
 }
 /* Card with bottom padding */
 .refs-card-hero {
@@ -104,9 +104,9 @@
 }
 /* Copy button */
 .refs-copy-btn {
-  border: 1px solid rgba(244, 180, 0, 0.35);
-  background: linear-gradient(135deg, rgba(244, 180, 0, 0.14) 0%, rgba(224, 142, 39, 0.10) 100%);
-  color: #F4B400;
+  border: 1px solid var(--primary-soft);
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(224, 142, 39, 0.10) 100%);
+  color: var(--primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -116,14 +116,14 @@
   flex-shrink: 0;
   border-radius: 10px;
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-  box-shadow: 0 2px 8px rgba(244, 180, 0, 0.10);
+  box-shadow: 0 2px 8px var(--primary-subtle);
 }
 .refs-copy-btn .copy-label { display: none; }
 .refs-copy-btn:hover {
-  background: linear-gradient(135deg, rgba(244, 180, 0, 0.22) 0%, rgba(224, 142, 39, 0.16) 100%);
-  border-color: rgba(244, 180, 0, 0.6);
-  color: #FFC733;
-  box-shadow: 0 4px 14px rgba(244, 180, 0, 0.22);
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(224, 142, 39, 0.16) 100%);
+  border-color: var(--primary-soft);
+  color: var(--primary);
+  box-shadow: 0 4px 14px var(--primary-soft);
   transform: translateY(-1px);
 }
 .refs-copy-btn:active { transform: translateY(0); }
@@ -142,9 +142,9 @@
   flex-wrap: wrap;
 }
 .code-copy-btn {
-  border: 1px solid rgba(244, 180, 0, 0.35);
-  background: linear-gradient(135deg, rgba(244, 180, 0, 0.14) 0%, rgba(224, 142, 39, 0.10) 100%);
-  color: #F4B400;
+  border: 1px solid var(--primary-soft);
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(224, 142, 39, 0.10) 100%);
+  color: var(--primary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -153,13 +153,13 @@
   height: 2.1rem;
   border-radius: 10px;
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-  box-shadow: 0 2px 8px rgba(244, 180, 0, 0.10);
+  box-shadow: 0 2px 8px var(--primary-subtle);
 }
 .code-copy-btn:hover {
-  background: linear-gradient(135deg, rgba(244, 180, 0, 0.22) 0%, rgba(224, 142, 39, 0.16) 100%);
-  border-color: rgba(244, 180, 0, 0.6);
-  color: #FFC733;
-  box-shadow: 0 4px 14px rgba(244, 180, 0, 0.22);
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(224, 142, 39, 0.16) 100%);
+  border-color: var(--primary-soft);
+  color: var(--primary);
+  box-shadow: 0 4px 14px var(--primary-soft);
   transform: translateY(-1px);
 }
 .code-copy-btn:active { transform: translateY(0); }
@@ -215,7 +215,7 @@
 }
 /* Pending/awaiting color */
 .refs-pending {
-  color: #FFB347;
+  color: var(--primary-hover);
 }
 /* Rewards grid */
 .refs-rewards-grid {
@@ -237,7 +237,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(244, 180, 0, 0.15);
+  background: var(--primary-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -300,7 +300,7 @@
 /* ── Claim rewards button ── */
 .ref-claim-btn {
   border: none;
-  background: #F4B400;
+  background: var(--primary);
   color: #241A00;
   font-weight: 600;
   font-size: 0.75rem;
@@ -328,7 +328,7 @@
 .refs-threshold-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #F4B400, #E0A500);
+  background: linear-gradient(90deg, var(--primary), #E0A500);
   transition: width 0.4s ease;
 }
 .refs-threshold-txt {
@@ -410,7 +410,7 @@
   transition: width 0.5s ease;
 }
 .refs-funnel-fill.f-teal   { background: linear-gradient(90deg, #00D68F, #00B377); }
-.refs-funnel-fill.f-gold   { background: linear-gradient(90deg, #F4B400, #E0A500); }
+.refs-funnel-fill.f-gold   { background: linear-gradient(90deg, var(--primary), #E0A500); }
 .refs-funnel-fill.f-green  { background: linear-gradient(90deg, #4CAF50, #2E7D32); }
 .refs-funnel-count {
   width: 64px;
@@ -465,6 +465,6 @@
   white-space: nowrap;
 }
 .refs-status-badge.refs-st-rewarded { background: rgba(0,214,143,0.15); color: #00D68F; }
-.refs-status-badge.refs-st-active   { background: rgba(244,180,0,0.15);  color: #F4B400; }
+.refs-status-badge.refs-st-active   { background: var(--primary-subtle);  color: var(--primary); }
 .refs-status-badge.refs-st-pending  { background: rgba(79,195,247,0.15); color: #4FC3F7; }
 .refs-status-badge.refs-st-idle     { background: rgba(255,152,0,0.15);  color: #FF9800; }

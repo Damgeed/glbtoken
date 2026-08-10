@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1272" />
+  <link rel="stylesheet" href="style.css?v=1273" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="team.css?v=1077" />
+<link rel="stylesheet" href="team.css?v=1078" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -212,7 +212,7 @@
       <!-- Team Insights (mix / capacity / top consumers) -->
       <div class="dash-card mt-lg" id="orgInsightCard" style="display:none">
         <div class="dash-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFC733" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline">
             <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
           </svg>
           Team Insights
@@ -1033,7 +1033,7 @@ function renderMembers(myRole, orgId){
       // and admin rows (when the viewer is an admin) are not selectable.
       var canSelect = !isOwner && !(role === 'admin' && m.role === 'admin');
       var checkStyle = memberBulkMode ? '' : 'display:none;';
-      var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+escapeAttr(String(m.user_id))+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
+      var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+escapeAttr(String(m.user_id))+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:var(--primary)" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
       return '<tr data-member="'+escapeAttr(String(m.user_id))+'" onclick="openMemberDrawer('+safeJsId(m.user_id)+')" title="View member details">'+
         '<td data-label="Member"><div class="flex-row">'+checkBox+'<div class="'+avatarClassFor(m.name)+'">'+escapeHtml(initial)+'</div><span>'+escapeHtml(m.name||'User')+'</span><span class="member-row-chevron">›</span></div></td>'+
         '<td data-label="Email">'+escapeHtml(m.email||'—')+'</td>'+
@@ -1096,7 +1096,7 @@ function mobileMemberCardHtml(m, role, orgId){
   var swipeW = (transferBtn && removeBtn) ? 150 : 75;
   var canSelect = !isOwner && !(role === 'admin' && m.role === 'admin');
   var checkStyle = memberBulkMode ? '' : 'display:none;';
-  var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+escapeAttr(String(m.user_id))+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:#F4B400" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
+  var checkBox = '<input type="checkbox" class="member-check" data-member-id="'+escapeAttr(String(m.user_id))+'" onchange="updateMemberBulkCount()" onclick="event.stopPropagation()" style="'+checkStyle+'flex-shrink:0;width:16px;height:16px;accent-color:var(--primary)" aria-label="Select member"'+(canSelect?'':' disabled')+' />';
   var cardBody = '<div class="member-card" data-member="'+escapeAttr(String(m.user_id))+'" onclick="openMemberDrawer('+safeJsId(m.user_id)+')">'
     + '<div class="member-card-top">'
     + checkBox
