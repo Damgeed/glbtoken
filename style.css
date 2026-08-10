@@ -4455,6 +4455,14 @@ body {
   gap: 1.25rem;
   margin-top: 0;
 }
+/* Desktop: fixed 3-column layout — row 1: Profile / Account / Security,
+   row 2: Notifications / Appearance / API Defaults. Below 1100px the
+   auto-fit grid degrades naturally (2 cols, then 1 col on mobile). */
+@media (min-width: 1100px) {
+  .settings-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 .toggle-row {
   display: flex;
   align-items: center;
