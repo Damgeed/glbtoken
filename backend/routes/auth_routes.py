@@ -511,19 +511,21 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
 @limiter.limit("10/minute")
 def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
     ip = _client_ip(request)
+    # Normalize email exactly like register does — prevents duplicate mixed-case accounts.
+    email = (req.email or "").strip().lower()
     # Lockout: 10 failed attempts per email+IP → 429 for 15 minutes.
-    if _login_locked(req.email, ip):
+    if _login_locked(email, ip):
         raise HTTPException(status_code=429, detail="Too many failed attempts. Try again in 15 minutes.")
-    user = db.query(User).filter(User.email == req.email).first()
+    user = db.query(User).filter(User.email == email).first()
     if not user or not user.password_hash:
         record_login_event(0, request, False, db)
-        _login_fail(req.email, ip)
+        _login_fail(email, ip)
         _401("Invalid credentials")
     if not verify_password(req.password, user.password_hash):
         record_login_event(0, request, False, db)
-        _login_fail(req.email, ip)
+        _login_fail(email, ip)
         _401("Invalid credentials")
-    _login_success(req.email, ip)
+    _login_success(email, ip)
     record_login_event(user.id, request, True, db)
     # ── 2FA gate: if TOTP is enabled, don't hand out the real token yet ──
     if _totp_enabled(user):
@@ -1340,7 +1342,8 @@ def change_password(request: Request, req: ChangePasswordRequest, user: User = D
 def forgot_password(request: Request, req: ForgotPasswordRequest, db: Session = Depends(get_db)):
     # Uniform response for every outcome — never reveal whether an email is
     # registered (anti-enumeration). Distinctions are logged server-side only.
-    user = db.query(User).filter(User.email == req.email).first()
+    email = (req.email or "").strip().lower()
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         return {"status": "sent"}  # indistinguishable from a real reset
     token = secrets.token_urlsafe(32)

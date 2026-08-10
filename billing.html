@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1266" />
+  <link rel="stylesheet" href="style.css?v=1267" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="billing.css?v=1042" />
   </head>
@@ -249,7 +249,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1165"></script>
+<script data-cfasync="false" src="shared.js?v=1166"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 
@@ -362,8 +362,9 @@ window._errMsg = _errMsg;
           if(invItem.pdf_url){
             receiptHtml = '<a href="javascript:void(0)" data-invoice-id="' + escapeAttr(invItem.id) + '" onclick="downloadInvoicePdf(this.dataset.invoiceId)" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> PDF</a>';
           } else if(invItem.receipt_url || invItem.receipt){
-            var rUrl = escapeAttr(invItem.receipt_url || invItem.receipt);
-            receiptHtml = '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>';
+            var rawR = String(invItem.receipt_url || invItem.receipt || '');
+            var rUrl = /^https:\/\//i.test(rawR) ? escapeAttr(rawR) : '';
+            receiptHtml = rUrl ? '<a href="' + rUrl + '" target="_blank" rel="noopener" class="receipt-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> View</a>' : '—';
           }
 
           row += '<tr>';
@@ -561,7 +562,8 @@ window._errMsg = _errMsg;
 
   window.addPaymentMethod = function(){
     api('POST','/api/payments/cards/setup',{}).then(function(d){
-      if(d && d.url){ window.location.href = d.url; }
+      // Fail closed on non-https URLs (never follow javascript:/data: from the API)
+      if(d && d.url && /^https:\/\//i.test(d.url)){ window.location.href = d.url; }
       else { showToast('Could not start card setup','error'); }
     }).catch(function(e){
       showToast((e && e.message) || 'Could not start card setup','error');

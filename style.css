@@ -1511,18 +1511,6 @@ input[type="range"]::-moz-range-thumb {
    DASHBOARD & SIDEBAR
    ══════════════════════════════════════════ */
 /* Dashboard - unified gap-based layout */
-.dash-balance {
-  background: linear-gradient(
-    135deg,
-    hsla(44 96% 52% / 0.15),
-    hsla(44 96% 52% / 0.04)
-  );
-  border: 1px solid hsla(44 96% 52% / 0.2);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-}
 .dash-balance::before {
   content: "";
   position: absolute;
@@ -3884,20 +3872,7 @@ html.light .star.white {
   color: var(--primary);
 }
 /* Settings grid: 2 cols desktop, 1 col mobile */
-.settings-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
 /* Toggle Switch */
-.toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.65rem 0;
-  border-bottom: 1px solid var(--border-light);
-}
 .toggle-row:last-child {
   border-bottom: none;
   padding-bottom: 0;

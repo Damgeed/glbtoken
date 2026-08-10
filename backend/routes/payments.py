@@ -442,7 +442,8 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if not tx or tx.status == "completed":
             return {"status": "ok"}
         meta = session.get("metadata") or {}
-        user_id = int(meta.get("user_id") or 0)
+        raw_uid = str(meta.get("user_id") or "")
+        user_id = int(raw_uid) if raw_uid.isdigit() else 0
         if not user_id:
             print(f"⚠️ Stripe checkout.session.completed missing metadata.user_id (payment_ref={session.get('id')})")
             return {"status": "ok"}
@@ -480,7 +481,8 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         tx = db.query(Transaction).filter(Transaction.payment_ref == pi["id"]).first()
         if tx and tx.status != "completed":
             meta = pi.get("metadata") or {}
-            user_id = int(meta.get("user_id") or 0)
+            raw_uid = str(meta.get("user_id") or "")
+            user_id = int(raw_uid) if raw_uid.isdigit() else 0
             if not user_id:
                 print(f"⚠️ Stripe payment_intent.succeeded missing metadata.user_id (payment_ref={pi.get('id')})")
                 return {"status": "ok"}

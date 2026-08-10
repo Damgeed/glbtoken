@@ -13,7 +13,7 @@ __all__ = [
     'PAYSTACK_SECRET_KEY', 'PAYSTACK_PUBLIC_KEY',
     'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET',
     'CRYPTO_USDT_TRC20', 'CRYPTO_USDT_ERC20', 'CRYPTO_BTC', 'CRYPTO_ETH',
-    'GLBTOKEN_SECRET', 'PORT', 'CRYPTO_WALLET_ADDRESSES',
+    'GLBTOKEN_SECRET', 'ADMIN_API_KEY', 'PORT', 'CRYPTO_WALLET_ADDRESSES',
     '_400', '_401', '_402', '_403', '_404', '_500', '_502', '_503', '_not_configured',
     'limiter', '_safe_error', '_url_quote',
 ]
@@ -83,6 +83,10 @@ CRYPTO_ETH = os.getenv("CRYPTO_ETH", "")
 
 # Security
 GLBTOKEN_SECRET = os.environ.get("GLBTOKEN_SECRET")
+# Optional dedicated admin-bearer key so GLBTOKEN_SECRET stays encryption-only and
+# can be rotated without breaking admin automation. Falls back to GLBTOKEN_SECRET
+# when unset (backward compatible). Set ADMIN_API_KEY in production to separate the two.
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
 
 # Server
 PORT = os.getenv("PORT", "8000")

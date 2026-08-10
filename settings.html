@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1266" />
+  <link rel="stylesheet" href="style.css?v=1267" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="settings.css?v=1068" />
   </head>
@@ -382,7 +382,7 @@
 
 <script src="nav.js?v=19"></script>
 <script src="translations.js?v=1110"></script>
-<script data-cfasync="false" src="shared.js?v=1165"></script>
+<script data-cfasync="false" src="shared.js?v=1166"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1236"></script>
 <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.js" integrity="sha384-cI8+BKLfdjtgrKKCdtnwJ7lYjVnNZA9xQoJ8FD3NL5jbTPFBsh1EbcMk/CAaVi4C" crossorigin="anonymous"></script>
@@ -1652,7 +1652,7 @@ function loadNotifications(){
     list.innerHTML = visible.map(function(n){
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
       return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
-        + '<div class="settings-icon settings-icon-'+escapeHtml(String(n.kind))+'" style="margin-right:1rem">'+(ICONS[n.kind]||'')+'</div>'
+        + '<div class="settings-icon settings-icon-'+escapeAttr(String(n.kind))+'" style="margin-right:1rem">'+(ICONS[n.kind]||'')+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'

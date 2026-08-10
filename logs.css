@@ -145,7 +145,7 @@
 #section-logs {
   display: block;
 }
-#responseTimeMoreBtn, #speedComparisonMoreBtn { display: none; }
+#responseTimeMoreBtn { display: none; }
 @media (max-width: 767px) {
-  #responseTimeMoreBtn, #speedComparisonMoreBtn { display: block; }
+  #responseTimeMoreBtn { display: block; }
 }

@@ -5,11 +5,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import Optional
 import json
+import math
 import secrets
 
 from database import get_db, User, Transaction, AIModel, AdminLog, Announcement
 from auth import get_current_user, get_optional_user
-from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET, real_client_ip
+from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET, ADMIN_API_KEY, real_client_ip
 from schemas import AdminBalanceRequest, SyncUsersRequest, AnnouncementCreate, AnnouncementUpdate
 
 router = APIRouter()
@@ -67,6 +68,10 @@ def admin_list_users(request: Request, page: int = Query(1, ge=1), per_page: int
 def admin_adjust_balance(req: AdminBalanceRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if not user.is_admin:
         _403("Admin access required")
+    # Guard against NaN/Infinity from JSON (json.loads accepts them by default) —
+    # NaN would permanently corrupt the balance, inf would mint unlimited credit.
+    if not math.isfinite(req.tokens):
+        _400("Invalid amount")
     target = db.query(User).filter(User.id == req.user_id).with_for_update().first()
     if not target:
         _404("User not found")
@@ -162,7 +167,7 @@ def admin_sync_users(
     api_key = ""
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
-    glbtoken_secret = GLBTOKEN_SECRET
+    glbtoken_secret = ADMIN_API_KEY or GLBTOKEN_SECRET
     if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
         if not user or not user.is_admin:
             _403("Admin access required")
@@ -274,7 +279,7 @@ def admin_delete_user(
     api_key = ""
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
-    glbtoken_secret = GLBTOKEN_SECRET
+    glbtoken_secret = ADMIN_API_KEY or GLBTOKEN_SECRET
     if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
         if not user or not user.is_admin:
             _403("Admin access required")

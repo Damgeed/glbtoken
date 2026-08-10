@@ -9,7 +9,7 @@ import os, json, secrets
 from database import get_db, User, AIModel, SessionLocal
 from auth import get_current_user
 from newapi_integration import get_user_models
-from common import _403, GLBTOKEN_SECRET, NEW_API_BASE_URL, FALLBACK_API_URL, FALLBACK_API_KEY, limiter
+from common import _403, GLBTOKEN_SECRET, ADMIN_API_KEY, NEW_API_BASE_URL, FALLBACK_API_URL, FALLBACK_API_KEY, limiter
 
 router = APIRouter()
 
@@ -186,7 +186,7 @@ def trigger_model_pull(request: Request, authorization: str = Header(None)):
     api_key = ""
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
-    glbtoken_secret = GLBTOKEN_SECRET
+    glbtoken_secret = ADMIN_API_KEY or GLBTOKEN_SECRET
     if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
         _403("Invalid API key")
     auto_pull_models()

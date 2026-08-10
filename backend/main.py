@@ -7,6 +7,7 @@ Clean orchestrator that imports and includes all route modules.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 from contextlib import asynccontextmanager
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -201,6 +202,23 @@ app.add_middleware(
 
 # ── Security Headers ──
 
+# ── Request Body Size Limit ──
+# Reject oversized JSON bodies before parsing (auth'd DoS guard: chat/completion
+# payloads and conversation saves are the only large-JSON endpoints, and none
+# legitimately exceed 2 MB). Multipart uploads (avatar) are exempt — the avatar
+# endpoint enforces its own 5 MB cap.
+MAX_JSON_BODY_BYTES = 2 * 1024 * 1024
+
+class BodySizeLimitMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        ctype = request.headers.get("content-type", "")
+        if ctype.startswith("application/json"):
+            cl = request.headers.get("content-length")
+            if cl and cl.isdigit() and int(cl) > MAX_JSON_BODY_BYTES:
+                return JSONResponse(status_code=413, content={"detail": "Request body too large"})
+        return await call_next(request)
+
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         try:
@@ -261,6 +279,7 @@ class V1CORSMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(V1CORSMiddleware)
+app.add_middleware(BodySizeLimitMiddleware)
 
 
 # ── Rate Limiting ──

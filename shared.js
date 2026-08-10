@@ -169,7 +169,7 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
         var _p = token.split('.')[1];
         var _b64 = _p.replace(/-/g,'+').replace(/_/g,'/');
         while(_b64.length % 4) _b64 += '=';
-        var _payload = JSON.parse(decodeURIComponent(escape(atob(_b64))));
+        var _payload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(_b64), function(c){return c.charCodeAt(0);})));
         if(_payload.exp && _payload.exp * 1000 < Date.now()){
           token = ''; sessionStorage.removeItem('gt_token');
         }
@@ -794,20 +794,6 @@ function logoutUser(){
       userData=d;window.__secure.setItem('gt_user',JSON.stringify(d));applyAuth();
     }
 
-    // ── Notification Settings ──
-    async function saveNotificationSettings(){
-      if(!token){showToast('Please sign in first','error');return}
-      var emailEl=document.getElementById('notifEmail');
-      var balEl=document.getElementById('notifLowBalance');
-      var loginEl=document.getElementById('notifLogin');
-      if(!emailEl){showToast('Settings form not found','error');return}
-      await safeApi('PUT','/api/user/settings',{
-        email_notifications:emailEl.checked,
-        low_balance_alert:balEl?balEl.checked:false,
-        login_alerts:loginEl?loginEl.checked:false
-      });
-      showToast('Notification preferences saved','success');
-    }
     // ── History / Transactions ──
 
 // ── Auth UI sync (shared so it works on all pages, not just dashboard) ──

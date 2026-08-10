@@ -87,6 +87,8 @@ def _maybe_low_balance_alert(user: User, db: Session):
 @limiter.limit("30/minute")
 async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     # Estimate cost (capped output — matches what we forward)
+    if not all(isinstance(m, dict) for m in req.messages):
+        _400("Each message must be an object with role and content")
     input_chars = sum(len(m.get("content", "")) for m in req.messages)
     input_tokens = max(1, input_chars // 4)
     max_out = min(req.max_tokens or MAX_OUTPUT_TOKENS, MAX_OUTPUT_TOKENS)
@@ -202,6 +204,8 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
                           user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Similar to proxy/chat but with additional parameters."""
     # Estimate cost (capped output — matches what we forward)
+    if not all(isinstance(m, dict) for m in req.messages):
+        _400("Each message must be an object with role and content")
     input_chars = sum(len(m.get("content", "")) for m in req.messages)
     input_tokens = max(1, input_chars // 4)
     max_out = min(req.max_tokens or MAX_OUTPUT_TOKENS, MAX_OUTPUT_TOKENS)
