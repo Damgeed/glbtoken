@@ -418,6 +418,29 @@ button.settings-save-btn:hover {
   }
 }
 
+/* ── Webhooks + Recent Notifications (2-col desktop grid, notifications wider) ── */
+.settings-grid-notif {
+  display: grid;
+  grid-template-columns: 2fr 3fr; /* Notifications slightly wider than Webhooks */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.settings-grid-notif > .settings-card {
+  margin-top: 0;
+}
+/* Notification cards: 2x2 grid inside the notifications column (desktop) */
+.settings-grid-notif .notif-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (max-width: 900px) {
+  .settings-grid-notif {
+    grid-template-columns: 1fr;
+  }
+  .settings-grid-notif .notif-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Avatar ── */
 .settings-avatar-row {
   display: flex;

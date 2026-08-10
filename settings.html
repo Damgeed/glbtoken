@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1271" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1068" />
+<link rel="stylesheet" href="settings.css?v=1069" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -283,8 +283,10 @@
           </div>
         </div>
       </div>
+      <!-- Webhooks + Recent Notifications (2-col grid on desktop, notifications wider) -->
+      <div class="settings-grid-notif">
       <!-- Webhooks -->
-      <div class="settings-card" style="margin-top:1rem">
+      <div class="settings-card">
         <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Webhooks</h3>
         <div class="settings-field-group">
           <div><label class="settings-field-label">Webhook URL</label><input type="url" id="webhookUrl" placeholder="https://your-app.com/hook" class="settings-input" autocomplete="off" spellcheck="false"></div>
@@ -311,7 +313,7 @@
         </div>
       </div>
       <!-- Recent Notifications -->
-      <div class="settings-card" style="margin-top:1rem">
+      <div class="settings-card">
         <div class="dash-section-title">
           <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Recent Notifications</span>
@@ -322,6 +324,7 @@
         </div>
         <div id="notifEmpty" style="display:none" class="settings-center-mt"><div class="empty-state-sm">No notifications yet</div></div>
       </div>
+      </div><!-- /.settings-grid-notif -->
 
       <!-- Data & Privacy + Danger Zone (2x grid on desktop) -->
       <div class="settings-grid-2">
