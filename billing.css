@@ -81,11 +81,13 @@
 @media (min-width: 768px) {
   .billing-grid {
     grid-template-columns: 1fr 1fr;
+    align-items: start;   /* each card sizes independently */
   }
-  /* Invoices = same full width as Transaction History (usage.html) —
-     Payment Methods stays half-width, Invoices spans the full row. */
+  /* Invoices sits inline with Payment Methods (half width each).
+     The inner .scroll-x wrapper already scrolls the 6-column table
+     horizontally, so nothing overflows the narrower column. */
   #invoicesCard {
-    grid-column: 1 / -1;
+    min-width: 0;
   }
 }
 .billing-summary-grid {

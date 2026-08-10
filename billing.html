@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1268" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1042" />
+<link rel="stylesheet" href="billing.css?v=1043" />
   </head>
 <body>
 <div class="stars-bg"><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star gold"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star teal"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star blue"></div><div class="star white"></div><div class="star white"></div><div class="star white"></div><div class="star trail gold"></div><div class="star trail teal"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail gold"></div></div>
@@ -248,7 +248,7 @@
   </div>
 
 <script src="nav.js?v=20"></script>
-<script src="translations.js?v=1112"></script>
+<script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1167"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1237"></script>
@@ -280,7 +280,7 @@ window._errMsg = _errMsg;
     .then(function(r){ return r.json(); })
     .then(function(data){
       var inv=(data&&data.invoices)||[];
-      if(!inv.length){ showToast('No invoices to export','info'); return; }
+      if(!inv.length){ showToast(t('No invoices to export'),'info'); return; }
       var csv='Date,Amount,Currency,Method,Tokens,Status\n';
       inv.forEach(function(t){
         var d=String(t.date||t.created_at||'').replace('T',' ').replace('Z','').substring(0,19);
@@ -314,7 +314,7 @@ window._errMsg = _errMsg;
     function renderInvoices(){
       var tbody = document.getElementById('invoicesBody');
       if(!tbody) return;
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-state-alt"><div class="spinner-btn"></div>Loading invoices...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state-alt"><div class="spinner-btn"></div>'+t('Loading invoices...')+'</td></tr>';
 
       _fetchT(API_URL + '/api/billing/invoices',{
         method:'GET',
@@ -325,7 +325,7 @@ window._errMsg = _errMsg;
         var inv = data && data.invoices;
         if(!inv || !inv.length){
           clearTableCollapse('invoicesCollapse','invoicesMoreBtn');
-          tbody.innerHTML = '<tr><td colspan="6" class="td-empty">No invoices found</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" class="td-empty">'+t('No invoices found')+'</td></tr>';
           document.getElementById('invoiceCount').textContent = '0';
           return;
         }
@@ -383,7 +383,7 @@ window._errMsg = _errMsg;
       .catch(function(err){
         console.error('Billing fetch error:', err);
         clearTableCollapse('invoicesCollapse','invoicesMoreBtn');
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="opacity-5"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto mb-xs"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>Could not load invoices. <a href="javascript:void(0)" onclick="loadBillingPage()" class="text-primary text-decoration-none">Try again</a></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="opacity-5"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto mb-xs"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>'+t('Could not load invoices.')+' <a href="javascript:void(0)" onclick="loadBillingPage()" class="text-primary text-decoration-none">'+t('Try again')+'</a></td></tr>';
       });
     }
 
@@ -433,15 +433,15 @@ window._errMsg = _errMsg;
     function renderPaymentMethods(){
       var container = document.getElementById('paymentMethodsList');
       if(!container) return;
-      container.innerHTML = '<div class="billing-empty-state"><div class="spinner-btn"></div>Loading payment methods...</div>';
+      container.innerHTML = '<div class="billing-empty-state"><div class="spinner-btn"></div>'+t('Loading payment methods...')+'</div>';
       safeApi('GET','/api/payments/cards').then(function(data){
         var cards = (data && data.cards) || [];
         if(!cards.length){
           container.innerHTML =
             '<div class="billing-empty-state">' +
               '<div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>' +
-              '<p><strong>No payment methods saved</strong></p>' +
-              '<p class="text-xs mt-xs">Add a card to make future top-ups one-click.</p>' +
+              '<p><strong>'+t('No payment methods saved')+'</strong></p>' +
+              '<p class="text-xs mt-xs">'+t('Add a card to make future top-ups one-click.')+'</p>' +
             '</div>';
           return;
         }
@@ -450,39 +450,39 @@ window._errMsg = _errMsg;
           var exp = String(c.exp_month||'').padStart(2,'0') + '/' + String(c.exp_year||'').slice(-2);
           var isDefault = !!c.is_default;
           return '<div class="pm-row' + (isDefault ? ' pm-row-default' : '') + '">' +
-            (isDefault ? '<span class="pm-default-badge">★ Default</span>' : '') +
+            (isDefault ? '<span class="pm-default-badge">★ '+t('Default')+'</span>' : '') +
             '<span class="pm-brand">'+escapeHtml(brand)+'</span>' +
             '<span class="pm-num">•••• '+escapeHtml(c.last4||'')+'</span>' +
             '<span class="pm-exp">'+escapeHtml(exp)+'</span>' +
             '<span class="pm-actions">' +
-            '<button class="pm-star' + (isDefault ? ' active' : '') + '" onclick="setDefaultCard(\''+safeJsStr(c.id)+'\')" title="' + (isDefault ? 'Default card' : 'Set as default') + '">' + (isDefault ? '★' : '☆') + '</button>' +
-            '<button class="pm-recharge" onclick="quickRecharge(\''+safeJsStr(c.id)+'\',\''+safeJsStr(c.last4||'')+'\')">⚡ Recharge</button>' +
-            '<button class="pm-remove" onclick="removeCard(\''+safeJsStr(c.id)+'\')" title="Remove card">✕</button>' +
+            '<button class="pm-star' + (isDefault ? ' active' : '') + '" onclick="setDefaultCard(\''+safeJsStr(c.id)+'\')" title="' + (isDefault ? t('Default card') : t('Set as default')) + '">' + (isDefault ? '★' : '☆') + '</button>' +
+            '<button class="pm-recharge" onclick="quickRecharge(\''+safeJsStr(c.id)+'\',\''+safeJsStr(c.last4||'')+'\')">⚡ '+t('Recharge')+'</button>' +
+            '<button class="pm-remove" onclick="removeCard(\''+safeJsStr(c.id)+'\')" title="'+t('Remove card')+'">✕</button>' +
             '</span>' +
           '</div>';
         }).join('');
       }).catch(function(){
-        container.innerHTML = '<div class="billing-empty-state"><p><strong>Could not load payment methods</strong></p></div>';
+        container.innerHTML = '<div class="billing-empty-state"><p><strong>'+t('Could not load payment methods')+'</strong></p></div>';
       });
     }
 
     window.removeCard = function(pmId){
       if(!pmId) return;
       safeApi('DELETE','/api/payments/cards',{payment_method_id:pmId}).then(function(d){
-        showToast(d && d.status==='removed' ? 'Card removed' : 'Removed','success');
+        showToast(d && d.status==='removed' ? t('Card removed') : t('Removed'),'success');
         renderPaymentMethods();
       }).catch(function(){
-        showToast('Failed to remove card','error');
+        showToast(t('Failed to remove card'),'error');
       });
     };
 
     window.setDefaultCard = function(pmId){
       if(!pmId) return;
       safeApi('POST','/api/payments/cards/default',{payment_method_id:pmId}).then(function(d){
-        showToast(d && d.status==='default_set' ? 'Default card updated' : 'Updated','success');
+        showToast(d && d.status==='default_set' ? t('Default card updated') : t('Updated'),'success');
         renderPaymentMethods();
       }).catch(function(){
-        showToast('Could not set default card','error');
+        showToast(t('Could not set default card'),'error');
       });
     };
 
@@ -506,7 +506,7 @@ window._errMsg = _errMsg;
         URL.revokeObjectURL(url);
       })
       .catch(function(){
-        showToast('Could not download invoice','error');
+        showToast(t('Could not download invoice'),'error');
       });
     };
 

@@ -2585,3 +2585,23 @@ I18N["Send exactly "] = {"zh-CN": "请准确发送 ", ru: "Отправьте р
 I18N[" to the address below. Tokens are credited after confirmation."] = {"zh-CN": " 到以下地址。确认后 Token 将计入账户。", ru: " на указанный ниже адрес. Токены зачисляются после подтверждения.", ja: " を下記のアドレスへ送金してください。確認後トークンが入金されます。", de: " an die folgende Adresse. Token werden nach Bestätigung gutgeschrieben."};
 I18N["Ref: "] = {"zh-CN": "参考号：", ru: "Ссылка: ", ja: "参照：", de: "Ref: "};
 I18N["Generating…"] = {"zh-CN": "生成中…", ru: "Создание…", ja: "生成中…", de: "Wird generiert…"};
+
+// ---- billing page inline copy (round 5) ----
+I18N["Loading payment methods..."] = {"zh-CN": "正在加载支付方式...", ru: "Загрузка способов оплаты...", ja: "支払い方法を読み込み中...", de: "Zahlungsmethoden werden geladen..."};
+I18N["Add a card to make future top-ups one-click."] = {"zh-CN": "添加卡片，让未来的充值一键完成。", ru: "Добавьте карту для оплаты в один клик.", ja: "カードを追加すると今後のチャージがワンクリックに。", de: "Fügen Sie eine Karte hinzu, um Aufladungen mit einem Klick zu ermöglichen."};
+I18N["Default card"] = {"zh-CN": "默认卡片", ru: "Карта по умолчанию", ja: "デフォルトカード", de: "Standardkarte"};
+I18N["Set as default"] = {"zh-CN": "设为默认", ru: "Сделать основной", ja: "デフォルトに設定", de: "Als Standard festlegen"};
+I18N["Recharge"] = {"zh-CN": "充值", ru: "Пополнить", ja: "チャージ", de: "Aufladen"};
+I18N["Could not load payment methods"] = {"zh-CN": "无法加载支付方式", ru: "Не удалось загрузить способы оплаты", ja: "支払い方法を読み込めませんでした", de: "Zahlungsmethoden konnten nicht geladen werden"};
+I18N["Card removed"] = {"zh-CN": "卡片已移除", ru: "Карта удалена", ja: "カードを削除しました", de: "Karte entfernt"};
+I18N["Removed"] = {"zh-CN": "已移除", ru: "Удалено", ja: "削除しました", de: "Entfernt"};
+I18N["Failed to remove card"] = {"zh-CN": "移除卡片失败", ru: "Не удалось удалить карту", ja: "カードの削除に失敗しました", de: "Karte konnte nicht entfernt werden"};
+I18N["Default card updated"] = {"zh-CN": "默认卡片已更新", ru: "Карта по умолчанию обновлена", ja: "デフォルトカードを更新しました", de: "Standardkarte aktualisiert"};
+I18N["Updated"] = {"zh-CN": "已更新", ru: "Обновлено", ja: "更新しました", de: "Aktualisiert"};
+I18N["Could not set default card"] = {"zh-CN": "无法设置默认卡片", ru: "Не удалось установить карту по умолчанию", ja: "デフォルトカードを設定できませんでした", de: "Standardkarte konnte nicht festgelegt werden"};
+I18N["No invoices to export"] = {"zh-CN": "没有可导出的发票", ru: "Нет счетов для экспорта", ja: "エクスポートする請求書がありません", de: "Keine Rechnungen zum Exportieren"};
+I18N["Loading invoices..."] = {"zh-CN": "正在加载发票...", ru: "Загрузка счетов...", ja: "請求書を読み込み中...", de: "Rechnungen werden geladen..."};
+I18N["No invoices found"] = {"zh-CN": "未找到发票", ru: "Счета не найдены", ja: "請求書が見つかりません", de: "Keine Rechnungen gefunden"};
+I18N["Could not load invoices."] = {"zh-CN": "无法加载发票。", ru: "Не удалось загрузить счета.", ja: "請求書を読み込めませんでした。", de: "Rechnungen konnten nicht geladen werden."};
+I18N["Try again"] = {"zh-CN": "重试", ru: "Попробовать снова", ja: "再試行", de: "Erneut versuchen"};
+I18N["Could not download invoice"] = {"zh-CN": "无法下载发票", ru: "Не удалось скачать счёт", ja: "請求書をダウンロードできませんでした", de: "Rechnung konnte nicht heruntergeladen werden"};
