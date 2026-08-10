@@ -2069,6 +2069,17 @@ body.compact-cards .reward-card {
 body.compact-cards .billing-stat-card {
   padding: 0.7rem 0.5rem;
 }
+/* Compact mode: remaining data cards across dash pages (kept in the global
+   stylesheet so the toggle works everywhere, not just settings). Selectors
+   out-rank per-page CSS via specificity (body.compact-cards .x > .x). */
+body.compact-cards .stat-card { padding: 0.85rem 1rem; }
+body.compact-cards .payment-card { padding: 0.85rem; }
+body.compact-cards .preset-card { padding: 1.1rem; }
+body.compact-cards .member-card { padding: 0.5rem 0.6rem; }
+body.compact-cards .pm-row { padding: 0.5rem 0.6rem; }
+body.compact-cards .key-result-box { padding: 0.8rem; }
+body.compact-cards .topup-success-card { padding: 2rem 1.5rem; }
+body.compact-cards .info-card { padding: 1.1rem; }
 .dash-card:hover {
   border-color: color-mix(in srgb, var(--border) 70%, var(--primary));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
