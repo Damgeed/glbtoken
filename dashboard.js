@@ -38,9 +38,9 @@ function timeAgo(iso){
   if(isNaN(t)) return '';
   var s = Math.floor((Date.now() - t)/1000);
   if(s < 60) return 'Just now';
-  if(s < 3600) return Math.floor(s/60) + ' min ago';
-  if(s < 86400) return Math.floor(s/3600) + 'h ago';
-  return Math.floor(s/86400) + 'd ago';
+  if(s < 3600) return Math.floor(s/60) + t('min ago');
+  if(s < 86400) return Math.floor(s/3600) + t('h ago');
+  return Math.floor(s/86400) + t('d ago');
 }
 
 // ── Stat cards + quota bar (real /api/dashboard) ──
@@ -185,7 +185,7 @@ async function renderApiCallsChart(days){
   var avgLat = lats.length ? Math.round(lats.reduce(function(a,b){return a+b;},0)/lats.length) : 0;
   var latEst = (respTimes||[]).some(function(r){ return r.estimated; });
   set('statLatency', avgLat ? (latEst ? '~'+avgLat+'ms' : avgLat+'ms') : '—');
-  set('statTotalCallsChg', days+'d total'); set('statAvgDayChg', days+'d avg'); set('statSuccessChg', days+'d'); set('statLatencyChg', (latEst?'est. ':'')+days+'d avg');
+  set('statTotalCallsChg', days+t('d total')); set('statAvgDayChg', days+t('d avg')); set('statSuccessChg', days+t('d')); set('statLatencyChg', (latEst?t('est.')+' ':'')+days+t('d avg'));
 }
 
 // ── API Calls per Model range dropdown (7d / 30d / 90d) ──

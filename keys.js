@@ -387,7 +387,7 @@
     }
     function updateBulkCount(){
       var n=document.querySelectorAll('.key-check:checked').length;
-      var el=document.getElementById('bulkCount'); if(el)el.textContent=n+' selected';
+      var el=document.getElementById('bulkCount'); if(el)el.textContent=n+' '+t('selected');
     }
     function bulkToggleAll(){
       var boxes=document.querySelectorAll('.key-check');

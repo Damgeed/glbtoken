@@ -1020,6 +1020,19 @@ I18N["Responses"] = {"zh-CN": "响应", "ru": "Ответы", "ja": "応答", "d
 I18N["View all 100+"] = {"zh-CN": "查看全部 100+", "ru": "Смотреть все 100+", "ja": "すべて表示 100+", "de": "Alle 100+ ansehen"};
 I18N["Loading models..."] = {"zh-CN": "正在加载模型…", "ru": "Загрузка моделей…", "ja": "モデルを読み込み中…", "de": "Modelle werden geladen…"};
 
+
+
+I18N["Verify & Continue"] = {"zh-CN": "验证并继续", "ru": "Подтвердить и продолжить", "ja": "確認して続行", "de": "Verifizieren und fortfahren"};
+I18N["0 announcements"] = {"zh-CN": "0 条公告", "ru": "0 объявлений", "ja": "お知らせ0件", "de": "0 Bekanntmachungen"};
+I18N["Projections assume your recent usage patterns continue. Based on real consumption data from your account."] = {"zh-CN": "预测假设您最近的使用模式仍在继续。基于您账号中的实际消费数据。", "ru": "Прогнозы предполагают, что ваши недавние модели использования продолжаются. На основе данных о реальном потреблении из вашего аккаунта.", "ja": "予測は、最近の使用パターンが継続していることを前提としています。アカウントからの実際の消費データに基づいています。", "de": "Projektionen gehen davon aus, dass sich Ihre jüngsten Nutzungsmuster fortsetzen. Basierend auf realen Verbrauchsdaten aus Ihrem Konto."};
+I18N["0 selected"] = {"zh-CN": "0 已选择", "ru": "Выбрано: 0", "ja": "0 件選択中", "de": "0 ausgewählt"};
+I18N["You haven't created your referral code yet. Generate one to start earning rewards for every friend who joins."] = {"zh-CN": "您尚未创建好友邀请码。生成一个，开始为每位加入的好友赚取奖励。", "ru": "Вы еще не создали код приглашения. Сгенерируйте один, чтобы начать получать награды за каждого друга, который присоединится.", "ja": "紹介コードはまだ作成されていません。1つ生成して、参加したすべての友達に報酬を獲得しましょう。", "de": "Du hast deinen Empfehlungscode noch nicht erstellt. Generiere einen, um Belohnungen für jeden Freund zu erhalten, der beitritt."};
+I18N["New models, features & platform news"] = {"zh-CN": "新型号、功能和平台新闻", "ru": "Новости о новых моделях, функциях и платформах", "ja": "新しいモデル、機能、プラットフォームのニュース", "de": "Neue Modelle, Funktionen & Plattform-News"};
+I18N["Payloads are POSTed as JSON with (HMAC-SHA256 hex of the body) and headers."] = {"zh-CN": "负载以 JSON 形式提交，并携带（正文的 HMAC-SHA256 十六进制值）和请求头。", "ru": "Полезные нагрузки отправляются как JSON с (HMAC-SHA256 шестнадцатеричным значением тела) и заголовками.", "ja": "ペイロードは（本文のHMAC-SHA256 16進値）とヘッダーを付けてJSONとして送信されます。", "de": "Nutzlasten werden als JSON mit (HMAC-SHA256-Hex des Bodys) und Headern gesendet."};
+I18N["Data & Privacy"] = {"zh-CN": "数据与隐私", "ru": "Данные и конфиденциальность", "ja": "データプライバシー", "de": "Datenschutz"};
+I18N["0 members"] = {"zh-CN": "0 位成员", "ru": "0 участников", "ja": "メンバー0人", "de": "0 Mitglieder"};
+I18N["Recent sign-in activity across all devices. If you see something unfamiliar, change your password and enable two-factor auth."] = {"zh-CN": "所有设备的近期登录活动。如果您看到不熟悉的内容，请更改密码并启用双重身份验证。", "ru": "Недавняя активность при входе на всех устройствах. Если вы видите что-то незнакомое, смените пароль и включите двухфакторную аутентификацию.", "ja": "すべてのデバイスでの最近のサインインアクティビティ。見慣れないものが見つかった場合は、パスワードを変更して二要素認証を有効にしてください。", "de": "Letzte Anmeldeaktivitäten auf allen Geräten. Wenn du etwas Ungewohntes siehst, ändere dein Passwort und aktiviere die Zwei-Faktor-Authentifizierung."};
+
 // ── data-i18n (HTML-safe) entries ──
 
 
@@ -2370,6 +2383,18 @@ I18N["🇿🇼 Zimbabwe"] = {"zh-CN": "🇿🇼 津巴布韦", ru: "🇿🇼 З�
 I18N["🌍 Other"] = {"zh-CN": "🌍 其他", ru: "🌍 Другое", ja: "🌍 その他", de: "🌍 Sonstiges"};
 I18N["📅 Select Range"] = {"zh-CN": "📅 选择范围", ru: "📅 Выбрать диапазон", ja: "📅 期間を選択", de: "📅 Zeitraum auswählen"};
 I18N["🤖 Model"] = {"zh-CN": "🤖 模型", ru: "🤖 Модель", ja: "🤖 モデル", de: "🤖 Modell"};
+
+/* ── Dynamic-count / unit suffixes (2026-08, translated via t() in JS) ──
+   These are appended at runtime (e.g. "3h ago", "7d total", "5 selected"),
+   so they are NOT auto-matched text nodes — JS calls t() to localize them. */
+I18N["min ago"] = {"zh-CN": "分钟前", ru: " мин. назад", ja: "分前", de: " Min. zuvor"};
+I18N["h ago"] = {"zh-CN": "小时前", ru: " ч. назад", ja: "時間前", de: " Std. zuvor"};
+I18N["d ago"] = {"zh-CN": "天前", ru: " дн. назад", ja: "日前", de: " Tagen zuvor"};
+I18N["d total"] = {"zh-CN": "天总量", ru: " дн. всего", ja: "日合計", de: " Tage gesamt"};
+I18N["d avg"] = {"zh-CN": "天平均", ru: " дн. в среднем", ja: "日平均", de: " Tage Ø"};
+I18N["d"] = {"zh-CN": "天", ru: " дн.", ja: "日", de: " T."};
+I18N["est."] = {"zh-CN": "约", ru: "прибл.", ja: "推定", de: "ca."};
+I18N["selected"] = {"zh-CN": "已选择", ru: "выбрано", ja: "選択中", de: "ausgewählt"};
 
 
 (function() {
