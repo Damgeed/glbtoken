@@ -140,12 +140,15 @@ async def topup(req: TopupRequest, request: Request, user: User = Depends(get_cu
         if not PAYSTACK_SECRET_KEY:
             _not_configured("Paystack")
         import httpx as _httpx
-        _r = _httpx.get(
-            f"https://api.paystack.co/transaction/verify/{ref}",
-            headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"},
-            timeout=15,
-        )
-        _d = _r.json()
+        try:
+            _r = _httpx.get(
+                f"https://api.paystack.co/transaction/verify/{ref}",
+                headers={"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"},
+                timeout=15,
+            )
+            _d = _r.json()
+        except Exception:
+            _502("Payment provider unavailable")
         if not _d.get("status") or _d.get("data", {}).get("status") != "success":
             _400("Payment not confirmed by Paystack")
     elif method == "stripe":
@@ -848,16 +851,24 @@ def _stripe_customer_for(user):
     # owner's saved cards (list cards, then quick-recharge on their card).
     # Match metadata.user_id first; only adopt an email match when it was
     # created FOR this user (metadata.user_id present and equal).
-    if email:
-        existing = stripe_lib.Customer.list(email=email, limit=20)
-        for cus in existing.data:
-            meta = cus.get("metadata") if hasattr(cus, "get") else (cus.metadata or {})
-            if str((meta or {}).get("user_id") or "") == str(user.id):
-                return cus
-    return stripe_lib.Customer.create(
-        email=email or None,
-        metadata={"user_id": str(user.id)},
-    )
+    try:
+        if email:
+            existing = stripe_lib.Customer.list(email=email, limit=20)
+            for cus in existing.data:
+                meta = cus.get("metadata") if hasattr(cus, "get") else (cus.metadata or {})
+                if str((meta or {}).get("user_id") or "") == str(user.id):
+                    return cus
+        return stripe_lib.Customer.create(
+            email=email or None,
+            metadata={"user_id": str(user.id)},
+        )
+    except stripe_lib.error.StripeError as e:
+        # Surface a friendly 502 instead of an unhandled 500 so the billing
+        # page never shows "Internal Server Error" when Stripe is down or the
+        # key is invalid — the UI can then degrade gracefully.
+        _502(f"Payment provider unavailable: {getattr(e, 'user_message', None) or 'Stripe error'}")
+    except Exception:
+        _502("Payment provider unavailable")
 
 
 @router.post("/api/payments/cards/setup")
@@ -888,8 +899,13 @@ def list_cards(request: Request, user: User = Depends(get_current_user)):
         _not_configured("Stripe")
     import stripe as stripe_lib
     stripe_lib.api_key = STRIPE_SECRET_KEY
-    cus = _stripe_customer_for(user)
-    pms = stripe_lib.PaymentMethod.list(customer=cus.id, type="card")
+    try:
+        cus = _stripe_customer_for(user)
+        pms = stripe_lib.PaymentMethod.list(customer=cus.id, type="card")
+    except stripe_lib.error.StripeError as e:
+        _502(f"Payment provider unavailable: {getattr(e, 'user_message', None) or 'Stripe error'}")
+    except Exception:
+        _502("Payment provider unavailable")
     default_id = user.default_payment_method_id
     return {
         "cards": [

@@ -410,7 +410,7 @@ window._errMsg = _errMsg;
     }
 
     function loadBillingSummary(){
-      safeApi('GET','/api/billing/summary').then(function(d){
+      safeApi('GET','/api/billing/summary',null,null,true).then(function(d){
         if(!d) return;
         var bal = Math.floor(d.balance || 0);
         var balEl = document.getElementById('summaryBalance');
@@ -434,7 +434,7 @@ window._errMsg = _errMsg;
       var container = document.getElementById('paymentMethodsList');
       if(!container) return;
       container.innerHTML = '<div class="billing-empty-state"><div class="spinner-btn"></div>'+t('Loading payment methods...')+'</div>';
-      safeApi('GET','/api/payments/cards').then(function(data){
+      safeApi('GET','/api/payments/cards',null,null,true).then(function(data){
         var cards = (data && data.cards) || [];
         if(!cards.length){
           container.innerHTML =
