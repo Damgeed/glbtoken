@@ -3448,6 +3448,116 @@ html.light .modal-overlay {
   z-index: 0;
   overflow: hidden;
 }
+
+/* ── Static star field (always-visible backdrop) ──
+   The 20 .star elements are shooting stars — they only light up briefly
+   during their 10-18s animation, so on dense dash pages the sky looks empty.
+   These two pseudo-element layers paint a permanent field of small stars
+   (warm gold + cool blue-white) so the backdrop is never bare. */
+.stars-bg::before,
+.stars-bg::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 1px; height: 1px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.stars-bg::before {
+  box-shadow:
+    63.4vw 4.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    28.4vw 23.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    72.7vw 67.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    87.6vw 10.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    42.5vw 4.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    23.0vw 50.5vh 0 0.5px rgba(255, 200, 80, 0.85),
+    4.5vw 21.1vh 0 0.5px rgba(255, 200, 80, 0.85),
+    64.4vw 54.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    23.2vw 58.6vh 0 0.5px rgba(255, 200, 80, 0.85),
+    79.7vw 2.6vh 0 0.5px rgba(255, 200, 80, 0.85),
+    79.4vw 69.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    34.7vw 16.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    93.9vw 34.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    10.9vw 11.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    83.4vw 60.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    79.5vw 72.1vh 0 0.5px rgba(255, 200, 80, 0.85),
+    53.5vw 95.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    38.3vw 55.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    81.6vw 61.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    84.7vw 57.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    69.6vw 6.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    23.9vw 29.8vh 0 0.5px rgba(255, 200, 80, 0.85),
+    9.7vw 24.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    11.7vw 28.7vh 0 0.5px rgba(255, 200, 80, 0.85),
+    63.0vw 37.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    37.5vw 22.1vh 0 0.5px rgba(255, 200, 80, 0.85),
+    27.6vw 91.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    64.2vw 60.5vh 0 0.5px rgba(255, 200, 80, 0.85),
+    18.4vw 72.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    17.7vw 38.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    97.0vw 63.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    55.5vw 67.7vh 0 0.5px rgba(255, 200, 80, 0.85),
+    82.9vw 76.5vh 0 0.5px rgba(255, 200, 80, 0.85),
+    24.0vw 5.1vh 0 0.5px rgba(255, 200, 80, 0.85),
+    32.3vw 27.7vh 0 0.5px rgba(255, 200, 80, 0.85),
+    22.3vw 92.5vh 0 0.5px rgba(255, 200, 80, 0.85),
+    86.1vw 32.2vh 0 0.5px rgba(255, 200, 80, 0.85),
+    64.9vw 40.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    89.8vw 46.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    27.4vw 25.7vh 0 0.5px rgba(255, 200, 80, 0.85),
+    55.9vw 27.2vh 0 0.5px rgba(255, 200, 80, 0.85),
+    58.1vw 88.2vh 0 0.5px rgba(255, 200, 80, 0.85),
+    40.3vw 23.1vh 0 0.5px rgba(255, 200, 80, 0.85),
+    97.8vw 50.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    10.7vw 6.5vh 0 0.5px rgba(255, 200, 80, 0.85);
+  animation: starTwinkle 6s ease-in-out infinite alternate;
+}
+.stars-bg::after {
+  box-shadow:
+    12.5vw 62.2vh 0 0.5px rgba(150, 200, 255, 0.75),
+    78.0vw 42.5vh 0 0.5px rgba(150, 200, 255, 0.75),
+    8.1vw 38.6vh 0 0.5px rgba(150, 200, 255, 0.75),
+    97.6vw 52.8vh 0 0.5px rgba(150, 200, 255, 0.75),
+    95.2vw 84.6vh 0 0.5px rgba(150, 200, 255, 0.75),
+    3.1vw 71.2vh 0 0.5px rgba(150, 200, 255, 0.75),
+    67.4vw 53.5vh 0 0.5px rgba(150, 200, 255, 0.75),
+    27.6vw 63.5vh 0 0.5px rgba(150, 200, 255, 0.75),
+    12.7vw 43.7vh 0 0.5px rgba(150, 200, 255, 0.75),
+    45.6vw 93.6vh 0 0.5px rgba(150, 200, 255, 0.75),
+    86.1vw 27.3vh 0 0.5px rgba(150, 200, 255, 0.75),
+    50.1vw 19.2vh 0 0.5px rgba(150, 200, 255, 0.75),
+    89.6vw 85.6vh 0 0.5px rgba(150, 200, 255, 0.75),
+    30.7vw 63.3vh 0 0.5px rgba(150, 200, 255, 0.75),
+    60.5vw 16.7vh 0 0.5px rgba(150, 200, 255, 0.75),
+    75.2vw 53.8vh 0 0.5px rgba(150, 200, 255, 0.75),
+    76.7vw 52.9vh 0 0.5px rgba(150, 200, 255, 0.75),
+    2.1vw 33.1vh 0 0.5px rgba(150, 200, 255, 0.75),
+    3.9vw 91.2vh 0 0.5px rgba(150, 200, 255, 0.75),
+    86.4vw 81.8vh 0 0.5px rgba(150, 200, 255, 0.75),
+    31.5vw 7.6vh 0 0.5px rgba(150, 200, 255, 0.75),
+    86.3vw 92.9vh 0 0.5px rgba(150, 200, 255, 0.75),
+    10.2vw 48.7vh 0 0.5px rgba(150, 200, 255, 0.75),
+    8.6vw 75.0vh 0 0.5px rgba(150, 200, 255, 0.75),
+    75.5vw 14.3vh 0 0.5px rgba(150, 200, 255, 0.75),
+    47.6vw 54.8vh 0 0.5px rgba(150, 200, 255, 0.75),
+    27.4vw 85.8vh 0 0.5px rgba(150, 200, 255, 0.75),
+    42.6vw 22.3vh 0 0.5px rgba(150, 200, 255, 0.75),
+    53.8vw 72.1vh 0 0.5px rgba(150, 200, 255, 0.75),
+    21.3vw 31.9vh 0 0.5px rgba(150, 200, 255, 0.75),
+    97.5vw 64.4vh 0 0.5px rgba(150, 200, 255, 0.75),
+    44.1vw 51.7vh 0 0.5px rgba(150, 200, 255, 0.75),
+    13.6vw 23.6vh 0 0.5px rgba(150, 200, 255, 0.75),
+    34.5vw 58.5vh 0 0.5px rgba(150, 200, 255, 0.75),
+    24.1vw 23.1vh 0 0.5px rgba(150, 200, 255, 0.75);
+  animation: starTwinkle 8s ease-in-out infinite alternate-reverse;
+}
+@keyframes starTwinkle {
+  0%   { opacity: 0.35; }
+  100% { opacity: 0.9; }
+}
+html.light .stars-bg::before { opacity: 0.5; }
+html.light .stars-bg::after { opacity: 0.45; }
+
 /* Reduce Motion (Settings → Appearance): hide the animated star field */
 body.reduce-motion .stars-bg {
   display: none;
