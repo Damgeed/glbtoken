@@ -849,9 +849,10 @@ def _make_statement_pdf(txs, user):
             amt_total = f"${total_amount:,.2f}"
             toks_total = f"{int(total_tokens):,}"
             _rrect(ops, 50, 132, 512, 26, 6, GOLD)
-            text(64, 144, "TOTAL", "F2", 12, NAVY)
-            text(391 - width_est(toks_total, 11), 144, toks_total, "F2", 11, NAVY)
-            text(562 - width_est(amt_total, 11), 144, amt_total, "F2", 11, NAVY)
+            # baseline 140 centers the 12pt text vertically in the 132-158 band
+            text(64, 140, "TOTAL", "F2", 12, NAVY)
+            text(391 - width_est(toks_total, 11), 140, toks_total, "F2", 11, NAVY)
+            text(562 - width_est(amt_total, 11), 140, amt_total, "F2", 11, NAVY)
         # Footer
         ops.append(f"q {GRAY_LINE} rg 50 96 512 0.8 re f Q")
         text(50, 76, "GlbTOKEN — AI tokens & API gateway", "F1", 8, GRAY_TXT)
@@ -910,10 +911,15 @@ def _make_invoice_pdf(tx, user):
     text(64, 724, "BILLED TO", "F2", 8, GOLD_DK)
     text(64, 708, name + (f"  ·  {email}" if email else ""), "F1", 10, NAVY)
     text(64, 694, f"Date: {date_str}", "F1", 9, "0.2 0.2 0.25")
-    # Status pill on the right (rounded)
-    st_w = width_est(status.upper(), 8) + 24
-    _rrect(ops, 562 - st_w, 706, st_w, 16, 8, GOLD)
-    text(562 - st_w + 12, 713, status.upper(), "F2", 8, NAVY)
+    # Status pill on the right (rounded) — text centered in the pill.
+    # Helvetica-Bold is wider than the 0.5em estimate, so use 0.6em for
+    # the pill width AND center the label: x = pill_x + (w - text_w)/2.
+    st_txt = status.upper()
+    st_tw = sum(0.62 if c.isdigit() else 0.7 for c in st_txt) * 8
+    st_w = st_tw + 20
+    pill_x = 562 - st_w
+    _rrect(ops, pill_x, 706, st_w, 16, 8, GOLD)
+    text(pill_x + (st_w - st_tw) / 2, 713, st_txt, "F2", 8, NAVY)
     text(562 - width_est(f"Method: {method}", 9), 694, f"Method: {method}", "F1", 9, GRAY_TXT)
     # ── Table ──
     text(50, 600, "Description", "F2", 10, NAVY)
@@ -927,8 +933,9 @@ def _make_invoice_pdf(tx, user):
     text(50, 522, f"Tokens credited: {tokens_str}", "F1", 9, GRAY_TXT)
     # Total — gold band (rounded)
     _rrect(ops, 50, 492, 512, 30, 6, GOLD)
-    text(64, 505, "TOTAL", "F2", 12, NAVY)
-    text(562 - width_est(amount_str, 12), 505, amount_str, "F2", 12, NAVY)
+    # baseline 502 centers the 12pt text vertically in the 492-522 band
+    text(64, 502, "TOTAL", "F2", 12, NAVY)
+    text(562 - width_est(amount_str, 12), 502, amount_str, "F2", 12, NAVY)
     # Footer
     ops.append(f"q {GRAY_LINE} rg 50 96 512 0.8 re f Q")
     text(50, 76, "Thank you for your business!", "F1", 9, GRAY_TXT)

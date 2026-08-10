@@ -3733,129 +3733,129 @@ html.light .star.white {
 .star:nth-child(1) {
   top: 8%;
   left: 15%;
-  animation: shootDR 10s ease-in infinite;
+  animation: shootDR 18s ease-in infinite;
   animation-delay: 0s;
 }
 .star:nth-child(2) {
   top: 22%;
   left: 55%;
-  animation: shootDL 12s ease-in infinite;
+  animation: shootDL 22s ease-in infinite;
   animation-delay: 2s;
 }
 .star:nth-child(3) {
   top: 38%;
   left: 8%;
-  animation: shootDR 11s ease-in infinite;
+  animation: shootDR 20s ease-in infinite;
   animation-delay: 4s;
 }
 .star:nth-child(4) {
   top: 12%;
   left: 78%;
-  animation: shootDL 13s ease-in infinite;
+  animation: shootDL 23s ease-in infinite;
   animation-delay: 1s;
 }
 /* Row 2: Teal stars */
 .star:nth-child(5) {
   top: 52%;
   left: 28%;
-  animation: shootD 9s ease-in infinite;
+  animation: shootD 16s ease-in infinite;
   animation-delay: 3s;
 }
 .star:nth-child(6) {
   top: 68%;
   left: 72%;
-  animation: shootDR 14s ease-in infinite;
+  animation: shootDR 25s ease-in infinite;
   animation-delay: 5s;
 }
 .star:nth-child(7) {
   top: 3%;
   left: 42%;
-  animation: shootDL 8s ease-in infinite;
+  animation: shootDL 14s ease-in infinite;
   animation-delay: 6s;
 }
 .star:nth-child(8) {
   top: 82%;
   left: 12%;
-  animation: shootD 11s ease-in infinite;
+  animation: shootD 20s ease-in infinite;
   animation-delay: 0.5s;
 }
 /* Row 3: Blue stars */
 .star:nth-child(9) {
   top: 32%;
   left: 88%;
-  animation: shootDL 10s ease-in infinite;
+  animation: shootDL 18s ease-in infinite;
   animation-delay: 3.5s;
 }
 .star:nth-child(10) {
   top: 58%;
   left: 48%;
-  animation: shootArc 15s ease-in infinite;
+  animation: shootArc 27s ease-in infinite;
   animation-delay: 7s;
 }
 .star:nth-child(11) {
   top: 48%;
   left: 3%;
-  animation: shootDR 9s ease-in infinite;
+  animation: shootDR 16s ease-in infinite;
   animation-delay: 1.5s;
 }
 .star:nth-child(12) {
   top: 73%;
   left: 82%;
-  animation: shootArc 16s ease-in infinite;
+  animation: shootArc 29s ease-in infinite;
   animation-delay: 4.5s;
 }
 /* Row 4: White stars */
 .star:nth-child(13) {
   top: 18%;
   left: 35%;
-  animation: shootDR 12s ease-in infinite;
+  animation: shootDR 22s ease-in infinite;
   animation-delay: 8s;
 }
 .star:nth-child(14) {
   top: 88%;
   left: 60%;
-  animation: shootDL 10s ease-in infinite;
+  animation: shootDL 18s ease-in infinite;
   animation-delay: 6.5s;
 }
 .star:nth-child(15) {
   top: 42%;
   left: 65%;
-  animation: shootArc 14s ease-in infinite;
+  animation: shootArc 25s ease-in infinite;
   animation-delay: 2.5s;
 }
 /* Trails (longer streaks) */
 .star.trail:nth-child(16) {
   top: 15%;
   left: 25%;
-  animation: shootDR 18s ease-in infinite;
+  animation: shootDR 32s ease-in infinite;
   animation-delay: 0.8s;
   height: 10px;
 }
 .star.trail:nth-child(17) {
   top: 50%;
   left: 70%;
-  animation: shootDL 16s ease-in infinite;
+  animation: shootDL 29s ease-in infinite;
   animation-delay: 3.2s;
   height: 8px;
 }
 .star.trail:nth-child(18) {
   top: 70%;
   left: 20%;
-  animation: shootD 14s ease-in infinite;
+  animation: shootD 25s ease-in infinite;
   animation-delay: 5s;
   height: 6px;
 }
 .star.trail:nth-child(19) {
   top: 28%;
   left: 50%;
-  animation: shootArc 20s ease-in infinite;
+  animation: shootArc 36s ease-in infinite;
   animation-delay: 9s;
   height: 12px;
 }
 .star.trail:nth-child(20) {
   top: 60%;
   left: 45%;
-  animation: shootDR 15s ease-in infinite;
+  animation: shootDR 27s ease-in infinite;
   animation-delay: 7.5s;
   height: 7px;
 }
