@@ -48,7 +48,7 @@
           '</div>' +
           '<div id="navUser" class="d-none">' +
             '<div class="nav-avatar" onclick="toggleDropdown()">U<div class="dropdown" id="userDropdown">' +
-              '<div class="dropdown-header cursor-pointer" onclick="window.location=\'dashboard.html#settings\'">' +
+              '<div class="dropdown-header cursor-pointer" onclick="window.location=\'settings.html#profile\'">' +
                 '<div class="dd-av" id="ddAvatar">U</div>' +
                 '<div class="dd-info">' +
                   '<div class="dd-name" id="dropName">User</div>' +

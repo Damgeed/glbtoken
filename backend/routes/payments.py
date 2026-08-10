@@ -735,13 +735,16 @@ def _make_statement_pdf(txs, user):
         ops.append("q 0.85 0.85 0.88 rg 50 668 512 0.8 re f Q")
         text(50, 648, f"Billed to: {name}" + (f"  ({email})" if email else ""))
         text(50, 634, f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y')}  |  {len(txs)} payment(s)")
-        # Table header (Tokens/Status/Amount right-aligned to match values)
+        # Table header — 6 columns evenly spread across the 512pt table
+        # (50..562). Left 3 columns (#, Date, Description) left-aligned to
+        # their column start; right 3 (Tokens, Status, Amount) right-aligned
+        # to their column end so every column has identical width/spacing.
         text(50, 600, "#", "F2", 9)
-        text(80, 600, "Date", "F2", 9)
-        text(165, 600, "Description", "F2", 9)
-        text(390 - width_est("Tokens", 9), 600, "Tokens", "F2", 9)
-        text(470 - width_est("Status", 9), 600, "Status", "F2", 9)
-        text(512 - width_est("Amount", 9), 600, "Amount", "F2", 9)
+        text(135, 600, "Date", "F2", 9)
+        text(221, 600, "Description", "F2", 9)
+        text(391 - width_est("Tokens", 9), 600, "Tokens", "F2", 9)
+        text(477 - width_est("Status", 9), 600, "Status", "F2", 9)
+        text(562 - width_est("Amount", 9), 600, "Amount", "F2", 9)
         ops.append("q 0.85 0.85 0.88 rg 50 592 512 0.8 re f Q")
         start = p * rows_per_page
         chunk = txs[start:start + rows_per_page]
@@ -757,11 +760,11 @@ def _make_statement_pdf(txs, user):
             amt = f"{sym}{float(t.amount or 0):,.2f}"
             toks = f"{int(t.tokens or 0):,}"
             text(50, y, str(start + i + 1), "F1", 9)
-            text(80, y, date_str, "F1", 9)
-            text(165, y, f"{method} #{t.id}", "F1", 9)
-            text(390 - width_est(toks, 9), y, toks, "F1", 9)
-            text(470 - width_est(status, 9), y, status, "F1", 9)
-            text(512 - width_est(amt, 9), y, amt, "F1", 9)
+            text(135, y, date_str, "F1", 9)
+            text(221, y, f"{method} #{t.id}", "F1", 9)
+            text(391 - width_est(toks, 9), y, toks, "F1", 9)
+            text(477 - width_est(status, 9), y, status, "F1", 9)
+            text(562 - width_est(amt, 9), y, amt, "F1", 9)
             y -= 18
         # TOTAL row on last page
         if p == total_pages - 1:
@@ -769,8 +772,8 @@ def _make_statement_pdf(txs, user):
             toks_total = f"{int(total_tokens):,}"
             ops.append("q 0.957 0.706 0 rg 50 126 512 0.8 re f Q")
             text(50, 108, "TOTAL", "F2", 11)
-            text(390 - width_est(toks_total, 11), 108, toks_total, "F2", 11)
-            text(512 - width_est(amt_total, 11), 108, amt_total, "F2", 11)
+            text(391 - width_est(toks_total, 11), 108, toks_total, "F2", 11)
+            text(562 - width_est(amt_total, 11), 108, amt_total, "F2", 11)
         # Footer
         ops.append("q 0.85 0.85 0.88 rg 50 90 512 0.8 re f Q")
         text(50, 70, f"Page {p + 1} of {total_pages}", "F1", 9, "0.45 0.45 0.5")

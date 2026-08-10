@@ -151,7 +151,7 @@
         </div>
       </div>
       <div class="settings-grid">
-        <div class="dash-card">
+        <div class="dash-card" id="profile-section">
           <h3 class="settings-section-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</h3>
           <div class="settings-field-group">
             <div class="settings-avatar-row">
@@ -1975,6 +1975,26 @@ document.addEventListener('DOMContentLoaded', function(){
   loadSettingsExtras();
   loadAccountOverview();
   }); // end _whenApiReady
+
+  // ── Hash deep-link: settings.html#profile scrolls to the Profile card ──
+  // Used by the nav dropdown (desktop) profile click so it lands on the
+  // profile section instead of the top of the page.
+  function scrollToSection(hash){
+    var id = String(hash || '').replace('#','');
+    if(!id) return;
+    var el = document.getElementById(id + '-section') || document.getElementById(id);
+    if(!el) return;
+    setTimeout(function(){
+      var y = el.getBoundingClientRect().top + window.pageYOffset - 90; // nav offset
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }, 150);
+  }
+  if(window.location.hash){
+    scrollToSection(window.location.hash);
+  }
+  window.addEventListener('hashchange', function(){
+    scrollToSection(window.location.hash);
+  });
 });
 </script>
 
