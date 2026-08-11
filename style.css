@@ -1068,6 +1068,43 @@ section {
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
+/* Step cards are proper containers (like .vp-card in "The Smartest Way
+   to Use AI") with a ✓ checklist inside each one. */
+.step-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: all 0.3s;
+  text-align: center;
+}
+.step-card:hover {
+  border-color: hsla(44 96% 52% / 0.2);
+  box-shadow: var(--shadow-hover);
+}
+.step-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0 0;
+  text-align: left;
+}
+.step-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+.step-list li:last-child {
+  border-bottom: none;
+}
+.step-list li::before {
+  content: "\2713";
+  color: var(--primary);
+  font-weight: 700;
+}
 .pricing-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
