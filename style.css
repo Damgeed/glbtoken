@@ -3465,90 +3465,46 @@ html.light .modal-overlay {
 }
 .stars-bg::before {
   box-shadow:
-    63.4vw 4.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    28.4vw 23.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    72.7vw 67.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    87.6vw 10.3vh 0 0.5px rgba(255, 200, 80, 0.85),
-    42.5vw 4.9vh 0 0.5px rgba(255, 200, 80, 0.85),
-    23.0vw 50.5vh 0 0.5px rgba(255, 200, 80, 0.85),
-    4.5vw 21.1vh 0 0.5px rgba(255, 200, 80, 0.85),
-    64.4vw 54.3vh 0 0.5px rgba(255, 200, 80, 0.85),
-    23.2vw 58.6vh 0 0.5px rgba(255, 200, 80, 0.85),
-    79.7vw 2.6vh 0 0.5px rgba(255, 200, 80, 0.85),
-    79.4vw 69.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    34.7vw 16.9vh 0 0.5px rgba(255, 200, 80, 0.85),
-    93.9vw 34.3vh 0 0.5px rgba(255, 200, 80, 0.85),
-    10.9vw 11.3vh 0 0.5px rgba(255, 200, 80, 0.85),
-    83.4vw 60.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    79.5vw 72.1vh 0 0.5px rgba(255, 200, 80, 0.85),
-    53.5vw 95.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    38.3vw 55.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    81.6vw 61.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    84.7vw 57.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    69.6vw 6.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    23.9vw 29.8vh 0 0.5px rgba(255, 200, 80, 0.85),
-    9.7vw 24.3vh 0 0.5px rgba(255, 200, 80, 0.85),
-    11.7vw 28.7vh 0 0.5px rgba(255, 200, 80, 0.85),
-    63.0vw 37.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    37.5vw 22.1vh 0 0.5px rgba(255, 200, 80, 0.85),
-    27.6vw 91.9vh 0 0.5px rgba(255, 200, 80, 0.85),
-    64.2vw 60.5vh 0 0.5px rgba(255, 200, 80, 0.85),
-    18.4vw 72.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    17.7vw 38.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    97.0vw 63.4vh 0 0.5px rgba(255, 200, 80, 0.85),
-    55.5vw 67.7vh 0 0.5px rgba(255, 200, 80, 0.85),
-    82.9vw 76.5vh 0 0.5px rgba(255, 200, 80, 0.85),
-    24.0vw 5.1vh 0 0.5px rgba(255, 200, 80, 0.85),
-    32.3vw 27.7vh 0 0.5px rgba(255, 200, 80, 0.85),
-    22.3vw 92.5vh 0 0.5px rgba(255, 200, 80, 0.85),
-    86.1vw 32.2vh 0 0.5px rgba(255, 200, 80, 0.85),
-    64.9vw 40.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    89.8vw 46.0vh 0 0.5px rgba(255, 200, 80, 0.85),
-    27.4vw 25.7vh 0 0.5px rgba(255, 200, 80, 0.85),
-    55.9vw 27.2vh 0 0.5px rgba(255, 200, 80, 0.85),
-    58.1vw 88.2vh 0 0.5px rgba(255, 200, 80, 0.85),
-    40.3vw 23.1vh 0 0.5px rgba(255, 200, 80, 0.85),
-    97.8vw 50.9vh 0 0.5px rgba(255, 200, 80, 0.85),
-    10.7vw 6.5vh 0 0.5px rgba(255, 200, 80, 0.85);
+    8.3vw 5.2vh 0 0.5px rgba(255, 200, 80, 0.85),
+    22.6vw 18.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    41.9vw 8.7vh 0 0.5px rgba(255, 200, 80, 0.85),
+    58.2vw 27.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    74.5vw 12.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    88.1vw 34.6vh 0 0.5px rgba(255, 200, 80, 0.85),
+    12.4vw 44.8vh 0 0.5px rgba(255, 200, 80, 0.85),
+    31.7vw 58.2vh 0 0.5px rgba(255, 200, 80, 0.85),
+    47.3vw 72.6vh 0 0.5px rgba(255, 200, 80, 0.85),
+    63.8vw 49.5vh 0 0.5px rgba(255, 200, 80, 0.85),
+    81.2vw 78.4vh 0 0.5px rgba(255, 200, 80, 0.85),
+    6.9vw 88.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    28.4vw 65.3vh 0 0.5px rgba(255, 200, 80, 0.85),
+    52.9vw 82.1vh 0 0.5px rgba(255, 200, 80, 0.85),
+    90.5vw 91.2vh 0 0.5px rgba(255, 200, 80, 0.85),
+    17.2vw 73.5vh 0 0.5px rgba(255, 200, 80, 0.85),
+    68.3vw 86.7vh 0 0.5px rgba(255, 200, 80, 0.85),
+    37.8vw 93.0vh 0 0.5px rgba(255, 200, 80, 0.85),
+    46.1vw 67.9vh 0 0.5px rgba(255, 200, 80, 0.85),
+    94.7vw 77.2vh 0 0.5px rgba(255, 200, 80, 0.85);
   animation: starTwinkle 6s ease-in-out infinite alternate;
 }
 .stars-bg::after {
   box-shadow:
-    12.5vw 62.2vh 0 0.5px rgba(150, 200, 255, 0.75),
-    78.0vw 42.5vh 0 0.5px rgba(150, 200, 255, 0.75),
+    16.2vw 9.7vh 0 0.5px rgba(150, 200, 255, 0.75),
+    35.4vw 21.5vh 0 0.5px rgba(150, 200, 255, 0.75),
+    52.7vw 40.3vh 0 0.5px rgba(150, 200, 255, 0.75),
+    69.8vw 61.8vh 0 0.5px rgba(150, 200, 255, 0.75),
+    87.4vw 26.9vh 0 0.5px rgba(150, 200, 255, 0.75),
+    25.1vw 67.4vh 0 0.5px rgba(150, 200, 255, 0.75),
+    44.6vw 88.2vh 0 0.5px rgba(150, 200, 255, 0.75),
+    93.2vw 54.1vh 0 0.5px rgba(150, 200, 255, 0.75),
     8.1vw 38.6vh 0 0.5px rgba(150, 200, 255, 0.75),
-    97.6vw 52.8vh 0 0.5px rgba(150, 200, 255, 0.75),
-    95.2vw 84.6vh 0 0.5px rgba(150, 200, 255, 0.75),
-    3.1vw 71.2vh 0 0.5px rgba(150, 200, 255, 0.75),
-    67.4vw 53.5vh 0 0.5px rgba(150, 200, 255, 0.75),
-    27.6vw 63.5vh 0 0.5px rgba(150, 200, 255, 0.75),
-    12.7vw 43.7vh 0 0.5px rgba(150, 200, 255, 0.75),
-    45.6vw 93.6vh 0 0.5px rgba(150, 200, 255, 0.75),
-    86.1vw 27.3vh 0 0.5px rgba(150, 200, 255, 0.75),
-    50.1vw 19.2vh 0 0.5px rgba(150, 200, 255, 0.75),
-    89.6vw 85.6vh 0 0.5px rgba(150, 200, 255, 0.75),
-    30.7vw 63.3vh 0 0.5px rgba(150, 200, 255, 0.75),
     60.5vw 16.7vh 0 0.5px rgba(150, 200, 255, 0.75),
-    75.2vw 53.8vh 0 0.5px rgba(150, 200, 255, 0.75),
     76.7vw 52.9vh 0 0.5px rgba(150, 200, 255, 0.75),
-    2.1vw 33.1vh 0 0.5px rgba(150, 200, 255, 0.75),
-    3.9vw 91.2vh 0 0.5px rgba(150, 200, 255, 0.75),
-    86.4vw 81.8vh 0 0.5px rgba(150, 200, 255, 0.75),
     31.5vw 7.6vh 0 0.5px rgba(150, 200, 255, 0.75),
-    86.3vw 92.9vh 0 0.5px rgba(150, 200, 255, 0.75),
-    10.2vw 48.7vh 0 0.5px rgba(150, 200, 255, 0.75),
-    8.6vw 75.0vh 0 0.5px rgba(150, 200, 255, 0.75),
-    75.5vw 14.3vh 0 0.5px rgba(150, 200, 255, 0.75),
-    47.6vw 54.8vh 0 0.5px rgba(150, 200, 255, 0.75),
-    27.4vw 85.8vh 0 0.5px rgba(150, 200, 255, 0.75),
-    42.6vw 22.3vh 0 0.5px rgba(150, 200, 255, 0.75),
-    53.8vw 72.1vh 0 0.5px rgba(150, 200, 255, 0.75),
-    21.3vw 31.9vh 0 0.5px rgba(150, 200, 255, 0.75),
     97.5vw 64.4vh 0 0.5px rgba(150, 200, 255, 0.75),
-    44.1vw 51.7vh 0 0.5px rgba(150, 200, 255, 0.75),
-    13.6vw 23.6vh 0 0.5px rgba(150, 200, 255, 0.75),
-    34.5vw 58.5vh 0 0.5px rgba(150, 200, 255, 0.75),
-    24.1vw 23.1vh 0 0.5px rgba(150, 200, 255, 0.75);
+    10.2vw 48.7vh 0 0.5px rgba(150, 200, 255, 0.75),
+    53.8vw 72.1vh 0 0.5px rgba(150, 200, 255, 0.75),
+    84.9vw 83.4vh 0 0.5px rgba(150, 200, 255, 0.75);
   animation: starTwinkle 8s ease-in-out infinite alternate-reverse;
 }
 @keyframes starTwinkle {
@@ -3732,133 +3688,196 @@ html.light .star.white {
     opacity: 0;
   }
 }
+/* Random-direction shooting star — each .star sets its own --tx/--ty so
+   every star travels a different angle/distance instead of one of the four
+   fixed diagonal paths above. */
+@keyframes shootRand {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  30% {
+    transform: translate(calc(var(--tx, 120px) * 0.35), calc(var(--ty, 240px) * 0.35)) scale(0.6);
+    opacity: 0.45;
+  }
+  60% {
+    transform: translate(calc(var(--tx, 120px) * 0.72), calc(var(--ty, 240px) * 0.72)) scale(0.2);
+    opacity: 0.1;
+  }
+  100% {
+    transform: translate(var(--tx, 120px), var(--ty, 240px)) scale(0);
+    opacity: 0;
+  }
+}
 /* Row 1: Gold stars */
 .star:nth-child(1) {
+  --tx: 160px;
+  --ty: 300px;
   top: 8%;
   left: 15%;
-  animation: shootDR 18s ease-in infinite;
+  animation: shootRand 18s ease-in infinite;
   animation-delay: 0s;
 }
 .star:nth-child(2) {
+  --tx: -200px;
+  --ty: 240px;
   top: 22%;
   left: 55%;
-  animation: shootDL 22s ease-in infinite;
+  animation: shootRand 22s ease-in infinite;
   animation-delay: 2s;
 }
 .star:nth-child(3) {
+  --tx: 240px;
+  --ty: 170px;
   top: 38%;
   left: 8%;
-  animation: shootDR 20s ease-in infinite;
+  animation: shootRand 20s ease-in infinite;
   animation-delay: 4s;
 }
 .star:nth-child(4) {
+  --tx: -140px;
+  --ty: 310px;
   top: 12%;
   left: 78%;
-  animation: shootDL 23s ease-in infinite;
+  animation: shootRand 23s ease-in infinite;
   animation-delay: 1s;
 }
-/* Row 2: Teal stars */
 .star:nth-child(5) {
+  --tx: 40px;
+  --ty: 260px;
   top: 52%;
   left: 28%;
-  animation: shootD 16s ease-in infinite;
+  animation: shootRand 16s ease-in infinite;
   animation-delay: 3s;
 }
 .star:nth-child(6) {
+  --tx: 220px;
+  --ty: 320px;
   top: 68%;
   left: 72%;
-  animation: shootDR 25s ease-in infinite;
+  animation: shootRand 25s ease-in infinite;
   animation-delay: 5s;
 }
 .star:nth-child(7) {
+  --tx: -260px;
+  --ty: 190px;
   top: 3%;
   left: 42%;
-  animation: shootDL 14s ease-in infinite;
+  animation: shootRand 14s ease-in infinite;
   animation-delay: 6s;
 }
 .star:nth-child(8) {
+  --tx: 30px;
+  --ty: 340px;
   top: 82%;
   left: 12%;
-  animation: shootD 20s ease-in infinite;
+  animation: shootRand 20s ease-in infinite;
   animation-delay: 0.5s;
 }
-/* Row 3: Blue stars */
 .star:nth-child(9) {
+  --tx: -180px;
+  --ty: 260px;
   top: 32%;
   left: 88%;
-  animation: shootDL 18s ease-in infinite;
+  animation: shootRand 18s ease-in infinite;
   animation-delay: 3.5s;
 }
 .star:nth-child(10) {
+  --tx: 120px;
+  --ty: 350px;
   top: 58%;
   left: 48%;
-  animation: shootArc 27s ease-in infinite;
+  animation: shootRand 27s ease-in infinite;
   animation-delay: 7s;
 }
 .star:nth-child(11) {
+  --tx: 200px;
+  --ty: 230px;
   top: 48%;
   left: 3%;
-  animation: shootDR 16s ease-in infinite;
+  animation: shootRand 16s ease-in infinite;
   animation-delay: 1.5s;
 }
 .star:nth-child(12) {
+  --tx: -220px;
+  --ty: 280px;
   top: 73%;
   left: 82%;
-  animation: shootArc 29s ease-in infinite;
+  animation: shootRand 29s ease-in infinite;
   animation-delay: 4.5s;
 }
-/* Row 4: White stars */
 .star:nth-child(13) {
+  --tx: 260px;
+  --ty: 210px;
   top: 18%;
   left: 35%;
-  animation: shootDR 22s ease-in infinite;
+  animation: shootRand 22s ease-in infinite;
   animation-delay: 8s;
 }
 .star:nth-child(14) {
+  --tx: -160px;
+  --ty: 320px;
   top: 88%;
   left: 60%;
-  animation: shootDL 18s ease-in infinite;
+  animation: shootRand 18s ease-in infinite;
   animation-delay: 6.5s;
 }
 .star:nth-child(15) {
+  --tx: 90px;
+  --ty: 240px;
   top: 42%;
   left: 65%;
-  animation: shootArc 25s ease-in infinite;
+  animation: shootRand 25s ease-in infinite;
   animation-delay: 2.5s;
 }
-/* Trails (longer streaks) */
 .star.trail:nth-child(16) {
+  --tx: 300px;
+  --ty: 150px;
   top: 15%;
   left: 25%;
-  animation: shootDR 32s ease-in infinite;
+  animation: shootRand 32s ease-in infinite;
   animation-delay: 0.8s;
   height: 10px;
 }
 .star.trail:nth-child(17) {
+  --tx: -280px;
+  --ty: 200px;
   top: 50%;
   left: 70%;
-  animation: shootDL 29s ease-in infinite;
+  animation: shootRand 29s ease-in infinite;
   animation-delay: 3.2s;
   height: 8px;
 }
 .star.trail:nth-child(18) {
+  --tx: 60px;
+  --ty: 330px;
   top: 70%;
   left: 20%;
-  animation: shootD 25s ease-in infinite;
+  animation: shootRand 25s ease-in infinite;
   animation-delay: 5s;
   height: 6px;
 }
 .star.trail:nth-child(19) {
+  --tx: 320px;
+  --ty: 120px;
   top: 28%;
   left: 50%;
-  animation: shootArc 36s ease-in infinite;
+  animation: shootRand 36s ease-in infinite;
   animation-delay: 9s;
   height: 12px;
 }
 .star.trail:nth-child(20) {
+  --tx: -240px;
+  --ty: 260px;
   top: 60%;
   left: 45%;
-  animation: shootDR 27s ease-in infinite;
+  animation: shootRand 27s ease-in infinite;
   animation-delay: 7.5s;
   height: 7px;
 }
@@ -5453,7 +5472,7 @@ body {
      element on every page (see .stars-bg static field rules above).
      The old display:none here made stars vanish on phones. */
   /* Mobile keeps the starfield subtle: the full ~80-star static field is
-     too dense on small screens, so swap in a light ~20-star field and
+     too dense on small screens, so swap in a light ~12-star field and
      show only 8 slow shooting stars instead of 20. */
   .stars-bg::before {
     box-shadow:
@@ -5463,12 +5482,7 @@ body {
       58.2vw 27.3vh 0 0.5px rgba(255, 200, 80, 0.8),
       74.5vw 12.9vh 0 0.5px rgba(255, 200, 80, 0.8),
       88.1vw 34.6vh 0 0.5px rgba(255, 200, 80, 0.8),
-      12.4vw 44.8vh 0 0.5px rgba(255, 200, 80, 0.8),
-      31.7vw 58.2vh 0 0.5px rgba(255, 200, 80, 0.8),
-      47.3vw 72.6vh 0 0.5px rgba(255, 200, 80, 0.8),
-      63.8vw 49.5vh 0 0.5px rgba(255, 200, 80, 0.8),
-      81.2vw 78.4vh 0 0.5px rgba(255, 200, 80, 0.8),
-      6.9vw 88.9vh 0 0.5px rgba(255, 200, 80, 0.8);
+      47.3vw 72.6vh 0 0.5px rgba(255, 200, 80, 0.8);
   }
   .stars-bg::after {
     box-shadow:
@@ -5476,10 +5490,7 @@ body {
       35.4vw 21.5vh 0 0.5px rgba(150, 200, 255, 0.7),
       52.7vw 40.3vh 0 0.5px rgba(150, 200, 255, 0.7),
       69.8vw 61.8vh 0 0.5px rgba(150, 200, 255, 0.7),
-      87.4vw 26.9vh 0 0.5px rgba(150, 200, 255, 0.7),
-      25.1vw 67.4vh 0 0.5px rgba(150, 200, 255, 0.7),
-      44.6vw 88.2vh 0 0.5px rgba(150, 200, 255, 0.7),
-      93.2vw 54.1vh 0 0.5px rgba(150, 200, 255, 0.7);
+      87.4vw 26.9vh 0 0.5px rgba(150, 200, 255, 0.7);
   }
   .star:nth-child(n+9) { display: none; }
   .pricing-card {
