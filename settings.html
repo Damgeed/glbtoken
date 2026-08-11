@@ -622,7 +622,7 @@ function openTwoFAModal(mode){
             var box = document.getElementById('twofaRecoveryCodes');
             if(box){
               box.innerHTML = d.backup_codes.map(function(c){
-                return '<span style="font-family:monospace;font-size:0.72rem;background:var(--primary-subtle);border:1px solid var(--primary-soft);border-radius:6px;padding:0.3rem 0.45rem;letter-spacing:0.5px">' + escapeHtml(c) + '</span>';
+                return '<span style="font-family:monospace;font-size:0.72rem;color:'+textClr+';background:var(--primary-subtle);border:1px solid var(--primary-soft);border-radius:6px;padding:0.3rem 0.45rem;letter-spacing:0.5px">' + escapeHtml(c) + '</span>';
               }).join('');
             }
           }
