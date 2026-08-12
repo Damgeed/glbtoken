@@ -157,7 +157,6 @@ def generate_api_key() -> str:
 
 def hash_api_key(raw: str) -> str:
     """SHA-256 hex hash of an API key for safe DB storage/lookup."""
-    import hashlib
     return hashlib.sha256(raw.encode()).hexdigest()
 
 async def verify_google_token(token: str) -> dict:

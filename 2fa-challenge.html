@@ -105,12 +105,12 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
           if(d.refresh_token) secure.setItem('gt_refresh_token', d.refresh_token);
           secure.setItem('gt_user', JSON.stringify(d.user || {}));
         }catch(e){}
-        // Same token-in-URL format the Auth0 callback uses for dashboard.html
+        // Token passed via fragment (#) — not sent in Referer headers or logged by proxies
         var q = 'token=' + encodeURIComponent(d.token);
         if(d.refresh_token) q += '&refresh=' + encodeURIComponent(d.refresh_token);
         if(d.user) q += '&user=' + encodeURIComponent(JSON.stringify(d.user));
         q += '&_ts=' + Date.now();
-        window.location.replace(next + (next.indexOf('?') > -1 ? '&' : '?') + q);
+        window.location.replace(next + '#' + q);
       } else {
         btn.disabled = false; btn.classList.remove('loading');
         showErr((d && d.detail) || 'Invalid code — please try again.');

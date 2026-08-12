@@ -57,7 +57,7 @@ def list_keys(request: Request, user: User = Depends(get_current_user), db: Sess
         {
             "id": k.id,
             "name": k.name,
-            "key": (k.key_prefix or k.key[:12] if k.key else "") + "••••••••" + (k.key_suffix or k.key[-4:] if k.key else ""),
+            "key": (k.key_prefix or (k.key[:12] if k.key else "")) + "••••••••" + (k.key_suffix or (k.key[-4:] if k.key else "")),
             "key_prefix": k.key_prefix or (k.key[:12] if k.key else ""),
             "permissions": k.permissions,
             "is_active": k.is_active,
