@@ -1934,11 +1934,21 @@ async def upload_avatar(
     ctype = (file.content_type or "").lower()
     if not ctype.startswith("image/"):
         _400("Upload must be an image file (JPG, PNG, WebP, GIF…)")
-    raw = await file.read()
+    # Stream-read in chunks — abort early if upload exceeds the cap,
+    # rather than loading the entire multipart body into memory first.
+    chunks = []
+    total = 0
+    while True:
+        chunk = await file.read(1024 * 1024)  # 1 MB at a time
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > MAX_AVATAR_BYTES:
+            _400(f"Image too large (max {MAX_AVATAR_BYTES // (1024 * 1024)} MB)")
+        chunks.append(chunk)
+    raw = b"".join(chunks)
     if not raw:
         _400("Empty file")
-    if len(raw) > MAX_AVATAR_BYTES:
-        _400(f"Image too large (max {MAX_AVATAR_BYTES // (1024 * 1024)} MB)")
     try:
         from io import BytesIO
         from PIL import Image, UnidentifiedImageError
