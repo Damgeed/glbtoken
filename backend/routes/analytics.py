@@ -50,7 +50,9 @@ async def _fetch_newapi(coro, default=None):
 # ── Dashboard Routes ──
 
 @router.get("/api/dashboard")
+@limiter.limit("30/minute")
 async def get_dashboard(
+    request: Request,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     days: int = Query(7, ge=1, le=90, description="Number of days of data to return"),
@@ -195,7 +197,9 @@ async def get_dashboard(
 # ── New API Request Logs ──
 
 @router.get("/api/logs")
+@limiter.limit("30/minute")
 async def get_logs(
+    request: Request,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     user: User = Depends(get_current_user),
@@ -239,7 +243,9 @@ async def get_logs(
 # ── Log Content (Prompt + Completion) ──
 
 @router.get("/api/logs/content")
+@limiter.limit("30/minute")
 async def get_log_content(
+    request: Request,
     log_id: int = Query(..., description="Log entry ID to fetch full content for"),
     user: User = Depends(get_current_user),
 ):
@@ -273,7 +279,9 @@ async def get_log_content(
 # ── Unified Activity Feed ──
 
 @router.get("/api/activity")
+@limiter.limit("30/minute")
 async def get_activity(
+    request: Request,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -587,14 +595,14 @@ async def analytics_key_usage(
         if cached is not None:
             return cached
 
-        # Get user's API keys
-        keys = db.query(ApiKey.id, ApiKey.key).filter(
+        # Get user's API keys (key_prefix for display, key as fallback for old keys)
+        keys = db.query(ApiKey.id, ApiKey.key_prefix, ApiKey.key).filter(
             ApiKey.user_id == user.id,
         ).all()
         if not keys:
             return []
         key_ids = [k.id for k in keys]
-        key_map = {k.id: k.key for k in keys}
+        key_map = {k.id: (k.key_prefix or k.key or "") for k in keys}
 
         # Single grouped query instead of N+1 (one query per key before)
         rows = db.query(

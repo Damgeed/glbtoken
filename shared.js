@@ -125,7 +125,7 @@ const API_URL = 'https://api.glbtoken.com';
 // never linger in the address bar.
 window.recoverTokenFromUrl = function recoverTokenFromUrl(){
   try{
-    var params = new URLSearchParams(window.location.search);
+    var params = new URLSearchParams(window.location.hash.substring(1) || window.location.search.substring(1));
     var urlToken = params.get('token');
     if(!urlToken) return false;
     var urlUser = params.get('user');

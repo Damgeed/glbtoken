@@ -7,7 +7,7 @@ from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 
 from database import get_db, User, ApiKey, Transaction
-from auth import get_current_user, generate_api_key
+from auth import get_current_user, generate_api_key, hash_api_key
 from common import _400, _404, limiter
 from schemas import ApiKeyCreate, ApiKeyUpdate
 
@@ -57,8 +57,8 @@ def list_keys(request: Request, user: User = Depends(get_current_user), db: Sess
         {
             "id": k.id,
             "name": k.name,
-            "key": k.key[:12] + "••••••••" + k.key[-4:],
-            "key_prefix": k.key[:12],
+            "key": (k.key_prefix or k.key[:12] if k.key else "") + "••••••••" + (k.key_suffix or k.key[-4:] if k.key else ""),
+            "key_prefix": k.key_prefix or (k.key[:12] if k.key else ""),
             "permissions": k.permissions,
             "is_active": k.is_active,
             "request_count": k.request_count,
@@ -85,9 +85,13 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
 
     _validate_permissions(req.permissions)
 
+    raw_key = generate_api_key()
     key = ApiKey(
         user_id=user.id,
-        key=generate_api_key(),
+        key=None,  # plaintext NOT stored — only hash + masked prefix/suffix
+        key_hash=hash_api_key(raw_key),
+        key_prefix=raw_key[:12],
+        key_suffix=raw_key[-4:],
         name=req.name,
         permissions=req.permissions,
         expires_at=_parse_expiry(req.expires_at),
@@ -106,7 +110,7 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
     return {
         "id": key.id,
         "name": key.name,
-        "key": key.key,  # Full key shown once
+        "key": raw_key,  # Full key shown once — NOT stored in DB
         "permissions": key.permissions,
         "created_at": key.created_at.isoformat(),
     }

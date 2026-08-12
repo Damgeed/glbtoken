@@ -51,7 +51,7 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
 <script>
 (function(){
   var API_URL = 'https://api.glbtoken.com';
-  var params = new URLSearchParams(window.location.search);
+  var params = new URLSearchParams(window.location.hash.substring(1) || window.location.search.substring(1));
   var preToken = params.get('pre') || '';
   var rawNext = params.get('next') || '/dashboard.html';
   var next = '/dashboard.html';
@@ -61,6 +61,11 @@ h1{font-size:1.05rem;font-weight:600;margin:1.25rem 0 0.35rem}
   // this and let the JWT leak to an attacker-controlled host), and javascript:.
   if(rawNext && rawNext.charAt(0) === '/' && rawNext.indexOf('\\') === -1 && !/^\/\//.test(rawNext) && !/^\/[a-z]+:/i.test(rawNext) && !/[\s\x00-\x1f]/.test(rawNext)){
     next = rawNext;
+  }
+
+  // Strip pre-token from the address bar immediately (no back-button leak)
+  if (window.location.hash || window.location.search) {
+    history.replaceState(null, document.title, window.location.pathname);
   }
 
   if(!preToken){

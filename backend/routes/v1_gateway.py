@@ -115,8 +115,12 @@ def _auth_user(db: Session, authorization: str, request: Request = None, require
         raw = raw[7:].strip()
     if not raw:
         _401("Not authenticated")
+    from sqlalchemy import or_
+    from auth import hash_api_key
+    key_hash = hash_api_key(raw)
     api_key = db.query(ApiKey).filter(
-        ApiKey.key == raw, ApiKey.is_active == True
+        or_(ApiKey.key_hash == key_hash, ApiKey.key == raw),
+        ApiKey.is_active == True
     ).first()
     if not api_key:
         _401("Invalid API key")

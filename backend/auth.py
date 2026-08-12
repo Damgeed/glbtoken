@@ -155,6 +155,11 @@ async def get_optional_user(
 def generate_api_key() -> str:
     return "gtk_" + secrets.token_hex(24)
 
+def hash_api_key(raw: str) -> str:
+    """SHA-256 hex hash of an API key for safe DB storage/lookup."""
+    import hashlib
+    return hashlib.sha256(raw.encode()).hexdigest()
+
 async def verify_google_token(token: str) -> dict:
     """Verify Google OAuth token and return user info."""
     async with httpx.AsyncClient() as client:

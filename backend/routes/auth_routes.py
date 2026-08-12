@@ -1034,9 +1034,7 @@ async def auth0_callback_redirect(request: Request, id_token: str = Query(...)):
     db.close()
     import time
     ts = int(time.time() * 1000)
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
-
-
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html#token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
 @router.get("/api/auth/auth0/pkce-callback")
 @limiter.limit("10/minute")
 async def auth0_pkce_callback(request: Request, code: str = Query(...), code_verifier: str = Query(...), state: str = Query(None)):
@@ -1092,7 +1090,7 @@ async def auth0_pkce_callback(request: Request, code: str = Query(...), code_ver
     db.close()
     import time
     ts = int(time.time() * 1000)
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html?token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html#token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
 
 
 @router.post("/api/auth/auth0/password-login")
@@ -1453,7 +1451,8 @@ def get_profile(user: User = Depends(get_current_user), db: Session = Depends(ge
 
 
 @router.put("/api/user/profile")
-def update_profile(req: ProfileUpdateRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("30/minute")
+def update_profile(request: Request, req: ProfileUpdateRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     if req.name is not None: user.name = req.name
     if req.country is not None: user.country = req.country
     if req.phone is not None: user.phone = req.phone
@@ -1638,7 +1637,7 @@ def _social_2fa_redirect(user):
         {"sub": str(user.id), "scope": "2fa"}, expires_minutes=5
     )
     qs = urlencode({"pre": pre_token, "next": "/dashboard.html"})
-    return RedirectResponse(url=f"https://glbtoken.com/2fa-challenge.html?{qs}")
+    return RedirectResponse(url=f"https://glbtoken.com/2fa-challenge.html#{qs}")
 
 
 @router.get("/api/auth/2fa/status")

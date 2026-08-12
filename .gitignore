@@ -3,9 +3,22 @@ __pycache__/
 *.pyo
 backend/glbtoken.db
 .env
+.env.*
 scripts/.i18n_state.json
 make_guide_pdf.py
+
+# Secrets & credentials
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.*
+id_rsa*
+*.log
 
 # Test artifacts
 test_glbtoken.db
 .pytest_cache/
+
+# Node
+node_modules/

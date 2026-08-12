@@ -1,20 +1,21 @@
 """GlbTOKEN — Presets CRUD Routes"""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from datetime import datetime, timezone
 
 from database import get_db, User, Preset
 from auth import get_current_user
-from common import _400, _404
+from common import _400, _404, limiter
 from schemas import CreatePresetRequest, UpdatePresetRequest
 
 router = APIRouter()
 
 
 @router.post("/api/presets")
-def create_preset(req: CreatePresetRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def create_preset(request: Request, req: CreatePresetRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Create a new preset for the current user."""
     if not req.name or not req.name.strip():
         _400("Preset name is required")
@@ -46,7 +47,8 @@ def create_preset(req: CreatePresetRequest, user: User = Depends(get_current_use
 
 
 @router.get("/api/presets")
-def list_presets(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def list_presets(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """List all presets for the current user."""
     presets = db.query(Preset).filter(Preset.user_id == user.id).order_by(desc(Preset.updated_at)).all()
     return [
@@ -66,7 +68,8 @@ def list_presets(user: User = Depends(get_current_user), db: Session = Depends(g
 
 
 @router.get("/api/presets/{preset_id}")
-def get_preset(preset_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def get_preset(request: Request, preset_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Get a single preset by ID."""
     preset = db.query(Preset).filter(Preset.id == preset_id, Preset.user_id == user.id).first()
     if not preset:
@@ -85,7 +88,8 @@ def get_preset(preset_id: int, user: User = Depends(get_current_user), db: Sessi
 
 
 @router.put("/api/presets/{preset_id}")
-def update_preset(preset_id: int, req: UpdatePresetRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def update_preset(request: Request, preset_id: int, req: UpdatePresetRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Update an existing preset."""
     preset = db.query(Preset).filter(Preset.id == preset_id, Preset.user_id == user.id).first()
     if not preset:
@@ -123,7 +127,8 @@ def update_preset(preset_id: int, req: UpdatePresetRequest, user: User = Depends
 
 
 @router.delete("/api/presets/{preset_id}")
-def delete_preset(preset_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def delete_preset(request: Request, preset_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Delete a preset."""
     preset = db.query(Preset).filter(Preset.id == preset_id, Preset.user_id == user.id).first()
     if not preset:

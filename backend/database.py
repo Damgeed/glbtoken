@@ -105,7 +105,10 @@ class ApiKey(Base):
     __tablename__ = "api_keys"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    key = Column(String, unique=True, index=True, nullable=False)
+    key = Column(String, unique=True, index=True, nullable=True)  # deprecated — kept for migration compat, null for new keys
+    key_hash = Column(String, unique=True, index=True, nullable=True)  # SHA-256 hex — primary lookup field
+    key_prefix = Column(String, nullable=True)  # first 12 chars for masked display
+    key_suffix = Column(String, nullable=True)  # last 4 chars for masked display
     name = Column(String, default="My API Key")
     permissions = Column(String, default="read_write")
     last_used = Column(DateTime, nullable=True)
