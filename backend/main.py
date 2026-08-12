@@ -91,12 +91,16 @@ async def lifespan(app: FastAPI):
     try:
         from database import engine
         from sqlalchemy import inspect, text
+        import hashlib as _hl
         inspector = inspect(engine)
         key_cols = {c['name'] for c in inspector.get_columns('api_keys')}
         key_add = {
             'expires_at': 'TIMESTAMP',
             'rate_limit_rpm': 'INTEGER',
             'ip_allowlist': 'TEXT',
+            'key_hash': 'VARCHAR',
+            'key_prefix': 'VARCHAR',
+            'key_suffix': 'VARCHAR',
         }
         tx_cols = {c['name'] for c in inspector.get_columns('transactions')}
         tx_add = {'key_id': 'INTEGER'}
@@ -109,6 +113,20 @@ async def lifespan(app: FastAPI):
                 if col_name not in tx_cols:
                     conn.execute(text(f'ALTER TABLE transactions ADD COLUMN IF NOT EXISTS "{col_name}" {col_type}'))
                     print(f"✅ Added missing column: transactions.{col_name}")
+            # Make legacy key column nullable (was NOT NULL before hashing migration)
+            try:
+                conn.execute(text('ALTER TABLE api_keys ALTER COLUMN key DROP NOT NULL'))
+                print("✅ api_keys.key is now nullable")
+            except Exception:
+                pass  # SQLite or already nullable
+            # Backfill key_hash/prefix/suffix from existing plaintext keys
+            rows = conn.execute(text('SELECT id, key FROM api_keys WHERE key IS NOT NULL AND key_hash IS NULL')).fetchall()
+            for row in rows:
+                raw = row[1]
+                conn.execute(text('UPDATE api_keys SET key_hash = :h, key_prefix = :p, key_suffix = :s WHERE id = :id'),
+                             {'h': _hl.sha256(raw.encode()).hexdigest(), 'p': raw[:12], 's': raw[-4:], 'id': row[0]})
+            if rows:
+                print(f"✅ Backfilled key_hash for {len(rows)} existing API keys")
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (api keys, non-critical): {e}")
@@ -157,6 +175,12 @@ async def lifespan(app: FastAPI):
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_login_events_user_id ON login_events (user_id)"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_referral_redemption_referred_user ON referral_redemptions (referred_user_id)"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_org_member ON org_members (org_id, user_id)"))
+            # Defense-in-depth: prevent duplicate payment_ref (double-credit guard at DB level)
+            try:
+                conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_transactions_payment_ref ON transactions (payment_ref) WHERE payment_ref IS NOT NULL"))
+            except Exception:
+                # SQLite doesn't support partial indexes the same way — skip silently
+                pass
             conn.commit()
             print("✅ Performance + integrity indexes ensured")
     except Exception as e:
