@@ -349,8 +349,8 @@
   .dash-keys-card .dash-keys-create {
     top: 0.3rem;
     right: 0.35rem;
-    padding: 0.18rem 0.32rem;
-    font-size: 0.72rem;
+    padding: 0.4rem 0.45rem;
+    font-size: 0.9rem;
     line-height: 1;
   }
   .dash-keys-card .dash-keys-create .key-label {
@@ -358,7 +358,7 @@
   }
   .dash-keys-card .dash-keys-create .key-icon {
     display: inline-block;
-    font-size: 0.8rem;
+    font-size: 1.05rem;
     line-height: 1;
   }
   /* left-align content on mobile so the top-right button has clear space */
