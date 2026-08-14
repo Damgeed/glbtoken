@@ -4576,7 +4576,7 @@ body {
 .dash-balance .actions {
   display: flex;
   gap: 0.625rem;
-  margin-top: 3rem;
+  margin-top: 3.5rem;
   position: relative;
   z-index: 1;
 }
