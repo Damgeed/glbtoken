@@ -286,23 +286,30 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.85rem;
 }
-/* Distinct secondary button: soft overlay (Buy Tokens = solid primary, Create API Key = soft) */
+/* Distinct secondary action button: elegant outline + key pip (Buy Tokens = solid primary) */
 .dash-actions-mt .btn-primary { font-weight: 600; }
 .dash-action-btn-key {
-  background: linear-gradient(135deg, rgba(52,211,153,0.16), rgba(52,211,153,0.06));
-  color: #5EE6A8;
-  border: 1px solid rgba(52,211,153,0.35);
+  position: relative;
+  background: linear-gradient(135deg, rgba(255,193,94,0.10), rgba(255,193,94,0.02));
+  color: var(--primary);
+  border: 1px solid rgba(255,193,94,0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }
+.dash-action-btn-key svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.9; }
 .dash-action-btn-key:hover {
-  background: linear-gradient(135deg, rgba(52,211,153,0.26), rgba(52,211,153,0.1));
-  border-color: rgba(52,211,153,0.6);
-  color: #7BEFBE;
+  background: linear-gradient(135deg, rgba(255,193,94,0.18), rgba(255,193,94,0.05));
+  border-color: var(--primary);
+  color: #fff;
 }
+.dash-action-btn-key:hover svg { color: var(--primary); }
 
-/* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
+/* Light-green status sub-text on stat cards (Lifetime / No usage / Total calls / Active / Offline) */
 .dash-stat-card .chg.stat-status {
   color: #5EE6A8;
-  opacity: 0.92;
+  opacity: 0.95;
 }
 /* Mini chart 2-col grid */
 .mini-chart-grid {

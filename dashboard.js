@@ -89,7 +89,7 @@ async function loadDashboardStats(){
     function renderTrend(id, meta, fallback){
       var el = document.getElementById(id);
       if(!el) return;
-      if(!meta){ el.textContent = fallback || '—'; el.className = 'chg text-muted'; return; }
+      if(!meta){ el.textContent = fallback || '—'; el.className = 'chg stat-status'; return; }
       el.textContent = meta.label + ' vs prev';
       el.className = 'chg ' + (meta.up ? 'up' : 'down');
     }
