@@ -286,19 +286,23 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.85rem;
 }
-/* Distinct secondary action button: understated outline (Buy Tokens = solid primary) */
+/* Distinct secondary action button: blue accent outline (Buy Tokens = solid primary) */
 .dash-actions-mt .btn-primary { font-weight: 600; }
 .dash-action-btn-key {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  box-shadow: none;
+  background: linear-gradient(135deg, rgba(79,195,247,0.10), rgba(79,195,247,0.02));
+  color: #4FC3F7;
+  border: 1px solid rgba(79,195,247,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 .dash-action-btn-key:hover {
-  background: var(--bg-alt);
-  border-color: rgba(255,255,255,0.28);
-  color: var(--text);
+  background: linear-gradient(135deg, rgba(79,195,247,0.18), rgba(79,195,247,0.05));
+  border-color: #4FC3F7;
+  color: #fff;
 }
+.dash-action-btn-key svg { color: #4FC3F7; }
 
 /* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
 .dash-stat-card .chg.stat-status {
