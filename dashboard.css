@@ -361,6 +361,21 @@
     font-size: 0.8rem;
     line-height: 1;
   }
+  /* left-align content on mobile so the top-right button has clear space */
+  .dash-keys-card {
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+    padding-right: 2.6rem;
+  }
+  .dash-keys-card .num {
+    width: 100%;
+    text-align: left;
+  }
+  .dash-keys-card .lbl,
+  .dash-keys-card .chg {
+    text-align: left;
+  }
 }
 
 /* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
