@@ -286,6 +286,17 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.85rem;
 }
+/* Ghost/secondary action button (e.g. Create API Key on balance card) */
+.dash-action-btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.dash-action-btn-ghost:hover {
+  background: var(--bg-alt);
+  border-color: var(--primary);
+  color: var(--primary);
+}
 /* Mini chart 2-col grid */
 .mini-chart-grid {
   display: grid;
