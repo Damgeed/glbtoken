@@ -286,16 +286,23 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.85rem;
 }
-/* Ghost/secondary action button (e.g. Create API Key on balance card) */
-.dash-action-btn-ghost {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
+/* Distinct secondary button: soft overlay (Buy Tokens = solid primary, Create API Key = soft) */
+.dash-actions-mt .btn-primary { font-weight: 600; }
+.dash-action-btn-key {
+  background: linear-gradient(135deg, rgba(52,211,153,0.16), rgba(52,211,153,0.06));
+  color: #5EE6A8;
+  border: 1px solid rgba(52,211,153,0.35);
 }
-.dash-action-btn-ghost:hover {
-  background: var(--bg-alt);
-  border-color: var(--primary);
-  color: var(--primary);
+.dash-action-btn-key:hover {
+  background: linear-gradient(135deg, rgba(52,211,153,0.26), rgba(52,211,153,0.1));
+  border-color: rgba(52,211,153,0.6);
+  color: #7BEFBE;
+}
+
+/* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
+.dash-stat-card .chg.stat-status {
+  color: #5EE6A8;
+  opacity: 0.92;
 }
 /* Mini chart 2-col grid */
 .mini-chart-grid {
