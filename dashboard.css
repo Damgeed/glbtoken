@@ -359,9 +359,12 @@
     display: none;
   }
   .dash-keys-card .dash-keys-create .key-icon {
-    display: inline-block;
-    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
     line-height: 1;
+  }
+  .dash-keys-card .dash-keys-create .key-icon svg {
+    display: block;
   }
 }
 
