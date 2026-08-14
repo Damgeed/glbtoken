@@ -327,13 +327,15 @@
   gap: 0.1rem;
 }
 .dash-keys-card .dash-keys-create {
-  margin-top: 0.35rem;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.78rem;
+  margin-top: 0.3rem;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.72rem;
   border-radius: var(--radius-sm);
+  line-height: 1.15;
 }
 .dash-keys-card .dash-keys-create .plus {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
 /* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
