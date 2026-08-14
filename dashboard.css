@@ -288,8 +288,8 @@
 }
 /* Distinct secondary action button: gradient following the user's accent color */
 .dash-actions-mt .btn-primary { font-weight: 600; }
-.dash-action-btn-key {
-  background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+.dash-actions-mt .btn-primary.dash-action-btn-key {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
   color: #0a0b14;
   border: none;
   box-shadow: var(--primary-glow);
@@ -298,15 +298,20 @@
   gap: 0.4rem;
   font-weight: 700;
 }
-.dash-action-btn-key:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-deep));
+.dash-actions-mt .btn-primary.dash-action-btn-key:hover {
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-deep) 100%);
   box-shadow: var(--primary-glow-strong);
   color: #0a0b14;
+}
+.dash-actions-mt .btn-primary.dash-action-btn-key:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 .dash-action-btn-key .plus {
   font-size: 1.1rem;
   line-height: 1;
   font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
 }
 
 /* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
