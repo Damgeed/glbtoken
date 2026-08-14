@@ -321,38 +321,40 @@
 .dash-keys-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  text-align: center;
+  text-align: left;
   gap: 0.1rem;
+  padding-right: 2.6rem;
+}
+.dash-keys-card .num {
+  width: 100%;
+  text-align: left;
+}
+.dash-keys-card .lbl,
+.dash-keys-card .chg {
+  text-align: left;
 }
 .dash-keys-card .dash-keys-create {
   position: absolute;
   top: 0.4rem;
   right: 0.45rem;
-  padding: 0.22rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.72rem;
   border-radius: var(--radius-sm);
-  line-height: 1.1;
+  line-height: 1;
   z-index: 1;
 }
 .dash-keys-card .dash-keys-create .plus {
-  font-size: 0.78rem;
+  font-size: 1rem;
   line-height: 1;
-  margin-right: 0.1rem;
+  margin-right: 0.15rem;
 }
 .dash-keys-card .dash-keys-create .key-icon {
   display: none;
 }
 /* compact icon-only "+ 🔑" on mobile */
 @media (max-width: 768px) {
-  .dash-keys-card .dash-keys-create {
-    top: 0.3rem;
-    right: 0.35rem;
-    padding: 0.4rem 0.45rem;
-    font-size: 0.9rem;
-    line-height: 1;
-  }
   .dash-keys-card .dash-keys-create .key-label {
     display: none;
   }
@@ -360,21 +362,6 @@
     display: inline-block;
     font-size: 1.05rem;
     line-height: 1;
-  }
-  /* left-align content on mobile so the top-right button has clear space */
-  .dash-keys-card {
-    align-items: flex-start;
-    justify-content: center;
-    text-align: left;
-    padding-right: 2.6rem;
-  }
-  .dash-keys-card .num {
-    width: 100%;
-    text-align: left;
-  }
-  .dash-keys-card .lbl,
-  .dash-keys-card .chg {
-    text-align: left;
   }
 }
 
