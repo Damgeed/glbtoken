@@ -327,15 +327,40 @@
   gap: 0.1rem;
 }
 .dash-keys-card .dash-keys-create {
-  margin-top: 0.3rem;
-  padding: 0.28rem 0.65rem;
-  font-size: 0.72rem;
+  position: absolute;
+  top: 0.4rem;
+  right: 0.45rem;
+  padding: 0.22rem 0.55rem;
+  font-size: 0.7rem;
   border-radius: var(--radius-sm);
-  line-height: 1.15;
+  line-height: 1.1;
+  z-index: 1;
 }
 .dash-keys-card .dash-keys-create .plus {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   line-height: 1;
+  margin-right: 0.1rem;
+}
+.dash-keys-card .dash-keys-create .key-icon {
+  display: none;
+}
+/* compact icon-only "+ 🔑" on mobile */
+@media (max-width: 768px) {
+  .dash-keys-card .dash-keys-create {
+    top: 0.3rem;
+    right: 0.35rem;
+    padding: 0.18rem 0.32rem;
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+  .dash-keys-card .dash-keys-create .key-label {
+    display: none;
+  }
+  .dash-keys-card .dash-keys-create .key-icon {
+    display: inline-block;
+    font-size: 0.8rem;
+    line-height: 1;
+  }
 }
 
 /* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
