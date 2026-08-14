@@ -1474,22 +1474,13 @@ async def refresh_access_token(
         user_id = validate_refresh_token(raw, db)
     except HTTPException:
         _401("Session expired. Please log in again.")
-    # ROTATE: revoke the old refresh token before minting the new one so each
-    # active device holds exactly one valid token (prevents the table from
-    # accumulating one row per silent page-load refresh). The frontend
-    # shared.js handles the multi-tab race by retrying once with the token
-    # that ended up in storage after this refresh.
-    try:
-        revoke_refresh_token(raw, db)
-    except Exception as e:
-        print(f"⚠️ Refresh-token rotation: failed to revoke old token: {e}")
-    # NOTE (Bud 2026-08): a silent page-load refresh is NOT a login. We do NOT
-    # record a LoginEvent here. Every real login/registration already records
-    # its own event in the password/OAuth/social handlers; treating refresh
-    # (or a UA drift from a browser upgrade) as a login polluted Login History
-    # with phantom entries on every page reload. Device/session tracking is
-    # handled by the RefreshToken table (ua/device_type labels), so Active
-    # Sessions stays accurate without touching Login History.
+    # ROTATE: mint a NEW refresh token but DO NOT revoke the previous one.
+    # validate_refresh_token is non-destructive intentionally (auth.py): when
+    # a user has multiple tabs open and they all auto-refresh around the same
+    # time, revoking the shared old token here makes the loser tab get a 401
+    # and the frontend force-logs the user out despite a valid session. Old
+    # tokens stay valid until their 30-day expiry; explicit logout still
+    # revokes via /auth/logout.
     # Generate new access + refresh tokens
     ua = request.headers.get("user-agent", "")
     new_access = create_access_token({"sub": str(user_id)})

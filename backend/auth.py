@@ -13,8 +13,8 @@ SECRET_KEY = os.getenv("JWT_SECRET")
 if not SECRET_KEY:
     raise RuntimeError("JWT_SECRET environment variable is required")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 4320  # 3-day access token — keeps users logged in across days without re-auth (refresh extends forever)
-REFRESH_TOKEN_EXPIRE_DAYS = 90    # 90-day refresh token
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1-hour access token — short-lived per industry standard (OWASP/Auth0); refresh extends transparently
+REFRESH_TOKEN_EXPIRE_DAYS = 30    # 30-day rotating refresh token
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
