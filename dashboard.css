@@ -286,23 +286,28 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.85rem;
 }
-/* Distinct secondary action button: blue accent outline (Buy Tokens = solid primary) */
+/* Distinct secondary action button: gradient following the user's accent color */
 .dash-actions-mt .btn-primary { font-weight: 600; }
 .dash-action-btn-key {
-  background: linear-gradient(135deg, rgba(79,195,247,0.10), rgba(79,195,247,0.02));
-  color: #4FC3F7;
-  border: 1px solid rgba(79,195,247,0.4);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+  color: #0a0b14;
+  border: none;
+  box-shadow: var(--primary-glow);
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
+  font-weight: 700;
 }
 .dash-action-btn-key:hover {
-  background: linear-gradient(135deg, rgba(79,195,247,0.18), rgba(79,195,247,0.05));
-  border-color: #4FC3F7;
-  color: #fff;
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary-deep));
+  box-shadow: var(--primary-glow-strong);
+  color: #0a0b14;
 }
-.dash-action-btn-key svg { color: #4FC3F7; }
+.dash-action-btn-key .plus {
+  font-size: 1.1rem;
+  line-height: 1;
+  font-weight: 700;
+}
 
 /* Light-green status sub-text on stat cards (Lifetime / Offline / Active / totals) */
 .dash-stat-card .chg.stat-status {
