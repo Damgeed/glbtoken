@@ -8,6 +8,7 @@ import json
 from database import get_db, User, AIModel, Conversation, Transaction
 from auth import get_current_user
 from common import _400, _402, _404, _502, limiter, NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL, _user_setting, send_alert_email
+from newapi_integration import get_gateway_token
 from routes.referrals import grant_referral_reward
 from schemas import ProxyChatRequest, PlaygroundChatRequest, SaveConversationRequest
 
@@ -97,12 +98,15 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
     if user.token_balance < cost_tokens:
         _402(f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
     
-    # Route through New API if configured, otherwise fallback to Fallback
-    newapi_key = user.newapi_token
-    newapi_url = NEW_API_BASE_URL
-    
+    # Route through the New API gateway when we have a key; otherwise fall back
+    # to FALLBACK_API_URL. A user's own `newapi_token` takes priority; otherwise
+    # use the shared gateway token so every user reaches the upstream models.
     import httpx
     headers = {"Content-Type": "application/json"}
+    user_key = user.newapi_token or ""
+    gw_token = get_gateway_token() if NEW_API_BASE_URL else ""
+    newapi_key = user_key or gw_token
+    newapi_url = NEW_API_BASE_URL
     
     if newapi_key and newapi_url:
         # Route via New API
@@ -215,11 +219,12 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
     if user.token_balance < cost_tokens:
         _402(f"Insufficient balance. Need {cost_tokens} tokens, have {user.token_balance}")
     
-    newapi_key = user.newapi_token
-    newapi_url = NEW_API_BASE_URL
-    
     import httpx
     headers = {"Content-Type": "application/json"}
+    user_key = user.newapi_token or ""
+    gw_token = get_gateway_token() if NEW_API_BASE_URL else ""
+    newapi_key = user_key or gw_token
+    newapi_url = NEW_API_BASE_URL
     
     if newapi_key and newapi_url:
         headers["Authorization"] = f"Bearer {newapi_key}"
