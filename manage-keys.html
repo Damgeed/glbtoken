@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1282" />
+  <link rel="stylesheet" href="style.css?v=1283" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <link rel="stylesheet" href="manage-keys.css?v=1037" />
   </head>
@@ -199,26 +199,26 @@
       <!-- Create Key Modal -->
       <div class="modal-overlay" id="createKeyModal" onclick="if(event.target===this)closeCreateKeyModal()">
         <div class="modal-content modal-dialog" onclick="event.stopPropagation()">
-          <button onclick="closeCreateKeyModal()" class="modal-close">✕</button>
+          <button type="button" onclick="closeCreateKeyModal()" class="modal-close" aria-label="Close create API key dialog">✕</button>
           <h3 class="api-key-title notranslate" id="createKeyTitle">Create API Key</h3>
           <p class="text-sm text-muted mb-lg">Name your key and set permissions</p>
-          <label class="field-label">Key Name</label>
+          <label class="field-label" for="newKeyName">Key Name</label>
           <input type="text" id="newKeyName" value="My API Key" class="form-input-full mb-md" />
-          <label class="field-label">Permissions</label>
+          <label class="field-label" for="newKeyPerms">Permissions</label>
           <select id="newKeyPerms" class="form-input-full mb-md">
             <option value="read_write">Read & Write</option>
             <option value="read_only">Read Only</option>
           </select>
-          <label class="field-label">Expires</label>
+          <label class="field-label" for="newKeyExpiry">Expires</label>
           <select id="newKeyExpiry" class="form-input-full mb-md">
             <option value="">Never</option>
             <option value="30d">30 days</option>
-            <option value="90d">90 days</option>
+            <option value="90d" selected>90 days (recommended)</option>
             <option value="1y">1 year</option>
           </select>
-          <label class="field-label">Rate Limit <span class="text-muted text-xs">(requests / minute — optional)</span></label>
-          <input type="number" id="newKeyRpm" class="form-input-full mb-md" placeholder="e.g. 60" min="1" />
-          <label class="field-label">IP Allowlist <span class="text-muted text-xs">(comma-separated — optional)</span></label>
+          <label class="field-label" for="newKeyRpm">Rate Limit <span class="text-muted text-xs">(requests / minute — optional)</span></label>
+          <input type="number" id="newKeyRpm" class="form-input-full mb-md" placeholder="e.g. 60" min="1" value="60" />
+          <label class="field-label" for="newKeyIps">IP Allowlist <span class="text-muted text-xs">(comma-separated — optional)</span></label>
           <input type="text" id="newKeyIps" class="form-input-full mb-lg" placeholder="e.g. 1.2.3.4, 203.0.113.0/24" />
           <div class="flex gap-md">
             <button class="btn-secondary flex-1 pad-sm" onclick="closeCreateKeyModal()">Cancel</button>
@@ -288,10 +288,10 @@
 
 <script src="nav.js?v=21"></script>
 <script src="translations.js?v=1113"></script>
-<script data-cfasync="false" src="shared.js?v=1169"></script>
+<script data-cfasync="false" src="shared.js?v=1170"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
-<script data-cfasync="false" src="keys.js?v=31"></script>
+<script data-cfasync="false" src="keys.js?v=32"></script>
 
 </body>
 </html>

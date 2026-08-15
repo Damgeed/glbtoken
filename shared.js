@@ -197,6 +197,17 @@ window.recoverTokenFromUrl = function recoverTokenFromUrl(){
     })();
     let userData = {};
     try{ userData = JSON.parse((window.__secure ? window.__secure.getItem('gt_user') : localStorage.getItem('gt_user')) || '{}'); }catch(e){ userData = {}; }
+
+    // Auth pages should never remain visible to an existing session.  The
+    // navigation helper below receives logical names ("login"), while direct
+    // visits use filenames ("login.html"), so guard the actual pathname too.
+    (function redirectAuthenticatedAuthPage(){
+      var page = window.location.pathname.split('/').pop() || 'index.html';
+      var refreshToken = (window.__secure ? window.__secure.getItem('gt_refresh_token') : localStorage.getItem('gt_refresh_token'));
+      if((page === 'login.html' || page === 'register.html') && (token || refreshToken)){
+        window.location.replace('dashboard.html');
+      }
+    })();
     // Avatar sanitize: legacy sessions (pre-2026-08 fix) can have avatar === true
     // cached in gt_user from when /auth/me returned a truthy default. A non-string
     // avatar renders <img src="true"> (broken/gold circle) on the nav. Drop it so

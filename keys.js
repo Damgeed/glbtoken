@@ -271,7 +271,7 @@
         done();
       }
     }
-    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value=t('My API Key');document.getElementById('newKeyExpiry').value='';document.getElementById('newKeyRpm').value='';document.getElementById('newKeyIps').value=''}
+    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value=t('My API Key');document.getElementById('newKeyExpiry').value='90d';document.getElementById('newKeyRpm').value='60';document.getElementById('newKeyIps').value='';document.getElementById('newKeyName').focus()}
     function closeCreateKeyModal(){document.getElementById('createKeyModal').classList.remove('open')}
     async function createApiKey(){
       const name=document.getElementById('newKeyName').value;

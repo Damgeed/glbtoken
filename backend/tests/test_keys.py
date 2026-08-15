@@ -1,4 +1,6 @@
 """API key CRUD + permission validation tests."""
+from datetime import datetime, timezone
+
 from auth import create_access_token
 
 
@@ -23,6 +25,22 @@ def test_create_key_ok(client, make_user):
     body = r.json()
     assert body["permissions"] == "read_only"
     assert body["key"].startswith("sk-") or len(body["key"]) > 20
+
+
+def test_create_key_uses_safe_defaults(client, make_user):
+    u = make_user()
+    created = client.post("/api/keys", headers=_auth(u), json={"name": "defaulted"})
+    assert created.status_code == 200
+
+    keys = client.get("/api/keys", headers=_auth(u)).json()
+    key = keys[0]
+    assert key["permissions"] == "read_write"
+    assert key["rate_limit_rpm"] == 60
+    expiry = datetime.fromisoformat(key["expires_at"])
+    if expiry.tzinfo is None:  # SQLite drops timezone metadata in tests.
+        expiry = expiry.replace(tzinfo=timezone.utc)
+    days_remaining = (expiry - datetime.now(timezone.utc)).days
+    assert 89 <= days_remaining <= 90
 
 
 def test_list_keys_masked(client, make_user):

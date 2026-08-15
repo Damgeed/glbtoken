@@ -51,7 +51,7 @@ body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,sans
 <body>
 <div class="wrap">
   <div class="logo"><span class="g">Glb</span><span class="t">TOKEN</span></div>
-  <div class="tagline">System Status</div>
+  <h1 class="tagline">System Status</h1>
   <div class="banner" id="banner"><span class="dot"></span><span id="bannerText">Checking status…</span></div>
   <div class="last-updated" id="lastUpdated"></div>
   <div class="card">
@@ -86,17 +86,19 @@ body{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,sans
         var ok = res.status === 200;
         var banner = document.getElementById('banner');
         var bannerText = document.getElementById('bannerText');
-        if(ok && d.newapi_connected !== false && d.database !== false){
-          banner.className = 'banner ok'; bannerText.textContent = 'All Systems Operational';
+        if(ok){
+          banner.className = 'banner ok'; bannerText.textContent = 'API Service Reachable';
         } else {
           banner.className = 'banner bad';
-          bannerText.textContent = 'Partial Outage — some components are degraded';
+          bannerText.textContent = 'API Service Unavailable';
         }
         setVal('apiStatus', ok ? 'Operational' : 'Down', ok ? 'ok' : 'bad');
-        setVal('dbStatus', d.database === false ? 'Down' : 'Operational', d.database === false ? 'bad' : 'ok');
-        setVal('newapiStatus', d.newapi_connected ? 'Operational' : 'Degraded', d.newapi_connected ? 'ok' : 'warn');
-        setVal('modelsStatus', (d.models_count != null ? d.models_count : '—') + ' models', 'mut');
-        setVal('versionStatus', d.version || '—', 'mut');
+        // /api/health is intentionally a minimal public liveness endpoint. Do
+        // not invent component health from fields it deliberately omits.
+        setVal('dbStatus', d.database === true ? 'Operational' : (d.database === false ? 'Down' : 'Not publicly reported'), d.database === true ? 'ok' : (d.database === false ? 'bad' : 'mut'));
+        setVal('newapiStatus', d.newapi_connected === true ? 'Operational' : (d.newapi_connected === false ? 'Degraded' : 'Not publicly reported'), d.newapi_connected === true ? 'ok' : (d.newapi_connected === false ? 'warn' : 'mut'));
+        setVal('modelsStatus', d.models_count != null ? d.models_count + ' models' : 'See model catalog', 'mut');
+        setVal('versionStatus', d.version || 'Not publicly reported', 'mut');
         var ts = d.timestamp ? new Date(d.timestamp * 1000).toLocaleString() : new Date().toLocaleString();
         document.getElementById('lastUpdated').textContent = 'Last checked: ' + ts;
       })
