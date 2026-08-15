@@ -159,6 +159,13 @@
     display: flex;
     flex-direction: column;
   }
+  /* Transaction History: let its table fill the remaining card height so
+     there's no trailing white block (card stretches to match Login History). */
+  .usage-history-grid .dash-card:first-child .scroll-x.tx-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none; /* let it fill the stretched card (remove 380px cap) */
+  }
 }
 
 /* ── Login History (shared login-history.js — same styling as settings) ── */
