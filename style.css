@@ -1109,6 +1109,7 @@ section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
+  margin-top: 2.5rem; /* breathing room below the "Choose a package" subtitle */
   margin-bottom: 1.5rem;
   max-width: 1200px;
   margin-left: auto;
