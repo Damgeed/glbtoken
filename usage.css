@@ -152,10 +152,15 @@
 @media (min-width: 768px) {
   .usage-history-grid {
     grid-template-columns: 1fr 1fr;
-    align-items: start;
+    align-items: stretch;
   }
   .usage-history-grid .dash-card {
     min-width: 0; /* allow the .scroll-x tables to scroll inside half-width */
+    display: flex;
+    flex-direction: column;
+  }
+  .usage-history-grid .dash-card > *:last-child {
+    margin-top: auto; /* pin the scroll-table to the bottom so both cards end flush */
   }
 }
 
