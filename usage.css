@@ -159,9 +159,6 @@
     display: flex;
     flex-direction: column;
   }
-  .usage-history-grid .dash-card > *:last-child {
-    margin-top: auto; /* pin the scroll-table to the bottom so both cards end flush */
-  }
 }
 
 /* ── Login History (shared login-history.js — same styling as settings) ── */
