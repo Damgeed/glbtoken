@@ -6,6 +6,12 @@ Do NOT modify — these are auto-generated from the original main.py.
 
 from pydantic import BaseModel, Field
 from typing import Optional
+from datetime import datetime, timedelta, timezone
+
+
+def _default_api_key_expiry() -> str:
+    """Return a fresh 90-day default instead of creating immortal keys."""
+    return (datetime.now(timezone.utc) + timedelta(days=90)).isoformat()
 
 
 # ── Auth Schemas ──
@@ -121,8 +127,8 @@ class PaystackVerifyRequest(BaseModel):
 class ApiKeyCreate(BaseModel):
     name: str = "My API Key"
     permissions: str = "read_write"
-    expires_at: Optional[str] = None  # ISO datetime or "" for never
-    rate_limit_rpm: Optional[int] = None  # requests per minute cap
+    expires_at: Optional[str] = Field(default_factory=_default_api_key_expiry)  # pass "" explicitly for never
+    rate_limit_rpm: Optional[int] = 60  # requests per minute cap
     ip_allowlist: Optional[str] = None  # comma-separated IPs/CIDRs
 
 

@@ -83,7 +83,7 @@
       var models=result.models||[];
         if(!models.length){
           countEl.textContent='0 models';
-          container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">No models available yet. Configure New API.</p>';
+          container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">No model usage yet. Make your first API request to see models here.</p>';
           return;
         }
         countEl.textContent=models.length+' models';
