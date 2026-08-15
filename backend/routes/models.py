@@ -17,83 +17,85 @@ router = APIRouter()
 # ── Seeding ──
 
 def auto_pull_models():
-    """Auto-fetch latest models from Fallback API and merge into DB."""
+    """Auto-fetch latest models from the New API gateway's /api/pricing and merge into DB.
+
+    The gateway's authoritative sellable list is `/api/pricing` (public, no auth) — it
+    lists every model with its `model_ratio` / `completion_ratio` and the groups that can
+    serve it. We use it to keep the glbtoken catalog in sync with the models the gateway
+    can actually proxy (e.g. kimi-k3, gpt-5.x, glm-5, deepseek-v4).
+    """
     import httpx
-    print("🔄 Auto-pulling models from Fallback...")
+    print("🔄 Auto-pulling models from New API gateway...")
+    newapi_url = NEW_API_BASE_URL
+    if not newapi_url:
+        print("⚠️ No NEW_API_BASE_URL configured. Using seeded models only.")
+        return
+    models_url = f"{newapi_url.rstrip('/')}/api/pricing"
     try:
-        # Try New API's admin endpoint first, then fallback URL
-        newapi_url = NEW_API_BASE_URL
-        fallback_url = FALLBACK_API_URL
-        models_url = ""
-        headers = {"Content-Type": "application/json"}
-        # Unit scale: DB stores USD per TOKEN (e.g. gpt-4o prompt = 2.5e-6).
-        # New API /api/model returns per-token (scale 1.0); the OpenAI-style
-        # /v1/models fallback returns per-1K-tokens (scale 0.001).
-        unit_scale = 1.0
-        
-        if newapi_url:
-            # Use New API's model endpoint (no auth needed for public models)
-            models_url = f"{newapi_url.rstrip('/')}/api/model"
-        elif fallback_url:
-            models_url = f"{fallback_url.rstrip('/')}/v1/models"
-            unit_scale = 0.001
-            admin_key = FALLBACK_API_KEY
-            if admin_key:
-                headers["Authorization"] = f"Bearer {admin_key}"
-        else:
-            print("⚠️ No Fallback API URL configured (set FALLBACK_API_URL or NEW_API_BASE_URL). Using seeded models only.")
-            return
-        
-        resp = httpx.get(models_url, headers=headers, timeout=30)
-        if resp.status_code != 200:
-            print(f"⚠️ Fallback API returned {resp.status_code}")
-            return
-        data = resp.json()
-        if not data.get("data"):
-            print("⚠️ No models data from Fallback")
-            return
-        db = SessionLocal()
-        count = 0
-        for m in data["data"]:
-            model_id = m.get("id", "")
+        resp = httpx.get(models_url, timeout=30)
+    except Exception as e:
+        print(f"❌ Auto-pull request failed: {e}")
+        return
+    if resp.status_code != 200:
+        print(f"⚠️ New API gateway returned {resp.status_code} for {models_url}")
+        return
+    data = resp.json()
+    items = data.get("data", [])
+    if not items:
+        print("⚠️ No models data from gateway pricing")
+        return
+    db = SessionLocal()
+    count = 0
+    try:
+        seen = set()
+        for m in items:
+            model_id = (m.get("model_name") or "").strip()
             if not model_id:
                 continue
-            pricing = m.get("pricing", {}) or {}
-            prompt_price = float(pricing.get("prompt", 0)) * unit_scale if pricing.get("prompt") else 0.0
-            completion_price = float(pricing.get("completion", 0)) * unit_scale if pricing.get("completion") else 0.0
-            context_length = int(m.get("context_length", 4096) or 4096)
-            name = m.get("name", model_id.split("/")[-1] if "/" in model_id else model_id)
+            seen.add(model_id)
+            # Display pricing: ratio × $2 = $/1M tokens → per-token.
+            mr = float(m.get("model_ratio") or 0)
+            cr = float(m.get("completion_ratio") or 0)
+            prompt_price = mr * 2.0 / 1_000_000.0 if mr else 0.0
+            completion_price = prompt_price * cr if cr else prompt_price
+            name = model_id
             provider = "Other"
-            if "/" in model_id:
-                company = model_id.split("/")[0]
-                provider_map = {
-                    "openai": "OpenAI", "anthropic": "Anthropic", "google": "Google",
-                    "meta-llama": "Meta Llama", "deepseek": "DeepSeek", "mistralai": "Mistral",
-                    "qwen": "Qwen", "cohere": "Cohere", "perplexity": "Perplexity",
-                    "x-ai": "X AI", "amazon": "Amazon", "microsoft": "Microsoft",
-                    "nvidia": "Nvidia", "nousresearch": "NousResearch"
-                }
-                provider = provider_map.get(company, company.title())
-            # Check if model already exists
+            prefix = model_id.split("-")[0].lower()
+            known = {
+                "gpt": "OpenAI", "claude": "Anthropic", "deepseek": "DeepSeek",
+                "glm": "Zhipu", "kimi": "Moonshot", "doubao": "Volcengine",
+                "seedance": "Volcengine", "seedream": "Volcengine", "volc": "Volcengine",
+            }
+            provider = known.get(prefix, model_id.split("-")[0].title())
             existing = db.query(AIModel).filter(AIModel.model_id == model_id).first()
             if existing:
-                # Update pricing/context in case they changed
                 existing.prompt_price = prompt_price
                 existing.completion_price = completion_price
-                existing.context_length = context_length
+                existing.provider = provider
+                existing.is_active = True
             else:
                 db.add(AIModel(
                     model_id=model_id, name=name, provider=provider,
-                    context_length=context_length,
+                    context_length=4096,
                     prompt_price=prompt_price, completion_price=completion_price,
                     version="", category="Auto"
                 ))
                 count += 1
+        # Deactivate catalog models that no longer exist on the gateway, so users
+        # never see/select a model the gateway can't proxy.
+        from sqlalchemy import update as _upd
+        inactive = db.execute(
+            _upd(AIModel)
+            .where(AIModel.is_active == True, AIModel.model_id.notin_(list(seen)))
+            .values(is_active=False)
+        )
         db.commit()
-        db.close()
-        print(f"✅ Auto-pull complete: {count} new models added")
+        print(f"✅ Auto-pull complete: {count} new, {inactive.rowcount or 0} hidden (not on gateway); catalog mirrors the gateway")
     except Exception as e:
-        print(f"❌ Auto-pull error: {e}")
+        print(f"❌ Auto-pull DB error: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
 
 def seed_models():
