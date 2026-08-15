@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>GlbTOKEN — Global Token for AI Models</title>
-<meta name="description" content="Buy GlbTOKEN — one balance for 100+ AI models. Pay with local currency or crypto (Paystack, Stripe, USDT). No subscriptions, pay-as-you-go API access." />
+<meta name="description" content="Access GlbTOKEN's live AI model catalog through one compatible API and one balance." />
 <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -19,13 +19,13 @@
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="GlbTOKEN" />
-<meta property="og:title" content="GlbTOKEN — One Token, 100+ AI Models" />
-<meta property="og:description" content="Buy GlbTOKEN — one balance for 100+ AI models. Pay with local currency or crypto (Paystack, Stripe, USDT). No subscriptions, pay-as-you-go API access." />
+<meta property="og:title" content="GlbTOKEN — One Balance, Live AI Catalog" />
+<meta property="og:description" content="Access the currently available AI models through one compatible API. Payments are simulated during beta." />
 <meta property="og:url" content="https://glbtoken.com/index.html" />
 <meta property="og:image" content="https://glbtoken.com/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="GlbTOKEN — One Token, 100+ AI Models" />
-<meta name="twitter:description" content="Buy GlbTOKEN — one balance for 100+ AI models. Pay with local currency or crypto (Paystack, Stripe, USDT). No subscriptions, pay-as-you-go API access." />
+<meta name="twitter:title" content="GlbTOKEN — One Balance, Live AI Catalog" />
+<meta name="twitter:description" content="Access the currently available AI models through one compatible API. Payments are simulated during beta." />
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 <script type="application/ld+json">
 {
@@ -34,7 +34,7 @@
   "name": "GlbTOKEN",
   "url": "https://glbtoken.com",
   "logo": "https://glbtoken.com/logo-nav.png",
-  "description": "One balance for 100+ AI models. Pay with local currency or crypto via Paystack, Stripe and USDT."
+  "description": "One balance for the live AI model catalog through a compatible API."
 }
 </script>
 <script type="application/ld+json">
@@ -53,7 +53,7 @@
 
 <section class="hero"><div class="container hero-grid">
 <div class="hero-text">
-<span class="hero-badge notranslate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> 100+ Models. One Balance.</span>
+<span class="hero-badge notranslate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> <span data-catalog-model-count>Live</span> Models. One Balance.</span>
 <h1 id="heroHeadline"><span class="nowrap notranslate">Premium AI.</span><br><span class="gold notranslate">One Token Balance.</span></h1>
 <p id="heroTagline">Access the world's most sophisticated AI models through a single, elegant API. Designed for those who demand excellence.</p>
 <div class="hero-actions">
@@ -61,9 +61,9 @@
 <button class="btn-secondary" onclick="showPage('how')">How It Works</button>
               </div>
 <div class="hero-stats notranslate">
-<div class="hero-stat"><h3>100+</h3><p>Models</p></div>
-<div class="hero-stat"><h3>56</h3><p>Providers</p></div>
-<div class="hero-stat"><h3>3</h3><p>Payments</p></div>
+<div class="hero-stat"><h3 data-catalog-model-count>—</h3><p>Live Models</p></div>
+<div class="hero-stat"><h3 data-catalog-provider-count>—</h3><p>Providers</p></div>
+<div class="hero-stat"><h3>Beta</h3><p>Payments</p></div>
               </div>
               </div>
 <div>
@@ -71,7 +71,7 @@
 <div class="hero-calc w-full">
 <div class="flex items-center justify-between mb-lg">
 <h3 class="text-sm font-bold-sm m-0 notranslate" id="tmTitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg> Top Models This Week</h3>
-<a onclick="showPage('models')" class="text-xs text-primary cursor-pointer">View all 100+ →</a>
+<a onclick="showPage('models')" class="text-xs text-primary cursor-pointer">View live catalog →</a>
               </div>
             <div class="tm-carousel relative overflow-hidden rounded-sm">
               <div class="tm-track flex tm-track-smooth" id="tmTrack">
@@ -275,10 +275,10 @@
 <section><div class="container text-center">
 <span class="section-label">Why GlbTOKEN</span>
 <h2 class="section-title">The Smartest Way to Use AI</h2>
-<p class="section-sub mx-auto">One balance, 100+ models, 56 providers. No subscriptions.</p>
+<p class="section-sub mx-auto">One balance, <span data-catalog-model-count>currently available</span> models across <span data-catalog-provider-count>multiple</span> providers. No subscriptions.</p>
 <div class="vp-grid mt-2">
 <div class="vp-card"><div class="vp-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4"/><path d="M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><h3>Pay-as-You-Go</h3><p>No monthly subscriptions expiring unused. Buy tokens once, spend whenever. They never expire.</p></div>
-<div class="vp-card"><div class="vp-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div><h3>Multi-Model Access</h3><p>One balance for 100+ models across 56 providers. Switch between GPT, Claude, Llama, Gemini instantly.</p></div>
+<div class="vp-card"><div class="vp-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div><h3>Multi-Model Access</h3><p>One balance for every model in the live catalog. Availability and pricing come directly from the gateway.</p></div>
 <div class="vp-card"><div class="vp-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div><h3>Local Payments</h3><p>Pay in NGN, GHS, KES via Paystack, USD via Stripe, or crypto (USDT/BTC/ETH). Africa-first.</p></div>
               </div>
             </div></section>
@@ -286,11 +286,11 @@
 <span class="section-label">Process</span><h2 class="section-title">Get Started in 3 Steps</h2><p class="section-sub mx-auto">From signup to first API call — under 2 minutes.</p>
 <div class="steps-grid mt-2">
 <div class="step-card"><div class="step-num">1</div><h3>Create Account</h3><ul class="step-list"><li>Sign up with email, Google, or GitHub</li><li>No credit card needed</li><li>25,000 free tokens on signup</li></ul></div>
-<div class="step-card"><div class="step-num">2</div><h3>Buy Tokens</h3><ul class="step-list"><li>Stripe — cards (USD)</li><li>Paystack — mobile money &amp; bank (NGN, GHS, KES)</li><li>Crypto — USDT, BTC, ETH</li></ul></div>
-<div class="step-card"><div class="step-num">3</div><h3>Use Any AI</h3><ul class="step-list"><li>Generate an API key from your dashboard</li><li>100+ models via one OpenAI-compatible endpoint</li><li>Tokens never expire</li></ul></div>
+<div class="step-card"><div class="step-num">2</div><h3>Try Billing</h3><ul class="step-list"><li>Payment flows are currently simulated</li><li>No real charge is made in beta</li><li>Production payments launch separately</li></ul></div>
+<div class="step-card"><div class="step-num">3</div><h3>Use Available AI</h3><ul class="step-list"><li>Generate an API key from your dashboard</li><li><span data-catalog-model-count>Live catalog</span> models via one compatible endpoint</li><li>Check the catalog before each integration</li></ul></div>
               </div>
             </div></section>
-<section><div class="container"><div class="cta-section"><h2><span class="nowrap">Ready for Premium AI?</span></h2><p>One token. 100+ models. No subscriptions.</p><button class="btn-primary btn-sm btn-hero-cta" onclick="showPage('register')">Create Free Account →</button></div></div></section>
+<section><div class="container"><div class="cta-section"><h2><span class="nowrap">Ready for Premium AI?</span></h2><p>One balance. Live model catalog. No subscriptions.</p><button class="btn-primary btn-sm btn-hero-cta" onclick="showPage('register')">Create Free Account →</button></div></div></section>
 
 <!-- PRICING -->
 <!-- FOOTER: Injected by footer.js -->
@@ -312,6 +312,7 @@
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1170"></script>
+<script data-cfasync="false" src="catalog.js?v=1"></script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 <script>initHeroVariants()</script>
 

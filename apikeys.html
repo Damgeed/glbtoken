@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>Docs — GlbTOKEN</title>
-  <meta name="description" content="GlbTOKEN API documentation. OpenAI-compatible endpoint for 100+ AI models." />
+  <meta name="description" content="GlbTOKEN API documentation for the live compatible model catalog." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -21,12 +21,12 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="GlbTOKEN" />
 <meta property="og:title" content="GlbTOKEN API Docs — OpenAI-Compatible Endpoint" />
-<meta property="og:description" content="GlbTOKEN API documentation — OpenAI-compatible endpoint. Generate a key and call 100+ models with Python, Node.js or cURL." />
+<meta property="og:description" content="Generate a key and call models from GlbTOKEN's live catalog with Python, Node.js or cURL." />
 <meta property="og:url" content="https://glbtoken.com/apikeys.html" />
 <meta property="og:image" content="https://glbtoken.com/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="GlbTOKEN API Docs — OpenAI-Compatible Endpoint" />
-<meta name="twitter:description" content="GlbTOKEN API documentation — OpenAI-compatible endpoint. Generate a key and call 100+ models with Python, Node.js or cURL." />
+<meta name="twitter:description" content="Generate a key and call models from GlbTOKEN's live catalog with Python, Node.js or cURL." />
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 </head>
 <body>
@@ -38,7 +38,7 @@
   <div class="doc-hero">
     <span class="section-label">Developer</span>
     <h2 class="section-title">API Documentation</h2>
-    <p class="section-sub">OpenAI-compatible endpoint. One API key for 100+ models. Integrate in minutes.</p>
+    <p class="section-sub">OpenAI-compatible endpoint. One API key for <span data-catalog-model-count>the live catalog</span> models. Integrate in minutes.</p>
   </div>
 
   <!-- Quick Start -->
@@ -163,35 +163,18 @@ console.log(completion.choices[0].message.content); // demo output
         <thead>
           <tr>
             <th>Model</th>
-            <th class="t-right">Price per 1K tokens</th>
+            <th>Provider</th>
+            <th class="t-right">Input / 1M</th>
+            <th class="t-right">Output / 1M</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td class="cell-first">GPT-4o Mini</td>
-            <td class="cell-num">0.5 GT</td>
-          </tr>
-          <tr>
-            <td class="cell-first">GPT-4o</td>
-            <td class="cell-num">5 GT</td>
-          </tr>
-          <tr>
-            <td class="cell-first">Claude 3.5 Sonnet</td>
-            <td class="cell-num">6 GT</td>
-          </tr>
-          <tr>
-            <td class="cell-first">DeepSeek V3</td>
-            <td class="cell-num">1 GT</td>
-          </tr>
-          <tr>
-            <td class="cell-first">Llama 4 Maverick</td>
-            <td class="cell-num">0.8 GT</td>
-          </tr>
+        <tbody id="livePricingBody">
+          <tr><td colspan="4" id="catalogLoadState">Loading live catalog…</td></tr>
         </tbody>
       </table>
     </div>
     
-    <p data-i18n="full-pricing-ref" class="text-footnote-sm">Full pricing: <a href="pricing.html">Pricing page</a> | 1,000 GT = $1 USD</p>
+    <p class="text-footnote-sm">Prices are loaded from the active catalog. Confirm current pricing immediately before production use.</p>
   </div>
 
   <!-- Error Codes -->
@@ -304,6 +287,7 @@ console.log(completion.choices[0].message.content); // demo output
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1170"></script>
+<script data-cfasync="false" src="catalog.js?v=1"></script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
