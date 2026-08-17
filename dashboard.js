@@ -57,8 +57,10 @@ async function loadDashboardStats(){
     set('dashTotalRequests', (d.total_requests||0).toLocaleString());
     set('dashKeyCount', d.api_keys_active||0);
     set('dashKeyStatus', (d.api_keys_active||0)>0 ? 'Active' : 'No keys');
-    set('dashDaysActive', d.days_active||0);
-    set('dashNewapiStatus', d.newapi_connected ? 'New API Connected' : 'Offline');
+    var activeDays = Number(d.days_active)||0;
+    set('dashDaysActive', activeDays);
+    set('dashDaysActiveLabel', activeDays === 1 ? 'Day Active' : 'Days Active');
+    set('dashNewapiStatus', d.newapi_connected ? 'Gateway connected' : 'Gateway status unavailable');
     var totalConsumed = d.total_tokens_consumed||0, balance = d.token_balance||0, totalEver = totalConsumed + balance;
     set('usedTokens', totalConsumed.toLocaleString());
     set('remainingTokens', balance.toLocaleString() + ' remaining');

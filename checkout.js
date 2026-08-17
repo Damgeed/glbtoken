@@ -26,8 +26,8 @@
       var el3=document.getElementById('customBuyBtn');
       var el4=document.getElementById('topupTotal');
       if(el1)el1.textContent=fmtUSD(val);
-      if(el2)el2.textContent=(val*1000).toLocaleString()+' Tokens';
-      if(el3)el3.textContent='Buy '+fmtUSD(val);
+      if(el2)el2.textContent=(val*1000).toLocaleString()+' Test Tokens';
+      if(el3)el3.textContent='Simulate '+fmtUSD(val);
       if(el4)el4.textContent=fmtUSD(val);
       selectedAmount=val;
     }

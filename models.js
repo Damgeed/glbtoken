@@ -88,6 +88,9 @@
         const brd = pmeta ? pmeta.border : 'hsla(44,96%,52%,0.2)';
         const clrIcon = pmeta ? pmeta.color : 'var(--primary)';
         const catTag = pmeta ? `<span class="mc-cat-tag" style="background:${bg};color:${clr}">${pmeta.icon} ${escapeHtml(pmeta.label)}</span>` : '';
+        const contextLabel = (m.category === 'Auto' && Number(m.context_length) === 4096)
+          ? 'Not reported'
+          : `${(m.context_length/1000).toFixed(0)}K`;
         return `<div class="model-card">
           <div class="mc-top">
             <span class="mc-badge" style="background:${bg};color:${clr};border-color:${brd}">${prov}</span>
@@ -98,7 +101,7 @@
           ${ver}
           ${desc ? `<div class="mc-desc">${desc}</div>` : ''}
           <div class="mc-meta">
-            <span title="Context window">📐 ${(m.context_length/1000).toFixed(0)}K</span>
+            <span title="Context window">📐 ${contextLabel}</span>
             <span title="Input price">⬇️ $${priceIn}/1K</span>
             <span title="Output price">⬆️ $${priceOut}/1K</span>
           </div>
