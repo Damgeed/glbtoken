@@ -736,11 +736,31 @@
   function toggleConfig(open) {
     var panel = byId('pgConfigPanel');
     var backdrop = byId('pgConfigBackdrop');
+    if (window.innerWidth > 1180) {
+      panel.classList.remove('open');
+      backdrop.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'false');
+      byId('pgConfigToggle').setAttribute('aria-expanded', 'false');
+      return;
+    }
     var next = typeof open === 'boolean' ? open : !panel.classList.contains('open');
     panel.classList.toggle('open', next);
     backdrop.classList.toggle('open', next);
     panel.setAttribute('aria-hidden', next ? 'false' : 'true');
     byId('pgConfigToggle').setAttribute('aria-expanded', next ? 'true' : 'false');
+  }
+
+  function syncResponsivePanels() {
+    var panel = byId('pgConfigPanel');
+    var backdrop = byId('pgConfigBackdrop');
+    if (window.innerWidth > 1180) {
+      panel.classList.remove('open');
+      backdrop.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'false');
+      byId('pgConfigToggle').setAttribute('aria-expanded', 'false');
+    } else {
+      panel.setAttribute('aria-hidden', panel.classList.contains('open') ? 'false' : 'true');
+    }
   }
 
   function copyText(text, button) {
@@ -815,6 +835,7 @@
     byId('pgConfigToggle').addEventListener('click', function () { toggleConfig(true); });
     byId('pgConfigClose').addEventListener('click', function () { toggleConfig(false); });
     byId('pgConfigBackdrop').addEventListener('click', function () { toggleConfig(false); });
+    window.addEventListener('resize', syncResponsivePanels);
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') { toggleConfig(false); toggleCode(false); }
     });
@@ -822,6 +843,7 @@
 
   async function init() {
     bindEvents();
+    syncResponsivePanels();
     renderChat();
     await Promise.all([loadModels(), loadPresets(), loadConversations()]);
     populateFallbacks();

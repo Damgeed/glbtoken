@@ -17,8 +17,25 @@
     var e=document.getElementById('livePricingBody'); if(!e)return;
     e.innerHTML=ms.length?ms.map(function(m){return '<tr><td class="cell-first"><code>'+esc(m.model_id)+'</code></td><td>'+esc(m.provider||'—')+'</td><td class="cell-num">$'+ppm(m.prompt_price)+'</td><td class="cell-num">$'+ppm(m.completion_price)+'</td></tr>';}).join(''):'<tr><td colspan="4">No models are currently published.</td></tr>';
   }
+  function chatModels(ms) {
+    var select=document.getElementById('aiModelSelect');
+    if(!select)return;
+    var previous=select.value;
+    select.textContent='';
+    ms.forEach(function(m){
+      var option=document.createElement('option');
+      option.value=m.model_id;
+      option.textContent=(m.name||m.model_id)+(m.provider?' — '+m.provider:'');
+      option.dataset.modelName=m.name||m.model_id;
+      select.appendChild(option);
+    });
+    if(previous&&ms.some(function(m){return m.model_id===previous;}))select.value=previous;
+    select.disabled=!ms.length;
+    document.dispatchEvent(new CustomEvent('glbtoken:catalog',{detail:{models:ms}}));
+    if(ms.length&&typeof window.selectAIModelDropdown==='function')window.selectAIModelDropdown(select.value);
+  }
   document.addEventListener('DOMContentLoaded',function(){
     var p=typeof safeApi==='function'?safeApi('GET','/api/models',null,null,true):fetch('https://api.glbtoken.com/api/models').then(function(r){if(!r.ok)throw Error();return r.json();});
-    Promise.resolve(p).then(function(ms){if(Array.isArray(ms)){counts(ms);featured(ms);pricing(ms);}}).catch(function(){var e=document.getElementById('catalogLoadState');if(e)e.textContent='Live pricing is temporarily unavailable. Check the Models page before sending a request.';});
+    Promise.resolve(p).then(function(ms){if(Array.isArray(ms)){counts(ms);featured(ms);pricing(ms);chatModels(ms);}}).catch(function(){var e=document.getElementById('catalogLoadState');if(e)e.textContent='Live pricing is temporarily unavailable. Check the Models page before sending a request.';var select=document.getElementById('aiModelSelect');if(select){select.innerHTML='<option value="">Catalog unavailable</option>';select.disabled=true;}document.dispatchEvent(new CustomEvent('glbtoken:catalog',{detail:{models:[]}}));});
   });
 })();
