@@ -48,51 +48,12 @@
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
-.usage-insight {
-  position: relative;
+.usage-insights .dash-stat-card {
   min-width: 0;
-  padding: 0.95rem 1rem;
+}
+.usage-insights .num,
+.usage-insights .chg {
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(145deg, hsla(44 96% 52% / 0.045), var(--card));
-}
-.usage-insight::after {
-  content: '';
-  position: absolute;
-  right: -18px;
-  bottom: -28px;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: hsla(44 96% 52% / 0.035);
-}
-.usage-insight span,
-.usage-insight strong,
-.usage-insight small {
-  display: block;
-}
-.usage-insight span {
-  color: var(--text-muted);
-  font-size: 0.62rem;
-  font-weight: 650;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-.usage-insight strong {
-  margin-top: 0.35rem;
-  overflow: hidden;
-  color: var(--text);
-  font-size: 1.12rem;
-  letter-spacing: -0.025em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.usage-insight small {
-  margin-top: 0.24rem;
-  overflow: hidden;
-  color: var(--text-muted);
-  font-size: 0.64rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -279,12 +240,6 @@
   .usage-insights {
     grid-template-columns: 1fr 1fr;
     gap: 0.55rem;
-  }
-  .usage-insight {
-    padding: 0.78rem;
-  }
-  .usage-insight strong {
-    font-size: 0.96rem;
   }
   .login-hint {
     align-items: flex-start;
