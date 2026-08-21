@@ -2421,12 +2421,16 @@ body.compact-cards .info-card { padding: 1.1rem; }
   margin-top: 1.5rem;
 }
 .payment-card {
+  width: 100%;
+  appearance: none;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1rem;
   text-align: center;
   cursor: pointer;
+  color: var(--text);
+  font: inherit;
   transition: all 0.2s ease;
   position: relative;
 }

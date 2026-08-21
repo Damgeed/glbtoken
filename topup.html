@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>Buy Tokens — GlbTOKEN</title>
-  <meta name="description" content="Try the GlbTOKEN billing experience in payment simulation mode." />
+  <meta name="description" content="Buy GlbTOKEN credits using cards, local payment methods, or supported crypto assets." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1282" />
+  <link rel="stylesheet" href="style.css?v=1284" />
 </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -23,47 +23,46 @@
 <div id="nav-container" data-active-page="home"></div>
 
 <div class="topup-page"><div class="container">
-      <div class="beta-banner" role="status"><strong>Payment simulation</strong><span>This beta flow does not make a real charge. Credits and receipts created here are test data.</span></div>
-      <div class="topup-header" id="topupHeader"><span class="section-label">Billing Sandbox</span><h2 class="section-title">Simulate a Wallet Top Up</h2><p class="section-sub">Choose a test package or custom amount. No real payment will be collected.</p></div>
+      <div class="topup-header" id="topupHeader"><span class="section-label">Wallet</span><h2 class="section-title">Buy GlbTOKEN Credits</h2><p class="section-sub">Choose a package or enter a custom amount, then select your preferred payment method.</p></div>
       <div id="topupStep1">
         <div class="pricing-grid">
-          <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Test Tokens</div><ul class="plan-features"><li>Live model catalog</li><li>API testing</li><li>No real charge</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(5)">Simulate $5</button></div>
-          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Test Tokens</div><ul class="plan-features"><li>Live model catalog</li><li>Billing sandbox</li><li>No real charge</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(20)">Simulate $20</button></div>
-          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">100,000 Test Tokens</div><ul class="plan-features"><li>Dedicated testing</li><li>Sandbox credits</li><li>Team sharing</li></ul><button class="btn-primary btn-block" onclick="showPaymentModal(100)">Simulate $100</button></div>
-          <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">50,000 Test Tokens</div>
+          <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>Live model catalog</li><li>API access</li><li>Usage tracking</li></ul><button type="button" class="btn-primary btn-block" onclick="showPaymentModal(5)">Buy $5</button></div>
+          <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Tokens</div><ul class="plan-features"><li>Live model catalog</li><li>API access</li><li>Usage tracking</li></ul><button type="button" class="btn-primary btn-block" onclick="showPaymentModal(20)">Buy $20</button></div>
+          <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">100,000 Tokens</div><ul class="plan-features"><li>High-volume usage</li><li>API access</li><li>Team sharing</li></ul><button type="button" class="btn-primary btn-block" onclick="showPaymentModal(100)">Buy $100</button></div>
+          <div class="pricing-card" id="customCard"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">50,000 Tokens</div>
             <div class="topup-slider-wrap">
               <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="topup-slider">
               <div class="topup-range-labels"><span>$2</span><span>$500</span></div>
             </div>
             <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Instant top-up</li></ul>
-            <button class="btn-primary btn-block" onclick="showPaymentModal('custom')" id="customBuyBtn">Simulate $50</button></div>
+            <button type="button" class="btn-primary btn-block" onclick="showPaymentModal('custom')" id="customBuyBtn">Buy $50</button></div>
         </div>
       </div>
-      <div id="topupSuccess" class="d-none"><div class="success-page topup-success-card"><div class="success-icon topup-success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="topup-success-title">Simulation Complete</h2><p id="topupSuccessMsg" class="topup-success-text"></p><div class="topup-balance-pill" id="topupBalancePill"><span class="topup-balance-label">New test balance</span><span class="topup-balance-value" id="topupBalanceValue">0</span></div><div class="topup-success-actions"><button class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard</button><button class="btn-secondary topup-btn-secondary" onclick="window.location.href='manage-keys.html'">API Keys</button></div></div></div>
+      <div id="topupSuccess" class="d-none"><div class="success-page topup-success-card"><div class="success-icon topup-success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h2 class="topup-success-title">Payment Complete</h2><p id="topupSuccessMsg" class="topup-success-text"></p><div class="topup-balance-pill" id="topupBalancePill"><span class="topup-balance-label">New balance</span><span class="topup-balance-value" id="topupBalanceValue">0</span></div><div class="topup-success-actions"><button type="button" class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard</button><button type="button" class="btn-secondary topup-btn-secondary" onclick="window.location.href='manage-keys.html'">API Keys</button></div></div></div>
     </div></div>
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal" onclick="closePaymentModal(event)">
       <div class="modal-box">
-        <button class="modal-close" onclick="closePaymentModal()">✕</button>
+        <button type="button" class="modal-close" onclick="closePaymentModal()" aria-label="Close payment methods">✕</button>
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="topup-center-icon-mb"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-        <h3 class="topup-modal-title">Choose Simulated Method</h3>
+        <h3 class="topup-modal-title">Choose Payment Method</h3>
         <p class="topup-modal-text">Amount: <strong id="modalAmount">$5.00</strong></p>
         <div class="payment-grid topup-payment-grid">
-          <div class="payment-card selected" onclick="selectPayment(this,'stripe')">
+          <button type="button" class="payment-card selected" onclick="selectPayment(this,'stripe')" aria-pressed="true">
             <div class="pc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
             <h4>Stripe</h4>
             <span class="pc-badge stripe">Worldwide</span>
-          </div>
-          <div class="payment-card" onclick="selectPayment(this,'paystack')">
+          </button>
+          <button type="button" class="payment-card" onclick="selectPayment(this,'paystack')" aria-pressed="false">
             <div class="pc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
             <h4>Paystack</h4>
             <span class="pc-badge paystack">Africa</span>
-          </div>
-          <div class="payment-card" onclick="selectPayment(this,'crypto')">
+          </button>
+          <button type="button" class="payment-card" onclick="selectPayment(this,'crypto')" aria-pressed="false">
             <div class="pc-icon">₿</div>
             <h4>Crypto</h4>
             <span class="pc-badge crypto">Global</span>
-          </div>
+          </button>
         </div>
         <div class="crypto-asset-row" id="cryptoAssetRow" style="display:none">
           <label class="topup-modal-label" for="cryptoAssetSelect">Crypto asset</label>
@@ -72,7 +71,7 @@
           </select>
           <p class="topup-modal-hint" id="cryptoAssetHint">Select the network you want to pay with.</p>
         </div>
-        <button class="btn-primary topup-modal-btn" onclick="processModalPayment()">Run Simulation</button>
+        <button type="button" class="btn-primary topup-modal-btn" onclick="processModalPayment()">Continue to Payment</button>
       </div>
     </div>
 
@@ -80,8 +79,8 @@
     <div class="modal-overlay topup-success-popup" id="topupSuccessPopup">
       <div class="modal-box topup-popup-box">
         <div class="topup-popup-icon"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-        <h3 class="topup-popup-title">Simulation Complete</h3>
-        <p id="topupPopupMsg" class="topup-popup-text">Your test tokens have been added.</p>
+        <h3 class="topup-popup-title">Payment Complete</h3>
+        <p id="topupPopupMsg" class="topup-popup-text">Your tokens have been added.</p>
         <div class="topup-popup-redirect"><span class="topup-popup-spinner"></span><span id="topupPopupRedirect">Redirecting to Dashboard...</span></div>
       </div>
     </div>
@@ -107,7 +106,7 @@
 <script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1169"></script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
-<script data-cfasync="false" src="checkout.js?v=17"></script>
+<script data-cfasync="false" src="checkout.js?v=18"></script>
 
 <script>
 // ── Payment redirect verification (Stripe / Paystack return to topup.html) ──

@@ -26,8 +26,8 @@
       var el3=document.getElementById('customBuyBtn');
       var el4=document.getElementById('topupTotal');
       if(el1)el1.textContent=fmtUSD(val);
-      if(el2)el2.textContent=(val*1000).toLocaleString()+' Test Tokens';
-      if(el3)el3.textContent='Simulate '+fmtUSD(val);
+      if(el2)el2.textContent=(val*1000).toLocaleString()+' Tokens';
+      if(el3)el3.textContent='Buy '+fmtUSD(val);
       if(el4)el4.textContent=fmtUSD(val);
       selectedAmount=val;
     }
@@ -38,8 +38,13 @@
       selectedAmount=amt;showPage('topup');
     }
     function selectPayment(el,method){
-      document.querySelectorAll('.payment-opt,.payment-card').forEach(p=>p.classList.remove('selected'));
-      el.classList.add('selected');selectedPayment=method;
+      document.querySelectorAll('.payment-opt,.payment-card').forEach(function(card){
+        card.classList.remove('selected');
+        if(card.hasAttribute('aria-pressed')) card.setAttribute('aria-pressed','false');
+      });
+      el.classList.add('selected');
+      if(el.hasAttribute('aria-pressed')) el.setAttribute('aria-pressed','true');
+      selectedPayment=method;
       var row=document.getElementById('cryptoAssetRow');
       if(row){ row.style.display = (method==='crypto') ? 'block' : 'none'; }
       if(method==='crypto') loadCryptoAssets();

@@ -1030,16 +1030,54 @@ html.light .developer-code { color: #dbeafe; background: #111827; }
   line-height: 1.45;
 }
 
+/* Keep the added gateway tools inside the dashboard's established two-card topology. */
+.dashboard-tools-grid {
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+.dashboard-tools-grid > .dash-card {
+  min-width: 0;
+  padding: 1.25rem;
+}
+.dashboard-card-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.dashboard-card-actions .sort-btn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.68rem;
+}
+.gateway-status-inline {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  border-radius: var(--radius-sm);
+}
+.gateway-metric-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.gateway-metric-grid .gateway-metric {
+  position: relative;
+  padding: 0.7rem;
+  text-align: left;
+}
+.gateway-metric-grid .gateway-metric strong {
+  font-size: 0.95rem;
+}
+
 @media (max-width: 1050px) {
-  .developer-command-grid { grid-template-columns: 1fr; }
+  .developer-command-grid,
+  .dashboard-tools-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
   .dash-header { align-items: flex-start; }
   .dash-header-actions { max-width: 58%; gap: 0.35rem; }
   .gateway-status { order: 3; width: 100%; }
   .dash-header-btn { min-height: 32px; padding: 0.42rem 0.62rem; font-size: 0.66rem; }
-  .developer-command-grid { gap: 0.75rem; }
-  .developer-command-grid > .dash-card { padding: 0.85rem; }
+  .developer-command-grid,
+  .dashboard-tools-grid { gap: 0.75rem; }
+  .developer-command-grid > .dash-card,
+  .dashboard-tools-grid > .dash-card { padding: 0.85rem; }
   .gateway-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 460px) {
@@ -1050,4 +1088,7 @@ html.light .developer-code { color: #dbeafe; background: #111827; }
   .developer-endpoint-row { grid-template-columns: 1fr; gap: 0.25rem; }
   .developer-code { font-size: 0.58rem; }
   .developer-card-actions { flex-direction: column; }
+  .dashboard-card-actions { gap: 0.4rem; }
+  .gateway-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gateway-metric-grid .gateway-metric:last-child { grid-column: 1 / -1; }
 }

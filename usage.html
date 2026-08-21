@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="dashboard.css?v=1047" />
 <link rel="stylesheet" href="more.css?v=11" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1063" />
+<link rel="stylesheet" href="usage.css?v=1064" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -154,15 +154,8 @@
             </svg>
             Usage &amp; History
           </h1>
-          <p>Explore real gateway consumption, spend, and account activity</p>
+          <p>Track your token usage, transactions, and account activity</p>
         </div>
-      </div>
-
-      <div class="usage-insights" aria-label="Usage summary">
-        <div class="usage-insight"><span>Requests</span><strong id="usageRequestStat">—</strong><small id="usageRequestSub">Selected period</small></div>
-        <div class="usage-insight"><span>Charged tokens</span><strong id="usageTokenStat">—</strong><small id="usageTokenSub">Across all models</small></div>
-        <div class="usage-insight"><span>Model cost</span><strong id="usageSpendStat">—</strong><small id="usageCostMethod">Loading cost method…</small></div>
-        <div class="usage-insight"><span>Top model</span><strong id="usageTopModelStat">—</strong><small id="usageTopModelSub">By charged tokens</small></div>
       </div>
 
       <!-- Usage Analytics Chart -->
@@ -181,6 +174,12 @@
             <button class="sort-btn usage-mode active badge" data-mode="tokens" onclick="setUsageMode('tokens')">Tokens</button>
             <button class="sort-btn usage-mode badge" data-mode="cost" onclick="setUsageMode('cost')">Cost</button>
           </div>
+        </div>
+        <div class="stat-cards usage-insights" aria-label="Usage summary">
+          <div class="dash-stat-card usage-insight"><span>Requests</span><strong id="usageRequestStat">—</strong><small id="usageRequestSub">Selected period</small></div>
+          <div class="dash-stat-card usage-insight"><span>Charged tokens</span><strong id="usageTokenStat">—</strong><small id="usageTokenSub">Across all models</small></div>
+          <div class="dash-stat-card usage-insight"><span>Model cost</span><strong id="usageSpendStat">—</strong><small id="usageCostMethod">Loading cost method…</small></div>
+          <div class="dash-stat-card usage-insight"><span>Top model</span><strong id="usageTopModelStat">—</strong><small id="usageTopModelSub">By charged tokens</small></div>
         </div>
         <div class="chart-container chart-container-rel usage-chart-wrap"><canvas id="dailyChart"></canvas><div class="usage-chart-empty" id="usageChartEmpty">No usage data for this period.</div></div>
         <div class="chart-axis-labels" id="usageSummary">

@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1282" />
-  <link rel="stylesheet" href="playground.css?v=1030" />
+  <link rel="stylesheet" href="playground.css?v=1031" />
   <link rel="stylesheet" href="dashboard.css?v=1047" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
@@ -152,7 +152,7 @@
     </div>
     <div class="pg-header-actions">
       <span class="pg-status" id="pgCatalogStatus">Loading catalog…</span>
-      <button type="button" class="pg-button pg-button-ghost" id="pgConfigToggle">Configure</button>
+      <button type="button" class="pg-button pg-button-ghost" id="pgConfigToggle" aria-controls="pgConfigPanel" aria-expanded="false">Configure</button>
       <button type="button" class="pg-button pg-button-ghost" id="pgSaveButton">Save run</button>
       <button type="button" class="pg-button pg-button-primary" id="pgNewButton">New run</button>
     </div>
@@ -179,7 +179,7 @@
         <div class="pg-route-summary" id="pgRouteSummary"><span>Direct route</span></div>
         <div class="pg-toolbar-actions">
           <button type="button" class="pg-text-button" id="pgClearButton">Clear</button>
-          <button type="button" class="pg-text-button" id="pgCodeButton">View code</button>
+          <button type="button" class="pg-text-button" id="pgCodeButton" aria-controls="pgCodeDrawer" aria-expanded="false">View code</button>
         </div>
       </div>
 
@@ -201,7 +201,7 @@
       </div>
     </main>
 
-    <aside class="pg-config" id="pgConfigPanel" aria-label="Run configuration">
+    <aside class="pg-config" id="pgConfigPanel" aria-label="Run configuration" aria-hidden="true">
       <div class="pg-panel-heading">
         <div><span class="pg-panel-kicker">Parameters</span><strong>Run configuration</strong></div>
         <button type="button" class="pg-icon-button pg-config-close" id="pgConfigClose" title="Close configuration" aria-label="Close configuration">×</button>
@@ -250,7 +250,7 @@
     </aside>
   </div>
 
-  <section class="pg-code-drawer" id="pgCodeDrawer" aria-label="API request code">
+  <section class="pg-code-drawer" id="pgCodeDrawer" aria-label="API request code" aria-hidden="true">
     <div class="pg-code-head">
       <div><span class="pg-panel-kicker">Portable request</span><strong>Use this configuration in your app</strong></div>
       <div class="pg-code-actions">
@@ -274,7 +274,7 @@
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 
-<script data-cfasync="false" src="playground.js?v=1"></script>
+<script data-cfasync="false" src="playground.js?v=2"></script>
 
   </div>
 </div>

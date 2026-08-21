@@ -1,17 +1,109 @@
-/* Hero section */
-.hero-center { text-align: center; }
-.hero-center p { margin: 0 auto; }
-.hero-sub { margin: 0 auto 2rem; max-width: 600px; }
-
-/* Step grid */
-.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin: 2rem auto 6rem; }
-@media (max-width: 768px) {
-  .steps-grid {
-    grid-template-columns: 1fr;
-    max-width: 520px;
-    margin: 1.5rem auto 3rem;
-  }
+/* How it works — uses the public-site card language with a clearer journey. */
+.how-section {
+  position: relative;
+  padding-top: clamp(4.5rem, 8vw, 7rem);
+  overflow: hidden;
 }
+.how-section::before {
+  content: '';
+  position: absolute;
+  top: 4rem;
+  left: 50%;
+  width: min(900px, 92vw);
+  height: 360px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--primary-subtle), transparent 68%);
+  pointer-events: none;
+}
+.hero-center { position: relative; text-align: center; }
+.hero-center p { margin-right: auto; margin-left: auto; }
+.how-hero-copy { max-width: 680px; margin: 0 auto; }
+.how-hero-copy .section-title { margin-top: 0.65rem; }
+.how-hero-copy .section-sub { margin-top: 0.7rem; }
 
-/* SVG inline icon */
-.icon-mid { vertical-align: middle; }
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 3rem auto 6rem;
+}
+.how-journey { position: relative; }
+.how-journey::before {
+  content: '';
+  position: absolute;
+  top: 2.15rem;
+  right: 12.5%;
+  left: 12.5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary-soft) 12%, var(--primary-soft) 88%, transparent);
+}
+.how-journey .step-card {
+  position: relative;
+  min-height: 245px;
+  padding: 1.4rem 1.25rem 1.3rem;
+  overflow: hidden;
+  border-color: var(--border);
+  background: linear-gradient(150deg, var(--card), color-mix(in srgb, var(--card) 88%, var(--primary-subtle)));
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.how-journey .step-card::after {
+  content: attr(data-step);
+  position: absolute;
+  right: 0.9rem;
+  bottom: -0.28rem;
+  color: color-mix(in srgb, var(--primary) 10%, transparent);
+  font-size: 4.8rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
+.how-journey .step-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary-soft);
+  box-shadow: var(--shadow-hover);
+}
+.how-journey .step-num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin: 0 0 1.35rem;
+  place-items: center;
+  border: 1px solid var(--primary-soft);
+  border-radius: 12px;
+  background: var(--primary-subtle);
+  color: var(--primary);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--bg) 86%, transparent);
+}
+.how-journey h3 {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.65rem;
+  font-size: 1rem;
+}
+.how-journey p {
+  position: relative;
+  z-index: 1;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+.icon-mid { vertical-align: -2px; color: var(--primary); }
+
+@media (max-width: 1040px) {
+  .steps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; }
+  .how-journey::before { display: none; }
+  .how-journey .step-card { min-height: 220px; }
+}
+@media (max-width: 640px) {
+  .how-section { padding-top: 3.8rem; }
+  .steps-grid { grid-template-columns: 1fr; max-width: 520px; margin: 2rem auto 3.5rem; }
+  .how-journey .step-card { min-height: 0; padding: 1.1rem 1rem 1.15rem 4.6rem; }
+  .how-journey .step-num { position: absolute; top: 1.1rem; left: 1rem; width: 42px; height: 42px; margin: 0; }
+  .how-journey h3 { margin-top: 0.05rem; }
+  .how-journey .step-card::after { right: 0.65rem; font-size: 3.8rem; }
+}
