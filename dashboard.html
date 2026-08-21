@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1285" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="dashboard.css?v=1060" />
+  <link rel="stylesheet" href="dashboard.css?v=1061" />
   </head>
 <body>
 <script>
@@ -276,19 +276,22 @@ function showDashSection(section) {
         </section>
 
         <section class="dash-card stat-card gateway-overview-card" aria-labelledby="gatewayOverviewTitle">
-          <div class="dash-section-title section-header developer-card-header">
+          <div class="dash-section-title section-header developer-card-header gateway-card-header">
             <span id="gatewayOverviewTitle">Gateway Overview</span>
-            <span class="dashboard-card-actions"><a href="logs.html" class="activity-view-all">Request logs</a><button type="button" class="sort-btn" id="dashRefreshBtn" onclick="refreshDashboard(this)">Refresh</button></span>
-          </div>
-          <div class="gateway-status gateway-status-inline" id="dashGatewayStatus" aria-live="polite">
-            <span class="gateway-status-dot"></span>
-            <span><strong id="dashGatewayStatusLabel">Checking NewAPI telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
+            <span class="dashboard-card-actions">
+              <span class="gateway-status gateway-status-inline" id="dashGatewayStatus" aria-live="polite">
+                <span class="gateway-status-dot"></span>
+                <span><strong id="dashGatewayStatusLabel">Checking telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
+              </span>
+              <a href="logs.html" class="activity-view-all">Request logs</a>
+              <button type="button" class="sort-btn" id="dashRefreshBtn" onclick="refreshDashboard(this)">Refresh</button>
+            </span>
           </div>
           <div class="stat-cards gateway-metric-grid">
-            <div class="dash-stat-card"><div class="num" id="dashCatalogCount">—</div><div class="lbl">Live Models</div><div class="chg gateway-metric-meta">NewAPI catalog</div></div>
-            <div class="dash-stat-card"><div class="num" id="dashProviderCount">—</div><div class="lbl">Providers</div><div class="chg gateway-metric-meta">Connected catalog</div></div>
-            <div class="dash-stat-card"><div class="num" id="dashMonthlyBudget">—</div><div class="lbl">Monthly Usage</div><div class="chg gateway-metric-meta" id="dashMonthlyBudgetHint">Checking</div></div>
-            <div class="dash-stat-card"><div class="num" id="dashProjectedCost">—</div><div class="lbl">30-Day Forecast</div><div class="chg gateway-metric-meta" id="dashProjectionHint">Usage-based estimate</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashCatalogCount">—</div><div class="lbl">Live Models</div><div class="chg stat-status gateway-metric-meta">NewAPI catalog</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashProviderCount">—</div><div class="lbl">Providers</div><div class="chg stat-status gateway-metric-meta">Connected catalog</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashMonthlyBudget">—</div><div class="lbl">Monthly Usage</div><div class="chg stat-status gateway-metric-meta" id="dashMonthlyBudgetHint">Checking</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashProjectedCost">—</div><div class="lbl">30-Day Forecast</div><div class="chg stat-status gateway-metric-meta" id="dashProjectionHint">Usage-based estimate</div></div>
           </div>
           <p class="dashboard-data-note">New requests store measured latency and token breakdowns. Costs use provider totals when available and catalog estimates otherwise.</p>
         </section>

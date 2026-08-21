@@ -804,13 +804,13 @@
   box-shadow: 0 0 0 4px rgba(148,163,184,0.08);
 }
 .gateway-status.is-online {
-  border-color: var(--border);
-  background: var(--card);
+  border-color: rgba(94, 230, 168, 0.3);
+  background: rgba(94, 230, 168, 0.06);
 }
-.gateway-status.is-online strong { color: var(--text); }
+.gateway-status.is-online strong { color: #5EE6A8; }
 .gateway-status.is-online .gateway-status-dot {
-  background: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-subtle);
+  background: var(--success);
+  box-shadow: 0 0 0 4px var(--success-subtle);
 }
 .gateway-status.is-offline {
   border-color: var(--border);
@@ -988,7 +988,6 @@
 }
 .gateway-metric-grid .gateway-metric-meta {
   overflow: hidden;
-  color: var(--primary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1023,9 +1022,23 @@
   font-size: 0.68rem;
 }
 .gateway-status-inline {
-  width: 100%;
-  margin-bottom: 0.75rem;
+  width: auto;
+  min-height: 32px;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
   border-radius: var(--radius-sm);
+}
+.gateway-card-header {
+  align-items: center;
+}
+.gateway-card-header .dashboard-card-actions {
+  min-width: 0;
+}
+.gateway-card-header .gateway-status strong {
+  font-size: 0.68rem;
+}
+.gateway-card-header .gateway-status small {
+  font-size: 0.58rem;
 }
 @media (max-width: 1050px) {
   .developer-command-grid,
@@ -1034,22 +1047,37 @@
 @media (max-width: 768px) {
   .dash-header { align-items: flex-start; }
   .dash-header-actions { max-width: 58%; gap: 0.35rem; }
-  .gateway-status { order: 3; width: 100%; }
+  .dash-header-actions .gateway-status { order: 3; width: 100%; }
   .dash-header-btn { min-height: 32px; padding: 0.42rem 0.62rem; font-size: 0.66rem; }
   .developer-command-grid,
   .dashboard-tools-grid { gap: 0.75rem; }
   .developer-command-grid > .dash-card,
   .dashboard-tools-grid > .dash-card { padding: 0.85rem; }
   .gateway-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gateway-card-header {
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+  .gateway-card-header .dashboard-card-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
 }
 @media (max-width: 460px) {
   .dash-header { flex-direction: column; }
   .dash-header-actions { width: 100%; max-width: none; justify-content: flex-start; }
-  .gateway-status { order: 0; width: auto; margin-right: auto; }
+  .dash-header-actions .gateway-status { order: 0; width: auto; margin-right: auto; }
   .developer-field-row,
   .developer-endpoint-row { grid-template-columns: 1fr; gap: 0.25rem; }
   .developer-code { font-size: 0.58rem; }
   .developer-card-actions { flex-direction: column; }
   .dashboard-card-actions { gap: 0.4rem; }
+  .gateway-card-header {
+    flex-direction: column;
+  }
+  .gateway-card-header .dashboard-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
   .gateway-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
