@@ -15,6 +15,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+/* Preserve the compact cost graph and align its top spacing with Error Rate. */
+#dashCostBreakdown .cost-breakdown-chart {
+  margin-top: 0.5rem;
+}
 /* Tablet range (769–1000px): the dash-sidebar is visible and 2 columns
    squeeze the log tables to ~289px cards, forcing heavy cell wrapping
    (rows grow to 130px+) and card overflow. Single column until the content
