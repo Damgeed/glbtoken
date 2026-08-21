@@ -16,7 +16,8 @@ from datetime import datetime, timezone
 
 import httpx
 from fastapi import APIRouter, Depends, Header, Request
-from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import func, update
 
@@ -25,15 +26,24 @@ from common import (
     NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL, real_client_ip,
 )
 from routes.referrals import grant_referral_reward
-from database import get_db, User, ApiKey, Transaction, AIModel
+from database import get_db, SessionLocal, User, ApiKey, Transaction, AIModel
+from metering import budget_snapshot, provider_for_model, usage_metrics
+from newapi_integration import get_gateway_token
 
 router = APIRouter()
 
 
 # ── Request Schemas ──
 
-class ChatCompletionRequest(BaseModel):
-    model: str
+class GatewayRequest(BaseModel):
+    # Preserve OpenAI/Anthropic-compatible fields we do not explicitly model
+    # yet (tools, response_format, seed, metadata, system, and future fields).
+    model_config = ConfigDict(extra="allow")
+
+
+class ChatCompletionRequest(GatewayRequest):
+    model: str = ""
+    models: list[str] = Field(default_factory=list)
     messages: list
     max_tokens: int = 4096
     temperature: float = 1.0
@@ -45,16 +55,18 @@ class ChatCompletionRequest(BaseModel):
     user: str = ""
 
 
-class ResponsesRequest(BaseModel):
-    model: str
+class ResponsesRequest(GatewayRequest):
+    model: str = ""
+    models: list[str] = Field(default_factory=list)
     input: object = None
     instructions: str = ""
     max_output_tokens: int = 4096
     stream: bool = False
 
 
-class MessagesRequest(BaseModel):
-    model: str
+class MessagesRequest(GatewayRequest):
+    model: str = ""
+    models: list[str] = Field(default_factory=list)
     messages: list
     max_tokens: int = 4096
     temperature: float = 1.0
@@ -170,14 +182,53 @@ def _estimate_tokens(texts: list) -> int:
     return max(1, total // 4)
 
 
+def _candidate_models(db: Session, primary: str, fallbacks: list[str]) -> list[str]:
+    """Return up to five unique, active catalog models in client order."""
+    candidates = []
+    for value in [primary] + list(fallbacks or []):
+        model = str(value or "").strip()
+        if model and model not in candidates:
+            candidates.append(model)
+    if not candidates:
+        _400("model or models is required")
+    if len(candidates) > 5:
+        _400("At most 5 fallback models are allowed")
+    active = {
+        row[0] for row in db.query(AIModel.model_id).filter(
+            AIModel.model_id.in_(candidates), AIModel.is_active == True
+        ).all()
+    }
+    unavailable = [model for model in candidates if model not in active]
+    if unavailable:
+        _400("Unknown or inactive model: " + unavailable[0])
+    return candidates
+
+
+def _enforce_monthly_budgets(db: Session, user: User, api_key: ApiKey):
+    snapshot = budget_snapshot(db, user, api_key)
+    if snapshot.get("account_exhausted"):
+        _402("Monthly account token budget reached")
+    if snapshot.get("key_exhausted"):
+        _402("Monthly API key token budget reached")
+
+
+def _request_id(result: dict, response: httpx.Response = None) -> str:
+    value = (result or {}).get("id")
+    if not value and response is not None:
+        value = response.headers.get("x-request-id") or response.headers.get("request-id")
+    return str(value)[:200] if value else None
+
+
 def _bill(db: Session, user: User, api_key: ApiKey, model: str,
-          cost_est: int, result: dict, payment_method: str = "api_key"):
+          cost_est: int, result: dict, payment_method: str = "api_key",
+          requested_model: str = "", latency_ms: float = None,
+          response: httpx.Response = None):
     """Deduct REAL usage from the response; fall back to estimate. Records tx.
 
     Atomic: decrements balance only if sufficient (prevents concurrent overdraft).
     """
-    usage = result.get("usage") or {}
-    real = int(usage.get("total_tokens") or 0)
+    metrics = usage_metrics(result)
+    real = int(metrics["total_tokens"] or 0)
     cost = max(1, real or cost_est)
     # Atomic decrement — fails (rowcount 0) when balance < cost, even under concurrency.
     res = db.execute(
@@ -200,6 +251,16 @@ def _bill(db: Session, user: User, api_key: ApiKey, model: str,
     tx = Transaction(
         user_id=user.id, type="consumption", amount=0,
         payment_method=payment_method, model_used=model,
+        requested_model=requested_model or model,
+        provider=provider_for_model(db, model, result),
+        request_id=_request_id(result, response),
+        prompt_tokens=metrics["prompt_tokens"],
+        completion_tokens=metrics["completion_tokens"],
+        reasoning_tokens=metrics["reasoning_tokens"],
+        cached_tokens=metrics["cached_tokens"],
+        latency_ms=latency_ms,
+        upstream_cost=metrics["upstream_cost"],
+        status_code=response.status_code if response is not None else 200,
         tokens=cost, status="completed", key_id=api_key.id,
     )
     db.add(tx)
@@ -211,9 +272,36 @@ def _bill(db: Session, user: User, api_key: ApiKey, model: str,
     return result
 
 
-async def _route(endpoint_path: str, user: User, payload: dict, timeout: int = 120):
-    """POST to New API (user token) or fallback. Returns httpx.Response."""
-    newapi_key = user.newapi_token
+def _record_failure(db: Session, user: User, api_key: ApiKey, model: str,
+                    requested_model: str, status_code: int,
+                    latency_ms: float, response: httpx.Response = None):
+    db.execute(
+        update(ApiKey).where(ApiKey.id == api_key.id).values(
+            request_count=func.coalesce(ApiKey.request_count, 0) + 1
+        )
+    )
+    api_key.last_used = datetime.now(timezone.utc)
+    db.add(Transaction(
+        user_id=user.id,
+        type="consumption",
+        amount=0,
+        payment_method="api_key",
+        model_used=model,
+        requested_model=requested_model or model,
+        provider=provider_for_model(db, model),
+        request_id=_request_id({}, response),
+        tokens=0,
+        status="failed",
+        status_code=status_code,
+        latency_ms=latency_ms,
+        key_id=api_key.id,
+    ))
+    db.commit()
+
+
+def _upstream_config(user: User, endpoint_path: str):
+    """Resolve NewAPI first, falling back only when it is not configured."""
+    newapi_key = user.newapi_token or (get_gateway_token() if NEW_API_BASE_URL else "")
     newapi_url = NEW_API_BASE_URL
     headers = {"Content-Type": "application/json"}
     if newapi_key and newapi_url:
@@ -233,8 +321,145 @@ async def _route(endpoint_path: str, user: User, payload: dict, timeout: int = 1
         if not fallback_url:
             _400("No AI routing configured")
         url = f"{fallback_url.rstrip('/')}{endpoint_path}"
+    return url, headers
+
+
+async def _route(endpoint_path: str, user: User, payload: dict, timeout: int = 120):
+    """POST to NewAPI (shared/user token) or the configured fallback."""
+    url, headers = _upstream_config(user, endpoint_path)
     async with httpx.AsyncClient(timeout=timeout) as client:
         return await client.post(url, headers=headers, json=payload)
+
+
+def _retryable_upstream_status(status_code: int) -> bool:
+    return status_code in (408, 409, 429) or status_code >= 500
+
+
+async def _route_with_model_fallbacks(endpoint_path: str, user: User,
+                                      payload: dict, candidates: list[str],
+                                      timeout: int = 120):
+    """Try the next model only for transient upstream failures."""
+    started = time.perf_counter()
+    last_response = None
+    selected = candidates[0]
+    for index, model in enumerate(candidates):
+        selected = model
+        attempt = dict(payload)
+        attempt["model"] = model
+        try:
+            last_response = await _route(endpoint_path, user, attempt, timeout=timeout)
+        except httpx.RequestError:
+            last_response = httpx.Response(
+                502,
+                json={"error": "upstream unavailable"},
+                request=httpx.Request("POST", "https://gateway.invalid" + endpoint_path),
+            )
+        if last_response.status_code < 400:
+            break
+        if index == len(candidates) - 1 or not _retryable_upstream_status(last_response.status_code):
+            break
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
+    return last_response, selected, latency_ms
+
+
+async def _open_stream_with_model_fallbacks(endpoint_path: str, user: User,
+                                            payload: dict, candidates: list[str],
+                                            timeout: int = 120):
+    """Open an SSE response, retrying only before any response body is sent."""
+    started = time.perf_counter()
+    last_client = None
+    last_response = None
+    selected = candidates[0]
+    for index, model in enumerate(candidates):
+        selected = model
+        attempt = dict(payload)
+        attempt["model"] = model
+        url, headers = _upstream_config(user, endpoint_path)
+        client = httpx.AsyncClient(timeout=timeout)
+        request = client.build_request("POST", url, headers=headers, json=attempt)
+        try:
+            response = await client.send(request, stream=True)
+        except httpx.RequestError:
+            await client.aclose()
+            response = httpx.Response(
+                502,
+                json={"error": "upstream unavailable"},
+                request=request,
+            )
+        last_client, last_response = client, response
+        if response.status_code < 400:
+            break
+        if index == len(candidates) - 1 or not _retryable_upstream_status(response.status_code):
+            break
+        await response.aclose()
+        await client.aclose()
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
+    return last_client, last_response, selected, latency_ms, started
+
+
+def _streaming_response(client: httpx.AsyncClient, response: httpx.Response,
+                        user_id: int, key_id: int, model: str,
+                        requested_model: str, cost_est: int, started: float):
+    """Forward SSE bytes and persist usage after the upstream stream closes."""
+    async def body_iter():
+        buffered = ""
+        metering_result = {}
+        try:
+            async for chunk in response.aiter_bytes():
+                if chunk:
+                    yield chunk
+                    buffered += chunk.decode("utf-8", errors="ignore")
+                    lines = buffered.split("\n")
+                    buffered = lines.pop()
+                    for raw_line in lines:
+                        line = raw_line.strip()
+                        if not line.startswith("data:"):
+                            continue
+                        payload = line[5:].strip()
+                        if not payload or payload == "[DONE]":
+                            continue
+                        try:
+                            event = json.loads(payload)
+                        except (json.JSONDecodeError, TypeError):
+                            continue
+                        if not isinstance(event, dict):
+                            continue
+                        if event.get("usage"):
+                            metering_result["usage"] = event["usage"]
+                        if event.get("id"):
+                            metering_result["id"] = event["id"]
+                        if event.get("provider"):
+                            metering_result["provider"] = event["provider"]
+        finally:
+            await response.aclose()
+            await client.aclose()
+            session = SessionLocal()
+            try:
+                fresh_user = session.query(User).filter(User.id == user_id).first()
+                fresh_key = session.query(ApiKey).filter(ApiKey.id == key_id).first()
+                if fresh_user and fresh_key:
+                    elapsed_ms = round((time.perf_counter() - started) * 1000, 2)
+                    _bill(
+                        session, fresh_user, fresh_key, model, cost_est,
+                        metering_result, requested_model=requested_model,
+                        latency_ms=elapsed_ms, response=response,
+                    )
+            except Exception as exc:
+                session.rollback()
+                print(f"⚠️ Streaming usage persistence failed: {exc}")
+            finally:
+                session.close()
+
+    headers = {}
+    request_id = response.headers.get("x-request-id") or response.headers.get("request-id")
+    if request_id:
+        headers["x-request-id"] = request_id
+    return StreamingResponse(
+        body_iter(),
+        status_code=response.status_code,
+        media_type="text/event-stream",
+        headers=headers,
+    )
 
 
 # ── Endpoints ──
@@ -248,6 +473,9 @@ async def chat_completions(
     db: Session = Depends(get_db),
 ):
     user, api_key = _auth_user(db, authorization, request, require_write=True)
+    candidates = _candidate_models(db, req.model, req.models)
+    requested_model = candidates[0]
+    _enforce_monthly_budgets(db, user, api_key)
 
     # Pre-flight balance check (estimate)
     texts = []
@@ -260,21 +488,42 @@ async def chat_completions(
     if user.token_balance < cost_est:
         _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
 
-    payload = {
-        "model": req.model,
-        "messages": req.messages,
-        "max_tokens": req.max_tokens,
-        "temperature": req.temperature,
-        "top_p": req.top_p,
-        "frequency_penalty": req.frequency_penalty,
-        "presence_penalty": req.presence_penalty,
-        "stream": req.stream,
-    }
-    resp = await _route("/v1/chat/completions", user, payload)
-    if resp.status_code != 200:
+    payload = req.model_dump(exclude={"models"}, exclude_none=True)
+    payload["model"] = requested_model
+    if req.stream:
+        payload["stream_options"] = {"include_usage": True}
+        client, resp, selected_model, latency_ms, started = await _open_stream_with_model_fallbacks(
+            "/v1/chat/completions", user, payload, candidates
+        )
+        if resp.status_code >= 400:
+            await resp.aread()
+            _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
+            await resp.aclose()
+            await client.aclose()
+            _502("AI API error. Please try again later.")
+        return _streaming_response(
+            client, resp, user.id, api_key.id, selected_model,
+            requested_model, cost_est, started,
+        )
+
+    resp, selected_model, latency_ms = await _route_with_model_fallbacks(
+        "/v1/chat/completions", user, payload, candidates
+    )
+    if not 200 <= resp.status_code < 300:
+        _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
         _502("AI API error. Please try again later.")
-    result = resp.json()
-    return _bill(db, user, api_key, req.model, cost_est, result)
+    try:
+        result = resp.json()
+    except Exception:
+        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _502("AI API returned an invalid response")
+    if not isinstance(result, dict):
+        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _502("AI API returned an invalid response")
+    return _bill(
+        db, user, api_key, selected_model, cost_est, result,
+        requested_model=requested_model, latency_ms=latency_ms, response=resp,
+    )
 
 
 @router.get("/v1/models")
@@ -312,21 +561,35 @@ async def responses_api(
 ):
     """OpenAI Responses API passthrough (billed on real usage)."""
     user, api_key = _auth_user(db, authorization, request, require_write=True)
+    candidates = _candidate_models(db, req.model, req.models)
+    requested_model = candidates[0]
+    _enforce_monthly_budgets(db, user, api_key)
+    if req.stream:
+        _400("Streaming is currently supported on /v1/chat/completions only")
     inp = req.input if isinstance(req.input, list) else [req.input] if req.input else []
     cost_est = max(1, int(_estimate_tokens([inp]) + min(req.max_output_tokens, 4096)) * 2 // 1000)
     if user.token_balance < cost_est:
         _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
-    payload = {
-        "model": req.model,
-        "input": req.input,
-        "instructions": req.instructions,
-        "max_output_tokens": req.max_output_tokens,
-        "stream": req.stream,
-    }
-    resp = await _route("/v1/responses", user, payload)
-    if resp.status_code != 200:
+    payload = req.model_dump(exclude={"models"}, exclude_none=True)
+    payload["model"] = requested_model
+    resp, selected_model, latency_ms = await _route_with_model_fallbacks(
+        "/v1/responses", user, payload, candidates
+    )
+    if not 200 <= resp.status_code < 300:
+        _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
         _502("AI API error. Please try again later.")
-    return _bill(db, user, api_key, req.model, cost_est, resp.json())
+    try:
+        result = resp.json()
+    except Exception:
+        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _502("AI API returned an invalid response")
+    if not isinstance(result, dict):
+        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _502("AI API returned an invalid response")
+    return _bill(
+        db, user, api_key, selected_model, cost_est, result,
+        requested_model=requested_model, latency_ms=latency_ms, response=resp,
+    )
 
 
 @router.post("/v1/messages")
@@ -339,18 +602,32 @@ async def messages_api(
 ):
     """Anthropic Messages API passthrough (billed on real usage)."""
     user, api_key = _auth_user(db, authorization, request, require_write=True)
+    candidates = _candidate_models(db, req.model, req.models)
+    requested_model = candidates[0]
+    _enforce_monthly_budgets(db, user, api_key)
+    if req.stream:
+        _400("Streaming is currently supported on /v1/chat/completions only")
     texts = [m.get("content", "") for m in req.messages if isinstance(m, dict)]
     cost_est = max(1, int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000)
     if user.token_balance < cost_est:
         _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
-    payload = {
-        "model": req.model,
-        "messages": req.messages,
-        "max_tokens": req.max_tokens,
-        "temperature": req.temperature,
-        "stream": req.stream,
-    }
-    resp = await _route("/v1/messages", user, payload)
-    if resp.status_code != 200:
+    payload = req.model_dump(exclude={"models"}, exclude_none=True)
+    payload["model"] = requested_model
+    resp, selected_model, latency_ms = await _route_with_model_fallbacks(
+        "/v1/messages", user, payload, candidates
+    )
+    if not 200 <= resp.status_code < 300:
+        _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
         _502("AI API error. Please try again later.")
-    return _bill(db, user, api_key, req.model, cost_est, resp.json())
+    try:
+        result = resp.json()
+    except Exception:
+        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _502("AI API returned an invalid response")
+    if not isinstance(result, dict):
+        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _502("AI API returned an invalid response")
+    return _bill(
+        db, user, api_key, selected_model, cost_est, result,
+        requested_model=requested_model, latency_ms=latency_ms, response=resp,
+    )

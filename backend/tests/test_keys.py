@@ -20,10 +20,12 @@ def test_create_key_ok(client, make_user):
     u = make_user()
     r = client.post("/api/keys", headers=_auth(u), json={
         "name": "prod", "permissions": "read_only", "rate_limit_rpm": 60,
+        "monthly_token_limit": 100000,
     })
     assert r.status_code == 200
     body = r.json()
     assert body["permissions"] == "read_only"
+    assert body["monthly_token_limit"] == 100000
     assert body["key"].startswith("sk-") or len(body["key"]) > 20
 
 
@@ -65,11 +67,32 @@ def test_update_key_validates_permissions(client, make_user):
 def test_update_key_ok(client, make_user):
     u = make_user()
     k = client.post("/api/keys", headers=_auth(u), json={"name": "a"}).json()
-    r = client.put(f"/api/keys/{k['id']}", headers=_auth(u), json={"name": "renamed", "rate_limit_rpm": 30})
+    r = client.put(f"/api/keys/{k['id']}", headers=_auth(u), json={"name": "renamed", "rate_limit_rpm": 30, "monthly_token_limit": 5000})
     assert r.status_code == 200
     keys = client.get("/api/keys", headers=_auth(u)).json()
     assert keys[0]["name"] == "renamed"
     assert keys[0]["rate_limit_rpm"] == 30
+    assert keys[0]["monthly_token_limit"] == 5000
+    assert keys[0]["monthly_tokens_used"] == 0
+
+
+def test_key_budget_validation(client, make_user):
+    u = make_user()
+    r = client.post("/api/keys", headers=_auth(u), json={
+        "name": "bad-budget", "monthly_token_limit": -1,
+    })
+    assert r.status_code == 400
+
+
+def test_account_budget_settings_round_trip(client, make_user):
+    u = make_user()
+    saved = client.put("/api/user/settings", headers=_auth(u), json={
+        "monthly_token_limit": 250000,
+    })
+    assert saved.status_code == 200
+    assert saved.json()["settings"]["monthly_token_limit"] == 250000
+    loaded = client.get("/api/user/settings", headers=_auth(u))
+    assert loaded.json()["monthly_token_limit"] == 250000
 
 
 def test_delete_key(client, make_user):

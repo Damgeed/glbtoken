@@ -130,6 +130,7 @@ class ApiKeyCreate(BaseModel):
     expires_at: Optional[str] = Field(default_factory=_default_api_key_expiry)  # pass "" explicitly for never
     rate_limit_rpm: Optional[int] = 60  # requests per minute cap
     ip_allowlist: Optional[str] = None  # comma-separated IPs/CIDRs
+    monthly_token_limit: Optional[float] = None  # calendar-month token cap; null/0 disables
 
 
 class ApiKeyUpdate(BaseModel):
@@ -139,6 +140,7 @@ class ApiKeyUpdate(BaseModel):
     expires_at: Optional[str] = None
     rate_limit_rpm: Optional[int] = None
     ip_allowlist: Optional[str] = None
+    monthly_token_limit: Optional[float] = None
 
 
 # ── Payment Schemas ──
@@ -347,6 +349,7 @@ class UserSettingsUpdate(BaseModel):
     webhook_url: Optional[str] = None
     webhook_secret: Optional[str] = None
     webhook_events: Optional[list] = None
+    monthly_token_limit: Optional[float] = None
 
 
 # ── Announcement Schemas ──

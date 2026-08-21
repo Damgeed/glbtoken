@@ -42,7 +42,7 @@
         });
         if(summaryTotal)summaryTotal.textContent=(data.total_tokens||0).toLocaleString();
         if(summaryCost)summaryCost.textContent=fmtUSD(data.total_cost||0);
-        if(summaryLabel)summaryLabel.innerHTML='Total: <strong>'+(data.total_tokens||0).toLocaleString()+'</strong> '+(isCost?'cost ($)':'tokens');
+        if(summaryLabel)summaryLabel.innerHTML='Total: <strong>'+(data.total_tokens||0).toLocaleString()+'</strong> tokens';
     }
     function setUsageRange(days){
       usageDays=days;
@@ -75,39 +75,6 @@
         });
       }catch(e){}
     }
-    async function loadAvailableModels(){
-      var container=document.getElementById('dashModelList');
-      var countEl=document.getElementById('modelCountLabel');
-      if(!container)return;
-      var result=await safeApi('GET','/api/available-models',null,null,true); if(!result){container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">Failed to load models.</p>';return}
-      var models=result.models||[];
-        if(!models.length){
-          countEl.textContent='0 models';
-          container.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.75rem">No model usage yet. Make your first API request to see models here.</p>';
-          return;
-        }
-        countEl.textContent=models.length+' models';
-        container.innerHTML=models.map(function(m){
-          var name=m.name||m.model||m.model_id||m.id||'Unknown';
-          var provider=m.provider||'';
-          var icon='🧠';
-          if(name.toLowerCase().includes('gpt')) icon='🤖';
-          else if(name.toLowerCase().includes('claude')) icon='🟣';
-          else if(name.toLowerCase().includes('deepseek')) icon='🔴';
-          else if(name.toLowerCase().includes('llama')) icon='🦙';
-          else if(name.toLowerCase().includes('gemini')) icon='🔵';
-          var tags='';
-          if(m.context_length) tags+='<span style="font-size:0.7rem;padding:1px 6px;border-radius:4px;background:var(--primary-subtle);color:var(--primary)">'+(m.context_length/1000).toFixed(0)+'K</span> ';
-          if(m.prompt_price) tags+='<span style="font-size:0.7rem;padding:1px 6px;border-radius:4px;background:var(--success-subtle);color:var(--success)">$'+(m.prompt_price*1000).toFixed(4)+'/1K</span>';
-          return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;font-size:0.8rem;border-bottom:1px solid var(--border);transition:background 0.2s" onmouseover="this.style.background=\'var(--card-hover)\'" onmouseout="this.style.background=\'\'">'+
-            '<span>'+icon+'</span>'+
-            '<span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escapeHtml(name)+'</span>'+
-            (provider?'<span style="color:var(--text-muted);font-size:0.7rem">'+escapeHtml(provider)+'</span>':'')+
-            tags+
-          '</div>';
-        }).join('');
-    }
-
     // Auto-init: render usage chart if canvas present
     document.addEventListener('DOMContentLoaded', function(){
       if(typeof refreshUsageChart==='function' && document.getElementById('dailyChart'))refreshUsageChart();

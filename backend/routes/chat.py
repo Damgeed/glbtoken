@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, update
 import json
+import time
 
 from database import get_db, User, AIModel, Conversation, Transaction
 from auth import get_current_user
@@ -11,6 +12,7 @@ from common import _400, _402, _404, _502, limiter, NEW_API_BASE_URL, FALLBACK_A
 from newapi_integration import get_gateway_token
 from routes.referrals import grant_referral_reward
 from schemas import ProxyChatRequest, PlaygroundChatRequest, SaveConversationRequest
+from metering import budget_snapshot, provider_for_model, usage_metrics
 
 router = APIRouter()
 
@@ -18,6 +20,45 @@ router = APIRouter()
 # is based on this cap, so unbounded max_tokens would let a caller burn far more
 # than the estimate while the (atomic) deduction only covers what was billed.
 MAX_OUTPUT_TOKENS = 4096
+
+
+def _enforce_account_budget(db: Session, user: User):
+    if budget_snapshot(db, user).get("account_exhausted"):
+        _402("Monthly account token budget reached")
+
+
+def _active_model(db: Session, model: str):
+    if not db.query(AIModel.id).filter(AIModel.model_id == model, AIModel.is_active == True).first():
+        _400("Unknown or inactive model")
+
+
+def _site_transaction(db: Session, user: User, model: str, result: dict,
+                      tokens: float, payment_method: str, latency_ms: float,
+                      status: str = "completed", status_code: int = 200,
+                      response=None):
+    metrics = usage_metrics(result)
+    request_id = (result or {}).get("id")
+    if not request_id and response is not None:
+        request_id = response.headers.get("x-request-id") or response.headers.get("request-id")
+    db.add(Transaction(
+        user_id=user.id,
+        type="consumption",
+        amount=0,
+        payment_method=payment_method,
+        model_used=model,
+        requested_model=model,
+        provider=provider_for_model(db, model, result),
+        request_id=str(request_id)[:200] if request_id else None,
+        prompt_tokens=metrics["prompt_tokens"],
+        completion_tokens=metrics["completion_tokens"],
+        reasoning_tokens=metrics["reasoning_tokens"],
+        cached_tokens=metrics["cached_tokens"],
+        upstream_cost=metrics["upstream_cost"],
+        latency_ms=latency_ms,
+        status_code=status_code,
+        tokens=tokens,
+        status=status,
+    ))
 
 
 def _atomic_deduct(db: Session, user: User, cost: int):
@@ -87,6 +128,8 @@ def _maybe_low_balance_alert(user: User, db: Session):
 @router.post("/api/proxy/chat")
 @limiter.limit("30/minute")
 async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    _active_model(db, req.model)
+    _enforce_account_budget(db, user)
     # Estimate cost (capped output — matches what we forward)
     if not all(isinstance(m, dict) for m in req.messages):
         _400("Each message must be an object with role and content")
@@ -128,34 +171,51 @@ async def proxy_chat(req: ProxyChatRequest, request: Request, user: User = Depen
             _400("No AI routing configured. Set NEW_API_BASE_URL or FALLBACK_API_URL")
         api_endpoint = f"{fallback_url.rstrip('/')}/v1/chat/completions"
     
+    started = time.perf_counter()
     async with httpx.AsyncClient(timeout=60) as client:
-        resp = await client.post(
-            api_endpoint,
-            headers=headers,
-            json={
-                "model": req.model,
-                "messages": req.messages,
-                "max_tokens": max_out,
-                "temperature": req.temperature,
-            },
-        )
-        if resp.status_code != 200:
+        try:
+            resp = await client.post(
+                api_endpoint,
+                headers=headers,
+                json={
+                    "model": req.model,
+                    "messages": req.messages,
+                    "max_tokens": max_out,
+                    "temperature": req.temperature,
+                },
+            )
+        except httpx.RequestError:
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "api_proxy", latency_ms, "failed", 502)
+            db.commit()
+            _502("AI API unavailable. Please try again later.")
+        if not 200 <= resp.status_code < 300:
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "api_proxy", latency_ms, "failed", resp.status_code, resp)
+            db.commit()
             _502("AI API error. Please try again later.")
-        result = resp.json()
+        try:
+            result = resp.json()
+        except Exception:
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "api_proxy", latency_ms, "failed", 502, resp)
+            db.commit()
+            _502("AI API returned an invalid response")
+        if not isinstance(result, dict):
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "api_proxy", latency_ms, "failed", 502, resp)
+            db.commit()
+            _502("AI API returned an invalid response")
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
     
     # Deduct tokens — use the REAL usage reported by the model provider,
     # falling back to the pre-flight estimate only if usage is missing.
-    usage = result.get("usage") or {}
-    real_tokens = int(usage.get("total_tokens") or 0)
+    metrics = usage_metrics(result)
+    real_tokens = int(metrics["total_tokens"] or 0)
     actual_tokens_cost = max(1, real_tokens or cost_tokens)
     # Atomic decrement — cannot go negative even under concurrency
     _atomic_deduct(db, user, actual_tokens_cost)
-    tx = Transaction(
-        user_id=user.id, type="consumption", amount=0,
-        payment_method="api_proxy", model_used=req.model,
-        tokens=actual_tokens_cost, status="completed",
-    )
-    db.add(tx)
+    _site_transaction(db, user, req.model, result, actual_tokens_cost, "api_proxy", latency_ms, response=resp)
     db.commit()
     # Referral: reward the referrer on the referred user's FIRST paid call
     grant_referral_reward(db, user)
@@ -207,6 +267,10 @@ def get_playground_models(request: Request, user: User = Depends(get_current_use
 async def playground_chat(req: PlaygroundChatRequest, request: Request,
                           user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Similar to proxy/chat but with additional parameters."""
+    _active_model(db, req.model)
+    _enforce_account_budget(db, user)
+    if req.stream:
+        _400("Playground streaming is not available yet; use /v1/chat/completions for SSE")
     # Estimate cost (capped output — matches what we forward)
     if not all(isinstance(m, dict) for m in req.messages):
         _400("Each message must be an object with role and content")
@@ -255,25 +319,42 @@ async def playground_chat(req: PlaygroundChatRequest, request: Request,
         "stream": req.stream,
     }
     
+    started = time.perf_counter()
     async with httpx.AsyncClient(timeout=120) as client:
-        resp = await client.post(api_endpoint, headers=headers, json=payload)
-        if resp.status_code != 200:
+        try:
+            resp = await client.post(api_endpoint, headers=headers, json=payload)
+        except httpx.RequestError:
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "playground", latency_ms, "failed", 502)
+            db.commit()
+            _502("AI API unavailable. Please try again later.")
+        if not 200 <= resp.status_code < 300:
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "playground", latency_ms, "failed", resp.status_code, resp)
+            db.commit()
             _502("AI API error. Please try again later.")
-        result = resp.json()
+        try:
+            result = resp.json()
+        except Exception:
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "playground", latency_ms, "failed", 502, resp)
+            db.commit()
+            _502("AI API returned an invalid response")
+        if not isinstance(result, dict):
+            latency_ms = round((time.perf_counter() - started) * 1000, 2)
+            _site_transaction(db, user, req.model, {}, 0, "playground", latency_ms, "failed", 502, resp)
+            db.commit()
+            _502("AI API returned an invalid response")
+    latency_ms = round((time.perf_counter() - started) * 1000, 2)
     
     # Deduct tokens — use the REAL usage reported by the model provider,
     # falling back to the pre-flight estimate only if usage is missing.
-    usage = result.get("usage") or {}
-    real_tokens = int(usage.get("total_tokens") or 0)
+    metrics = usage_metrics(result)
+    real_tokens = int(metrics["total_tokens"] or 0)
     actual_tokens_cost = max(1, real_tokens or cost_tokens)
     # Atomic decrement — cannot go negative even under concurrency
     _atomic_deduct(db, user, actual_tokens_cost)
-    tx = Transaction(
-        user_id=user.id, type="consumption", amount=0,
-        payment_method="playground", model_used=req.model,
-        tokens=actual_tokens_cost, status="completed",
-    )
-    db.add(tx)
+    _site_transaction(db, user, req.model, result, actual_tokens_cost, "playground", latency_ms, response=resp)
     db.commit()
     # Referral: reward the referrer on the referred user's FIRST paid call
     grant_referral_reward(db, user)

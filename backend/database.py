@@ -118,6 +118,7 @@ class ApiKey(Base):
     expires_at = Column(DateTime, nullable=True)          # optional auto-expiry
     rate_limit_rpm = Column(Integer, nullable=True)       # optional per-key req/min cap
     ip_allowlist = Column(Text, nullable=True)            # optional comma-separated IPs/CIDRs
+    monthly_token_limit = Column(Float, nullable=True)    # optional calendar-month token budget
     
     user = relationship("User", back_populates="api_keys")
 
@@ -139,6 +140,16 @@ class Transaction(Base):
     payment_ref = Column(String, nullable=True)  # Paystack/Stripe/Crypto reference
     key_id = Column(Integer, ForeignKey("api_keys.id"), nullable=True, index=True)  # API key that consumed
     status = Column(String, default="completed")  # completed, pending, failed
+    status_code = Column(Integer, nullable=True)          # upstream HTTP status when applicable
+    requested_model = Column(String, default="")         # client-requested primary model
+    provider = Column(String, default="")                # resolved catalog/upstream provider
+    request_id = Column(String, nullable=True, index=True) # upstream request/response identifier
+    prompt_tokens = Column(Float, default=0)
+    completion_tokens = Column(Float, default=0)
+    reasoning_tokens = Column(Float, default=0)
+    cached_tokens = Column(Float, default=0)
+    latency_ms = Column(Float, nullable=True)              # measured end-to-end upstream time
+    upstream_cost = Column(Float, nullable=True)           # provider-reported USD cost when available
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     user = relationship("User", back_populates="transactions")
