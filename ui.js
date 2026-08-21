@@ -30,6 +30,10 @@
       container.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1rem;color:var(--text-muted);font-size:0.8rem">'+t('Loading models...')+'</div>';
       var all=await safeApi('GET','/api/models',null,8000,true); if(!all){container.innerHTML=fallbackHtml;return}
         if(!all||!all.length){container.innerHTML=fallbackHtml;return;}
+        // The homepage carousel and chat share the same live catalog request.
+        // Hydrating the selector here also makes chat resilient if the catalog
+        // event fired before ui.js finished attaching its listener.
+        hydrateAIModelSelect(all);
         var featured=all.filter(function(m){return m.category==='Flagship'||m.category==='Flash';});
         var top4=featured.length>=4?featured.slice(0,4):all.slice(0,4);
         var html='';
@@ -203,6 +207,22 @@
     function aiModelRecord(modelId){
       return aiCatalog.find(function(model){return model.model_id===modelId;})||null;
     }
+    function hydrateAIModelSelect(models){
+      aiCatalog=Array.isArray(models)?models.filter(function(model){return model&&model.model_id;}):[];
+      const select=document.getElementById('aiModelSelect');
+      if(!select)return;
+      const previous=select.value;
+      select.textContent='';
+      aiCatalog.forEach(function(model){
+        const option=document.createElement('option');
+        option.value=model.model_id;
+        option.textContent=(model.name||model.model_id)+(model.provider?' — '+model.provider:'');
+        select.appendChild(option);
+      });
+      if(previous&&aiCatalog.some(function(model){return model.model_id===previous;}))select.value=previous;
+      select.disabled=!aiCatalog.length;
+      selectAIModelDropdown(select.disabled?'':select.value);
+    }
     function selectAIModelDropdown(model){
       aiModel=model||'';
       const record=aiModelRecord(aiModel);
@@ -304,9 +324,7 @@
     window.sendAIChatMsg=sendAIChatMsg;
     window.resetAIChat=resetAIChat;
     document.addEventListener('glbtoken:catalog',function(event){
-      aiCatalog=event.detail&&Array.isArray(event.detail.models)?event.detail.models:[];
-      const select=document.getElementById('aiModelSelect');
-      selectAIModelDropdown(select&&!select.disabled?select.value:'');
+      hydrateAIModelSelect(event.detail&&event.detail.models);
     });
 
     function tmDragStart(clientX){
