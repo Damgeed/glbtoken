@@ -8,6 +8,7 @@ from database import get_db, User, Announcement
 from auth import get_current_user
 from common import _400, limiter
 from schemas import ContactRequest, UserSettingsUpdate
+from metering import normalize_monthly_limit
 
 # Re-import send_email from auth_routes since it's a shared helper
 from routes.auth_routes import send_email
@@ -132,6 +133,7 @@ def get_user_settings(user: User = Depends(get_current_user)):
         "webhook_url": settings.get("webhook_url", ""),
         "webhook_secret": _mask_secret(settings.get("webhook_secret", "")),
         "webhook_events": settings.get("webhook_events", None),
+        "monthly_token_limit": settings.get("monthly_token_limit", None),
     }
 
 
@@ -180,6 +182,11 @@ def update_user_settings(
         # delivered anyway) and cap the list length.
         known = [e for e in req.webhook_events if isinstance(e, str) and e in DEFAULT_EVENTS]
         settings["webhook_events"] = known[:len(DEFAULT_EVENTS)]
+    if req.monthly_token_limit is not None:
+        try:
+            settings["monthly_token_limit"] = normalize_monthly_limit(req.monthly_token_limit)
+        except ValueError as exc:
+            _400(str(exc))
 
     user.settings = json.dumps(settings)
     db.commit()
@@ -193,5 +200,6 @@ def update_user_settings(
             "webhook_url": settings.get("webhook_url", ""),
             "webhook_secret": _mask_secret(settings.get("webhook_secret", "")),
             "webhook_events": settings.get("webhook_events", None),
+            "monthly_token_limit": settings.get("monthly_token_limit", None),
         },
     }

@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1282" />
-  <link rel="stylesheet" href="playground.css?v=1026" />
+  <link rel="stylesheet" href="playground.css?v=1030" />
   <link rel="stylesheet" href="dashboard.css?v=1047" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
@@ -143,74 +143,129 @@
   <div class="dash-sidebar-backdrop" onclick="toggleDashSidebar()"></div>
   <div class="dash-content">
 
-<div class="playground-shell">
-  <!-- API Request Code Panel (left) -->
-  <div class="playground-code-panel" id="codePanel">
-    <div class="playground-code-header" id="codePanelHeader" onclick="toggleCodePanel()">
-      <span class="playground-code-title">API Request</span>
-      <div class="playground-code-tabs">
-        <button type="button" class="playground-code-tab active" data-tab="py" onclick="event.stopPropagation();switchCodeTab('py')">Python</button>
-        <button type="button" class="playground-code-tab" data-tab="curl" onclick="event.stopPropagation();switchCodeTab('curl')">cURL</button>
-      </div>
-      <button type="button" class="playground-code-copy" onclick="event.stopPropagation();copyPlaygroundCode(this)" title="Copy code">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        <span class="pg-copy-label">Copy</span>
-      </button>
+<div class="pg-workbench">
+  <header class="pg-header">
+    <div>
+      <div class="pg-eyebrow"><span class="pg-live-dot"></span> Gateway workbench</div>
+      <h1>Playground</h1>
+      <p>Prototype prompts against the live model catalog, then copy the exact API request.</p>
     </div>
-    <div class="playground-code-body">
-      <pre class="playground-code-pre" id="playgroundCodePy"></pre>
-      <pre class="playground-code-pre" id="playgroundCodeCurl" style="display:none"></pre>
+    <div class="pg-header-actions">
+      <span class="pg-status" id="pgCatalogStatus">Loading catalog…</span>
+      <button type="button" class="pg-button pg-button-ghost" id="pgConfigToggle">Configure</button>
+      <button type="button" class="pg-button pg-button-ghost" id="pgSaveButton">Save run</button>
+      <button type="button" class="pg-button pg-button-primary" id="pgNewButton">New run</button>
     </div>
-  </div>
-  <!-- Main Chat Area -->
-  <div class="playground-main">
+  </header>
 
-    <!-- Chat Messages -->
-    <div class="playground-chat" id="chatMessages">
-      <!-- Empty State -->
-      <div class="playground-empty" id="emptyState">
-        <div class="playground-empty-logo">
-          <span class="logo-full notranslate">
-            <span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span>
-          </span>
+  <div class="pg-layout">
+    <aside class="pg-history" aria-label="Saved runs">
+      <div class="pg-panel-heading">
+        <div><span class="pg-panel-kicker">Workspace</span><strong>Recent runs</strong></div>
+        <button type="button" class="pg-icon-button" id="pgNewIcon" title="New run" aria-label="New run">+</button>
+      </div>
+      <div class="pg-history-list" id="pgConversationList">
+        <div class="pg-loading-row">Loading saved runs…</div>
+      </div>
+      <div class="pg-history-foot">Runs save after each successful response. Prompt content stays in your account workspace.</div>
+    </aside>
+
+    <main class="pg-stage">
+      <div class="pg-stage-toolbar">
+        <div class="pg-model-picker">
+          <label for="modelSelect">Primary model</label>
+          <select id="modelSelect" disabled><option>Loading live catalog…</option></select>
         </div>
-        <div class="playground-empty-sub">How can I help you today?</div>
-        <div class="playground-suggestions">
-          <span class="playground-suggestion" onclick="useSuggestion('Write a Python function to sort a list of dictionaries by a key')">Write a Python sort function</span>
-          <span class="playground-suggestion" onclick="useSuggestion('Explain quantum computing in simple terms')">Explain quantum computing</span>
-          <span class="playground-suggestion" onclick="useSuggestion('Create a React component for a modal dialog')">React modal component</span>
-          <span class="playground-suggestion" onclick="useSuggestion('Compare GPT-4o vs Claude 3.5 Sonnet performance')">Compare AI models</span>
+        <div class="pg-route-summary" id="pgRouteSummary"><span>Direct route</span></div>
+        <div class="pg-toolbar-actions">
+          <button type="button" class="pg-text-button" id="pgClearButton">Clear</button>
+          <button type="button" class="pg-text-button" id="pgCodeButton">View code</button>
         </div>
       </div>
-    </div>
 
-    <!-- Input Area -->
-    <div class="playground-input-area">
-      <div class="playground-input-inner">
-        <div class="playground-input-row">
-          <div class="playground-model-wrap">
-            <label class="playground-model-label" for="modelSelect">Model</label>
-            <select id="modelSelect" onchange="renderPlaygroundCode()">
-              <option value="gpt-4o">GPT-4o — OpenAI</option>
-              <option value="claude-3.5-sonnet" selected>Claude 3.5 Sonnet — Anthropic</option>
-              <option value="claude-3-opus">Claude 3 Opus — Anthropic</option>
-              <option value="gemini-2.0">Gemini 2.0 Flash — Google</option>
-              <option value="llama-3.1-405b">Llama 3.1 405B — Meta</option>
-              <option value="deepseek-v3">DeepSeek V3 — DeepSeek</option>
-              <option value="gpt-4-turbo">GPT-4 Turbo — OpenAI</option>
-              <option value="mistral-large">Mistral Large — Mistral</option>
-            </select>
-          </div>
-          <textarea id="chatInput" placeholder="Message GlbTOKEN..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendPlaygroundMessage()}"></textarea>
-          <button class="playground-send-btn" id="sendBtn" onclick="sendPlaygroundMessage()" onmousedown="event.preventDefault()" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
+      <div class="pg-chat" id="chatMessages" aria-live="polite"></div>
+
+      <div class="pg-composer-wrap">
+        <div class="pg-composer">
+          <textarea id="chatInput" rows="1" placeholder="Ask a question or test a prompt…" aria-label="Prompt"></textarea>
+          <button type="button" class="pg-send" id="sendBtn" disabled aria-label="Run prompt">
+            <span>Run</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
           </button>
         </div>
+        <div class="pg-composer-meta">
+          <span id="pgInputEstimate">~0 input tokens</span>
+          <span id="pgCostEstimate">Select a model for a cost ceiling</span>
+          <span>Enter to run · Shift+Enter for newline</span>
+        </div>
+      </div>
+    </main>
+
+    <aside class="pg-config" id="pgConfigPanel" aria-label="Run configuration">
+      <div class="pg-panel-heading">
+        <div><span class="pg-panel-kicker">Parameters</span><strong>Run configuration</strong></div>
+        <button type="button" class="pg-icon-button pg-config-close" id="pgConfigClose" title="Close configuration" aria-label="Close configuration">×</button>
+      </div>
+
+      <div class="pg-config-scroll">
+        <section class="pg-config-section">
+          <div class="pg-field-label"><label for="pgPresetSelect">Preset</label><a href="presets.html">Manage</a></div>
+          <div class="pg-inline-field">
+            <select id="pgPresetSelect"><option value="">Custom configuration</option></select>
+            <button type="button" id="pgApplyPreset">Apply</button>
+          </div>
+          <button type="button" class="pg-save-preset" id="pgSavePreset">Save current configuration as preset</button>
+        </section>
+
+        <section class="pg-config-section">
+          <div class="pg-field-label"><label for="pgSystemPrompt">System instructions</label><span id="pgSystemCount">0</span></div>
+          <textarea id="pgSystemPrompt" rows="5" maxlength="12000" placeholder="You are a concise, accurate assistant."></textarea>
+        </section>
+
+        <section class="pg-config-section pg-parameter-grid">
+          <label class="pg-range-field" for="pgTemperature"><span>Temperature <output id="pgTemperatureValue">0.7</output></span><input id="pgTemperature" type="range" min="0" max="2" step="0.1" value="0.7"></label>
+          <label class="pg-range-field" for="pgTopP"><span>Top P <output id="pgTopPValue">1.00</output></span><input id="pgTopP" type="range" min="0" max="1" step="0.05" value="1"></label>
+          <label class="pg-number-field" for="pgMaxTokens"><span>Max output</span><input id="pgMaxTokens" type="number" min="1" max="4096" step="1" value="2048"></label>
+        </section>
+
+        <section class="pg-config-section">
+          <div class="pg-field-label"><span>Fallback route</span><span>Transient errors only</span></div>
+          <label class="pg-fallback-field" for="pgFallbackOne"><span>01</span><select id="pgFallbackOne"><option value="">No fallback</option></select></label>
+          <label class="pg-fallback-field" for="pgFallbackTwo"><span>02</span><select id="pgFallbackTwo"><option value="">No second fallback</option></select></label>
+          <div class="pg-route-map" id="pgRouteMap"></div>
+          <p class="pg-field-help">GlbTOKEN tries these models in order only for timeouts, rate limits, or upstream 5xx errors. Provider priority inside each model remains managed by NewAPI.</p>
+        </section>
+
+        <section class="pg-model-card" id="pgModelCard">
+          <div class="pg-model-card-head"><span id="pgModelProvider">—</span><strong id="pgModelName">Choose a model</strong></div>
+          <div class="pg-model-metrics">
+            <div><span>Context</span><strong id="pgModelContext">—</strong></div>
+            <div><span>Input / 1M</span><strong id="pgModelInputPrice">—</strong></div>
+            <div><span>Output / 1M</span><strong id="pgModelOutputPrice">—</strong></div>
+          </div>
+          <div class="pg-context-track"><span id="pgContextFill"></span></div>
+          <small id="pgContextLabel">Waiting for prompt</small>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <section class="pg-code-drawer" id="pgCodeDrawer" aria-label="API request code">
+    <div class="pg-code-head">
+      <div><span class="pg-panel-kicker">Portable request</span><strong>Use this configuration in your app</strong></div>
+      <div class="pg-code-actions">
+        <div class="pg-code-tabs" id="pgCodeTabs">
+          <button type="button" class="active" data-tab="python">Python</button>
+          <button type="button" data-tab="curl">cURL</button>
+          <button type="button" data-tab="json">JSON</button>
+        </div>
+        <button type="button" class="pg-button pg-button-ghost" id="pgCopyCode">Copy</button>
+        <button type="button" class="pg-icon-button" id="pgCodeClose" aria-label="Close code">×</button>
       </div>
     </div>
-  </div>
+    <pre id="pgCodeOutput"></pre>
+  </section>
+  <div class="pg-config-backdrop" id="pgConfigBackdrop"></div>
 </div>
 
 <script src="nav.js?v=21"></script>
@@ -219,365 +274,7 @@
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 
-<script>
-// ── Playground chat functionality (ChatGPT/GlbGPT UX) ──
-var conversationCount = 4;
-var currentConversationId = 1;
-var isProcessing = false;
-
-// ── Conversations ──
-function newConversation(){
-  conversationCount++;
-  var id = conversationCount;
-  var history = document.getElementById('conversationHistory');
-  if(!history) return;  // no history sidebar container on this layout
-  var item = document.createElement('div');
-  item.className = 'playground-history-item';
-  item.setAttribute('data-id', id);
-  item.onclick = function(){ switchConversation(this); };
-  item.innerHTML = '<span class="conv-icon">'
-    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>'
-    + '<span class="conv-title">New conversation</span>'
-    + '<span class="conv-date">Today</span>'
-    + '<button class="delete-conv" onclick="event.stopPropagation();deleteConvItem(this)" title="Delete">'
-    + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>';
-  history.prepend(item);
-  item.click();
-  document.getElementById('chatInput').focus();
-}
-
-function switchConversation(el){
-  document.querySelectorAll('.playground-history-item').forEach(function(i){ i.classList.remove('active'); });
-  el.classList.add('active');
-  currentConversationId = parseInt(el.getAttribute('data-id'));
-  var title = el.querySelector('.conv-title');
-  if(title){
-    var ct = document.getElementById('conversationTitle');
-    if(ct) ct.textContent = title.textContent;
-  }
-  clearChat();
-}
-
-function deleteConvItem(btn){
-  if(confirm('Delete this conversation?')){
-    var item = btn.closest('.playground-history-item');
-    if(item){
-      var next = item.nextElementSibling || item.previousElementSibling;
-      item.remove();
-      if(next) { next.click(); } else { clearChat(); }
-    }
-  }
-}
-
-function clearChat(){
-  var chat = document.getElementById('chatMessages');
-  chat.innerHTML = '';
-  showEmptyState();
-  renderPlaygroundCode();
-}
-
-function showEmptyState(){
-  var chat = document.getElementById('chatMessages');
-  if(chat.querySelector('.playground-msg')) return;
-  chat.innerHTML = '<div class="playground-empty" id="emptyState">'
-    + '<div class="playground-empty-logo">'
-    + '<span class="logo-full notranslate">'
-    + '<span class="logo-glb notranslate">Glb</span><span class="logo-token notranslate">TOKEN</span>'
-    + '</span></div>'
-    + '<div class="playground-empty-sub">How can I help you today?</div>'
-    + '<div class="playground-suggestions">'
-    + '<span class="playground-suggestion" onclick="useSuggestion(\'Write a Python function to sort a list of dictionaries by a key\')">Write a Python sort function</span>'
-    + '<span class="playground-suggestion" onclick="useSuggestion(\'Explain quantum computing in simple terms\')">Explain quantum computing</span>'
-    + '<span class="playground-suggestion" onclick="useSuggestion(\'Create a React component for a modal dialog\')">React modal component</span>'
-    + '<span class="playground-suggestion" onclick="useSuggestion(\'Compare GPT-4o vs Claude 3.5 Sonnet performance\')">Compare AI models</span>'
-    + '</div></div>';
-}
-
-function useSuggestion(text){
-  document.getElementById('chatInput').value = text;
-  document.getElementById('chatInput').focus();
-  updateSendButton();
-  autoResizeTextarea(document.getElementById('chatInput'));
-  sendPlaygroundMessage();
-}
-
-// ── Send Message ──
-function sendPlaygroundMessage(){
-  var input = document.getElementById('chatInput');
-  var text = input.value.trim();
-  if(!text || isProcessing) return;
-
-  // Remove empty state
-  var empty = document.getElementById('emptyState');
-  if(empty) empty.remove();
-
-  isProcessing = true;
-  document.getElementById('sendBtn').disabled = true;
-
-  // Add user message
-  var chat = document.getElementById('chatMessages');
-  var userMsg = document.createElement('div');
-  userMsg.className = 'playground-msg user';
-  userMsg.innerHTML = '<div class="msg-avatar"></div><div class="msg-body"><div class="bubble">'+escapeHtml(text)+'</div><div class="msg-meta">Just now</div></div>';
-    chat.appendChild(userMsg);
-
-  input.value = '';
-  updateSendButton();
-  renderPlaygroundCode();
-  // Keep keyboard open on mobile — focus cascade, NO synchronous height reset (shifts layout and dismisses keyboard)
-  if(window.innerWidth <= 768){
-    input.focus({preventScroll:true});
-    requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-    setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 100);
-    setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 300);
-  }
-
-  chat.scrollTop = chat.scrollHeight;
-
-  // Show typing indicator
-  showTypingIndicator();
-
-  // ── Call the REAL model API (bills tokens server-side — never simulated) ──
-  var payload = {
-    model: getSelectedModel(),
-    messages: getPlaygroundMessages(),
-    temperature: 0.7,
-    max_tokens: 2048,
-    stream: false
-  };
-  var t0 = Date.now();
-  api('POST', '/api/playground/chat', payload, 120000).then(function(d){
-    removeTypingIndicator();
-    var modelSelect = document.getElementById('modelSelect');
-    var modelOption = modelSelect ? modelSelect.options[modelSelect.selectedIndex] : null;
-    var modelName = modelOption ? modelOption.text : '';
-    var response = (d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content)
-      || (d && d.response) || 'No response';
-    var tokenCount = (d && d.tokens_used) || 0;
-    var responseTime = ((Date.now() - t0) / 1000).toFixed(2);
-
-    var aiMsg = document.createElement('div');
-    aiMsg.className = 'playground-msg ai';
-    aiMsg.innerHTML = '<div class="msg-avatar">'
-      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>'
-      + '<div class="msg-body">'
-      + '<div class="bubble">'+escapeHtml(response)+'</div>'
-      + '<div class="msg-meta"><span class="model-badge">'+escapeHtml(modelName.split(' — ')[0])+'</span><span>'+tokenCount+' tokens</span><span>'+responseTime+'s</span>'
-      + (typeof d.balance_remaining !== 'undefined' ? '<span>Balance: '+Number(d.balance_remaining).toLocaleString()+' GT</span>' : '')
-      + '</div>'
-      + '</div>';
-    chat.appendChild(aiMsg);
-    chat.scrollTop = chat.scrollHeight;
-    renderPlaygroundCode();
-
-    isProcessing = false;
-    document.getElementById('sendBtn').disabled = false;
-    // Refocus on mobile so the keyboard stays up after the AI response arrives
-    if(window.innerWidth <= 768){
-      document.getElementById('chatInput').focus({preventScroll:true});
-      requestAnimationFrame(function(){ document.getElementById('chatInput').focus({preventScroll:true}); });
-    } else {
-      document.getElementById('chatInput').focus();
-    }
-  }).catch(function(e){
-    removeTypingIndicator();
-    var errMsg = (e && e.message) ? e.message : 'Connection failed';
-    var aiMsg = document.createElement('div');
-    aiMsg.className = 'playground-msg ai';
-    aiMsg.innerHTML = '<div class="msg-avatar">'
-      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>'
-      + '<div class="msg-body">'
-      + '<div class="bubble" style="color:var(--destructive)">Error: '+escapeHtml(errMsg)+'</div>'
-      + '</div>';
-    chat.appendChild(aiMsg);
-    chat.scrollTop = chat.scrollHeight;
-    renderPlaygroundCode();
-
-    isProcessing = false;
-    document.getElementById('sendBtn').disabled = false;
-    if(window.innerWidth <= 768){
-      document.getElementById('chatInput').focus({preventScroll:true});
-    } else {
-      document.getElementById('chatInput').focus();
-    }
-  });
-}
-
-// ── Typing Indicator ──
-function showTypingIndicator(){
-  var chat = document.getElementById('chatMessages');
-  var typing = document.createElement('div');
-  typing.className = 'playground-msg ai playground-typing';
-  typing.id = 'typingIndicator';
-  typing.innerHTML = '<div class="msg-avatar">'
-    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>'
-    + '<div class="msg-body"><div class="bubble">'
-    + '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>'
-    + '</div></div>';
-  chat.appendChild(typing);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function removeTypingIndicator(){
-  var typing = document.getElementById('typingIndicator');
-  if(typing) typing.remove();
-}
-
-// ── Utilities ──
-
-function updateSendButton(){
-  var input = document.getElementById('chatInput');
-  var btn = document.getElementById('sendBtn');
-  if(input.value.trim().length > 0 && !isProcessing){
-    btn.disabled = false;
-  } else {
-    btn.disabled = true;
-  }
-}
-
-function autoResizeTextarea(el){
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 180) + 'px';
-}
-
-// ── API Request Code Panel ──
-function getPlaygroundMessages(){
-  var chat = document.getElementById('chatMessages');
-  if(!chat) return [];
-  var msgs = [];
-  chat.querySelectorAll('.playground-msg').forEach(function(m){
-    var bubble = m.querySelector('.bubble');
-    if(!bubble) return;
-    var role = m.classList.contains('user') ? 'user' : 'assistant';
-    var content = bubble.textContent.trim();
-    if(!content) return;
-    msgs.push({role: role, content: content});
-  });
-  return msgs;
-}
-
-function getSelectedModel(){
-  var sel = document.getElementById('modelSelect');
-  return sel ? sel.value : 'claude-3.5-sonnet';
-}
-
-function renderPlaygroundCode(){
-  var pyEl = document.getElementById('playgroundCodePy');
-  var curlEl = document.getElementById('playgroundCodeCurl');
-  if(!pyEl && !curlEl) return;
-  var model = getSelectedModel();
-  var msgs = getPlaygroundMessages();
-  if(!msgs.length) msgs = [{role:'user', content:'Hello!'}];
-  var msgsJson = msgs.map(function(m){
-    return '      {"role": "' + m.role + '", "content": "' + escapeCodeStr(m.content) + '"}';
-  }).join(',\n');
-
-  var py = 'from openai import OpenAI\n'
-    + '\n'
-    + 'client = OpenAI(\n'
-    + '    base_url="https://api.glbtoken.com/v1",\n'
-    + '    api_key="YOUR_GLBTOKEN_API_KEY",\n'
-    + ')\n'
-    + '\n'
-    + 'response = client.chat.completions.create(\n'
-    + '    model="' + model + '",\n'
-    + '    messages=[\n' + msgsJson + '\n'
-    + '    ]\n'
-    + ')\n'
-    + '\n'
-    + 'print(response.choices[0].message.content)';
-
-  var curl = 'curl https://api.glbtoken.com/v1/chat/completions \\\n'
-    + '  -H "Content-Type: application/json" \\\n'
-    + '  -H "Authorization: Bearer YOUR_GLBTOKEN_API_KEY" \\\n'
-    + '  -d \'{\n'
-    + '    "model": "' + model + '",\n'
-    + '    "messages": [\n' + msgsJson + '\n'
-    + '    ]\n'
-    + '  }\'';
-
-  if(pyEl) pyEl.textContent = py;
-  if(curlEl) curlEl.textContent = curl;
-}
-
-function escapeCodeStr(s){
-  return String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n');
-}
-
-function switchCodeTab(tab){
-  document.querySelectorAll('.playground-code-tab').forEach(function(t){
-    t.classList.toggle('active', t.getAttribute('data-tab') === tab);
-  });
-  var pyEl = document.getElementById('playgroundCodePy');
-  var curlEl = document.getElementById('playgroundCodeCurl');
-  if(pyEl) pyEl.style.display = (tab === 'py') ? '' : 'none';
-  if(curlEl) curlEl.style.display = (tab === 'curl') ? '' : 'none';
-}
-
-function copyPlaygroundCode(btn){
-  var activeTab = document.querySelector('.playground-code-tab.active');
-  var tab = activeTab ? activeTab.getAttribute('data-tab') : 'py';
-  var el = document.getElementById(tab === 'py' ? 'playgroundCodePy' : 'playgroundCodeCurl');
-  if(!el) return;
-  var text = el.textContent;
-  var fallback = function(){
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try{ document.execCommand('copy'); }catch(e){}
-    document.body.removeChild(ta);
-    animatePgCopy(btn);
-  };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    var settled = false;
-    var timer = setTimeout(function(){
-      if(!settled){ settled = true; fallback(); }
-    }, 400);
-    navigator.clipboard.writeText(text).then(function(){
-      if(!settled){ settled = true; clearTimeout(timer); animatePgCopy(btn); }
-    }).catch(function(){
-      if(!settled){ settled = true; clearTimeout(timer); fallback(); }
-    });
-  } else {
-    fallback();
-  }
-}
-
-function animatePgCopy(btn){
-  var label = btn.querySelector('.pg-copy-label');
-  var orig = label ? label.textContent : '';
-  if(label) label.textContent = '✔ Copied';
-  btn.classList.add('copied');
-  setTimeout(function(){
-    if(label) label.textContent = orig;
-    btn.classList.remove('copied');
-  }, 2000);
-}
-
-function toggleCodePanel(){
-  var panel = document.getElementById('codePanel');
-  if(panel) panel.classList.toggle('open');
-}
-
-// ── Init ──
-document.addEventListener('DOMContentLoaded', function(){
-  var input = document.getElementById('chatInput');
-  if(input){
-    input.addEventListener('input', function(){
-      autoResizeTextarea(this);
-      updateSendButton();
-    });
-  }
-  updateSendButton();
-  renderPlaygroundCode();
-});
-</script>
+<script data-cfasync="false" src="playground.js?v=1"></script>
 
   </div>
 </div>

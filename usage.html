@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="dashboard.css?v=1047" />
 <link rel="stylesheet" href="more.css?v=11" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1060" />
+<link rel="stylesheet" href="usage.css?v=1063" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -154,14 +154,21 @@
             </svg>
             Usage &amp; History
           </h1>
-          <p>Track your token usage, transactions, and account activity</p>
+          <p>Explore real gateway consumption, spend, and account activity</p>
         </div>
+      </div>
+
+      <div class="usage-insights" aria-label="Usage summary">
+        <div class="usage-insight"><span>Requests</span><strong id="usageRequestStat">—</strong><small id="usageRequestSub">Selected period</small></div>
+        <div class="usage-insight"><span>Charged tokens</span><strong id="usageTokenStat">—</strong><small id="usageTokenSub">Across all models</small></div>
+        <div class="usage-insight"><span>Model cost</span><strong id="usageSpendStat">—</strong><small id="usageCostMethod">Loading cost method…</small></div>
+        <div class="usage-insight"><span>Top model</span><strong id="usageTopModelStat">—</strong><small id="usageTopModelSub">By charged tokens</small></div>
       </div>
 
       <!-- Usage Analytics Chart -->
       <div class="dash-card stat-card">
         <div class="dash-section-title filter-btn-row">
-          <span class="filter-btn-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Usage</span>
+          <span class="filter-btn-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Usage trend</span>
           <div class="filter-badge-row" id="usageRangeBtns">
             <button class="sort-btn usage-range active badge" data-days="7" onclick="setUsageRange(7)">7d</button>
             <button class="sort-btn usage-range badge" data-days="30" onclick="setUsageRange(30)">30d</button>
@@ -175,7 +182,7 @@
             <button class="sort-btn usage-mode badge" data-mode="cost" onclick="setUsageMode('cost')">Cost</button>
           </div>
         </div>
-        <div class="chart-container chart-container-rel"><canvas id="dailyChart"></canvas></div>
+        <div class="chart-container chart-container-rel usage-chart-wrap"><canvas id="dailyChart"></canvas><div class="usage-chart-empty" id="usageChartEmpty">No usage data for this period.</div></div>
         <div class="chart-axis-labels" id="usageSummary">
           <span id="usageTotalLabel">Total: <strong id="usageTotalVal" class="text-semibold">0</strong> tokens</span>
           <span id="usageCostLabel">Cost: <strong id="usageCostVal" class="text-semibold">$0.00</strong></span>
@@ -293,7 +300,7 @@
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 <script data-cfasync="false" src="filters.js?v=1148"></script>
-<script data-cfasync="false" src="usage-charts.js?v=8"></script>
+<script data-cfasync="false" src="usage-charts.js?v=11"></script>
 <script data-cfasync="false" src="login-history.js?v=1125"></script>
 
 <!-- ── Usage Script ── -->

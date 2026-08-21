@@ -138,6 +138,7 @@ def get_rates(user: User = Depends(get_current_user), db: Session = Depends(get_
 
 @router.get("/api/admin/providers")
 def provider_status(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Return catalog coverage only; provider health is not measured yet."""
     if not user.is_admin:
         _403("Admin access required")
     providers = db.query(
@@ -147,7 +148,7 @@ def provider_status(user: User = Depends(get_current_user), db: Session = Depend
     ).filter(AIModel.is_active == True).group_by(AIModel.provider).all()
     return [{
         "name": p[0], "models": p[1], "min_price": float(p[2]) if p[2] else 0,
-        "status": "operational", "latency_ms": round(150 + (hash(p[0]) % 350), 0)
+        "status": "not_measured", "latency_ms": None,
     } for p in providers]
 
 

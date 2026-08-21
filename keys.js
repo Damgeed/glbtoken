@@ -76,7 +76,7 @@
             <div class="key-info">
               <div class="key-name">${escapeHtml(key.name)} <button type="button" class="key-edit" onclick="openEditKeyModal(${safeJsId(key.id)})" title="${t('Edit key')}" aria-label="${t('Edit key')}">✎</button></div>
               <div class="key-val">${escapeHtml(key.key_prefix)}••••••••<button type="button" class="key-copy" data-copy="${escapeAttr(key.key_prefix)}" onclick="copyKeyPrefix(this)" title="${t('Copy key prefix')}" aria-label="${t('Copy key prefix')}">⧉</button></div>
-              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' '+t('used')+'</span>':''} · ${t('Created ')}${key.created_at?fmtDT(key.created_at):'—'} · ${escapeHtml(key.request_count)} ${t('requests')} · ${key.last_used?t('Last used ')+fmtDT(key.last_used):t('Never used')}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+escapeHtml(key.rate_limit_rpm)+' '+t('req/min'):''}${key.ip_allowlist?' · <span class="ip-allow" title="'+t('Allowed IPs')+'">'+t('IPs: ')+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">'+t('Active')+'</span>':'<span class="badge inactive">'+t('Inactive')+'</span>'}</div>
+              <div class="meta">${escapeHtml(key.permissions)}${key.total_spent?' · <span class="spent">'+fmtTokens(key.total_spent)+' '+t('used')+'</span>':''}${keyBudgetMeta(key)} · ${t('Created ')}${key.created_at?fmtDT(key.created_at):'—'} · ${escapeHtml(key.request_count)} ${t('requests')} · ${key.last_used?t('Last used ')+fmtDT(key.last_used):t('Never used')}${key.expires_at?' · '+fmtExpiry(key.expires_at):''}${key.rate_limit_rpm?' · '+escapeHtml(key.rate_limit_rpm)+' '+t('req/min'):''}${key.ip_allowlist?' · <span class="ip-allow" title="'+t('Allowed IPs')+'">'+t('IPs: ')+escapeHtml(key.ip_allowlist)+'</span>':''} · ${key.is_active?'<span class="badge active">'+t('Active')+'</span>':'<span class="badge inactive">'+t('Inactive')+'</span>'}</div>
               <div class="key-spark" id="spark-${safeJsId(key.id)}" data-key-id="${escapeAttr(String(key.id))}" title="${t('Token usage — last 7 days')}"><span class="spark-empty">—</span></div>
             </div>
             <div class="key-card-footer">
@@ -242,6 +242,13 @@
       if(n>=1e3)return (n/1e3).toFixed(1)+'k';
       return String(Math.round(n));
     }
+    function keyBudgetMeta(key){
+      const limit=Number(key.monthly_token_limit||0);
+      if(!limit)return '';
+      const used=Number(key.monthly_tokens_used||0);
+      const pct=Math.min(100,Math.round(used/limit*100));
+      return ' · <span class="spent" title="Calendar-month token budget">Monthly '+fmtTokens(used)+' / '+fmtTokens(limit)+' ('+pct+'%)</span>';
+    }
     function fmtExpiry(iso){
       const d=new Date((typeof window.parseUTCDate==='function')?window.parseUTCDate(iso):new Date(iso).getTime());const now=Date.now();
       if(isNaN(d.getTime()))return '';
@@ -271,7 +278,7 @@
         done();
       }
     }
-    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value=t('My API Key');document.getElementById('newKeyExpiry').value='90d';document.getElementById('newKeyRpm').value='60';document.getElementById('newKeyIps').value='';document.getElementById('newKeyName').focus()}
+    function showCreateKeyModal(){document.getElementById('createKeyModal').classList.add('open');document.getElementById('newKeyResult').style.display='none';document.getElementById('newKeyName').value=t('My API Key');document.getElementById('newKeyExpiry').value='90d';document.getElementById('newKeyRpm').value='60';document.getElementById('newKeyBudget').value='0';document.getElementById('newKeyIps').value='';document.getElementById('newKeyName').focus()}
     function closeCreateKeyModal(){document.getElementById('createKeyModal').classList.remove('open')}
     async function createApiKey(){
       const name=document.getElementById('newKeyName').value;
@@ -282,9 +289,11 @@
       else if(expirySel==='90d')expires_at=new Date(Date.now()+90*86400000).toISOString();
       else if(expirySel==='1y')expires_at=new Date(Date.now()+365*86400000).toISOString();
       const rpm=parseInt(document.getElementById('newKeyRpm').value,10);
+      const budget=Number(document.getElementById('newKeyBudget').value||0);
       const ips=document.getElementById('newKeyIps').value.trim();
+      if(!Number.isFinite(budget)||budget<0||budget>1000000000){showToast(t('Monthly budget must be between 0 and 1,000,000,000 tokens'),'error');return;}
       try{
-        const d=await safeApi('POST','/api/keys',{name,permissions:perms,expires_at,rate_limit_rpm:rpm>0?rpm:null,ip_allowlist:ips});
+        const d=await safeApi('POST','/api/keys',{name,permissions:perms,expires_at,rate_limit_rpm:rpm>0?rpm:null,monthly_token_limit:budget,ip_allowlist:ips});
         if(!d) return;
         document.getElementById('newKeyValue').textContent=d.key;
         document.getElementById('newKeyResult').style.display='block';
@@ -328,6 +337,7 @@
         expSel.value = days<=31?'30d':(days<=92?'90d':'1y');
       } else { expSel.value=''; }
       document.getElementById('editKeyRpm').value=key.rate_limit_rpm||'';
+      document.getElementById('editKeyBudget').value=key.monthly_token_limit||0;
       document.getElementById('editKeyIps').value=key.ip_allowlist||'';
       document.getElementById('editKeyModal').classList.add('open');
     }
@@ -342,9 +352,11 @@
       else if(expirySel==='90d')expires_at=new Date(Date.now()+90*86400000).toISOString();
       else if(expirySel==='1y')expires_at=new Date(Date.now()+365*86400000).toISOString();
       const rpm=parseInt(document.getElementById('editKeyRpm').value,10);
+      const budget=Number(document.getElementById('editKeyBudget').value||0);
       const ips=document.getElementById('editKeyIps').value.trim();
+      if(!Number.isFinite(budget)||budget<0||budget>1000000000){showToast(t('Monthly budget must be between 0 and 1,000,000,000 tokens'),'error');return;}
       try{
-        const d=await safeApi('PUT','/api/keys/'+_editingKey.id,{name:name,permissions:perms,expires_at:expires_at,rate_limit_rpm:rpm>0?rpm:null,ip_allowlist:ips});
+        const d=await safeApi('PUT','/api/keys/'+_editingKey.id,{name:name,permissions:perms,expires_at:expires_at,rate_limit_rpm:rpm>0?rpm:0,monthly_token_limit:budget,ip_allowlist:ips});
         if(!d) return;
         closeEditKeyModal();
         loadKeys();
@@ -440,13 +452,13 @@
         toExport = keys.filter(function(k){ return idSet[k.id]; });
         if(!toExport.length){ showToast(t('Select at least one key to export'),'error'); return; }
       }
-      var header=['name','key_prefix','permissions','created_at','last_used','requests','tokens_spent','expires_at','rate_limit_rpm','ip_allowlist','status'];
+      var header=['name','key_prefix','permissions','created_at','last_used','requests','tokens_spent','monthly_tokens_used','monthly_token_limit','expires_at','rate_limit_rpm','ip_allowlist','status'];
       var rows=[header];
       toExport.forEach(function(k){
         rows.push([
           csvGuard(k.name), csvGuard(k.key_prefix), csvGuard(k.permissions),
           k.created_at||'', k.last_used||'', k.request_count||0,
-          k.total_spent||0, k.expires_at||'', k.rate_limit_rpm||'', csvGuard(k.ip_allowlist||''),
+          k.total_spent||0, k.monthly_tokens_used||0, k.monthly_token_limit||'', k.expires_at||'', k.rate_limit_rpm||'', csvGuard(k.ip_allowlist||''),
           k.is_active?'active':'inactive'
         ]);
       });

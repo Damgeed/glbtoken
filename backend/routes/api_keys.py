@@ -10,6 +10,7 @@ from database import get_db, User, ApiKey, Transaction
 from auth import get_current_user, generate_api_key, hash_api_key
 from common import _400, _404, limiter
 from schemas import ApiKeyCreate, ApiKeyUpdate
+from metering import month_start_utc, normalize_monthly_limit
 
 router = APIRouter()
 
@@ -48,11 +49,28 @@ def _total_spent_map(db: Session) -> dict:
     return {int(kid): float(spent) for kid, spent in rows}
 
 
+def _monthly_spent_map(db: Session, user_id: int) -> dict:
+    rows = (
+        db.query(Transaction.key_id, func.coalesce(func.sum(Transaction.tokens), 0))
+        .filter(
+            Transaction.user_id == user_id,
+            Transaction.type == "consumption",
+            Transaction.status == "completed",
+            Transaction.key_id.isnot(None),
+            Transaction.created_at >= month_start_utc(),
+        )
+        .group_by(Transaction.key_id)
+        .all()
+    )
+    return {int(kid): float(spent) for kid, spent in rows}
+
+
 @router.get("/api/keys")
 @limiter.limit("60/minute")
 def list_keys(request: Request, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     keys = db.query(ApiKey).filter(ApiKey.user_id == user.id).order_by(desc(ApiKey.created_at)).all()
     spent = _total_spent_map(db)
+    monthly_spent = _monthly_spent_map(db, user.id)
     return [
         {
             "id": k.id,
@@ -68,6 +86,9 @@ def list_keys(request: Request, user: User = Depends(get_current_user), db: Sess
             "expires_at": k.expires_at.isoformat() if k.expires_at else None,
             "rate_limit_rpm": k.rate_limit_rpm,
             "ip_allowlist": k.ip_allowlist or "",
+            "monthly_token_limit": k.monthly_token_limit,
+            "monthly_tokens_used": monthly_spent.get(k.id, 0),
+            "monthly_tokens_remaining": max(0, k.monthly_token_limit - monthly_spent.get(k.id, 0)) if k.monthly_token_limit else None,
         }
         for k in keys
     ]
@@ -86,6 +107,11 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
     _validate_permissions(req.permissions)
 
     raw_key = generate_api_key()
+    try:
+        monthly_limit = normalize_monthly_limit(req.monthly_token_limit)
+    except ValueError as exc:
+        _400(str(exc))
+
     key = ApiKey(
         user_id=user.id,
         key=None,  # plaintext NOT stored — only hash + masked prefix/suffix
@@ -97,6 +123,7 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
         expires_at=_parse_expiry(req.expires_at),
         rate_limit_rpm=req.rate_limit_rpm if (req.rate_limit_rpm or 0) > 0 else None,
         ip_allowlist=(req.ip_allowlist or "").strip() or None,
+        monthly_token_limit=monthly_limit,
     )
     db.add(key)
     db.commit()
@@ -113,6 +140,7 @@ def create_key(req: ApiKeyCreate, request: Request, user: User = Depends(get_cur
         "key": raw_key,  # Full key shown once — NOT stored in DB
         "permissions": key.permissions,
         "created_at": key.created_at.isoformat(),
+        "monthly_token_limit": key.monthly_token_limit,
     }
 
 
@@ -157,6 +185,11 @@ def update_key(key_id: int, req: ApiKeyUpdate, request: Request, user: User = De
     if req.expires_at is not None: key.expires_at = _parse_expiry(req.expires_at)
     if req.rate_limit_rpm is not None: key.rate_limit_rpm = req.rate_limit_rpm if req.rate_limit_rpm > 0 else None
     if req.ip_allowlist is not None: key.ip_allowlist = (req.ip_allowlist or "").strip() or None
+    if req.monthly_token_limit is not None:
+        try:
+            key.monthly_token_limit = normalize_monthly_limit(req.monthly_token_limit)
+        except ValueError as exc:
+            _400(str(exc))
     db.commit()
     return {"status": "updated"}
 

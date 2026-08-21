@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>Logs — GlbTOKEN</title>
-  <meta name="description" content="Monitor system performance and errors." />
+  <meta name="description" content="Inspect GlbTOKEN gateway requests, latency, token usage, costs, and errors." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -66,7 +66,7 @@
       </a>
       <a class="dash-sidebar-item" href="topup.html">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-        Buy Tokens
+        Simulate Top Up
       </a>
       <a class="dash-sidebar-item" href="settings.html">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -79,7 +79,7 @@
     </div>
     <!-- ADMIN -->
     <div class="dash-sidebar-section">
-      <div class="dash-sidebar-label">Admin</div>
+      <div class="dash-sidebar-label">Developer</div>
       <a class="dash-sidebar-item active" href="logs.html">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Logs
@@ -148,7 +148,7 @@
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
             </svg>
             Logs</h1>
-          <p>Monitor system performance and errors.</p>
+          <p>Inspect gateway requests, measured latency, token usage, and errors.</p>
         </div>
       </div>
 
@@ -169,10 +169,10 @@
       <div class="dash-card" id="dashCostBreakdown">
         <div class="dash-section-title">
           <span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          Cost Breakdown by Model</span> <span class="label-muted-sm">Per-model spend</span>
+          Cost Breakdown by Model</span> <span class="label-muted-sm" id="cbCostBasis">Reported and estimated cost</span>
         </div>
         <div class="stat-cards">
-          <div class="dash-stat-card"><div class="num" id="cbTotalCost">$0.00</div><div class="lbl">Total Cost</div><div class="chg up" id="cbTotalCostTrend">Lifetime</div></div>
+          <div class="dash-stat-card"><div class="num" id="cbTotalCost">$0.00</div><div class="lbl">Period Cost</div><div class="chg up" id="cbTotalCostTrend">Lifetime</div></div>
           <div class="dash-stat-card"><div class="num" id="cbMostExpensive">—</div><div class="lbl">Most Expensive Model</div><div class="chg text-muted">Avg cost/call</div></div>
           <div class="dash-stat-card"><div class="num" id="cbAvgCost">$0.00</div><div class="lbl">Avg Cost / Call</div><div class="chg text-muted">Per request</div></div>
         </div>
@@ -215,7 +215,7 @@
         </div>
         <div class="stat-cards">
           <div class="dash-stat-card"><div class="num" id="cpProjected">$0.00</div><div class="lbl">Projected This Month</div><div class="chg text-muted" id="cpProjectedChg">Based on last 7 days</div></div>
-          <div class="dash-stat-card"><div class="num" id="cpActual">$0.00</div><div class="lbl" id="cpActualLbl">Actual (7d)</div><div class="chg text-muted">Real spend</div></div>
+          <div class="dash-stat-card"><div class="num" id="cpActual">$0.00</div><div class="lbl" id="cpActualLbl">Period Cost (7d)</div><div class="chg text-muted">Reported / estimated</div></div>
           <div class="dash-stat-card"><div class="num" id="cpAvgDaily">$0.00</div><div class="lbl">Avg / Day</div><div class="chg text-muted">Daily pace</div></div>
         </div>
       </div>
@@ -253,9 +253,9 @@
         <div class="logs-table-hint">Click a row for details</div>
         <div class="overflow-auto">
           <table class="tx-table" id="requestLogTable">
-            <thead><tr><th>Time</th><th>Model</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Cost</th><th class="tx-th-center">Status</th></tr></thead>
+            <thead><tr><th>Time</th><th>Model</th><th>Provider</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Latency</th><th class="tx-th-right">Cost</th><th class="tx-th-center">Status</th></tr></thead>
             <tbody id="requestLogBody">
-              <tr><td colspan="5" class="td-empty">Loading request logs...</td></tr>
+              <tr><td colspan="7" class="td-empty">Loading request logs...</td></tr>
             </tbody>
           </table>
         </div>
@@ -298,7 +298,7 @@
   </div>
 
 <script src="nav.js?v=21"></script>
-<script src="translations.js?v=1113"></script>
+<script src="translations.js?v=1114"></script>
 <script data-cfasync="false" src="shared.js?v=1169"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
@@ -496,6 +496,8 @@ async function loadCostBreakdown(days){
     });
     var totalCost=0, totalCalls=0;
     models.forEach(function(m){ totalCost += (m.cost||0); totalCalls += (m.calls||0); });
+    var basisEl=document.getElementById('cbCostBasis');
+    if(basisEl)basisEl.textContent=models.some(function(m){return !!m.estimated;})?'Includes catalog estimates':'Provider-reported cost';
     var totalCostEl=document.getElementById('cbTotalCost');
     if(totalCostEl)totalCostEl.textContent=fmtUSD(totalCost);
     // Trend: current window cost vs the previous window (prevModels covers 2x days,
@@ -626,7 +628,7 @@ async function loadCostProjection(days){
     document.getElementById('cpActual').textContent=fmtUSD(actual);
     document.getElementById('cpAvgDaily').textContent=fmtUSD(avgDaily);
     var lbl=document.getElementById('cpActualLbl');
-    if(lbl)lbl.textContent='Actual ('+actualDays+'d)';
+    if(lbl)lbl.textContent='Period Cost ('+actualDays+'d)';
     var chg=document.getElementById('cpProjectedChg');
     if(chg)chg.textContent='Based on last '+actualDays+' days';
   }catch(e){
@@ -656,7 +658,7 @@ async function loadKeyUsage(days){
   }
 }
 
-// ── Request Logs (real per-call records from New API) ──
+// ── Request Logs (account-scoped GlbTOKEN telemetry; NewAPI legacy fallback) ──
 var logsCurrentPage=1;
 var logsTotal=0;
 var logsPageSize=20;
@@ -664,7 +666,9 @@ var logsCurrentItems=[];
 var logsStatusFilter='all';
 
 function logsStatusOf(l){
-  return Number(l.status_code||l.status||200);
+  var code=Number(l.status_code);
+  if(Number.isFinite(code)&&code>0)return code;
+  return String(l.status||'').toLowerCase()==='failed'?500:200;
 }
 
 function logsStatusMatch(l){
@@ -687,7 +691,7 @@ function renderRequestLogRows(){
   if(!body)return;
   var items=logsCurrentItems.filter(logsStatusMatch);
   if(!items.length){
-    body.innerHTML='<tr><td colspan="5" class="td-empty">'
+    body.innerHTML='<tr><td colspan="7" class="td-empty">'
       +(logsStatusFilter==='all'
         ?'No request logs yet. Make an API call to see it here.'
         :'No '+(logsStatusFilter==='success'?'successful':'error')+' requests on this page.')
@@ -696,8 +700,10 @@ function renderRequestLogRows(){
   }
   body.innerHTML=items.map(function(l){
     var model=l.model||l.model_name||l.model_id||'Unknown';
+    var provider=l.provider||'—';
     var tokens=(l.tokens||l.total_tokens||0);
     var cost=(l.cost||l.amount||0);
+    var latency=Number(l.latency_ms);
     var pt=l.prompt_tokens||0, ct=l.completion_tokens||0;
     var status=logsStatusOf(l);
     var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
@@ -709,8 +715,10 @@ function renderRequestLogRows(){
     return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'" title="Status '+status+' — click for details">'
       + '<td class="td-date">'+escapeHtml(time)+'</td>'
       + '<td>'+escapeHtml(model)+'</td>'
+      + '<td>'+escapeHtml(provider)+'</td>'
       + tkCell
-      + '<td class="gold tx-td-right">$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
+      + '<td class="tx-td-right">'+(l.latency_ms!=null&&Number.isFinite(latency)?latency.toFixed(0)+' ms':'—')+'</td>'
+      + '<td class="gold tx-td-right" title="'+(l.cost_estimated?'Catalog estimate':'Provider reported')+'">'+(l.cost_estimated?'~':'')+'$'+(typeof cost==='number'?cost.toFixed(6):escapeHtml(cost))+'</td>'
       + '<td class="tx-td-center"><span class="status-badge '+statusCls+'">'+escapeHtml(String(status))+'</span></td>'
       + '</tr>';
   }).join('');
@@ -725,12 +733,12 @@ async function loadRequestLogs(page){
     var body=document.getElementById('requestLogBody');
     if(!body)return;
     logsCurrentPage=page||1;
-    body.innerHTML='<tr><td colspan="5" class="empty-state-sm">Loading...</td></tr>';
+    body.innerHTML='<tr><td colspan="7" class="empty-state-sm">Loading...</td></tr>';
     var data=await safeApi('GET','/api/logs?page='+logsCurrentPage+'&page_size='+logsPageSize);
     logsCurrentItems=(data&&data.items)||[];
     logsTotal=(data&&data.total)||0;
     if(!logsCurrentItems.length){
-      body.innerHTML='<tr><td colspan="5" class="empty-state-sm">No request logs yet. Make an API call to see it here.</td></tr>';
+      body.innerHTML='<tr><td colspan="7" class="empty-state-sm">No request logs yet. Make an API call to see it here.</td></tr>';
       var pg=document.getElementById('logsPager');
       if(pg)pg.style.display='none';
       return;
@@ -746,7 +754,7 @@ async function loadRequestLogs(page){
     }
   }catch(e){
     var b2=document.getElementById('requestLogBody');
-    if(b2)b2.innerHTML='<tr><td colspan="5" class="empty-state-sm">Failed to load request logs.</td></tr>';
+    if(b2)b2.innerHTML='<tr><td colspan="7" class="empty-state-sm">Failed to load request logs.</td></tr>';
   }
 }
 
@@ -760,14 +768,14 @@ function logsPage(dir){
 function exportLogsCsv(){
   var items=logsCurrentItems.filter(logsStatusMatch);
   if(!items.length){ showToast('No logs to export','error'); return; }
-  var rows=[['Time','Model','Prompt Tokens','Completion Tokens','Total Tokens','Cost','Status']];
+  var rows=[['Time','Request ID','Requested Model','Resolved Model','Provider','Prompt Tokens','Completion Tokens','Cached Tokens','Reasoning Tokens','Total Tokens','Latency ms','Cost','Cost Estimated','Status']];
   items.forEach(function(l){
     var model=l.model||l.model_name||l.model_id||'Unknown';
     var tokens=(l.tokens||l.total_tokens||0);
     var pt=l.prompt_tokens||0, ct=l.completion_tokens||0;
     var cost=(l.cost||l.amount||0);
     var status=logsStatusOf(l);
-    rows.push([l.created_at||l.time||'',model,pt,ct,tokens,cost,status]);
+    rows.push([l.created_at||l.time||'',l.request_id||'',l.requested_model||model,model,l.provider||'',pt,ct,l.cached_tokens||0,l.reasoning_tokens||0,tokens,l.latency_ms||'',cost,!!l.cost_estimated,status]);
   });
   var csv=rows.map(function(r){
     return r.map(function(c){
@@ -802,6 +810,19 @@ function openLogDetail(logId){
     if(!bodyEl)return;
     if(!d||d.error){
       bodyEl.innerHTML='<div class="text-muted" style="padding:1rem">Content not available for this request.</div>';
+      return;
+    }
+    if(d.content_stored===false){
+      var fields=[
+        ['Request ID',d.request_id||'—'],['Requested model',d.requested_model||'—'],['Resolved model',d.model||'—'],
+        ['Provider',d.provider||'—'],['Status',String(d.status_code||d.status||'—')],
+        ['Tokens',String(d.tokens||0)+' (in '+String(d.prompt_tokens||0)+' · out '+String(d.completion_tokens||0)+')'],
+        ['Cached / reasoning',String(d.cached_tokens||0)+' / '+String(d.reasoning_tokens||0)],
+        ['Latency',d.latency_ms!=null?Number(d.latency_ms).toFixed(0)+' ms':'—'],['Created',d.created_at||'—']
+      ];
+      bodyEl.innerHTML='<div class="log-detail-section"><div class="log-detail-label">Request telemetry</div>'
+        +fields.map(function(row){return '<div class="text-sm" style="display:flex;justify-content:space-between;gap:1rem;padding:0.35rem 0"><span class="text-muted">'+escapeHtml(row[0])+'</span><span>'+escapeHtml(row[1])+'</span></div>';}).join('')
+        +'</div><div class="text-muted text-sm" style="padding:1rem">Prompt and completion content are not stored by GlbTOKEN. This reduces sensitive-data retention while preserving operational telemetry.</div>';
       return;
     }
     var prompt=d.prompt||d.request||'';

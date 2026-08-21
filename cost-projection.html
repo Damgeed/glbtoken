@@ -187,12 +187,8 @@
 
         <div class="cp-bars">
           <div class="cp-bar-row">
-            <div class="cp-bar-label"><span>Current pace (daily avg × 30)</span><strong id="cpPaceVal">$0.00</strong></div>
-            <div class="cp-bar-track"><div class="cp-bar-fill" id="cpPaceBar" style="width:0%"></div></div>
-          </div>
-          <div class="cp-bar-row">
-            <div class="cp-bar-label"><span>Projected monthly spend</span><strong id="cpProjVal">$0.00</strong></div>
-            <div class="cp-bar-track"><div class="cp-bar-fill" id="cpProjBar" style="width:0%"></div></div>
+            <div class="cp-bar-label"><span>Active-day coverage</span><strong id="cpCoverageVal">0 / 30 days</strong></div>
+            <div class="cp-bar-track"><div class="cp-bar-fill cp-bar-coverage" id="cpCoverageBar" style="width:0%"></div></div>
           </div>
         </div>
 
@@ -252,20 +248,17 @@ function loadCostProjection(){
     document.getElementById('cpDailySub').textContent = 'across ' + daysData + ' active day' + (daysData === 1 ? '' : 's');
     document.getElementById('cpMonthly').textContent = fmtUsd(monthly);
     document.getElementById('cpMonthlySub').textContent = daysData > 0 ? 'if usage pace continues' : 'not enough data yet';
-    var pace = daily * 30;
-    document.getElementById('cpPaceVal').textContent = fmtUsd(pace);
-    document.getElementById('cpProjVal').textContent = fmtUsd(monthly);
-    var maxVal = Math.max(pace, monthly, 0.01);
-    document.getElementById('cpPaceBar').style.width = Math.round(pace / maxVal * 100) + '%';
-    document.getElementById('cpProjBar').style.width = Math.round(monthly / maxVal * 100) + '%';
+    document.getElementById('cpCoverageVal').textContent = daysData + ' / ' + daysReq + ' days';
+    document.getElementById('cpCoverageBar').style.width = Math.min(100, Math.round(daysData / Math.max(daysReq, 1) * 100)) + '%';
     var note = document.getElementById('cpNote');
     if(note){
+      var method = d.estimated ? ' Some cost rows use current catalog pricing.' : ' Costs are provider-reported.';
       if(daysData === 0){
         note.textContent = 'No consumption data yet in this window — buy tokens and use AI models, then check back for projections.';
       } else if(daysData < daysReq * 0.5){
-        note.textContent = 'Based on ' + daysData + ' active day' + (daysData === 1 ? '' : 's') + ' out of the last ' + daysReq + ' — projections will firm up as more usage accumulates.';
+        note.textContent = 'Based on ' + daysData + ' active day' + (daysData === 1 ? '' : 's') + ' out of the last ' + daysReq + ' — projections will firm up as more usage accumulates.' + method;
       } else {
-        note.textContent = 'Based on real consumption over ' + daysData + ' active day' + (daysData === 1 ? '' : 's') + '. Projections assume your recent usage patterns continue.';
+        note.textContent = 'Based on real consumption over ' + daysData + ' active day' + (daysData === 1 ? '' : 's') + '.' + method + ' Projections assume your recent usage patterns continue.';
       }
     }
   }).catch(function(){

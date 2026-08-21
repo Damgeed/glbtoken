@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1283" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1054" />
+<link rel="stylesheet" href="dashboard.css?v=1056" />
   </head>
 <body>
 <script>
@@ -136,7 +136,7 @@ function showDashSection(section) {
       </a>
       <a class="dash-sidebar-item" href="topup.html">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-        Buy Tokens
+        Simulate Top Up
       </a>
       <a class="dash-sidebar-item" href="settings.html">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -214,19 +214,27 @@ function showDashSection(section) {
     <!-- ===== OVERVIEW SECTION ===== -->
     <div class="dash-section active" id="section-overview">
       <div class="dash-header">
-        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
+        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>NewAPI gateway command center</p></div>
+        <div class="dash-header-actions">
+          <div class="gateway-status" id="dashGatewayStatus" aria-live="polite">
+            <span class="gateway-status-dot"></span>
+            <span><strong id="dashGatewayStatusLabel">Checking NewAPI telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
+          </div>
+          <a class="btn-ghost dash-header-btn" href="logs.html">Request logs</a>
+          <button type="button" class="btn-primary dash-header-btn" id="dashRefreshBtn" onclick="refreshDashboard(this)">Refresh</button>
+        </div>
       </div>
 
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline" id="dashTrendBadge" style="display:none"></span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Sandbox Balance <span class="sandbox-badge">Simulation</span></div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline" id="dashTrendBadge" style="display:none"></span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
-          <div class="actions dash-actions-mt"><button class="btn-primary dash-action-btn" onclick="showPage('topup')">Buy Tokens</button></div>
+          <div class="actions dash-actions-mt"><button class="btn-primary dash-action-btn" onclick="showPage('topup')">Simulate Top Up</button></div>
         </div>
         <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up" id="dashSpentTrend">—</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Simulated Spend</div><div class="chg up" id="dashSpentTrend">—</div></div>
           <div class="dash-stat-card"><div class="num" id="dashModelsUsed">—</div><div class="lbl">Models Used</div><div class="chg up" id="dashModelsTrend">—</div></div>
           <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up" id="dashReqTrend">—</div></div>
           <div class="dash-stat-card dash-keys-card">
@@ -238,6 +246,62 @@ function showDashSection(section) {
           <div class="dash-stat-card"><div class="num" id="dashDaysActive">—</div><div class="lbl" id="dashDaysActiveLabel">Days Active</div><div class="chg stat-status" id="dashNewapiStatus">Checking gateway…</div></div>
           <div class="dash-stat-card"><div class="num" id="dashTotalConsumed">—</div><div class="lbl">Tokens Consumed</div><div class="chg stat-status">Lifetime</div></div>
         </div>
+      </div>
+
+      <!-- ═══════ DEVELOPER COMMAND CENTER ═══════ -->
+      <div class="developer-command-grid">
+        <section class="dash-card developer-quickstart" aria-labelledby="quickstartTitle">
+          <div class="dash-section-title section-header developer-card-header">
+            <span id="quickstartTitle">API Quick Start</span>
+            <span class="compatibility-badge">OpenAI compatible</span>
+          </div>
+          <div class="developer-field-row">
+            <label for="dashQuickModel">Model</label>
+            <select id="dashQuickModel" class="developer-model-select" onchange="renderDashboardSnippet()">
+              <option value="">Loading live catalog…</option>
+            </select>
+          </div>
+          <div class="developer-field-row">
+            <label for="dashFallbackModel">Fallback <span class="text-muted text-xs">(optional)</span></label>
+            <select id="dashFallbackModel" class="developer-model-select" onchange="renderDashboardSnippet()">
+              <option value="">No model fallback</option>
+            </select>
+          </div>
+          <div class="developer-endpoint-row">
+            <span>Base URL</span>
+            <code>https://api.glbtoken.com/v1</code>
+          </div>
+          <div class="developer-code-tabs" role="tablist" aria-label="Quick start language">
+            <button type="button" class="developer-code-tab active" data-snippet="curl" onclick="setDashboardSnippet('curl')">cURL</button>
+            <button type="button" class="developer-code-tab" data-snippet="python" onclick="setDashboardSnippet('python')">Python</button>
+            <button type="button" class="developer-copy-btn" onclick="copyDashboardSnippet(this)">Copy</button>
+          </div>
+          <pre class="developer-code"><code id="dashQuickCode">Loading…</code></pre>
+          <div class="developer-card-actions">
+            <a class="btn-primary" href="manage-keys.html">Manage API keys</a>
+            <a class="btn-ghost" href="playground.html">Test in Playground</a>
+          </div>
+        </section>
+
+        <section class="dash-card gateway-overview-card" aria-labelledby="gatewayOverviewTitle">
+          <div class="dash-section-title section-header developer-card-header">
+            <span id="gatewayOverviewTitle">Gateway Overview</span>
+            <a href="models.html" class="activity-view-all">Browse models →</a>
+          </div>
+          <div class="gateway-metric-grid">
+            <div class="gateway-metric"><span>Live catalog</span><strong id="dashCatalogCount">—</strong><small>active models</small></div>
+            <div class="gateway-metric"><span>Providers</span><strong id="dashProviderCount">—</strong><small>in catalog</small></div>
+            <div class="gateway-metric"><span>Active keys</span><strong id="dashOverviewKeys">—</strong><small id="dashOverviewKeysHint">checking</small></div>
+            <div class="gateway-metric"><span>Monthly budget</span><strong id="dashMonthlyBudget">—</strong><small id="dashMonthlyBudgetHint">checking</small></div>
+            <div class="gateway-metric"><span>Est. 30-day cost</span><strong id="dashProjectedCost">—</strong><small id="dashProjectionHint">usage-based estimate</small></div>
+          </div>
+          <div class="developer-checklist" id="dashSetupChecklist">
+            <a href="manage-keys.html" class="developer-check"><span class="developer-check-icon" id="dashSetupKeyIcon">1</span><span><strong>Create an API key</strong><small id="dashSetupKeyText">Checking your keys…</small></span></a>
+            <a href="playground.html" class="developer-check"><span class="developer-check-icon" id="dashSetupCallIcon">2</span><span><strong>Make a test request</strong><small id="dashSetupCallText">Checking request history…</small></span></a>
+            <a href="logs.html" class="developer-check"><span class="developer-check-icon">3</span><span><strong>Inspect request logs</strong><small>Debug status, model, tokens, and cost.</small></span></a>
+          </div>
+          <p class="dashboard-data-note">New requests store measured latency and token breakdowns. Costs use provider totals when available and catalog estimates otherwise. Payment top-ups are simulations.</p>
+        </section>
       </div>
 
       <!-- ═══════ CHARTS ROW: Bar Chart + Donut ═══════ -->
@@ -276,7 +340,7 @@ function showDashSection(section) {
             </div>
             <div  class="text-center">
               <div  class="stat-value" id="statLatency">—</div>
-              <div  class="text-tiny-muted">Latency</div>
+              <div class="text-tiny-muted" title="Measured end-to-end gateway latency for newly recorded requests.">Latency</div>
               <div class="model-error" id="statLatencyChg">—</div>
             </div>
           </div>
@@ -285,15 +349,15 @@ function showDashSection(section) {
         <!-- Spending by Provider Donut Chart -->
         <div class="dash-card stat-card" >
           <div class="dash-section-title section-header" >
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-success"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Spending by Provider</span>
-            <span class="legend-label">This month</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-success"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Estimated Spend by Provider</span>
+            <span class="legend-label">Last 30d</span>
           </div>
           <div class="dash-usage-row">
             <div class="donut-wrap">
               <canvas id="spendingDonut" width="150" height="150" class="donut-canvas"></canvas>
             <div class="donut-center">
                 <div class="donut-value" id="donutCenterVal">$0.00</div>
-                <div  class="text-tiny-muted">spent</div>
+                <div class="text-tiny-muted">estimated</div>
               </div>
             </div>
             <div class="legend-item-flex spending-list" id="spendingList">
@@ -325,7 +389,7 @@ function showDashSection(section) {
           <div class="chart-container chart-container-rel"><canvas id="dailyChart"></canvas></div>
           <div class="chart-axis-labels" id="usageSummary">
             <span id="usageTotalLabel">Total: <strong id="usageTotalVal"  class="text-semibold">0</strong> tokens</span>
-            <span id="usageCostLabel">Cost: <strong id="usageCostVal"  class="text-semibold">$0.00</strong></span>
+            <span id="usageCostLabel">Estimated cost: <strong id="usageCostVal" class="text-semibold">$0.00</strong></span>
           </div>
         </div>
 
@@ -391,15 +455,6 @@ function showDashSection(section) {
       </div>
     </div>
 
-      <!-- ═══════ AVAILABLE MODELS ═══════ -->
-      <div class="dash-card stat-card" id="dashAvailableModels" >
-<div class="model-usage-row">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
-          Your Models <span id="modelCountLabel" class="text-sm-muted" style="margin-left:auto">via New API</span>
-        </div>
-        <div id="dashModelList" class="model-list-scroll"><p class="model-list-empty">Connect New API to see available models.</p></div>
-      </div>
-
       <!-- ═══════ RECENT TRANSACTIONS ═══════ -->
       <div class="dash-card stat-card" >
         <div class="dash-section-title section-header" >
@@ -428,7 +483,7 @@ function showDashSection(section) {
   <div class="chat-window" id="chatWindow">
     <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
     <div class="chat-msgs" id="chatMsgs">
-      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
+      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about simulated top-ups, AI models, gateway usage, or API keys.</div>  </div>
     </div>
     <div class="chat-input">
       <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
@@ -437,11 +492,11 @@ function showDashSection(section) {
   </div>
 
 <script src="nav.js?v=21"></script>
-<script src="translations.js?v=1113"></script>
+<script src="translations.js?v=1114"></script>
 <script data-cfasync="false" src="shared.js?v=1170"></script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
-<script data-cfasync="false" src="usage-charts.js?v=8"></script>
-<script data-cfasync="false" src="dashboard.js?v=1148"></script>
+<script data-cfasync="false" src="usage-charts.js?v=11"></script>
+<script data-cfasync="false" src="dashboard.js?v=1150"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====

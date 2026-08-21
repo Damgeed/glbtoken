@@ -101,9 +101,22 @@ async def lifespan(app: FastAPI):
             'key_hash': 'VARCHAR',
             'key_prefix': 'VARCHAR',
             'key_suffix': 'VARCHAR',
+            'monthly_token_limit': 'DOUBLE PRECISION',
         }
         tx_cols = {c['name'] for c in inspector.get_columns('transactions')}
-        tx_add = {'key_id': 'INTEGER'}
+        tx_add = {
+            'key_id': 'INTEGER',
+            'status_code': 'INTEGER',
+            'requested_model': "VARCHAR DEFAULT ''",
+            'provider': "VARCHAR DEFAULT ''",
+            'request_id': 'VARCHAR',
+            'prompt_tokens': 'DOUBLE PRECISION DEFAULT 0',
+            'completion_tokens': 'DOUBLE PRECISION DEFAULT 0',
+            'reasoning_tokens': 'DOUBLE PRECISION DEFAULT 0',
+            'cached_tokens': 'DOUBLE PRECISION DEFAULT 0',
+            'latency_ms': 'DOUBLE PRECISION',
+            'upstream_cost': 'DOUBLE PRECISION',
+        }
         with engine.connect() as conn:
             for col_name, col_type in key_add.items():
                 if col_name not in key_cols:
@@ -172,6 +185,7 @@ async def lifespan(app: FastAPI):
         with engine.connect() as conn:
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_id ON transactions (user_id)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_type_created ON transactions (user_id, type, created_at)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_request_id ON transactions (request_id)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_login_events_user_id ON login_events (user_id)"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_referral_redemption_referred_user ON referral_redemptions (referred_user_id)"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_org_member ON org_members (org_id, user_id)"))

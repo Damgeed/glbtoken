@@ -34,13 +34,28 @@ function fmtCompact(n){
 }
 function timeAgo(iso){
   if(!iso) return '';
-  var t = (typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime();
-  if(isNaN(t)) return '';
-  var s = Math.floor((Date.now() - t)/1000);
+  var timestamp = (typeof window.parseUTCDate === 'function') ? window.parseUTCDate(iso) : new Date(iso).getTime();
+  if(isNaN(timestamp)) return '';
+  var s = Math.floor((Date.now() - timestamp)/1000);
   if(s < 60) return 'Just now';
   if(s < 3600) return Math.floor(s/60) + t('min ago');
   if(s < 86400) return Math.floor(s/3600) + t('h ago');
   return Math.floor(s/86400) + t('d ago');
+}
+
+function setDashboardGatewayStatus(connected){
+  var wrap = document.getElementById('dashGatewayStatus');
+  var label = document.getElementById('dashGatewayStatusLabel');
+  if(!wrap || !label) return;
+  wrap.classList.remove('is-online','is-offline');
+  wrap.classList.add(connected ? 'is-online' : 'is-offline');
+  label.textContent = connected ? 'NewAPI telemetry online' : 'Telemetry unavailable';
+}
+
+function markDashboardUpdated(){
+  var el = document.getElementById('dashLastUpdated');
+  if(!el) return;
+  el.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
 // ── Stat cards + quota bar (real /api/dashboard) ──
@@ -61,6 +76,7 @@ async function loadDashboardStats(){
     set('dashDaysActive', activeDays);
     set('dashDaysActiveLabel', activeDays === 1 ? 'Day Active' : 'Days Active');
     set('dashNewapiStatus', d.newapi_connected ? 'Gateway connected' : 'Gateway status unavailable');
+    setDashboardGatewayStatus(!!d.newapi_connected);
     var totalConsumed = d.total_tokens_consumed||0, balance = d.token_balance||0, totalEver = totalConsumed + balance;
     set('usedTokens', totalConsumed.toLocaleString());
     set('remainingTokens', balance.toLocaleString() + ' remaining');
@@ -74,8 +90,8 @@ async function loadDashboardStats(){
     var vals = (du.values || []).map(Number);
     var reqs = (du.requests || []).map(Number);
     // ── Stat-card trend arrows (real progress: recent window vs previous) ──
-    // Total Spent / API Requests / Tokens Consumed use the same recent-vs-prev
-    // window as the balance badge; Models Used shows active-model count change.
+    // API Requests use a recent-vs-previous window. Spend and balance do not
+    // have historical snapshots, so those cards intentionally avoid trends.
     function trendMeta(arr, recentN){
       var n = arr.length;
       if(n < 2) return null;
@@ -95,7 +111,9 @@ async function loadDashboardStats(){
       el.textContent = meta.label + ' vs prev';
       el.className = 'chg ' + (meta.up ? 'up' : 'down');
     }
-    renderTrend('dashSpentTrend', trendMeta(vals, 3), 'Lifetime');
+    // Total spend is lifetime account data; daily token usage is not a spend
+    // trend, so do not imply a relationship the stored data cannot support.
+    renderTrend('dashSpentTrend', null, 'Sandbox total');
     renderTrend('dashReqTrend', trendMeta(reqs, 3), 'Total calls');
     // Models Used: compare distinct models in recent window vs prev window
     var usageModels = (d.usage_by_model || []).length;
@@ -108,18 +126,9 @@ async function loadDashboardStats(){
     renderTrend('dashModelsTrend', modelsTrend, usageModels > 0 ? (usageModels + ' active') : 'No usage');
     var badge = document.getElementById('dashTrendBadge');
     if(badge){
-      var n = vals.length;
-      var recent = vals.slice(Math.max(0, n-3)).reduce(function(a,b){return a+b;},0);
-      var prev = vals.slice(0, Math.max(1, n-3)).reduce(function(a,b){return a+b;},0);
-      if(prev > 0 && n > 1){
-        var pct = (recent - prev) / prev * 100;
-        var up = pct >= 0;
-        badge.style.display = '';
-        badge.innerHTML = '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="' + (up ? '18 15 12 9 6 15' : '6 9 12 15 18 9') + '"/></svg> ' + (up ? '+' : '') + pct.toFixed(1) + '%';
-        badge.style.color = up ? '#00D68F' : '#FF6B6B';
-      } else {
-        badge.style.display = 'none';
-      }
+      // No balance snapshots are stored yet. Keep this hidden rather than
+      // showing a token-usage trend beside the available balance.
+      badge.style.display = 'none';
     }
     var spark = document.getElementById('sparkline');
     var sparkData = vals.filter(function(v){return v > 0;});
@@ -136,6 +145,7 @@ async function loadDashboardStats(){
       // No meaningful trend data — hide the sparkline instead of drawing a flat green line
       spark.style.display = 'none';
     }
+    markDashboardUpdated();
     return d;
   }catch(e){ return null; }
 }
@@ -148,15 +158,14 @@ async function renderApiCallsChart(days){
     var el = document.getElementById(id);
     if(el && (el.textContent === '' || el.textContent === '—' || el.textContent === '-')) el.textContent = '…';
   });
-  // Fire all 4 fetches in parallel (was 4 sequential round-trips before),
-  // and share /api/dashboard + cost-by-model with the other loaders.
+  // Fire the three range-specific analytics requests in parallel and share
+  // cost-by-model with the provider-spend loader.
   var results = await Promise.all([
     flight('cost:'+days, function(){ return safeApi('GET','/api/analytics/cost-by-model?days='+days,null,null,true); }),
-    flight('dash', function(){ return safeApi('GET','/api/dashboard',null,null,true); }),
     flight('err:'+days, function(){ return safeApi('GET','/api/analytics/error-rate?days='+days,null,null,true); }),
     flight('rt:'+days, function(){ return safeApi('GET','/api/analytics/response-times?days='+days,null,null,true); })
   ]);
-  var costByModel = results[0], dash = results[1], errRate = results[2], respTimes = results[3];
+  var costByModel = results[0], errRate = results[1], respTimes = results[2];
   // Bars: top 6 by calls — same structure as original demo
   var wrap = document.getElementById('apiModelBars');
   if(wrap){
@@ -176,9 +185,9 @@ async function renderApiCallsChart(days){
     }
   }
   function set(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; }
-  var totalCalls = (dash && dash.total_requests)||0;
-  set('statTotalCalls', fmtCompact(totalCalls));
-  set('statAvgDay', fmtCompact(Math.round(totalCalls/days)));
+  var periodCalls = (costByModel||[]).reduce(function(sum, item){ return sum + Number(item.calls||0); }, 0);
+  set('statTotalCalls', fmtCompact(periodCalls));
+  set('statAvgDay', fmtCompact(Math.round(periodCalls/days)));
   var totalOk=0, totalErr=0;
   (errRate||[]).forEach(function(r){ totalOk += r.success_count||0; totalErr += r.error_count||0; });
   var succPct = (totalOk+totalErr)>0 ? (totalOk/(totalOk+totalErr)*100) : 0;
@@ -226,7 +235,7 @@ async function renderSpendingDonut(days){
   var provMap = {};
   costByModel.forEach(function(m){
     var full = String(m.model||'');
-    var prov = full.indexOf('/')>0 ? full.split('/')[0] : (full || 'Other');
+    var prov = String(m.provider || (full.indexOf('/')>0 ? full.split('/')[0] : 'Other'));
     prov = prov.charAt(0).toUpperCase() + prov.slice(1);
     if(!provMap[prov]) provMap[prov] = 0;
     provMap[prov] += m.cost||0;
@@ -301,7 +310,7 @@ async function loadActivityFeed(){
   }
   if(!items.length){
     if(countEl) countEl.textContent = '0 events';
-    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Buy tokens or use AI models to see activity here</div></div></div>';
+    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Simulate a top-up or make an API request to see activity here</div></div></div>';
     return;
   }
   if(countEl) countEl.textContent = items.length + ' events';
@@ -352,6 +361,201 @@ async function loadRecentTx(){
     var stHtml = '<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';
     return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td>'+detail+'</td><td class="amount '+amtCls+'">'+escapeHtml(amt)+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
   }).join('');
+}
+
+// ── Developer command center ──
+var _dashboardSnippetMode = 'curl';
+var _dashboardCatalog = [];
+
+function dashboardModelId(model){
+  return String((model && (model.model_id || model.id || model.model || model.name)) || '');
+}
+
+function setDashboardSnippet(mode){
+  _dashboardSnippetMode = mode === 'python' ? 'python' : 'curl';
+  document.querySelectorAll('.developer-code-tab').forEach(function(btn){
+    btn.classList.toggle('active', btn.getAttribute('data-snippet') === _dashboardSnippetMode);
+  });
+  renderDashboardSnippet();
+}
+
+function renderDashboardSnippet(){
+  var code = document.getElementById('dashQuickCode');
+  var select = document.getElementById('dashQuickModel');
+  var fallbackSelect = document.getElementById('dashFallbackModel');
+  if(!code || !select) return;
+  var model = select.value || (_dashboardCatalog.length ? dashboardModelId(_dashboardCatalog[0]) : 'YOUR_MODEL_ID');
+  var fallback = fallbackSelect ? fallbackSelect.value : '';
+  var requestBody = {model:model,messages:[{role:'user',content:'Hello!'}]};
+  if(fallback && fallback !== model) requestBody.models = [model, fallback];
+  if(_dashboardSnippetMode === 'python'){
+    code.textContent = 'from openai import OpenAI\n\n'
+      + 'client = OpenAI(\n'
+      + '    base_url="https://api.glbtoken.com/v1",\n'
+      + '    api_key="YOUR_GLBTOKEN_API_KEY",\n'
+      + ')\n\n'
+      + 'response = client.chat.completions.create(\n'
+      + '    model=' + JSON.stringify(model) + ',\n'
+      + '    messages=[{"role": "user", "content": "Hello!"}],\n'
+      + (fallback && fallback !== model ? '    extra_body={"models": [' + JSON.stringify(model) + ', ' + JSON.stringify(fallback) + ']},\n' : '')
+      + ')\n\n'
+      + 'print(response.choices[0].message.content)';
+    return;
+  }
+  code.textContent = 'curl https://api.glbtoken.com/v1/chat/completions \\\n'
+    + '  -H "Authorization: Bearer YOUR_GLBTOKEN_API_KEY" \\\n'
+    + '  -H "Content-Type: application/json" \\\n'
+    + '  -d \'' + JSON.stringify(requestBody) + '\'';
+}
+
+function copyDashboardSnippet(btn){
+  var code = document.getElementById('dashQuickCode');
+  if(!code) return;
+  var value = code.textContent;
+  function copied(){
+    if(typeof showToast === 'function') showToast('Quick-start code copied','success');
+    if(btn){
+      var original = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function(){ btn.textContent = original; }, 1200);
+    }
+  }
+  function copyFallback(){
+    var textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly','');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try{ document.execCommand('copy'); copied(); }
+    catch(e){ if(typeof showToast === 'function') showToast('Copy failed','error'); }
+    document.body.removeChild(textarea);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(value).then(copied).catch(copyFallback);
+  } else {
+    copyFallback();
+  }
+}
+
+function renderDashboardSetup(dashboard){
+  function set(id, value){ var el = document.getElementById(id); if(el) el.textContent = value; }
+  var keys = Number((dashboard && dashboard.api_keys_active) || 0);
+  var requests = Number((dashboard && dashboard.total_requests) || 0);
+  set('dashOverviewKeys', keys.toLocaleString());
+  set('dashOverviewKeysHint', keys ? 'ready to use' : 'create your first key');
+  var monthlyLimit = Number((dashboard && dashboard.monthly_token_limit) || 0);
+  var monthlyUsed = Number((dashboard && dashboard.monthly_tokens_used) || 0);
+  if(monthlyLimit > 0){
+    var pct = Math.min(100, Math.round(monthlyUsed / monthlyLimit * 100));
+    set('dashMonthlyBudget', fmtCompact(monthlyUsed) + ' / ' + fmtCompact(monthlyLimit));
+    set('dashMonthlyBudgetHint', pct + '% used this month');
+  } else {
+    set('dashMonthlyBudget', 'No limit');
+    set('dashMonthlyBudgetHint', fmtCompact(monthlyUsed) + ' used this month');
+  }
+  set('dashSetupKeyIcon', keys ? '✓' : '1');
+  set('dashSetupKeyText', keys ? keys + ' active ' + (keys === 1 ? 'key' : 'keys') : 'Required before your first API call.');
+  set('dashSetupCallIcon', requests ? '✓' : '2');
+  set('dashSetupCallText', requests ? requests.toLocaleString() + ' requests recorded' : 'Use the snippet or Playground to verify access.');
+  var keyIcon = document.getElementById('dashSetupKeyIcon');
+  var callIcon = document.getElementById('dashSetupCallIcon');
+  if(keyIcon) keyIcon.classList.toggle('is-complete', keys > 0);
+  if(callIcon) callIcon.classList.toggle('is-complete', requests > 0);
+}
+
+async function loadDashboardCommandCenter(){
+  if(!token) return;
+  var results = await Promise.all([
+    flight('catalog', function(){ return safeApi('GET','/api/models',null,null,true); }),
+    flight('projection:30', function(){ return safeApi('GET','/api/analytics/cost-projection?days=30',null,null,true); }),
+    flight('dash', function(){ return safeApi('GET','/api/dashboard',null,null,true); })
+  ]);
+  var catalogLoaded = Array.isArray(results[0]);
+  var models = catalogLoaded ? results[0] : [];
+  var projection = results[1] || {};
+  var dashboard = results[2] || {};
+  _dashboardCatalog = models;
+
+  var modelCount = document.getElementById('dashCatalogCount');
+  if(modelCount) modelCount.textContent = catalogLoaded ? models.length.toLocaleString() : '—';
+  var providers = {};
+  models.forEach(function(model){ if(model && model.provider) providers[String(model.provider)] = true; });
+  var providerCount = document.getElementById('dashProviderCount');
+  if(providerCount) providerCount.textContent = catalogLoaded ? Object.keys(providers).length.toLocaleString() : '—';
+
+  var projected = Number(projection.projected_monthly || 0);
+  var projectedEl = document.getElementById('dashProjectedCost');
+  if(projectedEl) projectedEl.textContent = '$' + projected.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  var projectionHint = document.getElementById('dashProjectionHint');
+  if(projectionHint){
+    var daysOfData = Number(projection.days_of_data || 0);
+    projectionHint.textContent = daysOfData
+      ? 'from ' + daysOfData + ' active ' + (daysOfData === 1 ? 'day' : 'days') + (projection.estimated ? ' · includes estimates' : ' · reported cost')
+      : 'waiting for usage data';
+  }
+
+  var select = document.getElementById('dashQuickModel');
+  var fallbackSelect = document.getElementById('dashFallbackModel');
+  if(select){
+    var selected = select.value;
+    select.innerHTML = '';
+    if(!catalogLoaded || !models.length){
+      var emptyOption = document.createElement('option');
+      emptyOption.value = '';
+      emptyOption.textContent = catalogLoaded ? 'No active models available' : 'Catalog unavailable';
+      select.appendChild(emptyOption);
+    } else {
+      models.forEach(function(model){
+        var id = dashboardModelId(model);
+        if(!id) return;
+        var option = document.createElement('option');
+        option.value = id;
+        option.textContent = (model.name || id) + (model.provider ? ' · ' + model.provider : '');
+        select.appendChild(option);
+      });
+      if(selected && models.some(function(model){ return dashboardModelId(model) === selected; })) select.value = selected;
+    }
+  }
+  if(fallbackSelect){
+    var selectedFallback = fallbackSelect.value;
+    fallbackSelect.innerHTML = '<option value="">No model fallback</option>';
+    if(catalogLoaded){
+      models.forEach(function(model){
+        var id = dashboardModelId(model);
+        if(!id) return;
+        var option = document.createElement('option');
+        option.value = id;
+        option.textContent = (model.name || id) + (model.provider ? ' · ' + model.provider : '');
+        fallbackSelect.appendChild(option);
+      });
+      if(selectedFallback && models.some(function(model){ return dashboardModelId(model) === selectedFallback; })) fallbackSelect.value = selectedFallback;
+    }
+  }
+  renderDashboardSnippet();
+  renderDashboardSetup(dashboard);
+  if(Object.prototype.hasOwnProperty.call(dashboard, 'newapi_connected')) setDashboardGatewayStatus(!!dashboard.newapi_connected);
+  markDashboardUpdated();
+}
+
+async function refreshDashboard(btn){
+  if(!token) return;
+  _flightCache = {};
+  if(btn){ btn.disabled = true; btn.classList.add('is-loading'); btn.textContent = 'Refreshing…'; }
+  try{
+    await Promise.all([
+      loadDashboardStats(),
+      loadDashboardCommandCenter(),
+      loadActivityFeed(),
+      loadRecentTx(),
+      renderApiCallsChart(window._apiModelDays || 7),
+      renderSpendingDonut(30)
+    ]);
+    if(typeof refreshUsageChart === 'function') refreshUsageChart();
+  } finally {
+    if(btn){ btn.disabled = false; btn.classList.remove('is-loading'); btn.textContent = 'Refresh'; }
+  }
 }
 
 // ── Announcements (public banner + admin manager) ──
@@ -469,7 +673,7 @@ function initAnnouncements(){
     loadRecentTx();
     renderApiCallsChart(window._apiModelDays || 7);
     renderSpendingDonut(30);
-    if(typeof loadAvailableModels === 'function') loadAvailableModels();
+    loadDashboardCommandCenter();
   }
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', bootDashboard);

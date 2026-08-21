@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import and_, case, desc, func
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 import asyncio
@@ -10,10 +10,71 @@ import time as _time
 
 from database import get_db, User, ApiKey, Transaction, AIModel
 from auth import get_current_user
-from newapi_integration import get_usage_today, get_user_logs, get_log_content as _get_log_content, get_user_quota, newapi_quota_to_tokens
+from newapi_integration import (
+    NEWAPI_QUOTA_PER_USD,
+    get_usage_today,
+    get_user_logs,
+    get_log_content as _get_log_content,
+    get_user_quota,
+    newapi_quota_to_tokens,
+)
 from common import limiter
+from metering import budget_snapshot
 
 router = APIRouter()
+
+
+def _catalog_prices(db: Session) -> dict:
+    """Return per-token prices keyed by the public model id."""
+    prices = {}
+    for model in db.query(
+        AIModel.model_id,
+        AIModel.prompt_price,
+        AIModel.completion_price,
+        AIModel.provider,
+    ).all():
+        prompt = float(model.prompt_price or 0)
+        completion = float(model.completion_price or 0)
+        prices[model.model_id] = {
+            "prompt": prompt,
+            "completion": completion,
+            "blended": (prompt + completion) / 2 if prompt or completion else 0.000001,
+            "provider": model.provider or "Other",
+        }
+    return prices
+
+
+def _cost_columns():
+    """Grouped columns that keep provider-reported and estimated usage separate."""
+    missing = Transaction.upstream_cost.is_(None)
+    no_breakdown = and_(
+        func.coalesce(Transaction.prompt_tokens, 0) == 0,
+        func.coalesce(Transaction.completion_tokens, 0) == 0,
+    )
+    return (
+        func.sum(Transaction.upstream_cost).label("reported_cost"),
+        func.count(Transaction.upstream_cost).label("reported_count"),
+        func.sum(case((missing, Transaction.prompt_tokens), else_=0)).label("estimated_prompt"),
+        func.sum(case((missing, Transaction.completion_tokens), else_=0)).label("estimated_completion"),
+        func.sum(case((and_(missing, no_breakdown), Transaction.tokens), else_=0)).label("estimated_aggregate"),
+    )
+
+
+def _group_cost(row, price_meta: dict) -> tuple[float, bool]:
+    """Calculate a group's cost, preferring upstream totals when available."""
+    reported = float(getattr(row, "reported_cost", 0) or 0)
+    prompt = float(getattr(row, "estimated_prompt", 0) or 0)
+    completion = float(getattr(row, "estimated_completion", 0) or 0)
+    aggregate = float(getattr(row, "estimated_aggregate", 0) or 0)
+    cost = (
+        reported
+        + prompt * price_meta["prompt"]
+        + completion * price_meta["completion"]
+        + aggregate * price_meta["blended"]
+    )
+    completed = int(getattr(row, "completed_count", 0) or 0)
+    reported_count = int(getattr(row, "reported_count", 0) or 0)
+    return round(cost, 6), reported_count < completed
 
 # ── Small TTL cache for analytics endpoints ──
 # The dashboard polls every 30s; without a cache every poll re-runs the same
@@ -162,6 +223,8 @@ async def get_dashboard(
         Transaction.type == "consumption"
     ).scalar() or 0
 
+    budget = budget_snapshot(db, user)
+
     result = {
         "token_balance": user.token_balance,
         "synced_balance": synced_balance,
@@ -171,6 +234,9 @@ async def get_dashboard(
         "days_active": days_active,
         "total_tokens_consumed": float(total_consumption),
         "total_requests": total_requests,
+        "monthly_tokens_used": budget["account_used"],
+        "monthly_token_limit": budget["account_limit"],
+        "monthly_tokens_remaining": budget["account_remaining"],
         "daily_usage": {"labels": daily_labels, "values": daily_values, "requests": daily_requests},
         "newapi_connected": newapi_connected,
         "usage_by_model": [
@@ -203,8 +269,60 @@ async def get_logs(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    """Fetch request logs from New API for the current user (standardized)."""
+    """Return account-scoped local gateway telemetry, with NewAPI as legacy fallback."""
+    local_query = db.query(Transaction).filter(
+        Transaction.user_id == user.id,
+        Transaction.type == "consumption",
+        Transaction.model_used != "",
+    )
+    local_total = local_query.count()
+    if local_total:
+        transactions = (
+            local_query.order_by(desc(Transaction.created_at))
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+        prices = _catalog_prices(db)
+        fallback_price = {"prompt": 0.000001, "completion": 0.000001, "blended": 0.000001, "provider": "Other"}
+        items = []
+        for tx in transactions:
+            model = tx.model_used or "unknown"
+            price = prices.get(model, fallback_price)
+            if tx.upstream_cost is not None:
+                cost = float(tx.upstream_cost)
+                estimated = False
+            elif (tx.prompt_tokens or 0) or (tx.completion_tokens or 0):
+                cost = float(tx.prompt_tokens or 0) * price["prompt"] + float(tx.completion_tokens or 0) * price["completion"]
+                estimated = True
+            else:
+                cost = float(tx.tokens or 0) * price["blended"]
+                estimated = True
+            items.append({
+                "id": f"local-{tx.id}",
+                "request_id": tx.request_id,
+                "model": model,
+                "requested_model": tx.requested_model or model,
+                "provider": tx.provider or price["provider"],
+                "prompt_tokens": float(tx.prompt_tokens or 0),
+                "completion_tokens": float(tx.completion_tokens or 0),
+                "cached_tokens": float(tx.cached_tokens or 0),
+                "reasoning_tokens": float(tx.reasoning_tokens or 0),
+                "tokens": float(tx.tokens or 0),
+                "cost": round(cost, 8),
+                "cost_estimated": estimated,
+                "latency_ms": float(tx.latency_ms) if tx.latency_ms is not None else None,
+                "status": tx.status,
+                "status_code": tx.status_code or (200 if tx.status == "completed" else 500),
+                "created_at": tx.created_at.isoformat() if tx.created_at else None,
+                "source": "glbtoken_gateway",
+            })
+        return {"total": local_total, "items": items, "source": "glbtoken_gateway"}
+
+    # Legacy fallback for accounts that have NewAPI logs but no local request
+    # transactions yet (for example, immediately after this migration ships).
     if not user.newapi_user_id:
         return {"total": 0, "items": [], "message": "New API user not linked"}
     try:
@@ -226,8 +344,10 @@ async def get_logs(
             ct = it.get("completion_tokens") or 0
             tokens = (pt + ct) or it.get("tokens") or it.get("total_tokens") or 0
             quota = it.get("quota") or 0
-            # New API quota → USD (default: 1 USD = 500,000 quota units); fall back to amount
-            cost = round(quota / 500000.0, 8) if quota else (it.get("amount") or 0)
+            # New API quota → USD using the same configured conversion as
+            # account quota sync. A hard-coded divisor made logs disagree with
+            # balance and dashboard figures whenever deployments customized it.
+            cost = round(quota / max(NEWAPI_QUOTA_PER_USD, 1), 8) if quota else (it.get("amount") or 0)
             std = dict(it)
             std["prompt_tokens"] = pt
             std["completion_tokens"] = ct
@@ -246,21 +366,54 @@ async def get_logs(
 @limiter.limit("30/minute")
 async def get_log_content(
     request: Request,
-    log_id: int = Query(..., description="Log entry ID to fetch full content for"),
+    log_id: str = Query(..., description="Log entry ID to fetch details for"),
     user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """Fetch full request content (prompt + completion) from New API for a specific log entry."""
+    if log_id.startswith("local-"):
+        try:
+            transaction_id = int(log_id[6:])
+        except ValueError:
+            return {"error": "Content not available"}
+        tx = db.query(Transaction).filter(
+            Transaction.id == transaction_id,
+            Transaction.user_id == user.id,
+            Transaction.type == "consumption",
+        ).first()
+        if not tx:
+            return {"error": "Content not available"}
+        return {
+            "content_stored": False,
+            "model": tx.model_used,
+            "requested_model": tx.requested_model or tx.model_used,
+            "provider": tx.provider,
+            "request_id": tx.request_id,
+            "tokens": tx.tokens,
+            "prompt_tokens": tx.prompt_tokens,
+            "completion_tokens": tx.completion_tokens,
+            "cached_tokens": tx.cached_tokens,
+            "reasoning_tokens": tx.reasoning_tokens,
+            "latency_ms": tx.latency_ms,
+            "status": tx.status,
+            "status_code": tx.status_code or (200 if tx.status == "completed" else 500),
+            "cost": tx.upstream_cost,
+            "created_at": tx.created_at.isoformat() if tx.created_at else None,
+        }
     if not user.newapi_user_id:
+        return {"error": "Content not available"}
+    if not log_id.isdigit():
         return {"error": "Content not available"}
     try:
         # SECURITY (IDOR): verify the log entry belongs to THIS user before
         # returning prompt/completion content. Otherwise any authenticated user
         # could enumerate log_ids and read other users' prompts.
         logs = await get_user_logs(user.newapi_user_id, page=1, page_size=200)
-        owned_ids = {str(item.get("id")) for item in logs.get("items", [])}
+        payload = logs.get("data") if isinstance(logs.get("data"), dict) else logs
+        owned_ids = {str(item.get("id")) for item in payload.get("items", [])}
         if str(log_id) not in owned_ids:
             return {"error": "Content not available"}
-        content = await _get_log_content(log_id)
+        content = await _get_log_content(int(log_id))
         if "error" in content:
             return {"error": "Content not available"}
         return {
@@ -397,26 +550,51 @@ async def get_usage_analytics(
             "requests": int(row.requests or 0),
         }
 
-    # Estimate cost per token using average ~$0.001/1K tokens (modelsave heuristic)
-    model_prices = {}
-    if not model:
-        all_models = db.query(AIModel.model_id, AIModel.prompt_price, AIModel.completion_price).all()
-        for m in all_models:
-            avg_price = (float(m.prompt_price or 0) + float(m.completion_price or 0)) / 2
-            model_prices[m.model_id] = avg_price if avg_price > 0 else 0.000001  # ~$0.001/1K tokens default
+    prices = _catalog_prices(db)
+    fallback_price = {"prompt": 0.000001, "completion": 0.000001, "blended": 0.000001, "provider": "Other"}
 
-    # Get per-model costs for the period
+    # Cost data prefers provider-reported totals. New requests without a
+    # reported cost use exact prompt/completion catalog prices; legacy rows
+    # without a breakdown use the blended catalog price.
     model_cost_query = db.query(
         Transaction.model_used,
         func.sum(Transaction.tokens).label("tokens"),
+        func.count(Transaction.id).label("completed_count"),
+        *_cost_columns(),
     ).filter(
         Transaction.user_id == user.id,
         Transaction.type == "consumption",
+        Transaction.status == "completed",
         Transaction.created_at >= since,
     )
     if model:
         model_cost_query = model_cost_query.filter(Transaction.model_used == model)
     model_cost_data = model_cost_query.group_by(Transaction.model_used).all()
+
+    daily_cost_query = db.query(
+        func.date(Transaction.created_at).label("day"),
+        Transaction.model_used,
+        func.count(Transaction.id).label("completed_count"),
+        *_cost_columns(),
+    ).filter(
+        Transaction.user_id == user.id,
+        Transaction.type == "consumption",
+        Transaction.status == "completed",
+        Transaction.created_at >= since,
+    )
+    if model:
+        daily_cost_query = daily_cost_query.filter(Transaction.model_used == model)
+    daily_cost_rows = daily_cost_query.group_by(
+        func.date(Transaction.created_at), Transaction.model_used
+    ).all()
+    daily_cost_map = {}
+    costs_estimated = False
+    for row in daily_cost_rows:
+        day_str = str(row.day) if hasattr(row.day, 'strftime') else str(row.day)
+        model_name = row.model_used or "unknown"
+        row_cost, row_estimated = _group_cost(row, prices.get(model_name, fallback_price))
+        daily_cost_map[day_str] = daily_cost_map.get(day_str, 0) + row_cost
+        costs_estimated = costs_estimated or row_estimated
 
     # Build daily arrays
     for i in range(days - 1, -1, -1):
@@ -425,8 +603,7 @@ async def get_usage_analytics(
         if d in daily_map:
             tokens_list.append(daily_map[d]["tokens"])
             requests_list.append(daily_map[d]["requests"])
-            # Estimate cost for this day's tokens
-            costs_list.append(round(daily_map[d]["tokens"] * 0.000001, 6))
+            costs_list.append(round(daily_cost_map.get(d, 0), 6))
         else:
             tokens_list.append(0)
             requests_list.append(0)
@@ -441,12 +618,12 @@ async def get_usage_analytics(
     for mc in model_cost_data:
         model_name = mc.model_used or "unknown"
         model_tokens = float(mc.tokens or 0)
-        price_per_token = model_prices.get(model_name, 0.000001)
-        model_cost = round(model_tokens * price_per_token, 6)
+        model_cost, model_estimated = _group_cost(mc, prices.get(model_name, fallback_price))
         top_models.append({
             "model": model_name,
             "tokens": model_tokens,
             "cost": model_cost,
+            "estimated": model_estimated,
         })
     top_models.sort(key=lambda x: x["tokens"], reverse=True)
 
@@ -458,6 +635,8 @@ async def get_usage_analytics(
         "total_tokens": total_tokens,
         "total_cost": total_cost,
         "top_models": top_models,
+        "costs_estimated": costs_estimated,
+        "cost_methodology": "Provider-reported cost where available; otherwise prompt/completion catalog pricing",
     }
 
 
@@ -482,33 +661,34 @@ async def analytics_cost_by_model(
             Transaction.model_used,
             func.sum(Transaction.tokens).label("tokens"),
             func.count(Transaction.id).label("calls"),
+            func.sum(case((Transaction.status == "completed", 1), else_=0)).label("completed_count"),
+            *_cost_columns(),
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
             Transaction.created_at >= since,
         ).group_by(Transaction.model_used).all()
 
-        # Get model prices
-        all_models = db.query(AIModel.model_id, AIModel.prompt_price, AIModel.completion_price).all()
-        model_prices = {}
-        for m in all_models:
-            avg_price = (float(m.prompt_price or 0) + float(m.completion_price or 0)) / 2
-            model_prices[m.model_id] = max(avg_price, 0.000001)
+        model_prices = _catalog_prices(db)
+        fallback_price = {"prompt": 0.000001, "completion": 0.000001, "blended": 0.000001, "provider": "Other"}
 
         results = []
+        providers = _catalog_prices(db)
         for row in q:
             model_name = row.model_used or "unknown"
             tokens_val = float(row.tokens or 0)
             calls_val = int(row.calls or 0)
-            price = model_prices.get(model_name, 0.000001)
-            cost = round(tokens_val * price, 6)
-            avg_cost = round(price, 10)
+            price_meta = model_prices.get(model_name, fallback_price)
+            cost, estimated = _group_cost(row, price_meta)
+            avg_cost = round(cost / tokens_val, 10) if tokens_val else 0
             results.append({
                 "model": model_name,
+                "provider": price_meta["provider"],
                 "cost": cost,
                 "tokens": tokens_val,
                 "calls": calls_val,
                 "avg_cost_per_token": avg_cost,
+                "estimated": estimated,
             })
         results.sort(key=lambda x: x["cost"], reverse=True)
         _cache_set(cache_key, results)
@@ -610,6 +790,8 @@ async def analytics_key_usage(
             Transaction.model_used,
             func.sum(Transaction.tokens).label("tokens"),
             func.count(Transaction.id).label("calls"),
+            func.sum(case((Transaction.status == "completed", 1), else_=0)).label("completed_count"),
+            *_cost_columns(),
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
@@ -617,6 +799,8 @@ async def analytics_key_usage(
             Transaction.created_at >= since,
         ).group_by(Transaction.key_id, Transaction.model_used).all()
 
+        prices = _catalog_prices(db)
+        fallback_price = {"prompt": 0.000001, "completion": 0.000001, "blended": 0.000001, "provider": "Other"}
         results = []
         for row in rows:
             key_raw = key_map.get(row.key_id, "")
@@ -624,13 +808,14 @@ async def analytics_key_usage(
             model_name = row.model_used or "unknown"
             tokens_val = float(row.tokens or 0)
             calls_val = max(1, round(int(row.calls or 0)))
-            cost = round(tokens_val * 0.000001, 6)
+            cost, estimated = _group_cost(row, prices.get(model_name, fallback_price))
             results.append({
                 "key_prefix": key_prefix,
                 "model": model_name,
                 "calls": calls_val,
                 "tokens": tokens_val,
                 "cost": cost,
+                "estimated": estimated,
             })
         _cache_set(cache_key, results)
         return results
@@ -658,15 +843,20 @@ async def analytics_response_times(
         q = db.query(
             func.date(Transaction.created_at).label("day"),
             Transaction.model_used,
-            func.sum(Transaction.tokens).label("total_tokens"),
+            Transaction.provider,
+            func.avg(Transaction.latency_ms).label("avg_ms"),
+            func.max(Transaction.latency_ms).label("max_ms"),
             func.count(Transaction.id).label("calls"),
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
+            Transaction.status == "completed",
+            Transaction.latency_ms.isnot(None),
             Transaction.created_at >= since,
         ).group_by(
             func.date(Transaction.created_at),
             Transaction.model_used,
+            Transaction.provider,
         ).all()
 
         results = []
@@ -674,33 +864,17 @@ async def analytics_response_times(
             date_str = str(row.day) if hasattr(row.day, 'strftime') else str(row.day)
             model_name = row.model_used or "unknown"
             calls_val = int(row.calls or 0)
-            total_tokens = float(row.total_tokens or 0)
 
-            # Estimate response time: base 200ms + ~1ms per token (varies by model)
-            avg_tokens_per_call = total_tokens / max(calls_val, 1)
-            base_ms = 200
-            speed_factor = 1.0
-            if "gpt-4" in model_name.lower():
-                speed_factor = 1.5
-            elif "gpt-3.5" in model_name.lower() or "gpt-4o-mini" in model_name.lower():
-                speed_factor = 0.7
-            elif "claude" in model_name.lower():
-                speed_factor = 1.3
-            elif "llama" in model_name.lower() or "mistral" in model_name.lower():
-                speed_factor = 0.9
-
-            avg_ms = round(base_ms + avg_tokens_per_call * speed_factor, 1)
-            # No real latency is recorded in the DB — expose a deterministic
-            # estimate and flag it instead of fabricating random-looking values.
-            max_ms = round(avg_ms * 2.0, 1)
-
+            avg_ms = round(float(row.avg_ms or 0), 1)
             results.append({
                 "date": date_str,
                 "model": model_name,
+                "provider": row.provider or providers.get(model_name, {"provider": "Other"})["provider"],
+                "response_time_ms": avg_ms,
                 "avg_response_time_ms": avg_ms,
-                "max_response_time_ms": max_ms,
+                "max_response_time_ms": round(float(row.max_ms or 0), 1),
                 "calls": calls_val,
-                "estimated": True,
+                "estimated": False,
             })
         results.sort(key=lambda x: x["date"])
         _cache_set(cache_key, results)
@@ -726,29 +900,28 @@ async def analytics_cost_projection(
         if cached is not None:
             return cached
 
-        # Get model prices
-        all_models = db.query(AIModel.model_id, AIModel.prompt_price, AIModel.completion_price).all()
-        model_prices = {}
-        for m in all_models:
-            avg_price = (float(m.prompt_price or 0) + float(m.completion_price or 0)) / 2
-            model_prices[m.model_id] = max(avg_price, 0.000001)
+        model_prices = _catalog_prices(db)
+        fallback_price = {"prompt": 0.000001, "completion": 0.000001, "blended": 0.000001, "provider": "Other"}
 
         # Per-model token counts
         model_data = db.query(
             Transaction.model_used,
-            func.sum(Transaction.tokens).label("tokens"),
+            func.count(Transaction.id).label("completed_count"),
+            *_cost_columns(),
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
+            Transaction.status == "completed",
             Transaction.created_at >= since,
         ).group_by(Transaction.model_used).all()
 
         total_cost = 0.0
+        estimated = False
         for row in model_data:
             model_name = row.model_used or "unknown"
-            tokens_val = float(row.tokens or 0)
-            price = model_prices.get(model_name, 0.000001)
-            total_cost += tokens_val * price
+            row_cost, row_estimated = _group_cost(row, model_prices.get(model_name, fallback_price))
+            total_cost += row_cost
+            estimated = estimated or row_estimated
 
         total_cost = round(total_cost, 6)
 
@@ -758,6 +931,7 @@ async def analytics_cost_projection(
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
+            Transaction.status == "completed",
             Transaction.created_at >= since,
         ).scalar() or 0
 
@@ -771,9 +945,11 @@ async def analytics_cost_projection(
             "daily_avg": daily_avg,
             "days_of_data": days_with_data,
             "days_requested": days,
+            "estimated": estimated,
+            "methodology": "Provider-reported cost where available; otherwise prompt/completion catalog pricing",
         }
         _cache_set(cache_key, result)
         return result
     except Exception as e:
         print(f"⚠️ analytics/cost-projection error: {e}")
-        return {"last_30_days_cost": 0, "period_cost": 0, "projected_monthly": 0, "daily_avg": 0, "days_of_data": 0, "days_requested": days}
+        return {"last_30_days_cost": 0, "period_cost": 0, "projected_monthly": 0, "daily_avg": 0, "days_of_data": 0, "days_requested": days, "estimated": True, "methodology": "Provider-reported cost where available; otherwise prompt/completion catalog pricing"}

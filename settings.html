@@ -302,6 +302,10 @@
             <div><label class="settings-field-label">Max Tokens</label>
               <input type="number" id="setDefaultMaxTokens" min="1" max="128000" step="1" value="4096" class="settings-input">
             </div>
+            <div><label class="settings-field-label">Monthly Token Budget <span class="text-muted text-xs">(0 = no limit)</span></label>
+              <input type="number" id="setMonthlyBudget" min="0" max="1000000000" step="1" value="0" class="settings-input">
+              <div class="text-muted text-xs" style="margin-top:0.35rem">Stops new gateway and Playground requests after this calendar-month cap is reached.</div>
+            </div>
             <div class="toggle-row">
               <div><div class="toggle-label">Stream Responses</div><div class="toggle-desc">Token-by-token streaming by default</div></div>
               <label class="toggle-switch"><input type="checkbox" id="setDefaultStream" checked /><span class="toggle-slider"></span></label>
@@ -411,7 +415,7 @@
   
 
 <script src="nav.js?v=21"></script>
-<script src="translations.js?v=1113"></script>
+<script src="translations.js?v=1114"></script>
 <script data-cfasync="false" src="shared.js?v=1169"></script>
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
@@ -877,14 +881,27 @@ window.saveAppearance = function(){
 // call the global window.setAccent(name) defined there.
 // (Deliberately no local redefinition — it would shadow the 11-color global.)
 
-// ── API Defaults (localStorage — used by Playground/API clients) ──
-window.saveApiDefaults = function(){
+// ── API Defaults (local preferences + server-enforced account budget) ──
+window.saveApiDefaults = async function(){
   var model = document.getElementById('setDefaultModel').value;
   var temp = parseFloat(document.getElementById('setDefaultTemp').value);
   var maxTok = parseInt(document.getElementById('setDefaultMaxTokens').value, 10);
+  var budget = parseInt(document.getElementById('setMonthlyBudget').value || '0', 10);
   var stream = document.getElementById('setDefaultStream').checked;
   if(isNaN(temp) || temp < 0 || temp > 2){ showToast('Temperature must be between 0 and 2','error'); return; }
   if(isNaN(maxTok) || maxTok < 1){ showToast('Max tokens must be at least 1','error'); return; }
+  if(isNaN(budget) || budget < 0 || budget > 1000000000){ showToast('Monthly budget must be between 0 and 1,000,000,000 tokens','error'); return; }
+  var saved = null;
+  try{
+    saved = await safeApi('PUT','/api/user/settings',{monthly_token_limit:budget},null,true);
+  }catch(e){
+    showToast('Failed to save monthly budget','error');
+    return;
+  }
+  if(!saved || saved.status !== 'updated'){
+    showToast('Failed to save monthly budget','error');
+    return;
+  }
   localStorage.setItem('gt_def_model', model);
   localStorage.setItem('gt_def_temp', String(Math.round(temp * 10) / 10));
   localStorage.setItem('gt_def_max_tokens', String(maxTok));
@@ -1434,6 +1451,8 @@ function loadSettingsExtras(){
     if(!d) return;
     var pEl = document.getElementById('notifProduct');
     if(pEl && typeof d.product_updates !== 'undefined') pEl.checked = !!d.product_updates;
+    var budgetEl = document.getElementById('setMonthlyBudget');
+    if(budgetEl) budgetEl.value = String(Number(d.monthly_token_limit || 0));
   });
 }
 
