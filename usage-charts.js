@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════
-   USAGE CHARTS — Usage analytics (dashboard.html)
+   USAGE CHARTS — Usage analytics (dashboard and Usage pages)
    Extracted from filters.js — shared globals
    (usageDays, usageMode, usageModel,
    safeApi) come from shared.js
@@ -7,6 +7,7 @@
     async function loadUsageAnalytics(days,model,mode){
       var canvas=document.getElementById('dailyChart');
       if(!canvas)return;
+      var costCanvas=document.getElementById('usageCostChart');
       var summaryTotal=document.getElementById('usageTotalVal');
       var summaryCost=document.getElementById('usageCostVal');
       var summaryLabel=document.getElementById('usageTotalLabel');
@@ -18,10 +19,16 @@
         var totalTokens=Number(data.total_tokens||0);
         var totalCost=Number(data.total_cost||0);
         var top=(data.top_models&&data.top_models[0])||null;
-        var empty=document.getElementById('usageChartEmpty');
+        var empty=document.getElementById('usageChartEmpty')||document.getElementById('usageTokenChartEmpty');
+        var costEmpty=document.getElementById('usageCostChartEmpty');
         var hasUsage=totalTokens>0||requests>0;
+        var tokenValues=Array.isArray(data.tokens)?data.tokens:[];
+        var costValues=Array.isArray(data.costs)?data.costs:tokenValues.map(function(){return 0});
+        var hasCost=totalCost>0||costValues.some(function(value){return Number(value)>0});
         if(empty)empty.classList.toggle('show',!hasUsage);
+        if(costEmpty)costEmpty.classList.toggle('show',!hasCost);
         canvas.style.opacity=hasUsage?'1':'0.18';
+        if(costCanvas)costCanvas.style.opacity=hasCost?'1':'0.18';
         var requestStat=document.getElementById('usageRequestStat');
         var requestSub=document.getElementById('usageRequestSub');
         var tokenStat=document.getElementById('usageTokenStat');
@@ -38,27 +45,36 @@
         if(costMethod)costMethod.textContent=hasUsage?(data.costs_estimated?'Includes catalog estimates':'Provider-reported cost'):'No billed usage';
         if(topStat)topStat.textContent=top?(top.model||'Unknown'):'—';
         if(topSub)topSub.textContent=top?Number(top.tokens||0).toLocaleString()+' charged tokens':'No model usage yet';
-        if(window.dailyChartInst){window.dailyChartInst.destroy()}
-        var isCost=mode==='cost';
-        var values=isCost?(data.costs||data.tokens.map(function(){return 0})):data.tokens;
-        var label=isCost?'Cost ($)':'Tokens';
-        var color=isCost?'rgba(0,214,143,0.7)':'rgba(255,179,71,0.6)';
-        var border=isCost?'#00D68F':cssVar('--primary-hover');
-        window.dailyChartInst=new Chart(canvas,{
-          type:'bar',
-          data:{
-            labels:(data.labels||[]).map(function(l){var p=String(l||'').split('-');return p[1]+'/'+p[2]}),
-            datasets:[{label:label,data:values,backgroundColor:color,borderColor:border,borderWidth:1,borderRadius:4}]
-          },
-          options:{
-            responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{display:false}},
-            scales:{
-              y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94A3B8',font:{size:10}}},
-              x:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:10}}}
+        function renderBarChart(target,values,label,color,border,isCurrency){
+          return new Chart(target,{
+            type:'bar',
+            data:{
+              labels:(data.labels||[]).map(function(l){var p=String(l||'').split('-');return p[1]+'/'+p[2]}),
+              datasets:[{label:label,data:values,backgroundColor:color,borderColor:border,borderWidth:1,borderRadius:4}]
+            },
+            options:{
+              responsive:true,maintainAspectRatio:false,
+              plugins:{legend:{display:false}},
+              scales:{
+                y:{beginAtZero:true,grid:{color:cssVar('--border-light')},ticks:{color:cssVar('--text-muted'),font:{size:10},callback:isCurrency?function(value){return '$'+Number(value).toLocaleString(undefined,{maximumFractionDigits:4})}:undefined}},
+                x:{grid:{display:false},ticks:{color:cssVar('--text-muted'),font:{size:10}}}
+              }
             }
-          }
-        });
+          });
+        }
+        if(window.dailyChartInst){window.dailyChartInst.destroy()}
+        if(costCanvas){
+          window.dailyChartInst=renderBarChart(canvas,tokenValues,'Tokens',cssVar('--primary-soft'),cssVar('--primary-hover'),false);
+          if(window.usageCostChartInst){window.usageCostChartInst.destroy()}
+          window.usageCostChartInst=renderBarChart(costCanvas,costValues,'Cost ($)','rgba(0,214,143,0.28)','#00D68F',true);
+        }else{
+          var isCost=mode==='cost';
+          var values=isCost?costValues:tokenValues;
+          var label=isCost?'Cost ($)':'Tokens';
+          var color=isCost?'rgba(0,214,143,0.28)':cssVar('--primary-soft');
+          var border=isCost?'#00D68F':cssVar('--primary-hover');
+          window.dailyChartInst=renderBarChart(canvas,values,label,color,border,isCost);
+        }
         if(summaryTotal)summaryTotal.textContent=totalTokens.toLocaleString();
         if(summaryCost)summaryCost.textContent=fmtUSD(totalCost)+(data.costs_estimated?' est.':'');
         if(summaryLabel)summaryLabel.innerHTML='Total: <strong>'+totalTokens.toLocaleString()+'</strong> tokens · '+requests.toLocaleString()+' requests';
