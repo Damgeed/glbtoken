@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1285" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="dashboard.css?v=1059" />
+  <link rel="stylesheet" href="dashboard.css?v=1060" />
   </head>
 <body>
 <script>
@@ -284,11 +284,11 @@ function showDashSection(section) {
             <span class="gateway-status-dot"></span>
             <span><strong id="dashGatewayStatusLabel">Checking NewAPI telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
           </div>
-          <div class="gateway-metric-grid">
-            <div class="gateway-metric"><span>Live catalog</span><strong id="dashCatalogCount">—</strong><small>models available</small></div>
-            <div class="gateway-metric"><span>Providers</span><strong id="dashProviderCount">—</strong><small>connected through NewAPI</small></div>
-            <div class="gateway-metric"><span>Monthly usage</span><strong id="dashMonthlyBudget">—</strong><small id="dashMonthlyBudgetHint">checking</small></div>
-            <div class="gateway-metric"><span>30-day forecast</span><strong id="dashProjectedCost">—</strong><small id="dashProjectionHint">usage-based estimate</small></div>
+          <div class="stat-cards gateway-metric-grid">
+            <div class="dash-stat-card"><div class="num" id="dashCatalogCount">—</div><div class="lbl">Live Models</div><div class="chg gateway-metric-meta">NewAPI catalog</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashProviderCount">—</div><div class="lbl">Providers</div><div class="chg gateway-metric-meta">Connected catalog</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashMonthlyBudget">—</div><div class="lbl">Monthly Usage</div><div class="chg gateway-metric-meta" id="dashMonthlyBudgetHint">Checking</div></div>
+            <div class="dash-stat-card"><div class="num" id="dashProjectedCost">—</div><div class="lbl">30-Day Forecast</div><div class="chg gateway-metric-meta" id="dashProjectionHint">Usage-based estimate</div></div>
           </div>
           <p class="dashboard-data-note">New requests store measured latency and token breakdowns. Costs use provider totals when available and catalog estimates otherwise.</p>
         </section>
