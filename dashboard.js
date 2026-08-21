@@ -444,10 +444,6 @@ function copyDashboardSnippet(btn){
 
 function renderDashboardSetup(dashboard){
   function set(id, value){ var el = document.getElementById(id); if(el) el.textContent = value; }
-  var keys = Number((dashboard && dashboard.api_keys_active) || 0);
-  var requests = Number((dashboard && dashboard.total_requests) || 0);
-  set('dashOverviewKeys', keys.toLocaleString());
-  set('dashOverviewKeysHint', keys ? 'ready to use' : 'create your first key');
   var monthlyLimit = Number((dashboard && dashboard.monthly_token_limit) || 0);
   var monthlyUsed = Number((dashboard && dashboard.monthly_tokens_used) || 0);
   if(monthlyLimit > 0){
@@ -458,14 +454,6 @@ function renderDashboardSetup(dashboard){
     set('dashMonthlyBudget', 'No limit');
     set('dashMonthlyBudgetHint', fmtCompact(monthlyUsed) + ' used this month');
   }
-  set('dashSetupKeyIcon', keys ? '✓' : '1');
-  set('dashSetupKeyText', keys ? keys + ' active ' + (keys === 1 ? 'key' : 'keys') : 'Required before your first API call.');
-  set('dashSetupCallIcon', requests ? '✓' : '2');
-  set('dashSetupCallText', requests ? requests.toLocaleString() + ' requests recorded' : 'Use the snippet or Playground to verify access.');
-  var keyIcon = document.getElementById('dashSetupKeyIcon');
-  var callIcon = document.getElementById('dashSetupCallIcon');
-  if(keyIcon) keyIcon.classList.toggle('is-complete', keys > 0);
-  if(callIcon) callIcon.classList.toggle('is-complete', requests > 0);
 }
 
 async function loadDashboardCommandCenter(){
