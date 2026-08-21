@@ -191,90 +191,123 @@
     hidePageLoader();
   });
       // ── AI Chat (Homepage) ──
-    let aiModel = 'gpt4o-mini';
-    // ── Demo chat responses (removed for production) ──
-    // AI chat now calls the backend proxy. See sendAIChatMsg below.
+    let aiModel = '';
+    let aiMessages = [];
+    let aiCatalog = [];
+
+    function updateAIChatControls(){
+      const input=document.getElementById('aiChatInput');
+      const button=document.getElementById('aiSendBtn');
+      if(button) button.disabled=!!window.__aiSending||!aiModel||!input||!input.value.trim();
+    }
+    function aiModelRecord(modelId){
+      return aiCatalog.find(function(model){return model.model_id===modelId;})||null;
+    }
     function selectAIModelDropdown(model){
-      aiModel = model;
-      const badge = document.getElementById('aiModelBadge');
-      const names = {'gpt4o-mini':'GPT-4o Mini','gpt4o':'GPT-4o','gpt4':'GPT-4 Turbo','claude-haiku':'Claude 3 Haiku','claude-sonnet':'Claude 3.5 Sonnet','claude-opus':'Claude 3 Opus','gemini-flash':'Gemini 2.0 Flash','gemini-pro':'Gemini 2.0 Pro','llama-scout':'Llama 4 Scout','llama-maverick':'Llama 4 Maverick','deepseek-flash':'DeepSeek V3 Flash','deepseek-v4':'DeepSeek V4 Pro','deepseek-r1':'DeepSeek R1','mistral-small':'Mistral Small','mistral-large':'Mistral Large 2','qwen-plus':'Qwen 3.7 Plus','grok-4':'Grok 4.20','command-a':'Command A','phi-4':'Phi-4'};
-      if(badge) badge.textContent = names[model] || model;
-      const welcome = document.getElementById('aiWelcome');
-      if(welcome) welcome.style.display='flex';
+      aiModel=model||'';
+      const record=aiModelRecord(aiModel);
+      const badge=document.getElementById('aiModelBadge');
+      if(badge) badge.textContent=record?(record.name||record.model_id):(aiModel||'Live catalog');
+      updateAIChatControls();
     }
-    function sendAIChatMsg(){
-      if(window.__aiSending) return;
-      window.__aiSending = true;
-      const input = document.getElementById('aiChatInput');
-      const msg = input.value.trim();
-      if(!msg){ window.__aiSending = false; return; }
-      const msgs = document.getElementById('aiChatMsgs');
-      // Hide welcome
-      const welcome = document.getElementById('aiWelcome');
-      if(welcome) welcome.style.display='none';
-      // Add user message
-      const userDiv = document.createElement('div');
-      userDiv.className = 'chat-msg user';
-      userDiv.innerHTML = '<div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div>';
-      msgs.appendChild(userDiv);
-      input.value = '';
-      // Keep keyboard open on mobile — focus cascade, NO synchronous height reset (shifts layout and dismisses keyboard)
-      if(window.innerWidth <= 768){
-        input.focus({preventScroll:true});
-        requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-        setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 100);
-        setTimeout(function(){ if(input) input.focus({preventScroll:true}); }, 300);
+    function appendAIChatMessage(role,text,meta){
+      const msgs=document.getElementById('aiChatMsgs');
+      if(!msgs)return null;
+      const row=document.createElement('div');
+      row.className='chat-msg '+(role==='user'?'user':'ai');
+      const avatar=document.createElement('div');
+      avatar.className='av';
+      avatar.textContent=role==='user'?'U':'GT';
+      const body=document.createElement('div');
+      body.className='ai-message-body';
+      const bubble=document.createElement('div');
+      bubble.className='bubble'+(meta&&meta.error?' ai-error':'');
+      bubble.textContent=String(text||'');
+      body.appendChild(bubble);
+      if(meta&&meta.auth){
+        const link=document.createElement('a');
+        link.href='login.html?next=index.html%23ai-chat';
+        link.className='ai-chat-login-link';
+        link.textContent='Sign in to continue →';
+        bubble.appendChild(document.createElement('br'));
+        bubble.appendChild(link);
       }
-      msgs.scrollTop = msgs.scrollHeight;
-      // Visual "sending" state WITHOUT disabling the button — btn.disabled=true
-      // makes iOS Safari drop input focus and dismiss the keyboard.
-      const btn = document.getElementById('aiSendBtn');
-      if(btn){ btn.setAttribute('aria-disabled','true'); btn.style.opacity='0.5'; btn.textContent = '⋯'; }
-      // Add typing indicator
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'chat-msg ai';
-      typingDiv.id = 'aiTyping';
-      typingDiv.innerHTML = '<div class="av">🤖</div><div class="bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>';
-      msgs.appendChild(typingDiv);
-      msgs.scrollTop = msgs.scrollHeight;
-      // Call backend proxy
-      (async () => {
-        try {
-          const data = await api('POST','/api/proxy/chat',{model: aiModel, message: msg});
-          document.getElementById('aiTyping').remove();
-          const aiDiv = document.createElement('div');
-          aiDiv.className = 'chat-msg ai';
-          aiDiv.innerHTML = '<div class="av">🤖</div><div class="bubble">'+escapeHtml(data.response || data.choices?.[0]?.message?.content || t('No response'))+'</div>';
-          msgs.appendChild(aiDiv);
-          msgs.scrollTop = msgs.scrollHeight;
-          // Refocus on mobile so the keyboard stays up after the AI response arrives
-          if(window.innerWidth <= 768 && input){
-            input.focus({preventScroll:true});
-            requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-          }
-        } catch(e){
-          const typing = document.getElementById('aiTyping');
-          if(typing) typing.remove();
-          const aiDiv = document.createElement('div');
-          aiDiv.className = 'chat-msg ai';
-          const errMsg = (e && e.message) ? e.message : 'Connection error. Please try again.';
-          let bubble = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">'+escapeHtml(errMsg)+'</div>';
-          if(errMsg === 'Not authenticated'){
-            bubble = '<div class="av">🤖</div><div class="bubble" style="color:var(--destructive)">Please <a href="login.html" style="color:var(--primary);text-decoration:underline">log in</a> to use the AI chat.</div>';
-          }
-          aiDiv.innerHTML = bubble;
-          msgs.appendChild(aiDiv);
-          msgs.scrollTop = msgs.scrollHeight;
-          // Refocus on mobile even on error — keep keyboard up for retry
-          if(window.innerWidth <= 768 && input){
-            input.focus({preventScroll:true});
-            requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-          }
-        }
-        btn.setAttribute('aria-disabled','false'); btn.style.opacity=''; btn.textContent = '➤';
-        window.__aiSending = false;
-      })();
+      if(meta&&(meta.model||meta.tokens!=null||meta.balance!=null)){
+        const details=document.createElement('div');
+        details.className='ai-message-meta';
+        [meta.model,meta.tokens!=null?Number(meta.tokens).toLocaleString()+' tokens':'',meta.balance!=null?Number(meta.balance).toLocaleString()+' GT left':''].filter(Boolean).forEach(function(value){
+          const chip=document.createElement('span');chip.textContent=value;details.appendChild(chip);
+        });
+        body.appendChild(details);
+      }
+      row.appendChild(avatar);
+      row.appendChild(body);
+      msgs.appendChild(row);
+      msgs.scrollTop=msgs.scrollHeight;
+      return row;
     }
+    function resetAIChat(){
+      if(window.__aiSending)return;
+      aiMessages=[];
+      const msgs=document.getElementById('aiChatMsgs');
+      if(!msgs)return;
+      msgs.querySelectorAll('.chat-msg').forEach(function(message){message.remove();});
+      const welcome=document.getElementById('aiWelcome');
+      if(welcome)welcome.style.display='flex';
+      const input=document.getElementById('aiChatInput');
+      if(input){input.value='';input.style.height='';}
+      updateAIChatControls();
+    }
+    async function sendAIChatMsg(){
+      if(window.__aiSending)return;
+      const input=document.getElementById('aiChatInput');
+      const msg=input&&input.value?input.value.trim():'';
+      if(!msg||!aiModel)return;
+      window.__aiSending=true;
+      updateAIChatControls();
+      const msgs=document.getElementById('aiChatMsgs');
+      const welcome=document.getElementById('aiWelcome');
+      if(welcome)welcome.style.display='none';
+      appendAIChatMessage('user',msg);
+      aiMessages.push({role:'user',content:msg});
+      input.value='';
+      input.style.height='';
+      if(msgs)msgs.setAttribute('aria-busy','true');
+      const typing=appendAIChatMessage('assistant','Routing through the live gateway…');
+      if(typing)typing.classList.add('ai-chat-pending');
+      try{
+        const data=await api('POST','/api/proxy/chat',{
+          model:aiModel,
+          messages:aiMessages.slice(-20),
+          max_tokens:1024,
+          temperature:0.7
+        },120000);
+        if(typing)typing.remove();
+        const content=data&&data.choices&&data.choices[0]&&data.choices[0].message?data.choices[0].message.content:data&&data.response;
+        const response=Array.isArray(content)?content.map(function(part){return typeof part==='string'?part:(part&&part.text)||'';}).join('\n'):String(content||'The gateway returned an empty response.');
+        aiMessages.push({role:'assistant',content:response});
+        appendAIChatMessage('assistant',response,{model:data.selected_model||data.model||aiModel,tokens:data.tokens_used,balance:data.balance_remaining});
+      }catch(error){
+        if(typing)typing.remove();
+        aiMessages.pop();
+        const message=error&&error.message?error.message:'The gateway could not complete this request.';
+        const auth=/not authenticated|session expired|unauthorized/i.test(message);
+        appendAIChatMessage('assistant',auth?'Sign in to chat with live models. Requests use your GlbTOKEN balance.':message,{error:true,auth:auth});
+      }finally{
+        window.__aiSending=false;
+        if(msgs)msgs.setAttribute('aria-busy','false');
+        updateAIChatControls();
+        if(window.innerWidth<=768&&input)requestAnimationFrame(function(){input.focus({preventScroll:true});});
+      }
+    }
+    window.selectAIModelDropdown=selectAIModelDropdown;
+    window.sendAIChatMsg=sendAIChatMsg;
+    window.resetAIChat=resetAIChat;
+    document.addEventListener('glbtoken:catalog',function(event){
+      aiCatalog=event.detail&&Array.isArray(event.detail.models)?event.detail.models:[];
+      const select=document.getElementById('aiModelSelect');
+      selectAIModelDropdown(select&&!select.disabled?select.value:'');
+    });
 
     function tmDragStart(clientX){
       tmDragStartX=clientX;
@@ -564,6 +597,7 @@ function toggleChat(){
   if(!win) return;
   if(window.innerWidth > 768){
     win.classList.toggle('open');
+    win.setAttribute('aria-hidden',win.classList.contains('open')?'false':'true');
     // Hide back-to-top when chat is open on desktop
     var btt = document.querySelector('.back-to-top');
     if(btt) btt.style.display = win.classList.contains('open') ? 'none' : '';
@@ -582,6 +616,7 @@ function openMobileSupportChat(){
   const aiSection=document.querySelector('.ai-chat-section.chat-focused');
   if(aiSection) closeMobileChat();
   win.classList.add('chat-focused');
+  win.setAttribute('aria-hidden','false');
   // Hide back-to-top while chat is open
   var btt = document.querySelector('.back-to-top');
   if(btt) btt.style.display = 'none';
@@ -615,6 +650,7 @@ function closeMobileSupportChat(){
   const win = document.getElementById('chatWindow');
   if(!win) return;
   win.classList.remove('chat-focused');
+  win.setAttribute('aria-hidden','true');
   // Restore back-to-top visibility
   var btt = document.querySelector('.back-to-top');
   if(btt) btt.style.display = '';
@@ -678,39 +714,44 @@ function closeMobileSupportChat(){
   fab.addEventListener('touchend', onEnd);
 })();
 var _sendingMsg = false;
-function sendChatMsg(inputOverride){
-  if(_sendingMsg) return;
-  const input=inputOverride||document.getElementById('chatInput');
-  const btn=document.getElementById('chatSendBtn');
-  const msg=(input&&input.value?input.value:'').trim();if(!msg)return;
-  _sendingMsg = true;
-  if(btn){btn.setAttribute('aria-disabled','true');btn.style.opacity='0.5'}
-  const msgs=document.getElementById('chatMsgs');
-  const userHtml='<div class="chat-msg user"><div class="av">U</div><div class="bubble">'+escapeHtml(msg)+'</div></div>';
-  msgs.innerHTML+=userHtml;
-  // Clear input WITHOUT losing focus — set value directly, don't blur
-  if(input) { var oldVal=input.value; input.value=''; }
-  saveChatHistory();
-  // Keep keyboard open on mobile — immediate + RAF + setTimeout cascade
-  if(window.innerWidth <= 768 && input){
-    // Use onmousedown-style prevention: refocus before browser blur completes
-    input.focus({preventScroll:true});
-    requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
+function supportAnswer(message){
+  var text=String(message||'').toLowerCase();
+  if(/api.?key|secret|credential|rotate|revoke/.test(text))return {text:'Create, label, copy, rotate, and revoke keys from API Keys. A secret is shown only once, so store it securely and never place it in browser code.',label:'Open API Keys',href:'manage-keys.html'};
+  if(/model|provider|catalog|openai|claude|gemini|deepseek/.test(text))return {text:'The Models page is the source of truth for active model IDs, providers, context limits, and prices. The Playground loads that same live catalog.',label:'Browse live models',href:'models.html'};
+  if(/bill|payment|paystack|stripe|crypto|token|balance|top.?up|refund/.test(text))return {text:'Buy Tokens shows the available packages and payment methods. Billing records completed and pending transactions. If a payment completed but your balance did not update, contact support with the payment reference—never send a card number or API key.',label:'Open Billing',href:'billing.html'};
+  if(/playground|prompt|temperature|fallback|route|test/.test(text))return {text:'Use the Playground to choose a live model, tune parameters, add ordered fallbacks, inspect the generated request, and save successful runs. Playground requests use your balance and appear in logs.',label:'Open Playground',href:'playground.html'};
+  if(/usage|log|request|latency|error|failed|status/.test(text))return {text:'Usage shows spend and model trends; Logs is the best place to inspect request status, latency, token counts, cost, and errors. Start with the newest failed request and confirm its model ID is still active.',label:'Inspect Logs',href:'logs.html'};
+  if(/login|register|sign.?in|password|account|security|2fa|verification/.test(text))return {text:'Use Login or Account Settings for access and security. Never share passwords, verification codes, API secrets, or full payment details in this chat.',label:'Account Settings',href:'settings.html'};
+  if(/human|agent|email|contact|support|help/.test(text))return {text:'For account-specific help, use the contact form or email support@glbtoken.com. This assistant does not create a ticket or send your message automatically.',label:'Contact support',href:'contact.html'};
+  return {text:'I can guide you through API keys, live models, Playground routes, billing, usage, logs, and account access. For account-specific help, use the contact form; this chat does not submit a support ticket.',label:'View help center',href:'faq.html'};
+}
+function appendSupportMessage(role,text,action){
+  var msgs=document.getElementById('chatMsgs');if(!msgs)return null;
+  var row=document.createElement('div');row.className='chat-msg '+(role==='user'?'user':'ai');
+  var av=document.createElement('div');av.className='av';av.textContent=role==='user'?'U':'GT';
+  var bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=text;
+  if(action&&action.href){
+    var link=document.createElement('a');link.className='support-chat-link';link.href=action.href;link.textContent=action.label||'Learn more';bubble.appendChild(link);
   }
-  // Acknowledge receipt
-  setTimeout(()=>{
-    const aiHtml='<div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Thanks for your message. Our support team will get back to you at the email on file. For urgent issues, contact support@glbtoken.com</div></div>';
-    msgs.innerHTML+=aiHtml;msgs.scrollTop=msgs.scrollHeight;
-    saveChatHistory();
-    _sendingMsg = false;
-    if(btn){btn.setAttribute('aria-disabled','false');btn.style.opacity='1'}
-    // Refocus input on mobile after lockout release
-    if(window.innerWidth <= 768 && input) {
-      input.focus({preventScroll:true});
-      requestAnimationFrame(function(){ if(input) input.focus({preventScroll:true}); });
-    }
-  },1000);
-  msgs.scrollTop=msgs.scrollHeight;
+  row.appendChild(av);row.appendChild(bubble);msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;return row;
+}
+function updateSupportSendButton(){
+  var input=document.getElementById('chatInput');var button=document.getElementById('chatSendBtn');
+  if(button)button.disabled=_sendingMsg||!input||!input.value.trim();
+}
+function sendChatMsg(inputOverride){
+  if(_sendingMsg)return;
+  var input=inputOverride||document.getElementById('chatInput');
+  var msg=input&&input.value?input.value.trim():'';if(!msg)return;
+  _sendingMsg=true;updateSupportSendButton();appendSupportMessage('user',msg);
+  input.value='';input.style.height='';saveChatHistory();
+  var pending=appendSupportMessage('ai','Finding the best place to help…');if(pending)pending.classList.add('support-chat-pending');
+  setTimeout(function(){
+    if(pending)pending.remove();
+    var answer=supportAnswer(msg);appendSupportMessage('ai',answer.text,answer);saveChatHistory();
+    _sendingMsg=false;updateSupportSendButton();
+    if(window.innerWidth<=768&&input)requestAnimationFrame(function(){input.focus({preventScroll:true});});
+  },320);
 }
 // ── Chat History Persistence (localStorage) ──
 function saveChatHistory(){
@@ -720,26 +761,60 @@ function saveChatHistory(){
   msgs.querySelectorAll('.chat-msg').forEach(function(el){
     var role=el.classList.contains('user')?'user':'ai';
     var bubble=el.querySelector('.bubble');
-    if(bubble) chatHistory.push({role:role,text:bubble.textContent});
+    if(bubble){
+      var first=bubble.firstChild;
+      chatHistory.push({role:role,text:first&&first.nodeType===3?first.nodeValue:bubble.textContent});
+    }
   });
-  try{localStorage.setItem('gt_chat_history',JSON.stringify(chatHistory))}catch(e){}
+  try{localStorage.setItem('gt_support_history_v2',JSON.stringify(chatHistory))}catch(e){}
 }
 function loadChatHistory(){
   var msgs=document.getElementById('chatMsgs');
   if(!msgs)return;
   try{
-    var data=localStorage.getItem('gt_chat_history');
+    var data=localStorage.getItem('gt_support_history_v2');
     if(!data)return;
     var chatHistory=JSON.parse(data);
     if(!chatHistory||!chatHistory.length)return;
     msgs.innerHTML='';
     chatHistory.forEach(function(h){
       var cls=h.role==='user'?'user':'ai';
-      var av=h.role==='user'?'U':'🤖';
+      var av=h.role==='user'?'U':'GT';
       msgs.innerHTML+='<div class="chat-msg '+cls+'"><div class="av">'+av+'</div><div class="bubble">'+escapeHtml(h.text)+'</div></div>';
     });
     msgs.scrollTop=msgs.scrollHeight;
   }catch(e){}
+}
+function enhanceSupportChat(){
+  var win=document.getElementById('chatWindow');
+  if(!win)return;
+  win.setAttribute('role','dialog');
+  win.setAttribute('aria-label','GlbTOKEN support assistant');
+  win.setAttribute('aria-hidden',win.classList.contains('open')||win.classList.contains('chat-focused')?'false':'true');
+  var fab=document.querySelector('.chat-fab');
+  if(fab){fab.setAttribute('aria-label','Open GlbTOKEN support');fab.title='Support';fab.innerHTML='<span aria-hidden="true">?</span>';}
+  var header=win.querySelector('.chat-header');
+  if(header&&!header.querySelector('.support-chat-status')){
+    var heading=header.querySelector('h3');
+    if(heading){
+      heading.textContent='GlbTOKEN Support';
+      var group=document.createElement('div');
+      heading.parentNode.insertBefore(group,heading);group.appendChild(heading);
+      var status=document.createElement('span');status.className='support-chat-status';status.innerHTML='<i></i> Self-service assistant';group.appendChild(status);
+    }
+  }
+  var close=win.querySelector('#chatStaticClose');if(close)close.setAttribute('aria-label','Close support');
+  var msgs=document.getElementById('chatMsgs');if(msgs)msgs.setAttribute('aria-live','polite');
+  var input=document.getElementById('chatInput');if(input){input.placeholder='Ask about keys, models, billing…';input.setAttribute('aria-label','Support question');}
+  var send=document.getElementById('chatSendBtn');if(send)send.setAttribute('aria-label','Send support question');
+  if(!win.querySelector('.support-chat-quick')){
+    var quick=document.createElement('div');quick.className='support-chat-quick';quick.setAttribute('aria-label','Common support topics');
+    [['API keys','How do API keys work?'],['Models','Which models are available?'],['Billing','Help with billing'],['Request errors','How do I debug a failed request?']].forEach(function(item){
+      var button=document.createElement('button');button.type='button';button.textContent=item[0];
+      button.addEventListener('click',function(){if(input){input.value=item[1];updateSupportSendButton();sendChatMsg(input);}});quick.appendChild(button);
+    });
+    var composer=win.querySelector('.chat-input');if(composer)win.insertBefore(quick,composer);
+  }
 }
 // Load chat history on page load
 if(document.readyState==='loading'){
@@ -762,7 +837,15 @@ document.addEventListener('DOMContentLoaded',function(){
   setupTextareaResize('aiChatInput');
   setupTextareaResize('chatInput');
   const ta = document.getElementById('aiChatInput');
-  if(ta) ta.addEventListener('focus',openMobileChat);
+  if(ta){
+    ta.addEventListener('focus',openMobileChat);
+    ta.addEventListener('input',updateAIChatControls);
+  }
+  var supportInput=document.getElementById('chatInput');
+  if(supportInput)supportInput.addEventListener('input',updateSupportSendButton);
+  enhanceSupportChat();
+  updateAIChatControls();
+  updateSupportSendButton();
 });
 
 /* ══════════════════════════════════════════

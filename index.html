@@ -15,17 +15,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=1283" />
+<link rel="stylesheet" href="style.css?v=1285" />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="GlbTOKEN" />
 <meta property="og:title" content="GlbTOKEN — One Balance, Live AI Catalog" />
-<meta property="og:description" content="Access the currently available AI models through one compatible API. Payments are simulated during beta." />
+<meta property="og:description" content="Access the currently available AI models through one OpenAI-compatible API and one GlbTOKEN balance." />
 <meta property="og:url" content="https://glbtoken.com/index.html" />
 <meta property="og:image" content="https://glbtoken.com/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="GlbTOKEN — One Balance, Live AI Catalog" />
-<meta name="twitter:description" content="Access the currently available AI models through one compatible API. Payments are simulated during beta." />
+<meta name="twitter:description" content="Access the currently available AI models through one OpenAI-compatible API and one GlbTOKEN balance." />
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 <script type="application/ld+json">
 {
@@ -229,45 +229,28 @@
 <div class="text-center mb-2">
 <span class="section-label">Try AI</span>
 <h2 class="section-title">Chat with Models</h2>
-<p class="section-sub mx-auto">Try our free AI models right now. No account needed.</p>
+<p class="section-sub mx-auto">Sign in to test live models with your GlbTOKEN balance. Every response uses the same gateway and catalog as your API.</p>
               </div>
 <div class="ai-chat-inner">
 <div class="chat-header">
-<label>🤖 Model</label>
-<select class="model-select" id="aiModelSelect" onchange="selectAIModelDropdown(this.value)" translate="no">
-<option value="gpt4o-mini">GPT-4o Mini — OpenAI</option>
-<option value="gpt4o">GPT-4o — OpenAI</option>
-<option value="gpt4">GPT-4 Turbo — OpenAI</option>
-<option value="claude-haiku">Claude 3 Haiku — Anthropic</option>
-<option value="claude-sonnet">Claude 3.5 Sonnet — Anthropic</option>
-<option value="claude-opus">Claude 3 Opus — Anthropic</option>
-<option value="gemini-flash">Gemini 2.0 Flash — Google</option>
-<option value="gemini-pro">Gemini 2.0 Pro — Google</option>
-<option value="llama-scout">Llama 4 Scout — Meta</option>
-<option value="llama-maverick">Llama 4 Maverick — Meta</option>
-<option value="deepseek-flash">DeepSeek V3 Flash — DeepSeek</option>
-<option value="deepseek-v4">DeepSeek V4 Pro — DeepSeek</option>
-<option value="deepseek-r1">DeepSeek R1 — DeepSeek</option>
-<option value="mistral-small">Mistral Small — Mistral</option>
-<option value="mistral-large">Mistral Large 2 — Mistral</option>
-<option value="qwen-plus">Qwen 3.7 Plus — Qwen</option>
-<option value="grok-4">Grok 4.20 — xAI</option>
-<option value="command-a">Command A — Cohere</option>
-<option value="phi-4">Phi-4 — Microsoft</option>
+<label for="aiModelSelect">Model</label>
+<select class="model-select" id="aiModelSelect" onchange="selectAIModelDropdown(this.value)" translate="no" disabled>
+<option value="">Loading live catalog…</option>
 </select>
-<span class="current-badge" id="aiModelBadge">GPT-4o Mini</span>
+<span class="current-badge" id="aiModelBadge">Live catalog</span>
+<button type="button" class="ai-chat-reset" id="aiResetBtn" onclick="resetAIChat()" aria-label="Start a new chat">New chat</button>
               </div>
 <div class="ai-chat-main">
-<div class="chat-msgs" id="aiChatMsgs">
+<div class="chat-msgs" id="aiChatMsgs" aria-live="polite" aria-busy="false">
 <div class="ai-welcome" id="aiWelcome">
 <div class="aw-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block mx-auto"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
 <h3>Ask me anything</h3>
-<p>Choose a model from the left and start chatting. I can help with code, writing, analysis, research, and more — all for free.</p>
+<p>Choose a live model and start chatting. Sign-in and an available balance are required; usage appears in your dashboard logs.</p>
               </div>
               </div>
 <div class="chat-input">
-<textarea id="aiChatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIChatMsg()}"></textarea>
-<button type="button" onmousedown="event.preventDefault()" onclick="sendAIChatMsg()" id="aiSendBtn">➤</button>
+<textarea id="aiChatInput" placeholder="Ask a live model…" rows="1" aria-label="Message to AI model" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIChatMsg()}"></textarea>
+<button type="button" onmousedown="event.preventDefault()" onclick="sendAIChatMsg()" id="aiSendBtn" aria-label="Send message" disabled>➤</button>
               </div>
               </div>
               </div>
@@ -286,7 +269,7 @@
 <span class="section-label">Process</span><h2 class="section-title">Get Started in 3 Steps</h2><p class="section-sub mx-auto">From signup to first API call — under 2 minutes.</p>
 <div class="steps-grid mt-2">
 <div class="step-card"><div class="step-num">1</div><h3>Create Account</h3><ul class="step-list"><li>Sign up with email, Google, or GitHub</li><li>No credit card needed</li><li>25,000 free tokens on signup</li></ul></div>
-<div class="step-card"><div class="step-num">2</div><h3>Try Billing</h3><ul class="step-list"><li>Payment flows are currently simulated</li><li>No real charge is made in beta</li><li>Production payments launch separately</li></ul></div>
+<div class="step-card"><div class="step-num">2</div><h3>Add Tokens</h3><ul class="step-list"><li>Choose a token package</li><li>Select an available payment method</li><li>Track every transaction from Billing</li></ul></div>
 <div class="step-card"><div class="step-num">3</div><h3>Use Available AI</h3><ul class="step-list"><li>Generate an API key from your dashboard</li><li><span data-catalog-model-count>Live catalog</span> models via one compatible endpoint</li><li>Check the catalog before each integration</li></ul></div>
               </div>
             </div></section>
@@ -296,15 +279,15 @@
 <!-- FOOTER: Injected by footer.js -->
 <div id="footer-container"></div>
 
-<button class="chat-fab" onclick="toggleChat()">💬</button>
-<div class="chat-window" id="chatWindow">
-<div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
-<div class="chat-msgs" id="chatMsgs">
+<button class="chat-fab" onclick="toggleChat()" aria-label="Open GlbTOKEN support" title="Support"><span aria-hidden="true">?</span></button>
+<div class="chat-window" id="chatWindow" role="dialog" aria-label="GlbTOKEN support assistant" aria-hidden="true">
+<div class="chat-header"><div><h3>GlbTOKEN Support</h3><span class="support-chat-status"><i></i> Self-service assistant</span></div><button id="chatStaticClose" onclick="toggleChat()" aria-label="Close support">✕</button></div>
+<div class="chat-msgs" id="chatMsgs" aria-live="polite">
 <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, payments, or API keys.</div>  </div>
               </div>
 <div class="chat-input">
-<textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
-<button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()">➤</button>
+<textarea id="chatInput" placeholder="Ask about keys, models, billing…" aria-label="Support question" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
+<button type="button" id="chatSendBtn" onclick="sendChatMsg()" onmousedown="event.preventDefault()" aria-label="Send support question" disabled>➤</button>
               </div>
               </div>
 
@@ -312,8 +295,8 @@
 <script src="footer.js?v=28"></script>
 <script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1170"></script>
-<script data-cfasync="false" src="catalog.js?v=1"></script>
-<script data-cfasync="false" src="ui.js?v=1239"></script>
+<script data-cfasync="false" src="catalog.js?v=2"></script>
+<script data-cfasync="false" src="ui.js?v=1240"></script>
 <script>initHeroVariants()</script>
 
 </body>

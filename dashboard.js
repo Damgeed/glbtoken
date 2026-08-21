@@ -374,7 +374,10 @@ function dashboardModelId(model){
 function setDashboardSnippet(mode){
   _dashboardSnippetMode = mode === 'python' ? 'python' : 'curl';
   document.querySelectorAll('.developer-code-tab').forEach(function(btn){
-    btn.classList.toggle('active', btn.getAttribute('data-snippet') === _dashboardSnippetMode);
+    var active = btn.getAttribute('data-snippet') === _dashboardSnippetMode;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    btn.tabIndex = active ? 0 : -1;
   });
   renderDashboardSnippet();
 }

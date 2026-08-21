@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1283" />
+  <link rel="stylesheet" href="style.css?v=1285" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1057" />
+<link rel="stylesheet" href="dashboard.css?v=1058" />
   </head>
 <body>
 <script>
@@ -264,11 +264,11 @@ function showDashSection(section) {
             <code>https://api.glbtoken.com/v1</code>
           </div>
           <div class="developer-code-tabs" role="tablist" aria-label="Quick start language">
-            <button type="button" class="developer-code-tab active" data-snippet="curl" onclick="setDashboardSnippet('curl')">cURL</button>
-            <button type="button" class="developer-code-tab" data-snippet="python" onclick="setDashboardSnippet('python')">Python</button>
+            <button type="button" class="developer-code-tab active" data-snippet="curl" role="tab" aria-selected="true" aria-controls="dashQuickCode" onclick="setDashboardSnippet('curl')">cURL</button>
+            <button type="button" class="developer-code-tab" data-snippet="python" role="tab" aria-selected="false" aria-controls="dashQuickCode" tabindex="-1" onclick="setDashboardSnippet('python')">Python</button>
             <button type="button" class="developer-copy-btn" onclick="copyDashboardSnippet(this)">Copy</button>
           </div>
-          <pre class="developer-code"><code id="dashQuickCode">Loading…</code></pre>
+          <pre class="developer-code" aria-live="polite"><code id="dashQuickCode">Loading…</code></pre>
           <div class="developer-card-actions">
             <a class="btn-primary" href="manage-keys.html">Manage API keys</a>
             <a class="btn-ghost" href="playground.html">Test in Playground</a>
@@ -490,9 +490,9 @@ function showDashSection(section) {
 <script src="nav.js?v=21"></script>
 <script src="translations.js?v=1114"></script>
 <script data-cfasync="false" src="shared.js?v=1170"></script>
-<script data-cfasync="false" src="ui.js?v=1238"></script>
+<script data-cfasync="false" src="ui.js?v=1240"></script>
 <script data-cfasync="false" src="usage-charts.js?v=11"></script>
-<script data-cfasync="false" src="dashboard.js?v=1151"></script>
+<script data-cfasync="false" src="dashboard.js?v=1152"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====

@@ -914,6 +914,8 @@
 }
 .developer-copy-btn:hover { color: var(--text); background: var(--card-hover); }
 .developer-code {
+  width: 100%;
+  min-width: 0;
   min-height: 138px;
   max-height: 180px;
   margin: 0;
@@ -929,6 +931,31 @@
   white-space: pre;
 }
 html.light .developer-code { color: #dbeafe; background: #111827; }
+.developer-quickstart {
+  display: flex;
+  flex-direction: column;
+}
+/* The shared documentation rules target every pre/code inside .dash-card.
+   Keep this executable example legible and aligned as one contained surface. */
+.developer-quickstart .developer-code {
+  display: block;
+  background: #090d18 !important;
+  border-color: var(--border);
+}
+html.light .developer-quickstart .developer-code {
+  background: #111827 !important;
+}
+.developer-quickstart .developer-code code {
+  display: block;
+  min-width: max-content;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  white-space: inherit;
+}
 .developer-card-actions {
   display: flex;
   gap: 0.5rem;
@@ -1038,6 +1065,11 @@ html.light .developer-code { color: #dbeafe; background: #111827; }
 .dashboard-tools-grid > .dash-card {
   min-width: 0;
   padding: 1.25rem;
+}
+.dashboard-tools-grid .developer-card-actions,
+.dashboard-tools-grid .dashboard-data-note {
+  margin-top: auto;
+  padding-top: 0.75rem;
 }
 .dashboard-card-actions {
   display: inline-flex;
