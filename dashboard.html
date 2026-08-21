@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1283" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1056" />
+<link rel="stylesheet" href="dashboard.css?v=1057" />
   </head>
 <body>
 <script>
@@ -136,7 +136,7 @@ function showDashSection(section) {
       </a>
       <a class="dash-sidebar-item" href="topup.html">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-        Simulate Top Up
+        Buy Tokens
       </a>
       <a class="dash-sidebar-item" href="settings.html">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -214,27 +214,19 @@ function showDashSection(section) {
     <!-- ===== OVERVIEW SECTION ===== -->
     <div class="dash-section active" id="section-overview">
       <div class="dash-header">
-        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>NewAPI gateway command center</p></div>
-        <div class="dash-header-actions">
-          <div class="gateway-status" id="dashGatewayStatus" aria-live="polite">
-            <span class="gateway-status-dot"></span>
-            <span><strong id="dashGatewayStatusLabel">Checking NewAPI telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
-          </div>
-          <a class="btn-ghost dash-header-btn" href="logs.html">Request logs</a>
-          <button type="button" class="btn-primary dash-header-btn" id="dashRefreshBtn" onclick="refreshDashboard(this)">Refresh</button>
-        </div>
+        <div class="dash-welcome"><h1>Hello, <span id="dashUserName">User</span></h1><p>Token usage overview</p></div>
       </div>
 
       <div class="dash-grid">
         <div class="dash-balance">
           <div class="top">
-            <div><div class="label">Sandbox Balance <span class="sandbox-badge">Simulation</span></div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline" id="dashTrendBadge" style="display:none"></span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
+            <div><div class="label">Available Balance</div><div class="amount"><span id="dashBalance" class="dash-gradient-text">0</span> <small>GT</small> <span class="dash-badge-inline" id="dashTrendBadge" style="display:none"></span></div><div class="usd-equiv" id="dashUsd">$0.00 USD</div></div>
             <div class="mini-chart"><canvas id="sparkline" width="120" height="40"></canvas></div>
           </div>
-          <div class="actions dash-actions-mt"><button class="btn-primary dash-action-btn" onclick="showPage('topup')">Simulate Top Up</button></div>
+          <div class="actions dash-actions-mt"><button type="button" class="btn-primary dash-action-btn" onclick="showPage('topup')">Buy Tokens</button></div>
         </div>
         <div class="dash-stats">
-          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Simulated Spend</div><div class="chg up" id="dashSpentTrend">—</div></div>
+          <div class="dash-stat-card"><div class="num" id="dashTotalSpent">—</div><div class="lbl">Total Spent</div><div class="chg up" id="dashSpentTrend">—</div></div>
           <div class="dash-stat-card"><div class="num" id="dashModelsUsed">—</div><div class="lbl">Models Used</div><div class="chg up" id="dashModelsTrend">—</div></div>
           <div class="dash-stat-card"><div class="num" id="dashTotalRequests">—</div><div class="lbl">API Requests</div><div class="chg up" id="dashReqTrend">—</div></div>
           <div class="dash-stat-card dash-keys-card">
@@ -248,12 +240,12 @@ function showDashSection(section) {
         </div>
       </div>
 
-      <!-- ═══════ DEVELOPER COMMAND CENTER ═══════ -->
-      <div class="developer-command-grid">
-        <section class="dash-card developer-quickstart" aria-labelledby="quickstartTitle">
+      <!-- ═══════ DEVELOPER TOOLS ═══════ -->
+      <div class="mini-chart-grid dashboard-tools-grid">
+        <section class="dash-card stat-card developer-quickstart" aria-labelledby="quickstartTitle">
           <div class="dash-section-title section-header developer-card-header">
             <span id="quickstartTitle">API Quick Start</span>
-            <span class="compatibility-badge">OpenAI compatible</span>
+            <span class="legend-label">OpenAI compatible</span>
           </div>
           <div class="developer-field-row">
             <label for="dashQuickModel">Model</label>
@@ -283,24 +275,28 @@ function showDashSection(section) {
           </div>
         </section>
 
-        <section class="dash-card gateway-overview-card" aria-labelledby="gatewayOverviewTitle">
+        <section class="dash-card stat-card gateway-overview-card" aria-labelledby="gatewayOverviewTitle">
           <div class="dash-section-title section-header developer-card-header">
             <span id="gatewayOverviewTitle">Gateway Overview</span>
-            <a href="models.html" class="activity-view-all">Browse models →</a>
+            <span class="dashboard-card-actions"><a href="logs.html" class="activity-view-all">Request logs</a><button type="button" class="sort-btn" id="dashRefreshBtn" onclick="refreshDashboard(this)">Refresh</button></span>
+          </div>
+          <div class="gateway-status gateway-status-inline" id="dashGatewayStatus" aria-live="polite">
+            <span class="gateway-status-dot"></span>
+            <span><strong id="dashGatewayStatusLabel">Checking NewAPI telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
           </div>
           <div class="gateway-metric-grid">
-            <div class="gateway-metric"><span>Live catalog</span><strong id="dashCatalogCount">—</strong><small>active models</small></div>
-            <div class="gateway-metric"><span>Providers</span><strong id="dashProviderCount">—</strong><small>in catalog</small></div>
-            <div class="gateway-metric"><span>Active keys</span><strong id="dashOverviewKeys">—</strong><small id="dashOverviewKeysHint">checking</small></div>
-            <div class="gateway-metric"><span>Monthly budget</span><strong id="dashMonthlyBudget">—</strong><small id="dashMonthlyBudgetHint">checking</small></div>
-            <div class="gateway-metric"><span>Est. 30-day cost</span><strong id="dashProjectedCost">—</strong><small id="dashProjectionHint">usage-based estimate</small></div>
+            <div class="dash-stat-card gateway-metric"><span>Live catalog</span><strong id="dashCatalogCount">—</strong><small>active models</small></div>
+            <div class="dash-stat-card gateway-metric"><span>Providers</span><strong id="dashProviderCount">—</strong><small>in catalog</small></div>
+            <div class="dash-stat-card gateway-metric"><span>Active keys</span><strong id="dashOverviewKeys">—</strong><small id="dashOverviewKeysHint">checking</small></div>
+            <div class="dash-stat-card gateway-metric"><span>Monthly budget</span><strong id="dashMonthlyBudget">—</strong><small id="dashMonthlyBudgetHint">checking</small></div>
+            <div class="dash-stat-card gateway-metric"><span>Est. 30-day cost</span><strong id="dashProjectedCost">—</strong><small id="dashProjectionHint">usage-based estimate</small></div>
           </div>
           <div class="developer-checklist" id="dashSetupChecklist">
             <a href="manage-keys.html" class="developer-check"><span class="developer-check-icon" id="dashSetupKeyIcon">1</span><span><strong>Create an API key</strong><small id="dashSetupKeyText">Checking your keys…</small></span></a>
             <a href="playground.html" class="developer-check"><span class="developer-check-icon" id="dashSetupCallIcon">2</span><span><strong>Make a test request</strong><small id="dashSetupCallText">Checking request history…</small></span></a>
             <a href="logs.html" class="developer-check"><span class="developer-check-icon">3</span><span><strong>Inspect request logs</strong><small>Debug status, model, tokens, and cost.</small></span></a>
           </div>
-          <p class="dashboard-data-note">New requests store measured latency and token breakdowns. Costs use provider totals when available and catalog estimates otherwise. Payment top-ups are simulations.</p>
+          <p class="dashboard-data-note">New requests store measured latency and token breakdowns. Costs use provider totals when available and catalog estimates otherwise.</p>
         </section>
       </div>
 
@@ -483,7 +479,7 @@ function showDashSection(section) {
   <div class="chat-window" id="chatWindow">
     <div class="chat-header"><h3>💬 Support</h3><button id="chatStaticClose" onclick="toggleChat()">✕</button></div>
     <div class="chat-msgs" id="chatMsgs">
-      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about simulated top-ups, AI models, gateway usage, or API keys.</div>  </div>
+      <div class="chat-msg ai"><div class="av">🤖</div><div class="bubble">Hi! I'm the GlbTOKEN assistant. Ask me about buying tokens, AI models, gateway usage, or API keys.</div>  </div>
     </div>
     <div class="chat-input">
       <textarea id="chatInput" placeholder="Send a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}"></textarea>
@@ -496,7 +492,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1170"></script>
 <script data-cfasync="false" src="ui.js?v=1238"></script>
 <script data-cfasync="false" src="usage-charts.js?v=11"></script>
-<script data-cfasync="false" src="dashboard.js?v=1150"></script>
+<script data-cfasync="false" src="dashboard.js?v=1151"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====

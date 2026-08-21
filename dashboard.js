@@ -113,7 +113,7 @@ async function loadDashboardStats(){
     }
     // Total spend is lifetime account data; daily token usage is not a spend
     // trend, so do not imply a relationship the stored data cannot support.
-    renderTrend('dashSpentTrend', null, 'Sandbox total');
+    renderTrend('dashSpentTrend', null, 'Lifetime total');
     renderTrend('dashReqTrend', trendMeta(reqs, 3), 'Total calls');
     // Models Used: compare distinct models in recent window vs prev window
     var usageModels = (d.usage_by_model || []).length;
@@ -310,7 +310,7 @@ async function loadActivityFeed(){
   }
   if(!items.length){
     if(countEl) countEl.textContent = '0 events';
-    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Simulate a top-up or make an API request to see activity here</div></div></div>';
+    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Buy tokens or make an API request to see activity here</div></div></div>';
     return;
   }
   if(countEl) countEl.textContent = items.length + ' events';

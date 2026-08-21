@@ -726,7 +726,10 @@
 
   function toggleCode(open) {
     var drawer = byId('pgCodeDrawer');
-    drawer.classList.toggle('open', typeof open === 'boolean' ? open : !drawer.classList.contains('open'));
+    var next = typeof open === 'boolean' ? open : !drawer.classList.contains('open');
+    drawer.classList.toggle('open', next);
+    drawer.setAttribute('aria-hidden', next ? 'false' : 'true');
+    byId('pgCodeButton').setAttribute('aria-expanded', next ? 'true' : 'false');
     renderCode();
   }
 
@@ -736,6 +739,8 @@
     var next = typeof open === 'boolean' ? open : !panel.classList.contains('open');
     panel.classList.toggle('open', next);
     backdrop.classList.toggle('open', next);
+    panel.setAttribute('aria-hidden', next ? 'false' : 'true');
+    byId('pgConfigToggle').setAttribute('aria-expanded', next ? 'true' : 'false');
   }
 
   function copyText(text, button) {

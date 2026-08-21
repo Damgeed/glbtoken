@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="style.css?v=1282" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
-<link rel="stylesheet" href="presets.css?v=1024" />
+<link rel="stylesheet" href="presets.css?v=1025" />
 </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -145,16 +145,11 @@
               <line x1="8" y1="6" x2="21" y2="6"/><circle cx="6" cy="6" r="2"/><line x1="3" y1="12" x2="17" y2="12"/><circle cx="19" cy="12" r="2"/><line x1="10" y1="18" x2="21" y2="18"/><circle cx="8" cy="18" r="2"/>
             </svg>
             Model Presets</h1>
-          <p>Build reusable model configurations and launch them directly in the Playground</p>
+          <p>Save and reuse model configurations</p>
         </div>
-        <button class="btn-action" onclick="showPresetModal()">+ Create Preset</button>
+        <button type="button" class="btn-action" onclick="showPresetModal()">+ Create Preset</button>
       </div>
-  <div class="presets-workflow">
-    <div><span>01</span><strong>Choose a live model</strong><small>The selector mirrors the active NewAPI-backed catalog.</small></div>
-    <div><span>02</span><strong>Tune the request</strong><small>Save system instructions and sampling parameters together.</small></div>
-    <div><span>03</span><strong>Test before shipping</strong><small>Open any preset in the Playground with one click.</small></div>
-  </div>
-  <div class="dash-card presets-library-card">
+  <div class="dash-card">
     <div class="dash-section-title">Your Presets <span class="label-muted-sm" id="presetCount">0 saved</span></div>
     <div id="presetsList">
       <div class="presets-empty">
@@ -171,7 +166,7 @@
 <!-- Preset Modal -->
 <div class="modal-overlay preset-modal" id="presetModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closePresetModal()">✕</button>
+    <button type="button" class="modal-close" onclick="closePresetModal()" aria-label="Close preset editor">✕</button>
     <h3 id="presetModalTitle">Create Preset</h3>
     <form id="presetForm" onsubmit="return false">
       <div class="form-group">

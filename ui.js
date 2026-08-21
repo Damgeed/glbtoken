@@ -67,11 +67,18 @@
       if(!container) return;
       var text = container.textContent || container.innerText;
       text = text.replace(/^# .+\n/mg,'').replace(/^REQUEST\n|^RESPONSE\n/gm,'').trim();
-      if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){
-        animateCopyBtn(btn);
-        showToast('Copied!','success');
-      }).catch(function(){})}
-      else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);animateCopyBtn(btn);showToast('Copied!','success')}
+      function copied(){animateCopyBtn(btn);showToast('Copied!','success')}
+      function legacyCopy(){
+        var ta=document.createElement('textarea');
+        ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.select();
+        var ok=false;
+        try{ok=document.execCommand('copy')}catch(e){ok=false}
+        document.body.removeChild(ta);
+        if(ok)copied();else showToast('Copy failed — select the code manually.','error');
+      }
+      if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(copied).catch(legacyCopy)}
+      else{legacyCopy()}
     }
     function animateCopyBtn(btn){
     btn.classList.add('copying');

@@ -1,42 +1,3 @@
-.presets-workflow {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-.presets-workflow > div {
-  position: relative;
-  min-width: 0;
-  padding: 1rem 1rem 1rem 3.1rem;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, hsla(44 96% 52% / 0.055), var(--card));
-}
-.presets-workflow span {
-  position: absolute;
-  top: 0.95rem;
-  left: 1rem;
-  color: var(--primary);
-  font: 700 0.62rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-.presets-workflow strong,
-.presets-workflow small {
-  display: block;
-}
-.presets-workflow strong {
-  color: var(--text);
-  font-size: 0.82rem;
-}
-.presets-workflow small {
-  margin-top: 0.3rem;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  line-height: 1.45;
-}
-.presets-library-card {
-  background: rgba(15, 17, 29, 0.76);
-}
 .presets-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -299,9 +260,6 @@
   margin: 0 auto;
 }
 @media (max-width: 600px) {
-  .presets-workflow {
-    grid-template-columns: 1fr;
-  }
   .presets-grid {
     grid-template-columns: 1fr;
   }
