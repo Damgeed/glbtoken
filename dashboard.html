@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1285" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="dashboard.css?v=1058" />
+  <link rel="stylesheet" href="dashboard.css?v=1059" />
   </head>
 <body>
 <script>
@@ -285,16 +285,10 @@ function showDashSection(section) {
             <span><strong id="dashGatewayStatusLabel">Checking NewAPI telemetry…</strong><small id="dashLastUpdated">Waiting for data</small></span>
           </div>
           <div class="gateway-metric-grid">
-            <div class="dash-stat-card gateway-metric"><span>Live catalog</span><strong id="dashCatalogCount">—</strong><small>active models</small></div>
-            <div class="dash-stat-card gateway-metric"><span>Providers</span><strong id="dashProviderCount">—</strong><small>in catalog</small></div>
-            <div class="dash-stat-card gateway-metric"><span>Active keys</span><strong id="dashOverviewKeys">—</strong><small id="dashOverviewKeysHint">checking</small></div>
-            <div class="dash-stat-card gateway-metric"><span>Monthly budget</span><strong id="dashMonthlyBudget">—</strong><small id="dashMonthlyBudgetHint">checking</small></div>
-            <div class="dash-stat-card gateway-metric"><span>Est. 30-day cost</span><strong id="dashProjectedCost">—</strong><small id="dashProjectionHint">usage-based estimate</small></div>
-          </div>
-          <div class="developer-checklist" id="dashSetupChecklist">
-            <a href="manage-keys.html" class="developer-check"><span class="developer-check-icon" id="dashSetupKeyIcon">1</span><span><strong>Create an API key</strong><small id="dashSetupKeyText">Checking your keys…</small></span></a>
-            <a href="playground.html" class="developer-check"><span class="developer-check-icon" id="dashSetupCallIcon">2</span><span><strong>Make a test request</strong><small id="dashSetupCallText">Checking request history…</small></span></a>
-            <a href="logs.html" class="developer-check"><span class="developer-check-icon">3</span><span><strong>Inspect request logs</strong><small>Debug status, model, tokens, and cost.</small></span></a>
+            <div class="gateway-metric"><span>Live catalog</span><strong id="dashCatalogCount">—</strong><small>models available</small></div>
+            <div class="gateway-metric"><span>Providers</span><strong id="dashProviderCount">—</strong><small>connected through NewAPI</small></div>
+            <div class="gateway-metric"><span>Monthly usage</span><strong id="dashMonthlyBudget">—</strong><small id="dashMonthlyBudgetHint">checking</small></div>
+            <div class="gateway-metric"><span>30-day forecast</span><strong id="dashProjectedCost">—</strong><small id="dashProjectionHint">usage-based estimate</small></div>
           </div>
           <p class="dashboard-data-note">New requests store measured latency and token breakdowns. Costs use provider totals when available and catalog estimates otherwise.</p>
         </section>
@@ -492,7 +486,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1170"></script>
 <script data-cfasync="false" src="ui.js?v=1240"></script>
 <script data-cfasync="false" src="usage-charts.js?v=11"></script>
-<script data-cfasync="false" src="dashboard.js?v=1152"></script>
+<script data-cfasync="false" src="dashboard.js?v=1153"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====
