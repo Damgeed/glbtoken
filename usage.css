@@ -46,14 +46,26 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem;
-  margin: 0 0 1rem;
+  margin-bottom: 1rem;
 }
 .usage-insight {
+  position: relative;
   min-width: 0;
-  padding: 0.75rem;
+  padding: 0.95rem 1rem;
   overflow: hidden;
-  border-radius: var(--radius-sm);
-  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, hsla(44 96% 52% / 0.045), var(--card));
+}
+.usage-insight::after {
+  content: '';
+  position: absolute;
+  right: -18px;
+  bottom: -28px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: hsla(44 96% 52% / 0.035);
 }
 .usage-insight span,
 .usage-insight strong,
@@ -62,22 +74,25 @@
 }
 .usage-insight span {
   color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 500;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 .usage-insight strong {
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
   overflow: hidden;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 1.12rem;
+  letter-spacing: -0.025em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .usage-insight small {
-  margin-top: 0.18rem;
+  margin-top: 0.24rem;
   overflow: hidden;
   color: var(--text-muted);
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
