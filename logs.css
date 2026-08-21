@@ -15,9 +15,17 @@
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
-/* Preserve the compact cost graph and align its top spacing with Error Rate. */
+/* Keep the compact cost graph, but anchor it to the bottom of the card so it
+   sits on the same baseline as the Error Rate graph beside it. */
+#dashCostBreakdown {
+  display: flex;
+  flex-direction: column;
+}
+#dashCostBreakdown .stat-cards {
+  margin-bottom: 0.5rem;
+}
 #dashCostBreakdown .cost-breakdown-chart {
-  margin-top: 0.5rem;
+  margin-top: auto;
 }
 /* Tablet range (769–1000px): the dash-sidebar is visible and 2 columns
    squeeze the log tables to ~289px cards, forcing heavy cell wrapping
