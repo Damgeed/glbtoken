@@ -55,7 +55,7 @@ client = OpenAI(
 )
 
 response = client.chat.completions.create(
-  model=<span class="syn-str">"openai/gpt-5.4"</span>,
+  model=<span class="syn-str">"gpt-5.4"</span>,
   messages=[
     {<span class="syn-str">"role"</span>: <span class="syn-str">"user"</span>, <span class="syn-str">"content"</span>: <span class="syn-str">"Hello!"</span>}
   ]
@@ -99,7 +99,7 @@ print(response.choices[0].message.content)</pre>
   -H <span class="syn-str">"Content-Type: application/json"</span> \
   -H <span class="syn-str">"Authorization: Bearer gtk_..."</span> \
   -d '{
-    <span class="syn-str">"model"</span>: <span class="syn-str">"openai/gpt-5.4"</span>,
+    <span class="syn-str">"model"</span>: <span class="syn-str">"gpt-5.4"</span>,
     <span class="syn-str">"messages"</span>: [
       {<span class="syn-str">"role"</span>: <span class="syn-str">"system"</span>, <span class="syn-str">"content"</span>: <span class="syn-str">"You are a helpful assistant."</span>},
       {<span class="syn-str">"role"</span>: <span class="syn-str">"user"</span>, <span class="syn-str">"content"</span>: <span class="syn-str">"What is GlbTOKEN?"</span>}
@@ -125,7 +125,7 @@ client = OpenAI(
 )
 
 stream = client.chat.completions.create(
-  model=<span class="syn-str">"openai/gpt-5.4"</span>,
+  model=<span class="syn-str">"gpt-5.4"</span>,
   messages=[{<span class="syn-str">"role"</span>: <span class="syn-str">"user"</span>, <span class="syn-str">"content"</span>: <span class="syn-str">"Tell me a story"</span>}],
   stream=<span class="syn-kw">True</span>
 )
@@ -147,7 +147,7 @@ stream = client.chat.completions.create(
 });
 
 <span class="syn-kw">const</span> completion = <span class="syn-kw">await</span> client.chat.completions.create({
-  model: <span class="syn-str">"openai/gpt-5.4"</span>,
+  model: <span class="syn-str">"gpt-5.4"</span>,
   messages: [{ role: <span class="syn-str">"user"</span>, content: <span class="syn-str">"Hello!"</span> }]
 });
 console.log(completion.choices[0].message.content);
