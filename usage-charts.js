@@ -14,11 +14,30 @@
         if(model)params+='&model='+encodeURIComponent(model);
         var data=await safeApi('GET','/api/usage-analytics'+params);
         if(!data) return;
-        if((!data.labels||!data.labels.length)&&(!data.tokens||!data.tokens.length)){
-          if(window.dailyChartInst){window.dailyChartInst.destroy();window.dailyChartInst=null}
-          canvas.parentNode.innerHTML+='<p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:0.85rem">No usage data for this period.</p>';
-          return;
-        }
+        var requests=(data.requests||[]).reduce(function(sum,n){return sum+Number(n||0)},0);
+        var totalTokens=Number(data.total_tokens||0);
+        var totalCost=Number(data.total_cost||0);
+        var top=(data.top_models&&data.top_models[0])||null;
+        var empty=document.getElementById('usageChartEmpty');
+        var hasUsage=totalTokens>0||requests>0;
+        if(empty)empty.classList.toggle('show',!hasUsage);
+        canvas.style.opacity=hasUsage?'1':'0.18';
+        var requestStat=document.getElementById('usageRequestStat');
+        var requestSub=document.getElementById('usageRequestSub');
+        var tokenStat=document.getElementById('usageTokenStat');
+        var tokenSub=document.getElementById('usageTokenSub');
+        var spendStat=document.getElementById('usageSpendStat');
+        var costMethod=document.getElementById('usageCostMethod');
+        var topStat=document.getElementById('usageTopModelStat');
+        var topSub=document.getElementById('usageTopModelSub');
+        if(requestStat)requestStat.textContent=requests.toLocaleString();
+        if(requestSub)requestSub.textContent=(days||7)+' day window';
+        if(tokenStat)tokenStat.textContent=totalTokens.toLocaleString();
+        if(tokenSub)tokenSub.textContent=requests?Math.round(totalTokens/requests).toLocaleString()+' avg / request':'No completed requests';
+        if(spendStat)spendStat.textContent=fmtUSD(totalCost);
+        if(costMethod)costMethod.textContent=hasUsage?(data.costs_estimated?'Includes catalog estimates':'Provider-reported cost'):'No billed usage';
+        if(topStat)topStat.textContent=top?(top.model||'Unknown'):'—';
+        if(topSub)topSub.textContent=top?Number(top.tokens||0).toLocaleString()+' charged tokens':'No model usage yet';
         if(window.dailyChartInst){window.dailyChartInst.destroy()}
         var isCost=mode==='cost';
         var values=isCost?(data.costs||data.tokens.map(function(){return 0})):data.tokens;
@@ -40,9 +59,9 @@
             }
           }
         });
-        if(summaryTotal)summaryTotal.textContent=(data.total_tokens||0).toLocaleString();
-        if(summaryCost)summaryCost.textContent=fmtUSD(data.total_cost||0);
-        if(summaryLabel)summaryLabel.innerHTML='Total: <strong>'+(data.total_tokens||0).toLocaleString()+'</strong> tokens';
+        if(summaryTotal)summaryTotal.textContent=totalTokens.toLocaleString();
+        if(summaryCost)summaryCost.textContent=fmtUSD(totalCost)+(data.costs_estimated?' est.':'');
+        if(summaryLabel)summaryLabel.innerHTML='Total: <strong>'+totalTokens.toLocaleString()+'</strong> tokens · '+requests.toLocaleString()+' requests';
     }
     function setUsageRange(days){
       usageDays=days;
@@ -55,21 +74,23 @@
       refreshUsageChart();
     }
     function refreshUsageChart(){
+      var modelSelect=document.getElementById('usageModelFilter');
+      usageModel=modelSelect?modelSelect.value:'';
       loadUsageAnalytics(usageDays,usageModel,usageMode);
     }
     async function populateModelFilter(){
       var sel=document.getElementById('usageModelFilter');
       if(!sel)return;
       try{
-        var result=await safeApi('GET','/api/available-models');
-        if(!result) return;
-        var models=result.models||[];
+        var models=await safeApi('GET','/api/playground/models',null,null,true);
+        if(!Array.isArray(models)) return;
+        while(sel.options.length>1)sel.remove(1);
         var seen={};
         models.forEach(function(m){
-          var name=m.name||m.model||m.model_id;
-          if(name&&!seen[name]){seen[name]=true;
+          var id=m.model_id||m.model||m.name;
+          if(id&&!seen[id]){seen[id]=true;
             var opt=document.createElement('option');
-            opt.value=name;opt.textContent=name;
+            opt.value=id;opt.textContent=(m.name||id)+(m.provider?' · '+m.provider:'');
             sel.appendChild(opt);
           }
         });

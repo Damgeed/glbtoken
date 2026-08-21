@@ -183,6 +183,7 @@ class ProxyChatRequest(BaseModel):
 
 class PlaygroundChatRequest(BaseModel):
     model: str
+    models: list[str] = Field(default_factory=list)
     messages: list
     temperature: float = 0.7
     max_tokens: int = 4096
@@ -194,7 +195,7 @@ class PlaygroundChatRequest(BaseModel):
 
 class SaveConversationRequest(BaseModel):
     title: str = "New Conversation"
-    messages: list = []
+    messages: list = Field(default_factory=list)
     model: str = ""
 
 

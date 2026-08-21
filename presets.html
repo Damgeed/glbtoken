@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="style.css?v=1282" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
-<link rel="stylesheet" href="presets.css?v=1021" />
+<link rel="stylesheet" href="presets.css?v=1024" />
 </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -145,11 +145,16 @@
               <line x1="8" y1="6" x2="21" y2="6"/><circle cx="6" cy="6" r="2"/><line x1="3" y1="12" x2="17" y2="12"/><circle cx="19" cy="12" r="2"/><line x1="10" y1="18" x2="21" y2="18"/><circle cx="8" cy="18" r="2"/>
             </svg>
             Model Presets</h1>
-          <p>Save and reuse model configurations</p>
+          <p>Build reusable model configurations and launch them directly in the Playground</p>
         </div>
         <button class="btn-action" onclick="showPresetModal()">+ Create Preset</button>
       </div>
-  <div class="dash-card">
+  <div class="presets-workflow">
+    <div><span>01</span><strong>Choose a live model</strong><small>The selector mirrors the active NewAPI-backed catalog.</small></div>
+    <div><span>02</span><strong>Tune the request</strong><small>Save system instructions and sampling parameters together.</small></div>
+    <div><span>03</span><strong>Test before shipping</strong><small>Open any preset in the Playground with one click.</small></div>
+  </div>
+  <div class="dash-card presets-library-card">
     <div class="dash-section-title">Your Presets <span class="label-muted-sm" id="presetCount">0 saved</span></div>
     <div id="presetsList">
       <div class="presets-empty">
@@ -175,7 +180,7 @@
       </div>
       <div class="form-group">
         <label for="presetModel">Model <span class="text-destructive">*</span></label>
-        <input type="text" id="presetModel" placeholder="e.g. gpt-4o, claude-sonnet-4" required />
+        <select id="presetModel" required><option value="">Loading live models…</option></select>
       </div>
       <div class="form-group">
         <label for="presetSystemPrompt">System Prompt</label>
@@ -235,6 +240,34 @@
 <script>
 /* ── Presets State ── */
 var editingPresetId = null;
+var presetCatalogLoaded = false;
+
+async function loadPresetModels(){
+  if(presetCatalogLoaded) return;
+  var select = document.getElementById('presetModel');
+  try {
+    var models = await api('GET','/api/playground/models');
+    if(!Array.isArray(models)) models = [];
+    select.innerHTML = '<option value="">Choose a live model</option>';
+    var groups = {};
+    models.forEach(function(model){
+      var provider = model.provider || 'Other';
+      if(!groups[provider]){
+        groups[provider] = document.createElement('optgroup');
+        groups[provider].label = provider;
+        select.appendChild(groups[provider]);
+      }
+      var option = document.createElement('option');
+      option.value = model.model_id;
+      option.textContent = model.name || model.model_id;
+      option.title = model.model_id;
+      groups[provider].appendChild(option);
+    });
+    presetCatalogLoaded = true;
+  } catch(e){
+    select.innerHTML = '<option value="">Catalog unavailable</option>';
+  }
+}
 
 /* ── Load Presets ── */
 async function loadPresets(){
@@ -265,6 +298,7 @@ async function loadPresets(){
       card += '</div>';
       card += '<div class="pc-preview">' + promptPreview + '</div>';
       card += '<div class="pc-actions">';
+      card += '<a class="pc-run" href="playground.html?preset=' + encodeURIComponent(p.id) + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg> Open</a>';
       card += '<button class="pc-edit" onclick="showPresetModal(' + safeJsId(p.id) + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>';
       card += '<button class="pc-delete" onclick="deletePreset(' + safeJsId(p.id) + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-xs"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Delete</button>';
       card += '</div></div>';
@@ -301,6 +335,7 @@ function refreshPresetsMoreBtn(){
 
 /* ── Show Preset Modal (Create or Edit) ── */
 async function showPresetModal(presetId){
+  await loadPresetModels();
   editingPresetId = null;
   document.getElementById('presetForm').reset();
   document.getElementById('presetName').value = '';
@@ -322,6 +357,12 @@ async function showPresetModal(presetId){
       if(p){
         editingPresetId = p.id;
         document.getElementById('presetName').value = p.name || '';
+        if(p.model && !Array.prototype.some.call(document.getElementById('presetModel').options,function(option){ return option.value === p.model; })){
+          var unavailable = document.createElement('option');
+          unavailable.value = p.model;
+          unavailable.textContent = p.model + ' (not currently active)';
+          document.getElementById('presetModel').appendChild(unavailable);
+        }
         document.getElementById('presetModel').value = p.model || '';
         document.getElementById('presetSystemPrompt').value = p.system_prompt || '';
         document.getElementById('presetTemperature').value = p.temperature != null ? p.temperature : '0.7';
@@ -391,6 +432,7 @@ async function deletePreset(id){
 /* ── Auto-load on page load ── */
 document.addEventListener('DOMContentLoaded', function(){
   if(localStorage.getItem('gt_refresh_token')){
+    loadPresetModels();
     loadPresets();
   }
 });
