@@ -99,6 +99,16 @@
 .usage-chart-wrap {
   position: relative;
 }
+.usage-graphs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.usage-graphs-grid > .dash-card {
+  min-width: 0;
+  margin-bottom: 0;
+}
 .usage-chart-empty {
   position: absolute;
   inset: 0;
@@ -115,6 +125,9 @@
 @media (max-width: 1000px) {
   .usage-insights {
     grid-template-columns: 1fr 1fr;
+  }
+  .usage-graphs-grid {
+    grid-template-columns: 1fr;
   }
 }
 

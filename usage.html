@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="dashboard.css?v=1061" />
 <link rel="stylesheet" href="more.css?v=11" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="usage.css?v=1065" />
+<link rel="stylesheet" href="usage.css?v=1066" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -165,27 +165,37 @@
         <div class="usage-insight"><span>Top model</span><strong id="usageTopModelStat">—</strong><small id="usageTopModelSub">By charged tokens</small></div>
       </div>
 
-      <!-- Usage Analytics Chart -->
-      <div class="dash-card stat-card">
-        <div class="dash-section-title filter-btn-row">
-          <span class="filter-btn-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Usage trend</span>
-          <div class="filter-badge-row" id="usageRangeBtns">
-            <button class="sort-btn usage-range active badge" data-days="7" onclick="setUsageRange(7)">7d</button>
-            <button class="sort-btn usage-range badge" data-days="30" onclick="setUsageRange(30)">30d</button>
-            <button class="sort-btn usage-range badge" data-days="90" onclick="setUsageRange(90)">90d</button>
+      <!-- Usage Analytics Graphs -->
+      <div class="usage-graphs-grid">
+        <div class="dash-card stat-card">
+          <div class="dash-section-title filter-btn-row">
+            <span class="filter-btn-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-blue"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Token Usage</span>
+            <div class="filter-badge-row" id="usageRangeBtns">
+              <button class="sort-btn usage-range active badge" data-days="7" onclick="setUsageRange(7)">7d</button>
+              <button class="sort-btn usage-range badge" data-days="30" onclick="setUsageRange(30)">30d</button>
+              <button class="sort-btn usage-range badge" data-days="90" onclick="setUsageRange(90)">90d</button>
+            </div>
+            <select id="usageModelFilter" class="filter-badge-item" onchange="refreshUsageChart()">
+              <option value="">All Models</option>
+            </select>
           </div>
-          <select id="usageModelFilter" class="filter-badge-item" onchange="refreshUsageChart()">
-            <option value="">All Models</option>
-          </select>
-          <div class="filter-badge-right" id="usageModeBtns">
-            <button class="sort-btn usage-mode active badge" data-mode="tokens" onclick="setUsageMode('tokens')">Tokens</button>
-            <button class="sort-btn usage-mode badge" data-mode="cost" onclick="setUsageMode('cost')">Cost</button>
+          <div class="chart-container chart-container-rel usage-chart-wrap"><canvas id="dailyChart" role="img" aria-label="Token usage over the selected period"></canvas><div class="usage-chart-empty" id="usageTokenChartEmpty">No token usage for this period.</div></div>
+          <div class="chart-axis-labels" id="usageSummary">
+            <span id="usageTotalLabel">Total: <strong id="usageTotalVal" class="text-semibold">0</strong> tokens</span>
+            <span class="text-muted">Selected range</span>
           </div>
         </div>
-        <div class="chart-container chart-container-rel usage-chart-wrap"><canvas id="dailyChart"></canvas><div class="usage-chart-empty" id="usageChartEmpty">No usage data for this period.</div></div>
-        <div class="chart-axis-labels" id="usageSummary">
-          <span id="usageTotalLabel">Total: <strong id="usageTotalVal" class="text-semibold">0</strong> tokens</span>
-          <span id="usageCostLabel">Cost: <strong id="usageCostVal" class="text-semibold">$0.00</strong></span>
+
+        <div class="dash-card stat-card">
+          <div class="dash-section-title section-header">
+            <span class="dash-title-group"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Cost</span>
+            <span class="legend-label">Same filters</span>
+          </div>
+          <div class="chart-container chart-container-rel usage-chart-wrap"><canvas id="usageCostChart" role="img" aria-label="Cost over the selected period"></canvas><div class="usage-chart-empty" id="usageCostChartEmpty">No cost data for this period.</div></div>
+          <div class="chart-axis-labels">
+            <span id="usageCostLabel">Cost: <strong id="usageCostVal" class="text-semibold">$0.00</strong></span>
+            <span class="text-muted">Selected range</span>
+          </div>
         </div>
       </div>
 
@@ -300,7 +310,7 @@
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1240"></script>
 <script data-cfasync="false" src="filters.js?v=1148"></script>
-<script data-cfasync="false" src="usage-charts.js?v=11"></script>
+<script data-cfasync="false" src="usage-charts.js?v=12"></script>
 <script data-cfasync="false" src="login-history.js?v=1125"></script>
 
 <!-- ── Usage Script ── -->
