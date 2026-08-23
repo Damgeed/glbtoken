@@ -2,17 +2,20 @@
 import os
 import sys
 import pathlib
+import tempfile
 
 # MUST be set before importing app modules (engine created at import time)
-os.environ["JWT_SECRET"] = "pytest-secret-key"
-os.environ["GLBTOKEN_SECRET"] = "pytest-secret-key"
-os.environ["DATABASE_URL"] = "sqlite:///./test_glbtoken.db"
+os.environ["JWT_SECRET"] = "pytest-jwt-secret-key-with-32-bytes-minimum"
+os.environ["GLBTOKEN_SECRET"] = "pytest-data-secret-key-with-32-bytes-minimum"
+_db_fd, _db_path = tempfile.mkstemp(prefix="glbtoken-pytest-", suffix=".db")
+os.close(_db_fd)
+os.environ["DATABASE_URL"] = f"sqlite:///{_db_path}"
 
 BACKEND = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BACKEND))
 
 import pytest
-from fastapi.testclient import TestClient
+from starlette.testclient import TestClient
 
 from database import Base, engine, SessionLocal, get_db, User
 import main as app_module
@@ -21,6 +24,13 @@ from auth import hash_password
 
 # Disable rate limiting in tests — all TestClient requests share one IP
 limiter.enabled = False
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Dispose the isolated test DB so repeated runs never reuse stale journals."""
+    engine.dispose()
+    for suffix in ("", "-journal", "-wal", "-shm"):
+        pathlib.Path(_db_path + suffix).unlink(missing_ok=True)
 
 
 @pytest.fixture()

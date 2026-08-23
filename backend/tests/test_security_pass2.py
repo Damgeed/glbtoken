@@ -1,6 +1,7 @@
 """Security assessment Pass 2 regression tests — fixes for findings 1-7."""
 import json
 import hashlib
+import socket
 
 from database import User
 from common import SIGNUP_BONUS_TOKENS
@@ -27,7 +28,15 @@ def _token_for(client, u):
     return r.json()["token"]
 
 
-def test_webhook_url_https_only_and_ssrf_blocked(client, make_user):
+def test_webhook_url_https_only_and_ssrf_blocked(client, make_user, monkeypatch):
+    real_getaddrinfo = socket.getaddrinfo
+
+    def resolved_public(host, port, *args, **kwargs):
+        if host == "example.com":
+            return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 0))]
+        return real_getaddrinfo(host, port, *args, **kwargs)
+
+    monkeypatch.setattr(socket, "getaddrinfo", resolved_public)
     u = make_user()
     tok = _token_for(client, u)
     h = _auth(tok)
@@ -49,7 +58,10 @@ def test_webhook_url_https_only_and_ssrf_blocked(client, make_user):
     assert r.json()["settings"]["webhook_url"] == "https://example.com/glbtoken"
 
 
-def test_is_private_url_covers_cgnat():
+def test_is_private_url_covers_cgnat(monkeypatch):
+    monkeypatch.setattr(socket, "getaddrinfo", lambda host, port: [
+        (socket.AF_INET, socket.SOCK_STREAM, 6, "", (host if host[0].isdigit() else "93.184.216.34", 0))
+    ])
     assert _is_private_url("http://100.64.0.1/x") is True
     assert _is_private_url("https://100.127.255.254/x") is True
     assert _is_private_url("https://example.com/x") is False

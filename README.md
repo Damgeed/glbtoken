@@ -1,6 +1,6 @@
 # GlbTOKEN — Global Token for Premium AI Models
 
-**One balance. 340+ AI models. Pay-as-you-go.**
+**One balance. A live, provider-backed AI model catalog. Pay-as-you-go.**
 
 ## Architecture
 
@@ -41,7 +41,10 @@ to your deployed backend (see `shared.js`).
 
 | Variable | Description |
 |----------|-------------|
-| `GLBTOKEN_SECRET` | JWT signing secret (auto-generated if missing) |
+| `JWT_SECRET` | Required JWT signing secret (at least 32 random bytes) |
+| `GLBTOKEN_SECRET` | Separate required key for encrypting stored application secrets |
+| `ADMIN_API_KEY` | Separate high-entropy bearer key for admin automation |
+| `BOOTSTRAP_ADMIN_EMAILS` | Verified email allowlist for explicit admin bootstrap; empty disables it |
 | `DATABASE_URL` | PostgreSQL URL (Railway provides `postgres://`; SQLite fallback locally) |
 | `AUTH0_DOMAIN` / `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` | Auth0 passwordless email/SMS + social login |
 | `NEW_API_BASE_URL` / `NEW_API_ADMIN_TOKEN` | New API routing engine (users, quota, model pricing) |
@@ -68,12 +71,12 @@ to your deployed backend (see `shared.js`).
 ## Security Highlights
 
 - bcrypt password hashing; JWT 1h access + 30d refresh (SHA-256 hashed in DB)
-- Atomic balance deduction — cannot go negative under concurrency
+- Atomic balance deduction prevents a stored negative balance; upstream-cost reservation is tracked as a separate hardening item
 - Provider-verified top-up crediting (webhook + idempotency, no client-minted tokens)
 - Rate limiting (slowapi) on auth, payments, key creation; admin routes locked down
 - XSS: all dynamic HTML escaped; CSV export guarded against formula injection
 - SSRF / open-redirect: all outbound URLs and redirects are hardcoded allowlists
-- Login history records real client IP (XFF spoof-proof)
+- Login history uses validated proxy headers; production must close direct origin access with Cloudflare Tunnel
 - Optional TOTP two-factor auth per user
 
 ## Deploy
@@ -82,7 +85,7 @@ to your deployed backend (see `shared.js`).
 
 ```bash
 # Build:  cd backend && pip install -r requirements.txt
-# Start:  uvicorn main:app --host 0.0.0.0 --port $PORT
+# Start:  ./entrypoint.sh
 ```
 
 ### GitHub Pages (frontend)

@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=1285" />
+<link rel="stylesheet" href="style.css?v=1286" />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="GlbTOKEN" />
@@ -238,7 +238,7 @@
 <option value="">Loading live catalog…</option>
 </select>
 <span class="current-badge" id="aiModelBadge">Live catalog</span>
-<button type="button" class="ai-chat-reset" id="aiResetBtn" onclick="resetAIChat()" aria-label="Start a new chat">New chat</button>
+<button type="button" class="ai-chat-reset" id="aiResetBtn" onclick="resetAIChat()" aria-label="Start a new chat"><span class="ai-chat-reset-desktop">New chat</span><span class="ai-chat-reset-mobile" aria-hidden="true">New</span></button>
               </div>
 <div class="ai-chat-main">
 <div class="chat-msgs" id="aiChatMsgs" aria-live="polite" aria-busy="false">
@@ -279,7 +279,7 @@
 <!-- FOOTER: Injected by footer.js -->
 <div id="footer-container"></div>
 
-<button class="chat-fab" onclick="toggleChat()" aria-label="Open GlbTOKEN support" title="Support"><span aria-hidden="true">?</span></button>
+<button class="chat-fab" onclick="toggleChat()" aria-label="Open GlbTOKEN support" title="Support"><span aria-hidden="true">💬</span></button>
 <div class="chat-window" id="chatWindow" role="dialog" aria-label="GlbTOKEN support assistant" aria-hidden="true">
 <div class="chat-header"><div><h3>GlbTOKEN Support</h3><span class="support-chat-status"><i></i> Self-service assistant</span></div><button id="chatStaticClose" onclick="toggleChat()" aria-label="Close support">✕</button></div>
 <div class="chat-msgs" id="chatMsgs" aria-live="polite">
@@ -296,7 +296,7 @@
 <script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1170"></script>
 <script data-cfasync="false" src="catalog.js?v=2"></script>
-<script data-cfasync="false" src="ui.js?v=1241"></script>
+<script data-cfasync="false" src="ui.js?v=1242"></script>
 <script>initHeroVariants()</script>
 
 </body>

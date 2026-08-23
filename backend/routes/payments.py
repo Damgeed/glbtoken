@@ -612,6 +612,7 @@ def billing_summary(user: User = Depends(get_current_user), db: Session = Depend
     tokens_month = db.query(func.coalesce(func.sum(Transaction.tokens), 0.0)).filter(
         Transaction.user_id == user.id,
         Transaction.type == "consumption",
+        Transaction.status == "completed",
         Transaction.created_at >= month_start,
     ).scalar() or 0.0
     try:

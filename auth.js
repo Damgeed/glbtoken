@@ -351,7 +351,9 @@
           var challenge = base64url(hash);
           // Store state and verifier
           sessionStorage.setItem('gt_code_verifier', verifier);
-          var csrfState = Array.from(new Uint8Array(32), function(b){ return b.toString(36)[2] || '0'; }).join('').substring(0, 32);
+          var stateBytes = new Uint8Array(32);
+          crypto.getRandomValues(stateBytes);
+          var csrfState = base64url(stateBytes);
           sessionStorage.setItem('gt_oauth_state', csrfState);
           
           // Build Auth0 authorize URL directly (PKCE code flow)
@@ -381,4 +383,3 @@
         setBtnLoading(btn, false);
       });
     }
-

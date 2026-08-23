@@ -130,6 +130,7 @@ async def get_dashboard(
     usage = db.query(Transaction.model_used, func.sum(Transaction.tokens)).filter(
         Transaction.user_id == user.id,
         Transaction.type == "consumption",
+        Transaction.status == "completed",
         Transaction.created_at >= since_dashboard,
     ).group_by(Transaction.model_used).all()
     
@@ -180,7 +181,8 @@ async def get_dashboard(
     # Total consumption from local DB (fallback when New API not connected)
     total_consumption = db.query(func.sum(Transaction.tokens)).filter(
         Transaction.user_id == user.id,
-        Transaction.type == "consumption"
+        Transaction.type == "consumption",
+        Transaction.status == "completed",
     ).scalar() or 0
 
     # ── Daily usage for last N days ──
@@ -191,6 +193,7 @@ async def get_dashboard(
     ).filter(
         Transaction.user_id == user.id,
         Transaction.type == "consumption",
+        Transaction.status == "completed",
         Transaction.created_at >= since_dashboard
     ).group_by(func.date(Transaction.created_at)).order_by(func.date(Transaction.created_at)).all()
 
@@ -220,7 +223,8 @@ async def get_dashboard(
     # ── Total request count ──
     total_requests = db.query(func.count(Transaction.id)).filter(
         Transaction.user_id == user.id,
-        Transaction.type == "consumption"
+        Transaction.type == "consumption",
+        Transaction.status.in_(("completed", "failed")),
     ).scalar() or 0
 
     budget = budget_snapshot(db, user)
@@ -528,6 +532,7 @@ async def get_usage_analytics(
     ).filter(
         Transaction.user_id == user.id,
         Transaction.type == "consumption",
+        Transaction.status == "completed",
         Transaction.created_at >= since,
     )
     if model:
@@ -666,6 +671,7 @@ async def analytics_cost_by_model(
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
+            Transaction.status == "completed",
             Transaction.created_at >= since,
         ).group_by(Transaction.model_used).all()
 
@@ -775,14 +781,14 @@ async def analytics_key_usage(
         if cached is not None:
             return cached
 
-        # Get user's API keys (key_prefix for display, key as fallback for old keys)
-        keys = db.query(ApiKey.id, ApiKey.key_prefix, ApiKey.key).filter(
+        # Only masked key metadata is loaded; plaintext keys are never retained.
+        keys = db.query(ApiKey.id, ApiKey.key_prefix).filter(
             ApiKey.user_id == user.id,
         ).all()
         if not keys:
             return []
         key_ids = [k.id for k in keys]
-        key_map = {k.id: (k.key_prefix or k.key or "") for k in keys}
+        key_map = {k.id: (k.key_prefix or "") for k in keys}
 
         # Single grouped query instead of N+1 (one query per key before)
         rows = db.query(
@@ -795,6 +801,7 @@ async def analytics_key_usage(
         ).filter(
             Transaction.user_id == user.id,
             Transaction.type == "consumption",
+            Transaction.status == "completed",
             Transaction.key_id.in_(key_ids),
             Transaction.created_at >= since,
         ).group_by(Transaction.key_id, Transaction.model_used).all()
@@ -859,6 +866,7 @@ async def analytics_response_times(
             Transaction.provider,
         ).all()
 
+        providers = _catalog_prices(db)
         results = []
         for row in q:
             date_str = str(row.day) if hasattr(row.day, 'strftime') else str(row.day)

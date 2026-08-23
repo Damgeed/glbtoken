@@ -600,11 +600,13 @@ def get_org_usage(org_id: int, request: Request, user: User = Depends(get_curren
     total_tokens_used = db.query(func.sum(Transaction.tokens)).filter(
         Transaction.user_id.in_(member_ids),
         Transaction.type == "consumption",
+        Transaction.status == "completed",
     ).scalar() or 0
     
     total_transactions = db.query(func.count(Transaction.id)).filter(
         Transaction.user_id.in_(member_ids),
         Transaction.type == "consumption",  # API calls only — deposits are NOT calls
+        Transaction.status.in_(("completed", "failed")),
     ).scalar() or 0
     
     # Total spend = the members' cumulative spend (user.total_spent is the
@@ -619,6 +621,7 @@ def get_org_usage(org_id: int, request: Request, user: User = Depends(get_curren
     token_rows = db.query(Transaction.user_id, func.sum(Transaction.tokens)).filter(
         Transaction.user_id.in_(member_ids),
         Transaction.type == "consumption",
+        Transaction.status == "completed",
     ).group_by(Transaction.user_id).all()
     tokens_map = {uid: float(t) for uid, t in token_rows}
 

@@ -1,11 +1,12 @@
 """GlbTOKEN — Auth Routes (register, login, OAuth, Auth0, OTP, SMS, password, profile)"""
 
-from fastapi import APIRouter, Depends, Query, Request, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, Query, Request, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, update
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone, timedelta
 import secrets, json, random, re, hashlib, time, threading
+import os
 import httpx
 
 from database import get_db, User, LoginEvent, Referral, RefreshToken
@@ -34,8 +35,26 @@ from schemas import (
     ProfileUpdateRequest, RefreshRequest, LogoutRequest,
     DeleteAccountRequest,
 )
+from secret_store import SecretStoreUnavailable, decrypt_secret, encrypt_secret
 
 router = APIRouter()
+
+
+def _bootstrap_admin_allowed(email: str, verified: bool) -> bool:
+    """Allow admin bootstrap only through an explicit, verified email allowlist."""
+    if not verified:
+        return False
+    allowed = {
+        item.strip().lower()
+        for item in os.getenv("BOOTSTRAP_ADMIN_EMAILS", "").split(",")
+        if item.strip()
+    }
+    return bool(email and email.strip().lower() in allowed)
+
+
+def _apply_bootstrap_admin(user) -> None:
+    if _bootstrap_admin_allowed(user.email, bool(user.email_verified)):
+        user.is_admin = True
 
 # ── Helper: build auth response with refresh token ──
 def _auth_response(user, db, ua: str = ""):
@@ -435,15 +454,11 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
             referred_by=_resolve_ref(db, req.ref),
             signup_ip=_client_ip(request),
             referral_source=_clean_src(req.src),
-            is_admin=False,  # promoted to admin below if id == 1
+            is_admin=False,
         )
         db.add(user)
         db.commit()
         db.refresh(user)
-        # Deterministic first-user-admin: id==1 (no check-then-insert race)
-        if user.id == 1:
-            user.is_admin = True
-            db.commit()
     except IntegrityError:
         # Email unique-constraint race (two concurrent registers with the same
         # email both passed the pre-check) → clean generic 400, not a 500.
@@ -474,8 +489,10 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
                 newapi_token = token_resp["key"]
                 # Store the New API token reference in our DB
                 user.newapi_user_id = newapi_user["id"]
-                user.newapi_token = newapi_token
+                user.newapi_token = encrypt_secret(newapi_token)
                 db.commit()
+    except SecretStoreUnavailable as e:
+        print(f"⚠️ New API token was not stored: {e}")
     except Exception as e:
         print(f"⚠️ New API sync failed on register: {e}")
         # Don't block registration on New API failure
@@ -494,10 +511,6 @@ async def register(req: RegisterRequest, request: Request, db: Session = Depends
         "token": auth["token"],
         "refresh_token": auth["refresh_token"],
     }
-    if newapi_token:
-        result["newapi_token"] = newapi_token
-        result["newapi_endpoint"] = NEW_API_BASE_URL
-    
     # Record login event
     try:
         record_login_event(user.id, request, True, db)
@@ -704,15 +717,11 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
             referred_by=_resolve_ref(db, body.ref),
             signup_ip=_client_ip(request),
             referral_source=_clean_src(body.src),
-            is_admin=False,
+            is_admin=_bootstrap_admin_allowed(email, verified=True),
         )
         db.add(user)
         db.commit()
         db.refresh(user)
-        # Deterministic first-user-admin: id==1 (no check-then-insert race)
-        if user.id == 1:
-            user.is_admin = True
-            db.commit()
         
         # Sync to New API (non-blocking)
         try:
@@ -724,6 +733,7 @@ async def verify_code(request: Request, body: VerifyCodeRequest, db: Session = D
             print(f"⚠️ New API sync failed on verify-code: {e}")
     else:
         user.email_verified = True
+        _apply_bootstrap_admin(user)
         db.commit()
     
     jwt_token = create_access_token({"sub": str(user.id)})
@@ -794,15 +804,11 @@ async def verify_sms_code_endpoint(request: Request, body: VerifySmsCodeRequest,
             password_hash=None,
             token_balance=SIGNUP_BONUS_TOKENS,
             email_verified=email_verified,
-            is_admin=False,
+            is_admin=_bootstrap_admin_allowed(email, verified=email_verified),
         )
         db.add(user)
         db.commit()
         db.refresh(user)
-        # Deterministic first-user-admin: id==1 (no check-then-insert race)
-        if user.id == 1:
-            user.is_admin = True
-            db.commit()
         try:
             newapi_user = await create_newapi_user(email=email, name=user.name, quota=0)
             if newapi_user and isinstance(newapi_user, dict) and newapi_user.get("id"):
@@ -880,6 +886,7 @@ async def auth0_login(request: Request, req: Auth0LoginRequest, db: Session = De
             token_balance=(_bonus if _ev else 0),
             settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not _ev else None),
             email_verified=_ev,
+            is_admin=_bootstrap_admin_allowed(info["email"], verified=_ev),
         )
         db.add(user)
         db.commit()
@@ -958,6 +965,7 @@ def _resolve_social_user(db, info, id_field="google_id"):
             token_balance=(_bonus if email_verified else 0),
             settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not email_verified else None),
             email_verified=email_verified,
+            is_admin=_bootstrap_admin_allowed(db_email, verified=email_verified),
         )
         db.add(user)
         try:
@@ -977,6 +985,7 @@ def _resolve_social_user(db, info, id_field="google_id"):
     if email_verified and email and not user.email:
         user.email = email
     user.email_verified = user.email_verified or email_verified
+    _apply_bootstrap_admin(user)
     db.commit()
     # Verified social login → release any held signup bonus.
     _grant_pending_bonus(user, db)
@@ -985,83 +994,42 @@ def _resolve_social_user(db, info, id_field="google_id"):
 
 @router.get("/api/auth/auth0/callback")
 @limiter.limit("10/minute")
-async def auth0_callback_redirect(request: Request, id_token: str = Query(...)):
-    """Callback redirect endpoint for social login. Validates Auth0 id_token and redirects to frontend dashboard with JWT."""
-    from starlette.responses import RedirectResponse
-    if not is_auth0_configured():
-        return RedirectResponse(url="https://glbtoken.com/login.html?error=Auth0+not+configured")
-    try:
-        payload = verify_auth0_token(id_token)
-        info = get_user_info(payload)
-    except ValueError as e:
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Invalid+token:+{_safe_error(e)}")
-    from database import get_db
-    db = next(get_db())
-    try:
-        user, _ = _resolve_social_user(db, info)
-    except ValueError as e:
-        db.close()
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
-    except Exception as e:
-        db.close()
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}")
-    try:
-        from newapi_integration import create_newapi_user
-        await create_newapi_user(email=user.email, name=user.name, quota=0)
-    except Exception as e:
-        print(f"⚠️ New API sync failed for Auth0 callback: {e}")
-    twofa_redirect = _social_2fa_redirect(user)
-    if twofa_redirect:
-        db.close()
-        return twofa_redirect
-    ua = request.headers.get("user-agent", "")
-    jwt_token = create_access_token({"sub": str(user.id)})
-    try:
-        _revoke_same_device(user.id, ua, db)
-    except Exception as e:
-        print(f"⚠️ Same-device session cleanup failed: {e}")
-    refresh_token = generate_refresh_token(user.id, db, ua=ua, device_type=_ua_device_type(ua))
-    # Record this social login so Login History shows the browser (e.g. Firefox
-    # signing in via Google) — was missing, so social logins never appeared.
-    try:
-        record_login_event(user.id, request, True, db)
-    except Exception as e:
-        print(f"⚠️ Auth0 callback login event failed: {e}")
-    user_json = _url_quote(json.dumps({
-        "id": user.id, "name": user.name, "email": user.email,
-        "token_balance": user.token_balance, "picture": info.get("picture", ""),
-    }))
-    db.close()
-    import time
-    ts = int(time.time() * 1000)
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html#token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
-@router.get("/api/auth/auth0/pkce-callback")
+async def auth0_callback_redirect(request: Request):
+    """Reject the legacy implicit flow, which exposed ID tokens in URLs/logs."""
+    raise HTTPException(status_code=410, detail="Implicit OAuth flow is disabled; use PKCE")
+
+
+@router.post("/api/auth/auth0/pkce-callback")
 @limiter.limit("10/minute")
-async def auth0_pkce_callback(request: Request, code: str = Query(...), code_verifier: str = Query(...), state: str = Query(None)):
+async def auth0_pkce_callback(
+    request: Request,
+    code: str = Form(...),
+    code_verifier: str = Form(...),
+):
     """Server-side PKCE callback: exchange Auth0 code for tokens, then redirect to dashboard with JWT."""
     from starlette.responses import RedirectResponse
     if not is_auth0_configured():
-        return RedirectResponse(url="https://glbtoken.com/login.html?error=Auth0+not+configured")
+        return RedirectResponse(url="https://glbtoken.com/login.html?error=Auth0+not+configured", status_code=303)
     try:
         redirect_uri = "https://glbtoken.com/auth/callback.html"
         tokens = exchange_pkce_code(code, code_verifier, redirect_uri)
         id_token = tokens.get("id_token")
         if not id_token:
-            return RedirectResponse(url="https://glbtoken.com/login.html?error=No+id_token+from+Auth0")
+            return RedirectResponse(url="https://glbtoken.com/login.html?error=No+id_token+from+Auth0", status_code=303)
         payload = verify_auth0_token(id_token)
         info = get_user_info(payload)
     except ValueError as e:
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}", status_code=303)
     from database import get_db
     db = next(get_db())
     try:
         user, _ = _resolve_social_user(db, info)
     except ValueError as e:
         db.close()
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error={_safe_error(e)}", status_code=303)
     except Exception as e:
         db.close()
-        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}")
+        return RedirectResponse(url=f"https://glbtoken.com/login.html?error=Database+error:+{_safe_error(e)}", status_code=303)
     try:
         from newapi_integration import create_newapi_user
         await create_newapi_user(email=user.email, name=user.name, quota=0)
@@ -1090,7 +1058,7 @@ async def auth0_pkce_callback(request: Request, code: str = Query(...), code_ver
     db.close()
     import time
     ts = int(time.time() * 1000)
-    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html#token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}")
+    return RedirectResponse(url=f"https://glbtoken.com/dashboard.html#token={_url_quote(jwt_token, safe='')}&refresh={_url_quote(refresh_token, safe='')}&user={user_json}&_ts={ts}", status_code=303)
 
 
 @router.post("/api/auth/auth0/password-login")
@@ -1132,6 +1100,7 @@ async def auth0_password_login_endpoint(request: Request, body: Auth0PasswordLog
             token_balance=(_bonus if _ev else 0),
             settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not _ev else None),
             email_verified=_ev,
+            is_admin=_bootstrap_admin_allowed(info["email"], verified=_ev),
         )
         db.add(user); db.commit(); db.refresh(user)
         try:
@@ -1192,6 +1161,7 @@ async def auth0_signup_endpoint(request: Request, body: Auth0SignupRequest, db: 
         token_balance=(_bonus if _ev else 0),
         settings=(json.dumps({"pending_bonus": _bonus}) if _bonus > 0 and not _ev else None),
         email_verified=_ev,
+        is_admin=_bootstrap_admin_allowed(info["email"], verified=_ev),
     )
     db.add(user); db.commit(); db.refresh(user)
     try:
@@ -1317,6 +1287,7 @@ def verify_email(req: VerifyEmailRequest, request: Request, user: User = Depends
     if not _aware(user.email_otp_expiry) or now > _aware(user.email_otp_expiry):
         _400("OTP expired")
     user.email_verified = True
+    _apply_bootstrap_admin(user)
     user.email_otp = None
     user.email_otp_expiry = None
     _email_otp_attempts.pop(key, None)
@@ -1573,7 +1544,10 @@ def _totp_enabled(user) -> bool:
 
 
 def _totp_secret(user) -> str:
-    return _totp_settings(user).get("totp_secret", "")
+    try:
+        return decrypt_secret(_totp_settings(user).get("totp_secret", ""))
+    except SecretStoreUnavailable:
+        return ""
 
 
 # ── 2FA recovery codes (backup codes) ──
@@ -1628,7 +1602,7 @@ def _social_2fa_redirect(user):
         {"sub": str(user.id), "scope": "2fa"}, expires_minutes=5
     )
     qs = urlencode({"pre": pre_token, "next": "/dashboard.html"})
-    return RedirectResponse(url=f"https://glbtoken.com/2fa-challenge.html#{qs}")
+    return RedirectResponse(url=f"https://glbtoken.com/2fa-challenge.html#{qs}", status_code=303)
 
 
 @router.get("/api/auth/2fa/status")
@@ -1647,7 +1621,10 @@ def twofa_setup(request: Request, user: User = Depends(get_current_user), db: Se
     secret = generate_secret()
     codes = _generate_recovery_codes(10)
     s = _totp_settings(user)
-    s["totp_pending_secret"] = secret
+    try:
+        s["totp_pending_secret"] = encrypt_secret(secret)
+    except SecretStoreUnavailable:
+        _500("Two-factor secret storage is not configured")
     # Stage hashed recovery codes too — they become active on enable.
     s["totp_pending_backup_codes"] = _hash_recovery_codes(codes)
     user.settings = json.dumps(s)
@@ -1665,7 +1642,10 @@ def twofa_enable(request: Request, req: TwoFactorCodeRequest, user: User = Depen
     """Verify a code from the staged secret, then enable 2FA."""
     from totp import verify
     s = _totp_settings(user)
-    pending = s.get("totp_pending_secret", "")
+    try:
+        pending = decrypt_secret(s.get("totp_pending_secret", ""))
+    except SecretStoreUnavailable:
+        _500("Two-factor secret could not be decrypted")
     if not pending:
         _400("No pending 2FA setup — call setup first")
     # Per-account failed-attempt cap (same counter as 2fa/confirm) — prevents
@@ -1678,7 +1658,10 @@ def twofa_enable(request: Request, req: TwoFactorCodeRequest, user: User = Depen
         _twofa_attempts[key] = attempts + 1
         _400("Invalid authenticator code")
     _twofa_attempts.pop(key, None)
-    s["totp_secret"] = pending
+    try:
+        s["totp_secret"] = encrypt_secret(pending)
+    except SecretStoreUnavailable:
+        _500("Two-factor secret storage is not configured")
     s["totp_enabled"] = True
     s.pop("totp_pending_secret", None)
     # Activate the staged recovery codes (hashed).
@@ -1844,22 +1827,22 @@ def list_sessions(request: Request, user: User = Depends(get_current_user), db: 
     Historical cleanup: before the refresh endpoint rotated tokens (it revokes
     the old one each refresh), every silent page-load refresh minted a new row
     without revoking the previous one — so one browser could accumulate 20+
-    "sessions". We cap active tokens per user at MAX_ACTIVE_SESSIONS and revoke
+    "sessions". We cap active tokens per user at MAX_ACTIVE_REFRESH_TOKENS and revoke
     the oldest beyond that, so the count reflects real devices/sessions.
     """
-    MAX_ACTIVE_SESSIONS = 8
+    from auth import MAX_ACTIVE_REFRESH_TOKENS
     rows = db.query(RefreshToken).filter(
         RefreshToken.user_id == user.id,
         RefreshToken.revoked == False,
         RefreshToken.expires_at > datetime.now(timezone.utc),
     ).order_by(desc(RefreshToken.created_at)).all()
-    if len(rows) > MAX_ACTIVE_SESSIONS:
+    if len(rows) > MAX_ACTIVE_REFRESH_TOKENS:
         # Revoke the oldest tokens beyond the cap (one-time historical cleanup;
         # rotation keeps new sessions at ~1 per device from here on).
-        for stale in rows[MAX_ACTIVE_SESSIONS:]:
+        for stale in rows[MAX_ACTIVE_REFRESH_TOKENS:]:
             stale.revoked = True
         db.commit()
-        rows = rows[:MAX_ACTIVE_SESSIONS]
+        rows = rows[:MAX_ACTIVE_REFRESH_TOKENS]
     # Collapse by browser family so legacy tokens (minted before same-device
     # rotation) don't inflate the count: 4×Safari shows as 1 session, but
     # Safari + Firefox stays 2. Newest token per family wins.

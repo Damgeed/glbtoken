@@ -15,6 +15,7 @@ if not SECRET_KEY:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1-hour access token — short-lived per industry standard (OWASP/Auth0); refresh extends transparently
 REFRESH_TOKEN_EXPIRE_DAYS = 30    # 30-day rotating refresh token
+MAX_ACTIVE_REFRESH_TOKENS = 8
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
@@ -65,6 +66,14 @@ def generate_refresh_token(user_id: int, db: Session, ua: str = "", device_type:
         device_type=(device_type or "")[:50],
     )
     db.add(db_entry)
+    db.flush()
+    active = db.query(RefreshToken).filter(
+        RefreshToken.user_id == user_id,
+        RefreshToken.revoked == False,
+        RefreshToken.expires_at > datetime.now(timezone.utc),
+    ).order_by(RefreshToken.created_at.desc(), RefreshToken.id.desc()).all()
+    for stale in active[MAX_ACTIVE_REFRESH_TOKENS:]:
+        stale.revoked = True
     db.commit()
     return raw
 

@@ -83,9 +83,8 @@ CRYPTO_ETH = os.getenv("CRYPTO_ETH", "")
 
 # Security
 GLBTOKEN_SECRET = os.environ.get("GLBTOKEN_SECRET")
-# Optional dedicated admin-bearer key so GLBTOKEN_SECRET stays encryption-only and
-# can be rotated without breaking admin automation. Falls back to GLBTOKEN_SECRET
-# when unset (backward compatible). Set ADMIN_API_KEY in production to separate the two.
+# Dedicated bearer key for non-interactive admin automation.  It deliberately
+# never falls back to GLBTOKEN_SECRET, which is reserved for encryption.
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "")
 
 # Server
@@ -371,4 +370,3 @@ def send_alert_email(user, subject: str, body: str):
         ).start()
     except Exception as e:
         print(f"⚠️ Failed to queue alert email: {e}")
-

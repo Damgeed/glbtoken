@@ -1,7 +1,7 @@
 """GlbTOKEN — Pydantic Schemas
 
-All request/response models extracted from the main.py monolith.
-Do NOT modify — these are auto-generated from the original main.py.
+Request models include explicit bounds so malformed input is rejected before it
+reaches database, payment, or upstream-provider code.
 """
 
 from pydantic import BaseModel, Field
@@ -17,147 +17,147 @@ def _default_api_key_expiry() -> str:
 # ── Auth Schemas ──
 
 class RegisterRequest(BaseModel):
-    name: str
-    email: str
-    password: str
-    country: str = ""
-    ref: str = ""  # optional referral code or link
-    src: str = ""  # optional channel attribution (twitter/whatsapp/telegram/email/facebook/linkedin)
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=3, max_length=320)
+    password: str = Field(min_length=8, max_length=128)
+    country: str = Field(default="", max_length=100)
+    ref: str = Field(default="", max_length=200)  # optional referral code or link
+    src: str = Field(default="", max_length=50)  # optional channel attribution
 
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    email: str = Field(min_length=3, max_length=320)
+    password: str = Field(min_length=1, max_length=128)
 
 
 class GoogleAuthRequest(BaseModel):
-    token: str
+    token: str = Field(min_length=1, max_length=8192)
 
 
 class GithubAuthRequest(BaseModel):
-    code: str
+    code: str = Field(min_length=1, max_length=2048)
 
 
 class Auth0LoginRequest(BaseModel):
-    token: str
+    token: str = Field(min_length=1, max_length=8192)
 
 
 class SendCodeRequest(BaseModel):
-    email: str
+    email: str = Field(min_length=3, max_length=320)
 
 
 class VerifyCodeRequest(BaseModel):
-    email: str
-    code: str
-    ref: str = ""  # optional referral code or link
-    src: str = ""  # optional channel attribution (twitter/whatsapp/telegram/email/facebook/linkedin)
+    email: str = Field(min_length=3, max_length=320)
+    code: str = Field(min_length=4, max_length=20)
+    ref: str = Field(default="", max_length=200)
+    src: str = Field(default="", max_length=50)
 
 
 class TwoFactorCodeRequest(BaseModel):
-    code: str
+    code: str = Field(min_length=6, max_length=32)
 
 
 class DeleteAccountRequest(BaseModel):
-    email: str           # must match the logged-in user's email
-    password: str = ""   # current password (required if the account has one)
-    code: str = ""       # TOTP 6-digit OR one-time recovery code (required if 2FA on)
+    email: str = Field(min_length=3, max_length=320)
+    password: str = Field(default="", max_length=128)
+    code: str = Field(default="", max_length=32)
 
 
 class TwoFactorConfirmRequest(BaseModel):
-    pre_token: str
-    code: str
+    pre_token: str = Field(min_length=1, max_length=4096)
+    code: str = Field(min_length=6, max_length=32)
 
 
 class SendSmsCodeRequest(BaseModel):
-    phone: str
+    phone: str = Field(min_length=7, max_length=32)
 
 
 class VerifySmsCodeRequest(BaseModel):
-    phone: str
-    code: str
+    phone: str = Field(min_length=7, max_length=32)
+    code: str = Field(min_length=4, max_length=20)
 
 
 class Auth0PasswordLoginRequest(BaseModel):
-    email: str
-    password: str
+    email: str = Field(min_length=3, max_length=320)
+    password: str = Field(min_length=1, max_length=128)
 
 
 class Auth0SignupRequest(BaseModel):
-    name: str
-    email: str
-    password: str
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=3, max_length=320)
+    password: str = Field(min_length=8, max_length=128)
 
 
 class OptionalEmailRequest(BaseModel):
-    email: str = ""
+    email: str = Field(default="", max_length=320)
 
 
 class VerifyEmailRequest(BaseModel):
-    otp: str
+    otp: str = Field(min_length=6, max_length=6)
 
 
 class ForgotPasswordRequest(BaseModel):
-    email: str
+    email: str = Field(min_length=3, max_length=320)
 
 
 class ChangePasswordRequest(BaseModel):
-    current_password: str
-    new_password: str
+    current_password: str = Field(min_length=1, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class ResetPasswordRequest(BaseModel):
-    token: str
-    new_password: str
+    token: str = Field(min_length=32, max_length=512)
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class RefreshRequest(BaseModel):
-    refresh_token: str
+    refresh_token: str = Field(min_length=64, max_length=128)
 
 
 class LogoutRequest(BaseModel):
-    refresh_token: str = ""
+    refresh_token: str = Field(default="", max_length=128)
 
 
 class PaystackVerifyRequest(BaseModel):
-    reference: str
+    reference: str = Field(min_length=1, max_length=255)
 
 
 # ── API Key Schemas ──
 
 class ApiKeyCreate(BaseModel):
-    name: str = "My API Key"
-    permissions: str = "read_write"
-    expires_at: Optional[str] = Field(default_factory=_default_api_key_expiry)  # pass "" explicitly for never
-    rate_limit_rpm: Optional[int] = 60  # requests per minute cap
-    ip_allowlist: Optional[str] = None  # comma-separated IPs/CIDRs
-    monthly_token_limit: Optional[float] = None  # calendar-month token cap; null/0 disables
+    name: str = Field(default="My API Key", min_length=1, max_length=100)
+    permissions: str = Field(default="read_write", max_length=20)
+    expires_at: Optional[str] = Field(default_factory=_default_api_key_expiry, max_length=64)
+    rate_limit_rpm: Optional[int] = Field(default=60, ge=1, le=10000)
+    ip_allowlist: Optional[str] = Field(default=None, max_length=4000)
+    monthly_token_limit: Optional[float] = Field(default=None, le=1_000_000_000)
 
 
 class ApiKeyUpdate(BaseModel):
-    name: Optional[str] = None
-    permissions: Optional[str] = None
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    permissions: Optional[str] = Field(default=None, max_length=20)
     is_active: Optional[bool] = None
-    expires_at: Optional[str] = None
-    rate_limit_rpm: Optional[int] = None
-    ip_allowlist: Optional[str] = None
-    monthly_token_limit: Optional[float] = None
+    expires_at: Optional[str] = Field(default=None, max_length=64)
+    rate_limit_rpm: Optional[int] = Field(default=None, ge=0, le=10000)
+    ip_allowlist: Optional[str] = Field(default=None, max_length=4000)
+    monthly_token_limit: Optional[float] = Field(default=None, le=1_000_000_000)
 
 
 # ── Payment Schemas ──
 
 class TopupRequest(BaseModel):
-    amount: float
-    currency: str = "USD"
-    payment_method: str = "stripe"
-    payment_ref: str = ""  # required: pending deposit tx reference from a payment provider
+    amount: float = Field(gt=0, le=1_000_000)
+    currency: str = Field(default="USD", min_length=3, max_length=8)
+    payment_method: str = Field(default="stripe", min_length=1, max_length=32)
+    payment_ref: str = Field(default="", max_length=255)
 
 
 class InitiatePaymentRequest(BaseModel):
-    amount: float
-    currency: str = "USD"
-    payment_method: str = "stripe"
-    email: str = ""
-    payment_method_id: str = ""  # saved card PM id for one-click recharge
+    amount: float = Field(gt=0, le=1_000_000)
+    currency: str = Field(default="USD", min_length=3, max_length=8)
+    payment_method: str = Field(default="stripe", min_length=1, max_length=32)
+    email: str = Field(default="", max_length=320)
+    payment_method_id: str = Field(default="", max_length=255)
 
 
 class CardConfirmRequest(BaseModel):
@@ -175,28 +175,28 @@ class CardDefaultRequest(BaseModel):
 # ── Proxy / Chat Schemas ──
 
 class ProxyChatRequest(BaseModel):
-    model: str
-    messages: list
-    max_tokens: int = 4096
-    temperature: float = 0.7
+    model: str = Field(min_length=1, max_length=200)
+    messages: list = Field(min_length=1, max_length=200)
+    max_tokens: int = Field(default=4096, ge=1, le=4096)
+    temperature: float = Field(default=0.7, ge=0, le=2)
 
 
 class PlaygroundChatRequest(BaseModel):
-    model: str
+    model: str = Field(min_length=1, max_length=200)
     models: list[str] = Field(default_factory=list)
-    messages: list
-    temperature: float = 0.7
-    max_tokens: int = 4096
-    top_p: float = 1.0
-    frequency_penalty: float = 0.0
-    presence_penalty: float = 0.0
+    messages: list = Field(min_length=1, max_length=200)
+    temperature: float = Field(default=0.7, ge=0, le=2)
+    max_tokens: int = Field(default=4096, ge=1, le=4096)
+    top_p: float = Field(default=1.0, ge=0, le=1)
+    frequency_penalty: float = Field(default=0.0, ge=-2, le=2)
+    presence_penalty: float = Field(default=0.0, ge=-2, le=2)
     stream: bool = False
 
 
 class SaveConversationRequest(BaseModel):
-    title: str = "New Conversation"
+    title: str = Field(default="New Conversation", min_length=1, max_length=200)
     messages: list = Field(default_factory=list)
-    model: str = ""
+    model: str = Field(default="", max_length=200)
 
 
 # ── Preset Schemas ──
@@ -222,9 +222,9 @@ class UpdatePresetRequest(BaseModel):
 # ── Profile Schemas ──
 
 class ProfileUpdateRequest(BaseModel):
-    name: Optional[str] = None
-    country: Optional[str] = None
-    phone: Optional[str] = None
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    country: Optional[str] = Field(default=None, max_length=100)
+    phone: Optional[str] = Field(default=None, max_length=32)
 
 
 # ── Analytics / Response Models ──
@@ -335,9 +335,9 @@ class SyncUsersRequest(BaseModel):
 # ── Contact Schema ──
 
 class ContactRequest(BaseModel):
-    name: str
-    email: str
-    message: str
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=3, max_length=320)
+    message: str = Field(min_length=1, max_length=10000)
 
 
 # ── Settings Schemas ──
@@ -346,11 +346,11 @@ class UserSettingsUpdate(BaseModel):
     email_notifications: Optional[bool] = None
     low_balance_alert: Optional[bool] = None
     login_alerts: Optional[bool] = None
-    theme: Optional[str] = None
-    webhook_url: Optional[str] = None
-    webhook_secret: Optional[str] = None
+    theme: Optional[str] = Field(default=None, max_length=20)
+    webhook_url: Optional[str] = Field(default=None, max_length=2048)
+    webhook_secret: Optional[str] = Field(default=None, max_length=512)
     webhook_events: Optional[list] = None
-    monthly_token_limit: Optional[float] = None
+    monthly_token_limit: Optional[float] = Field(default=None, le=1_000_000_000)
 
 
 # ── Announcement Schemas ──

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>Pricing — GlbTOKEN</title>
-  <meta name="description" content="GlbTOKEN pricing — buy tokens with NGN, GHS, KES, USD or crypto. Pay-as-you-go rates for GPT, Claude, Gemini, Llama and 100+ models." />
+  <meta name="description" content="GlbTOKEN pay-as-you-go token packages and current checkout options." />
   <meta name="theme-color" content="#0A0B14" id="metaTheme" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.glbtoken.com https://api.frankfurter.app; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -20,12 +20,12 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="GlbTOKEN" />
 <meta property="og:title" content="GlbTOKEN Pricing — Pay-As-You-Go AI Tokens" />
-<meta property="og:description" content="GlbTOKEN pricing — buy tokens with NGN, GHS, KES, USD or crypto. Pay-as-you-go rates for GPT, Claude, Gemini, Llama and 100+ models." />
+<meta property="og:description" content="GlbTOKEN pay-as-you-go token packages and current checkout options." />
 <meta property="og:url" content="https://glbtoken.com/pricing.html" />
 <meta property="og:image" content="https://glbtoken.com/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="GlbTOKEN Pricing — Pay-As-You-Go AI Tokens" />
-<meta name="twitter:description" content="GlbTOKEN pricing — buy tokens with NGN, GHS, KES, USD or crypto. Pay-as-you-go rates for GPT, Claude, Gemini, Llama and 100+ models." />
+<meta name="twitter:description" content="GlbTOKEN pay-as-you-go token packages and current checkout options." />
 <meta name="twitter:image" content="https://glbtoken.com/og-image.png" />
 </head>
 <body>
@@ -36,15 +36,15 @@
 <section><div class="container text-center">
       <span class="section-label">Pricing</span><h2 class="section-title">Token Packages</h2><p class="section-sub mx-auto">Choose a package or choose your own amount.</p>
       <div class="pricing-grid">
-        <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>API access</li><li>Email support</li></ul><button class="btn-primary w-full" onclick="startCheckout(5)">Buy $5</button></div>
-        <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Tokens</div><ul class="plan-features"><li>All 100+ models</li><li>Priority support</li><li>Tokens never expire</li></ul><button class="btn-primary w-full" onclick="startCheckout(20)">Buy $20</button></div>
+        <div class="pricing-card"><div class="plan-name">Starter</div><div class="plan-price">$5</div><div class="plan-desc">5,000 Tokens</div><ul class="plan-features"><li>Live model catalog</li><li>API access</li><li>Email support</li></ul><button class="btn-primary w-full" onclick="startCheckout(5)">Buy $5</button></div>
+        <div class="pricing-card featured"><div class="plan-name">Professional</div><div class="plan-price">$20</div><div class="plan-desc">20,000 Tokens</div><ul class="plan-features"><li>Live model catalog</li><li>Priority support</li><li>Tokens never expire</li></ul><button class="btn-primary w-full" onclick="startCheckout(20)">Buy $20</button></div>
         <div class="pricing-card"><div class="plan-name">Enterprise</div><div class="plan-price">$100</div><div class="plan-desc">100,000 Tokens</div><ul class="plan-features"><li>Dedicated support</li><li>Tokens never expire</li><li>Team sharing</li></ul><button class="btn-primary w-full" onclick="startCheckout(100)">Buy $100</button></div>
         <div class="pricing-card"><div class="plan-name">Custom</div><div class="plan-price" id="customPriceDisplay">$50</div><div class="plan-desc" id="customTokensDisplay">50,000 Tokens</div>
           <div class="pricing-slider-wrap">
             <input type="range" id="customSlider" min="2" max="500" value="50" step="1" oninput="updateCustomPricing()" class="pricing-range">
             <div class="pricing-range-labels"><span>$2</span><span>$500</span></div>
           </div>
-          <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Instant top-up</li></ul>
+          <ul class="plan-features"><li>Every dollar counts</li><li>Flexible amount</li><li>Provider-verified top-up</li></ul>
           <button class="btn-primary w-full" onclick="customCheckout()" id="customBuyBtn">Buy $50</button></div>
       </div>
       <div id="priceCalculator"></div>
@@ -70,7 +70,7 @@
 <script src="footer.js?v=27"></script>
 <script src="translations.js?v=1113"></script>
 <script data-cfasync="false" src="shared.js?v=1169"></script>
-<script data-cfasync="false" src="ui.js?v=1240"></script>
+<script data-cfasync="false" src="ui.js?v=1242"></script>
 <script data-cfasync="false" src="checkout.js?v=18"></script>
 
 </body>

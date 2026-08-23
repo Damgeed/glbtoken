@@ -10,7 +10,7 @@ import secrets
 
 from database import get_db, User, Transaction, AIModel, AdminLog, Announcement
 from auth import get_current_user, get_optional_user
-from common import _400, _403, _404, _500, _503, limiter, GLBTOKEN_SECRET, ADMIN_API_KEY, real_client_ip
+from common import _400, _403, _404, _500, _503, limiter, ADMIN_API_KEY, real_client_ip
 from schemas import AdminBalanceRequest, SyncUsersRequest, AnnouncementCreate, AnnouncementUpdate
 
 router = APIRouter()
@@ -168,8 +168,7 @@ def admin_sync_users(
     api_key = ""
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
-    glbtoken_secret = ADMIN_API_KEY or GLBTOKEN_SECRET
-    if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
+    if not ADMIN_API_KEY or not secrets.compare_digest(api_key or "", ADMIN_API_KEY):
         if not user or not user.is_admin:
             _403("Admin access required")
 
@@ -274,14 +273,13 @@ def admin_delete_user(
     """Delete a user and ALL their data (keys, transactions, presets, referrals,
     login history, org memberships, conversations, refresh tokens).
 
-    Admin-only: valid admin JWT, OR `Authorization: Bearer <GLBTOKEN_SECRET>`.
+    Admin-only: valid admin JWT, OR `Authorization: Bearer <ADMIN_API_KEY>`.
     Refuses to delete admin accounts.
     """
     api_key = ""
     if authorization and authorization.startswith("Bearer "):
         api_key = authorization.removeprefix("Bearer ")
-    glbtoken_secret = ADMIN_API_KEY or GLBTOKEN_SECRET
-    if not glbtoken_secret or not secrets.compare_digest(api_key or "", glbtoken_secret):
+    if not ADMIN_API_KEY or not secrets.compare_digest(api_key or "", ADMIN_API_KEY):
         if not user or not user.is_admin:
             _403("Admin access required")
 

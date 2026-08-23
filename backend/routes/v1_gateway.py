@@ -19,15 +19,17 @@ from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
-from sqlalchemy import func, update
 
 from common import (
     _400, _401, _402, _403, _429, _502, limiter,
     NEW_API_BASE_URL, FALLBACK_API_KEY, FALLBACK_API_URL, real_client_ip,
 )
 from routes.referrals import grant_referral_reward
-from database import get_db, SessionLocal, User, ApiKey, Transaction, AIModel
-from metering import budget_snapshot, provider_for_model, usage_metrics
+from database import get_db, SessionLocal, User, ApiKey, AIModel
+from metering import (
+    budget_snapshot, cancel_usage_reservation, conservative_token_reservation,
+    mark_usage_dispatched, reserve_usage, settle_usage_reservation,
+)
 from newapi_integration import get_gateway_token
 
 router = APIRouter()
@@ -44,12 +46,12 @@ class GatewayRequest(BaseModel):
 class ChatCompletionRequest(GatewayRequest):
     model: str = ""
     models: list[str] = Field(default_factory=list)
-    messages: list
-    max_tokens: int = 4096
-    temperature: float = 1.0
-    top_p: float = 1.0
-    frequency_penalty: float = 0.0
-    presence_penalty: float = 0.0
+    messages: list = Field(min_length=1, max_length=200)
+    max_tokens: int = Field(default=4096, ge=1, le=4096)
+    temperature: float = Field(default=1.0, ge=0, le=2)
+    top_p: float = Field(default=1.0, ge=0, le=1)
+    frequency_penalty: float = Field(default=0.0, ge=-2, le=2)
+    presence_penalty: float = Field(default=0.0, ge=-2, le=2)
     stream: bool = False
     stop: object = None
     user: str = ""
@@ -60,16 +62,16 @@ class ResponsesRequest(GatewayRequest):
     models: list[str] = Field(default_factory=list)
     input: object = None
     instructions: str = ""
-    max_output_tokens: int = 4096
+    max_output_tokens: int = Field(default=4096, ge=1, le=4096)
     stream: bool = False
 
 
 class MessagesRequest(GatewayRequest):
     model: str = ""
     models: list[str] = Field(default_factory=list)
-    messages: list
-    max_tokens: int = 4096
-    temperature: float = 1.0
+    messages: list = Field(min_length=1, max_length=200)
+    max_tokens: int = Field(default=4096, ge=1, le=4096)
+    temperature: float = Field(default=1.0, ge=0, le=2)
     stream: bool = False
 
 
@@ -127,11 +129,10 @@ def _auth_user(db: Session, authorization: str, request: Request = None, require
         raw = raw[7:].strip()
     if not raw:
         _401("Not authenticated")
-    from sqlalchemy import or_
     from auth import hash_api_key
     key_hash = hash_api_key(raw)
     api_key = db.query(ApiKey).filter(
-        or_(ApiKey.key_hash == key_hash, ApiKey.key == raw),
+        ApiKey.key_hash == key_hash,
         ApiKey.is_active == True
     ).first()
     if not api_key:
@@ -168,20 +169,6 @@ def _auth_user(db: Session, authorization: str, request: Request = None, require
     return user, api_key
 
 
-def _estimate_tokens(texts: list) -> int:
-    total = 0
-    for t in texts:
-        if isinstance(t, str):
-            total += len(t)
-        elif isinstance(t, (list, dict)):
-            try:
-                total += len(json.dumps(t))
-            except Exception as e:
-                print(f"⚠️ token estimate failed for item: {e}")
-                total += 0
-    return max(1, total // 4)
-
-
 def _candidate_models(db: Session, primary: str, fallbacks: list[str]) -> list[str]:
     """Return up to five unique, active catalog models in client order."""
     candidates = []
@@ -212,59 +199,15 @@ def _enforce_monthly_budgets(db: Session, user: User, api_key: ApiKey):
         _402("Monthly API key token budget reached")
 
 
-def _request_id(result: dict, response: httpx.Response = None) -> str:
-    value = (result or {}).get("id")
-    if not value and response is not None:
-        value = response.headers.get("x-request-id") or response.headers.get("request-id")
-    return str(value)[:200] if value else None
-
-
 def _bill(db: Session, user: User, api_key: ApiKey, model: str,
-          cost_est: int, result: dict, payment_method: str = "api_key",
+          fallback_tokens: int, result: dict, reservation_id: int,
           requested_model: str = "", latency_ms: float = None,
           response: httpx.Response = None):
-    """Deduct REAL usage from the response; fall back to estimate. Records tx.
-
-    Atomic: decrements balance only if sufficient (prevents concurrent overdraft).
-    """
-    metrics = usage_metrics(result)
-    real = int(metrics["total_tokens"] or 0)
-    cost = max(1, real or cost_est)
-    # Atomic decrement — fails (rowcount 0) when balance < cost, even under concurrency.
-    res = db.execute(
-        update(User)
-        .where(User.id == user.id, User.token_balance >= cost)
-        .values(token_balance=User.token_balance - cost)
+    """Settle a pre-upstream hold against measured provider usage."""
+    cost = settle_usage_reservation(
+        db, reservation_id, user, model, fallback_tokens, result,
+        requested_model=requested_model, latency_ms=latency_ms, response=response,
     )
-    if res.rowcount == 0:
-        db.rollback()
-        _402("Insufficient balance")
-    db.refresh(user)
-    # Atomic SQL-side increment — a Python read-modify-write would lose counts
-    # under concurrent /v1 calls (the row is shared across all of a user's keys).
-    db.execute(
-        update(ApiKey).where(ApiKey.id == api_key.id).values(
-            request_count=func.coalesce(ApiKey.request_count, 0) + 1
-        )
-    )
-    api_key.last_used = datetime.now(timezone.utc)
-    tx = Transaction(
-        user_id=user.id, type="consumption", amount=0,
-        payment_method=payment_method, model_used=model,
-        requested_model=requested_model or model,
-        provider=provider_for_model(db, model, result),
-        request_id=_request_id(result, response),
-        prompt_tokens=metrics["prompt_tokens"],
-        completion_tokens=metrics["completion_tokens"],
-        reasoning_tokens=metrics["reasoning_tokens"],
-        cached_tokens=metrics["cached_tokens"],
-        latency_ms=latency_ms,
-        upstream_cost=metrics["upstream_cost"],
-        status_code=response.status_code if response is not None else 200,
-        tokens=cost, status="completed", key_id=api_key.id,
-    )
-    db.add(tx)
-    db.commit()
     # Referral: reward the referrer on the referred user's FIRST paid call
     grant_referral_reward(db, user)
     result["tokens_used"] = cost
@@ -274,34 +217,23 @@ def _bill(db: Session, user: User, api_key: ApiKey, model: str,
 
 def _record_failure(db: Session, user: User, api_key: ApiKey, model: str,
                     requested_model: str, status_code: int,
-                    latency_ms: float, response: httpx.Response = None):
-    db.execute(
-        update(ApiKey).where(ApiKey.id == api_key.id).values(
-            request_count=func.coalesce(ApiKey.request_count, 0) + 1
-        )
+                    latency_ms: float, reservation_id: int,
+                    response: httpx.Response = None):
+    cancel_usage_reservation(
+        db, reservation_id, model, status_code, latency_ms,
+        response=response, requested_model=requested_model,
     )
-    api_key.last_used = datetime.now(timezone.utc)
-    db.add(Transaction(
-        user_id=user.id,
-        type="consumption",
-        amount=0,
-        payment_method="api_key",
-        model_used=model,
-        requested_model=requested_model or model,
-        provider=provider_for_model(db, model),
-        request_id=_request_id({}, response),
-        tokens=0,
-        status="failed",
-        status_code=status_code,
-        latency_ms=latency_ms,
-        key_id=api_key.id,
-    ))
-    db.commit()
 
 
 def _upstream_config(user: User, endpoint_path: str):
     """Resolve NewAPI first, falling back only when it is not configured."""
-    newapi_key = user.newapi_token or (get_gateway_token() if NEW_API_BASE_URL else "")
+    from secret_store import SecretStoreUnavailable, decrypt_secret
+    try:
+        user_key = decrypt_secret(user.newapi_token or "")
+    except SecretStoreUnavailable as e:
+        print(f"⚠️ User upstream token unavailable: {e}")
+        user_key = ""
+    newapi_key = user_key or (get_gateway_token() if NEW_API_BASE_URL else "")
     newapi_url = NEW_API_BASE_URL
     headers = {"Content-Type": "application/json"}
     if newapi_key and newapi_url:
@@ -399,7 +331,8 @@ async def _open_stream_with_model_fallbacks(endpoint_path: str, user: User,
 
 def _streaming_response(client: httpx.AsyncClient, response: httpx.Response,
                         user_id: int, key_id: int, model: str,
-                        requested_model: str, cost_est: int, started: float):
+                        requested_model: str, fallback_tokens: int, reservation_id: int,
+                        started: float):
     """Forward SSE bytes and persist usage after the upstream stream closes."""
     async def body_iter():
         buffered = ""
@@ -431,8 +364,14 @@ def _streaming_response(client: httpx.AsyncClient, response: httpx.Response,
                         if event.get("provider"):
                             metering_result["provider"] = event["provider"]
         finally:
-            await response.aclose()
-            await client.aclose()
+            try:
+                await response.aclose()
+            except Exception as exc:
+                print(f"⚠️ Streaming response close failed: {exc}")
+            try:
+                await client.aclose()
+            except Exception as exc:
+                print(f"⚠️ Streaming client close failed: {exc}")
             session = SessionLocal()
             try:
                 fresh_user = session.query(User).filter(User.id == user_id).first()
@@ -440,8 +379,9 @@ def _streaming_response(client: httpx.AsyncClient, response: httpx.Response,
                 if fresh_user and fresh_key:
                     elapsed_ms = round((time.perf_counter() - started) * 1000, 2)
                     _bill(
-                        session, fresh_user, fresh_key, model, cost_est,
-                        metering_result, requested_model=requested_model,
+                        session, fresh_user, fresh_key, model, fallback_tokens,
+                        metering_result, reservation_id,
+                        requested_model=requested_model,
                         latency_ms=elapsed_ms, response=response,
                     )
             except Exception as exc:
@@ -477,51 +417,75 @@ async def chat_completions(
     requested_model = candidates[0]
     _enforce_monthly_budgets(db, user, api_key)
 
-    # Pre-flight balance check (estimate)
-    texts = []
-    for m in req.messages:
-        if isinstance(m, dict):
-            c = m.get("content", "")
-            texts.append(c)
-    cost_est = int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000
-    cost_est = max(1, cost_est)
-    if user.token_balance < cost_est:
-        _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
-
     payload = req.model_dump(exclude={"models"}, exclude_none=True)
     payload["model"] = requested_model
     if req.stream:
         payload["stream_options"] = {"include_usage": True}
-        client, resp, selected_model, latency_ms, started = await _open_stream_with_model_fallbacks(
-            "/v1/chat/completions", user, payload, candidates
-        )
+    reservation = reserve_usage(
+        db, user,
+        conservative_token_reservation(db, candidates, payload, req.max_tokens),
+        requested_model, requested_model=requested_model, api_key=api_key,
+    )
+    mark_usage_dispatched(db, reservation.id)
+
+    if req.stream:
+        try:
+            client, resp, selected_model, latency_ms, started = await _open_stream_with_model_fallbacks(
+                "/v1/chat/completions", user, payload, candidates
+            )
+        except Exception:
+            cancel_usage_reservation(
+                db, reservation.id, requested_model, 502,
+                requested_model=requested_model,
+            )
+            raise
         if resp.status_code >= 400:
             await resp.aread()
-            _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
+            _record_failure(
+                db, user, api_key, selected_model, requested_model,
+                resp.status_code, latency_ms, reservation.id, resp,
+            )
             await resp.aclose()
             await client.aclose()
             _502("AI API error. Please try again later.")
         return _streaming_response(
             client, resp, user.id, api_key.id, selected_model,
-            requested_model, cost_est, started,
+            requested_model, int(reservation.tokens), reservation.id, started,
         )
 
-    resp, selected_model, latency_ms = await _route_with_model_fallbacks(
-        "/v1/chat/completions", user, payload, candidates
-    )
+    try:
+        resp, selected_model, latency_ms = await _route_with_model_fallbacks(
+            "/v1/chat/completions", user, payload, candidates
+        )
+    except Exception:
+        cancel_usage_reservation(
+            db, reservation.id, requested_model, 502,
+            requested_model=requested_model,
+        )
+        raise
     if not 200 <= resp.status_code < 300:
-        _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            resp.status_code, latency_ms, reservation.id, resp,
+        )
         _502("AI API error. Please try again later.")
     try:
         result = resp.json()
     except Exception:
-        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            502, latency_ms, reservation.id, resp,
+        )
         _502("AI API returned an invalid response")
     if not isinstance(result, dict):
-        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            502, latency_ms, reservation.id, resp,
+        )
         _502("AI API returned an invalid response")
     return _bill(
-        db, user, api_key, selected_model, cost_est, result,
+        db, user, api_key, selected_model, int(reservation.tokens), result,
+        reservation.id,
         requested_model=requested_model, latency_ms=latency_ms, response=resp,
     )
 
@@ -566,28 +530,47 @@ async def responses_api(
     _enforce_monthly_budgets(db, user, api_key)
     if req.stream:
         _400("Streaming is currently supported on /v1/chat/completions only")
-    inp = req.input if isinstance(req.input, list) else [req.input] if req.input else []
-    cost_est = max(1, int(_estimate_tokens([inp]) + min(req.max_output_tokens, 4096)) * 2 // 1000)
-    if user.token_balance < cost_est:
-        _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
     payload = req.model_dump(exclude={"models"}, exclude_none=True)
     payload["model"] = requested_model
-    resp, selected_model, latency_ms = await _route_with_model_fallbacks(
-        "/v1/responses", user, payload, candidates
+    reservation = reserve_usage(
+        db, user,
+        conservative_token_reservation(db, candidates, payload, req.max_output_tokens),
+        requested_model, requested_model=requested_model, api_key=api_key,
     )
+    mark_usage_dispatched(db, reservation.id)
+    try:
+        resp, selected_model, latency_ms = await _route_with_model_fallbacks(
+            "/v1/responses", user, payload, candidates
+        )
+    except Exception:
+        cancel_usage_reservation(
+            db, reservation.id, requested_model, 502,
+            requested_model=requested_model,
+        )
+        raise
     if not 200 <= resp.status_code < 300:
-        _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            resp.status_code, latency_ms, reservation.id, resp,
+        )
         _502("AI API error. Please try again later.")
     try:
         result = resp.json()
     except Exception:
-        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            502, latency_ms, reservation.id, resp,
+        )
         _502("AI API returned an invalid response")
     if not isinstance(result, dict):
-        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            502, latency_ms, reservation.id, resp,
+        )
         _502("AI API returned an invalid response")
     return _bill(
-        db, user, api_key, selected_model, cost_est, result,
+        db, user, api_key, selected_model, int(reservation.tokens), result,
+        reservation.id,
         requested_model=requested_model, latency_ms=latency_ms, response=resp,
     )
 
@@ -607,27 +590,46 @@ async def messages_api(
     _enforce_monthly_budgets(db, user, api_key)
     if req.stream:
         _400("Streaming is currently supported on /v1/chat/completions only")
-    texts = [m.get("content", "") for m in req.messages if isinstance(m, dict)]
-    cost_est = max(1, int(_estimate_tokens(texts) + min(req.max_tokens, 4096)) * 2 // 1000)
-    if user.token_balance < cost_est:
-        _402(f"Insufficient balance. Need {cost_est} tokens, have {user.token_balance}")
     payload = req.model_dump(exclude={"models"}, exclude_none=True)
     payload["model"] = requested_model
-    resp, selected_model, latency_ms = await _route_with_model_fallbacks(
-        "/v1/messages", user, payload, candidates
+    reservation = reserve_usage(
+        db, user,
+        conservative_token_reservation(db, candidates, payload, req.max_tokens),
+        requested_model, requested_model=requested_model, api_key=api_key,
     )
+    mark_usage_dispatched(db, reservation.id)
+    try:
+        resp, selected_model, latency_ms = await _route_with_model_fallbacks(
+            "/v1/messages", user, payload, candidates
+        )
+    except Exception:
+        cancel_usage_reservation(
+            db, reservation.id, requested_model, 502,
+            requested_model=requested_model,
+        )
+        raise
     if not 200 <= resp.status_code < 300:
-        _record_failure(db, user, api_key, selected_model, requested_model, resp.status_code, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            resp.status_code, latency_ms, reservation.id, resp,
+        )
         _502("AI API error. Please try again later.")
     try:
         result = resp.json()
     except Exception:
-        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            502, latency_ms, reservation.id, resp,
+        )
         _502("AI API returned an invalid response")
     if not isinstance(result, dict):
-        _record_failure(db, user, api_key, selected_model, requested_model, 502, latency_ms, resp)
+        _record_failure(
+            db, user, api_key, selected_model, requested_model,
+            502, latency_ms, reservation.id, resp,
+        )
         _502("AI API returned an invalid response")
     return _bill(
-        db, user, api_key, selected_model, cost_est, result,
+        db, user, api_key, selected_model, int(reservation.tokens), result,
+        reservation.id,
         requested_model=requested_model, latency_ms=latency_ms, response=resp,
     )

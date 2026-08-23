@@ -42,7 +42,11 @@ def _validate_permissions(perms):
 def _total_spent_map(db: Session) -> dict:
     rows = (
         db.query(Transaction.key_id, func.coalesce(func.sum(Transaction.tokens), 0))
-        .filter(Transaction.type == "consumption", Transaction.key_id.isnot(None))
+        .filter(
+            Transaction.type == "consumption",
+            Transaction.status == "completed",
+            Transaction.key_id.isnot(None),
+        )
         .group_by(Transaction.key_id)
         .all()
     )
@@ -75,8 +79,8 @@ def list_keys(request: Request, user: User = Depends(get_current_user), db: Sess
         {
             "id": k.id,
             "name": k.name,
-            "key": (k.key_prefix or (k.key[:12] if k.key else "")) + "••••••••" + (k.key_suffix or (k.key[-4:] if k.key else "")),
-            "key_prefix": k.key_prefix or (k.key[:12] if k.key else ""),
+            "key": (k.key_prefix or "") + "••••••••" + (k.key_suffix or ""),
+            "key_prefix": k.key_prefix or "",
             "permissions": k.permissions,
             "is_active": k.is_active,
             "request_count": k.request_count,
@@ -161,6 +165,7 @@ def key_usage_series(key_id: int, request: Request, user: User = Depends(get_cur
         Transaction.user_id == user.id,
         Transaction.key_id == key_id,
         Transaction.type == "consumption",
+        Transaction.status == "completed",
         Transaction.created_at >= since,
     ).group_by(_func.date(Transaction.created_at)).all()
     by_day = {str(r.day): float(r.tokens or 0) for r in rows}

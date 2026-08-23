@@ -6,7 +6,7 @@ import json, re
 
 from database import get_db, User, Announcement
 from auth import get_current_user
-from common import _400, limiter
+from common import _400, _503, limiter
 from schemas import ContactRequest, UserSettingsUpdate
 from metering import normalize_monthly_limit
 
@@ -174,8 +174,11 @@ def update_user_settings(
     if req.webhook_url is not None:
         settings["webhook_url"] = validate_webhook_url(req.webhook_url)
     if req.webhook_secret is not None:
-        from webhooks import encrypt_secret
-        settings["webhook_secret"] = encrypt_secret((req.webhook_secret or "").strip())
+        from secret_store import SecretStoreUnavailable, encrypt_secret
+        try:
+            settings["webhook_secret"] = encrypt_secret((req.webhook_secret or "").strip())
+        except SecretStoreUnavailable:
+            _503("Secret storage is not configured")
     if req.webhook_events is not None:
         from webhooks import DEFAULT_EVENTS
         # Validate against known event names (unknown events could never be

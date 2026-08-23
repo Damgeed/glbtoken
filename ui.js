@@ -535,7 +535,9 @@ function setupTextareaResize(id){
 function addCloseBtn(container, onClose){
   if(container.querySelector('.chat-focused-close')) return;
   const btn = document.createElement('button');
+  btn.type = 'button';
   btn.className = 'chat-focused-close';
+  btn.setAttribute('aria-label', 'Close chat');
   btn.innerHTML = '✕';
   btn.onclick = onClose;
   container.appendChild(btn);
@@ -810,7 +812,7 @@ function enhanceSupportChat(){
   win.setAttribute('aria-label','GlbTOKEN support assistant');
   win.setAttribute('aria-hidden',win.classList.contains('open')||win.classList.contains('chat-focused')?'false':'true');
   var fab=document.querySelector('.chat-fab');
-  if(fab){fab.setAttribute('aria-label','Open GlbTOKEN support');fab.title='Support';fab.innerHTML='<span aria-hidden="true">?</span>';}
+  if(fab){fab.setAttribute('aria-label','Open GlbTOKEN support');fab.title='Support';fab.innerHTML='<span aria-hidden="true">💬</span>';}
   var header=win.querySelector('.chat-header');
   if(header&&!header.querySelector('.support-chat-status')){
     var heading=header.querySelector('h3');

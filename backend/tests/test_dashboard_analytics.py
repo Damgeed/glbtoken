@@ -61,6 +61,26 @@ def test_usage_cost_uses_blended_catalog_price(client, make_user, db):
     assert abs(sum(data["costs"]) - data["total_cost"]) < 1e-9
 
 
+def test_in_flight_reservations_do_not_pollute_usage_analytics(client, make_user, db):
+    _ANALYTICS_CACHE.clear()
+    user = make_user()
+    _seed_usage(db, user)
+    db.add(Transaction(
+        user_id=user.id,
+        type="consumption",
+        tokens=900,
+        model_used="openai/test-model",
+        status="dispatched",
+        created_at=datetime.now(timezone.utc),
+    ))
+    db.commit()
+
+    data = client.get("/api/usage-analytics?days=7", headers=_auth(user)).json()
+
+    assert data["total_tokens"] == 100
+    assert sum(data["requests"]) == 1
+
+
 def test_projection_discloses_estimate_methodology(client, make_user, db):
     _ANALYTICS_CACHE.clear()
     user = make_user()

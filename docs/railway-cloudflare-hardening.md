@@ -24,17 +24,15 @@ unreachable from the public internet, so forged headers are moot.
 2. Copy the tunnel token (`eyJhIjoi...`).
 3. **Railway** → your backend service → Variables → add:
    - `TUNNEL_TOKEN=<token from step 2>`
-4. **Run cloudflared in the same service.** Add a second process to the
-   Procfile / start command:
+4. **Run the existing hardened entrypoint.** The repository's
+   `backend/entrypoint.sh` starts `cloudflared` when `TUNNEL_TOKEN` is set and
+   then launches the API:
 
    ```
-   # Procfile (Railway runs both processes)
-   web: uvicorn main:app --host 0.0.0.0 --port $PORT
-   tunnel: cloudflared tunnel --no-autoupdate run --token $TUNNEL_TOKEN
+   cd backend && ./entrypoint.sh
    ```
 
-   (Railway natively supports multiple processes in a Procfile; if the image
-   lacks `cloudflared`, add `RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared` to the Dockerfile.)
+   The supplied Docker image already installs `cloudflared`.
 
 5. **Cloudflare dashboard → tunnel → Public Hostnames** → add
    `api.glbtoken.com` → Service `http://localhost:8000` (or the app port).

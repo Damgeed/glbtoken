@@ -1,5 +1,7 @@
 """2FA (TOTP) endpoint + login-gate tests — real DB, no Auth0 dependency."""
 
+import json
+
 from auth import create_access_token
 from totp import totp_at
 
@@ -22,6 +24,10 @@ def test_2fa_setup_returns_secret(client, make_user):
     body = r.json()
     assert len(body["secret"]) == 32
     assert body["otpauth_url"].startswith("otpauth://")
+    # The setup secret is shown once, but never retained as plaintext.
+    stored = json.loads(u.settings)["totp_pending_secret"]
+    assert stored.startswith("enc:v1:")
+    assert body["secret"] not in stored
 
 
 def test_2fa_enable_requires_valid_code(client, make_user):

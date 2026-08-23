@@ -16,6 +16,8 @@ import urllib.parse
 import urllib.request
 import urllib.error
 
+from secret_store import decrypt_secret, encrypt_secret
+
 DEFAULT_EVENTS = ["low_balance", "key.created", "key.deleted", "topup.success"]
 
 
@@ -33,62 +35,6 @@ def get_webhook_url(user) -> str:
 
 def get_webhook_secret(user) -> str:
     return decrypt_secret((_settings(user).get("webhook_secret") or "").strip())
-
-
-_EPHEMERAL_KEY = None  # per-process random key when GLBTOKEN_SECRET is unset
-
-
-def _fernet():
-    """Fernet instance keyed off the server secret (GLBTOKEN_SECRET).
-
-    If GLBTOKEN_SECRET is unset we fall back to a per-process EPHEMERAL key —
-    never a hardcoded value. A predictable dev key would let anyone who can
-    read the DB decrypt every webhook secret. With the ephemeral key the
-    ciphertext is simply undecryptable after a restart (user re-enters the
-    secret), which is fail-closed instead of fail-open.
-    """
-    import base64
-    from cryptography.fernet import Fernet
-    from common import GLBTOKEN_SECRET
-    global _EPHEMERAL_KEY
-    if GLBTOKEN_SECRET:
-        material = GLBTOKEN_SECRET.encode()
-    else:
-        if _EPHEMERAL_KEY is None:
-            import secrets as _secrets
-            _EPHEMERAL_KEY = _secrets.token_bytes(32)
-            print("⚠️ GLBTOKEN_SECRET unset — webhook secrets use an ephemeral per-process key "
-                  "(undecryptable after restart; set GLBTOKEN_SECRET to persist)")
-        material = _EPHEMERAL_KEY
-    key = base64.urlsafe_b64encode(hashlib.sha256(material).digest())
-    return Fernet(key)
-
-
-def encrypt_secret(raw: str) -> str:
-    """Encrypt a webhook secret at rest (Fernet, AES-128-CBC+HMAC)."""
-    if not raw:
-        return ""
-    try:
-        return "enc:v1:" + _fernet().encrypt(raw.encode()).decode()
-    except Exception as e:
-        # NEVER store the raw secret on encryption failure — that would leave
-        # plaintext credentials in the DB. Return empty (secret cleared) and
-        # log loudly; the user can re-enter the secret.
-        print(f"⚠️ Webhook secret encryption failed (secret NOT stored): {e}")
-        return ""
-
-
-def decrypt_secret(stored: str) -> str:
-    """Decrypt a webhook secret for signing; legacy plaintext passes through."""
-    if not stored:
-        return ""
-    if stored.startswith("enc:v1:"):
-        try:
-            return _fernet().decrypt(stored[len("enc:v1:"):].encode()).decode()
-        except Exception as e:
-            print(f"⚠️ Webhook secret decryption failed: {e}")
-            return ""
-    return stored  # legacy plaintext value
 
 
 def _sign(body: bytes, secret: str) -> str:

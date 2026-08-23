@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Redirecting — GlbTOKEN</title>
 <meta name="robots" content="noindex,nofollow" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; font-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; font-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action https://api.glbtoken.com" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
@@ -56,7 +56,7 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
   }
 
   // ====== FLOW A: PKCE Code Flow (?code=xxx) ======
-  // Redirect to Railway server-side exchange — no cross-origin fetch
+  // POST the verifier so it never appears in API access logs or browser URLs.
   if (code) {
     sessionStorage.removeItem('gt_code_verifier');
     if (!codeVerifier) {
@@ -64,17 +64,25 @@ body{background:#0A0B14;color:#cdd6f4;font-family:Inter,-apple-system,sans-serif
       return;
     }
     sessionStorage.removeItem('gt_oauth_state');
-    // Browser redirects to Railway, which exchanges the code with Auth0 server-side
-    // Railway redirects back to dashboard.html?token=JWT&_ts=TIMESTAMP
-    window.location.replace(API_URL + '/api/auth/auth0/pkce-callback?code=' + encodeURIComponent(code) + '&code_verifier=' + encodeURIComponent(codeVerifier));
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = API_URL + '/api/auth/auth0/pkce-callback';
+    [['code', code], ['code_verifier', codeVerifier]].forEach(function(pair) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = pair[0];
+      input.value = pair[1];
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
     return;
   }
 
-  // ====== FLOW B: Implicit Flow (#id_token=xxx) ======
+  // ====== FLOW B: legacy implicit flow is intentionally disabled ======
   if (idToken) {
     history.replaceState(null, document.title, window.location.pathname + window.location.search);
-    // Redirect to Railway callback endpoint (server-side validation)
-    window.location.replace(API_URL + '/api/auth/auth0/callback?id_token=' + encodeURIComponent(idToken));
+    window.location.replace('/login.html?error=implicit_flow_disabled');
     return;
   }
 

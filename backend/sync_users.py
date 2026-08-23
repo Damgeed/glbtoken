@@ -32,8 +32,7 @@ from typing import List, Optional, Dict, Any
 
 # ── DB Setup (mirrors database.py) ──
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./glbtoken.db")
 if DATABASE_URL.startswith("postgres://"):
@@ -64,6 +63,7 @@ class User(Base):
 
 # ── HTTP Client ──
 import httpx
+from secret_store import SecretStoreUnavailable, encrypt_secret
 
 NEW_API_BASE = os.getenv("NEW_API_BASE_URL", "")
 ADMIN_TOKEN = os.getenv("NEW_API_ADMIN_TOKEN", "")
@@ -209,7 +209,10 @@ def sync_user(user: User, dry_run: bool = False) -> Optional[str]:
 
     # Step 3: Update local DB
     user.newapi_user_id = newapi_user_id
-    user.newapi_token = newapi_token
+    try:
+        user.newapi_token = encrypt_secret(newapi_token) if newapi_token else None
+    except SecretStoreUnavailable:
+        return "GLBTOKEN_SECRET is required to store the New API token"
 
     return None  # success
 
@@ -267,8 +270,8 @@ def run_sync(dry_run: bool = False, batch_size: int = 50, verbose: bool = False)
                 else:
                     result.created += 1
                     if verbose:
-                        token_preview = user.newapi_token[:12] + "..." if user.newapi_token else "no-token"
-                        print(f"  ✅ [{user.id}] {user.email} → newapi_id={user.newapi_user_id} token={token_preview}")
+                        token_status = "encrypted" if user.newapi_token else "no-token"
+                        print(f"  ✅ [{user.id}] {user.email} → newapi_id={user.newapi_user_id} token={token_status}")
 
             # Commit batch
             if not dry_run:

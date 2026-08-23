@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, Index, UniqueConstraint
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime, timezone
 import os
 
@@ -72,7 +71,7 @@ class User(Base):
     reset_token = Column(String, nullable=True)         # password reset token
     reset_token_expiry = Column(DateTime, nullable=True)
     newapi_user_id = Column(Integer, nullable=True)    # New API user ID
-    newapi_token = Column(String, nullable=True)       # New API access token
+    newapi_token = Column(String, nullable=True)       # encrypted New API access token (enc:v1:...)
     settings = Column(Text, default="{}")              # JSON settings (notifications, theme, etc.)
     # Referral fields
     referral_code = Column(String, unique=True, nullable=True)
@@ -128,6 +127,7 @@ class Transaction(Base):
         # Composite index for the dominant analytics pattern:
         # WHERE user_id = ? AND type = 'consumption' AND created_at >= ? GROUP BY ...
         Index("ix_transactions_user_type_created", "user_id", "type", "created_at"),
+        Index("ix_transactions_status_created", "status", "created_at"),
     )
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -139,7 +139,7 @@ class Transaction(Base):
     model_used = Column(String, default="")
     payment_ref = Column(String, nullable=True)  # Paystack/Stripe/Crypto reference
     key_id = Column(Integer, ForeignKey("api_keys.id"), nullable=True, index=True)  # API key that consumed
-    status = Column(String, default="completed")  # completed, pending, failed
+    status = Column(String, default="completed")  # completed, pending, reserved, dispatched, failed
     status_code = Column(Integer, nullable=True)          # upstream HTTP status when applicable
     requested_model = Column(String, default="")         # client-requested primary model
     provider = Column(String, default="")                # resolved catalog/upstream provider

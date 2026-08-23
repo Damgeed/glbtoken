@@ -132,14 +132,16 @@ async def lifespan(app: FastAPI):
                 print("✅ api_keys.key is now nullable")
             except Exception:
                 pass  # SQLite or already nullable
-            # Backfill key_hash/prefix/suffix from existing plaintext keys
+            # Backfill key_hash/prefix/suffix, then irreversibly purge plaintext.
             rows = conn.execute(text('SELECT id, key FROM api_keys WHERE key IS NOT NULL AND key_hash IS NULL')).fetchall()
             for row in rows:
                 raw = row[1]
-                conn.execute(text('UPDATE api_keys SET key_hash = :h, key_prefix = :p, key_suffix = :s WHERE id = :id'),
+                conn.execute(text('UPDATE api_keys SET key_hash = :h, key_prefix = :p, key_suffix = :s, key = NULL WHERE id = :id'),
                              {'h': _hl.sha256(raw.encode()).hexdigest(), 'p': raw[:12], 's': raw[-4:], 'id': row[0]})
+            # Covers rows already hashed by an earlier deploy but still retaining raw keys.
+            conn.execute(text('UPDATE api_keys SET key = NULL WHERE key IS NOT NULL AND key_hash IS NOT NULL'))
             if rows:
-                print(f"✅ Backfilled key_hash for {len(rows)} existing API keys")
+                print(f"✅ Backfilled and purged {len(rows)} legacy API keys")
             conn.commit()
     except Exception as e:
         print(f"⚠️ Migration error (api keys, non-critical): {e}")
@@ -185,6 +187,7 @@ async def lifespan(app: FastAPI):
         with engine.connect() as conn:
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_id ON transactions (user_id)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_user_type_created ON transactions (user_id, type, created_at)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_status_created ON transactions (status, created_at)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_transactions_request_id ON transactions (request_id)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_login_events_user_id ON login_events (user_id)"))
             conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS uq_referral_redemption_referred_user ON referral_redemptions (referred_user_id)"))
@@ -199,6 +202,34 @@ async def lifespan(app: FastAPI):
             print("✅ Performance + integrity indexes ensured")
     except Exception as e:
         print(f"⚠️ Index migration error (non-critical): {e}")
+
+    # Idempotent data hygiene: encrypt legacy secrets, purge raw API keys, and
+    # delete only expired/revoked short-lived authentication rows.
+    try:
+        from data_hygiene import clean_security_data
+        delete_expired = os.getenv("SECURITY_CLEANUP_DELETE_EXPIRED", "false").lower() == "true"
+        cleaned = clean_security_data(delete_expired=delete_expired)
+        changed = {name: count for name, count in cleaned.items() if count}
+        if changed:
+            print(f"✅ Security data cleanup: {changed}")
+    except Exception as e:
+        print(f"⚠️ Security data cleanup failed (non-critical): {e}")
+
+    # Resolve usage holds abandoned by a worker crash. Requests that never
+    # crossed the upstream boundary are refunded; dispatched requests retain
+    # their conservative charge because provider cost may already exist.
+    try:
+        from database import SessionLocal
+        from metering import resolve_stale_usage_reservations
+        reservation_db = SessionLocal()
+        try:
+            resolved = resolve_stale_usage_reservations(reservation_db)
+            if any(resolved.values()):
+                print(f"✅ Stale usage reservations resolved: {resolved}")
+        finally:
+            reservation_db.close()
+    except Exception as e:
+        print(f"⚠️ Stale usage reservation cleanup failed (non-critical): {e}")
 
     # Periodic model/pricing sync — New API prices change without redeploys, so
     # re-pull every 6h to keep AIModel.prompt_price/completion_price in sync.
@@ -248,14 +279,47 @@ app.add_middleware(
 # endpoint enforces its own 5 MB cap.
 MAX_JSON_BODY_BYTES = 2 * 1024 * 1024
 
-class BodySizeLimitMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        ctype = request.headers.get("content-type", "")
-        if ctype.startswith("application/json"):
-            cl = request.headers.get("content-length")
-            if cl and cl.isdigit() and int(cl) > MAX_JSON_BODY_BYTES:
-                return JSONResponse(status_code=413, content={"detail": "Request body too large"})
-        return await call_next(request)
+class _BodyTooLarge(Exception):
+    pass
+
+
+class BodySizeLimitMiddleware:
+    """ASGI-level limit that also covers chunked requests without Content-Length."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") != "http":
+            return await self.app(scope, receive, send)
+        headers = {
+            key.decode("latin-1").lower(): value.decode("latin-1")
+            for key, value in scope.get("headers", [])
+        }
+        if not headers.get("content-type", "").startswith("application/json"):
+            return await self.app(scope, receive, send)
+
+        content_length = headers.get("content-length", "")
+        if content_length.isdigit() and int(content_length) > MAX_JSON_BODY_BYTES:
+            response = JSONResponse(status_code=413, content={"detail": "Request body too large"})
+            return await response(scope, receive, send)
+
+        received = 0
+
+        async def limited_receive():
+            nonlocal received
+            message = await receive()
+            if message.get("type") == "http.request":
+                received += len(message.get("body", b""))
+                if received > MAX_JSON_BODY_BYTES:
+                    raise _BodyTooLarge
+            return message
+
+        try:
+            return await self.app(scope, limited_receive, send)
+        except _BodyTooLarge:
+            response = JSONResponse(status_code=413, content={"detail": "Request body too large"})
+            return await response(scope, receive, send)
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -287,6 +351,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.glbtoken.com; frame-src 'self' https://www.google.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), midi=(), sync-xhr=(), accelerometer=(), gyroscope=(), magnetometer=(), fullscreen=(self), interest-cohort=()"
+        if request.url.path.startswith((
+            "/api/auth/", "/auth/", "/api/user/", "/api/keys",
+            "/api/admin/", "/api/payments/", "/api/topup",
+        )):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Pragma"] = "no-cache"
         return response
 
 

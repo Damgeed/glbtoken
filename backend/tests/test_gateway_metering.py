@@ -4,7 +4,7 @@ import json
 import httpx
 
 from auth import create_access_token, hash_api_key
-from database import AIModel, ApiKey, Transaction
+from database import AIModel, ApiKey, Transaction, User
 import routes.v1_gateway as gateway
 
 
@@ -41,11 +41,16 @@ def _user_headers(user):
 def test_model_fallback_preserves_compatible_fields_and_records_telemetry(
     client, make_user, db, monkeypatch
 ):
-    user = make_user(balance=1000)
+    user = make_user(balance=10000)
     raw_key, key = _gateway_setup(db, user)
     attempts = []
 
     async def fake_route(endpoint_path, routed_user, payload, timeout=120):
+        db.expire_all()
+        held_user = db.query(User).filter(User.id == user.id).one()
+        held_tx = db.query(Transaction).filter(Transaction.user_id == user.id).one()
+        assert held_user.token_balance < 10000
+        assert held_tx.status == "dispatched"
         attempts.append(dict(payload))
         request = httpx.Request("POST", f"https://gateway.test{endpoint_path}")
         if payload["model"] == "provider/primary":
@@ -76,6 +81,7 @@ def test_model_fallback_preserves_compatible_fields_and_records_telemetry(
     assert [attempt["model"] for attempt in attempts] == ["provider/primary", "provider/fallback"]
     assert "tools" in attempts[0]
     assert response.json()["tokens_used"] == 15
+    assert response.json()["balance_remaining"] == 9985
 
     db.expire_all()
     tx = db.query(Transaction).filter(Transaction.user_id == user.id).one()
@@ -103,6 +109,110 @@ def test_model_fallback_preserves_compatible_fields_and_records_telemetry(
     ).json()
     assert details["content_stored"] is False
     assert details["prompt_tokens"] == 10
+
+
+def test_upstream_failure_refunds_reservation(client, make_user, db, monkeypatch):
+    user = make_user(balance=1000)
+    raw_key, _ = _gateway_setup(db, user)
+
+    async def fail_route(endpoint_path, routed_user, payload, timeout=120):
+        request = httpx.Request("POST", f"https://gateway.test{endpoint_path}")
+        return httpx.Response(503, json={"error": "temporary"}, request=request)
+
+    monkeypatch.setattr(gateway, "_route", fail_route)
+    response = client.post("/v1/chat/completions", headers=_api_headers(raw_key), json={
+        "model": "provider/primary",
+        "messages": [{"role": "user", "content": "hello"}],
+        "max_tokens": 20,
+    })
+
+    assert response.status_code == 502
+    db.expire_all()
+    assert db.query(User).filter(User.id == user.id).one().token_balance == 1000
+    tx = db.query(Transaction).filter(Transaction.user_id == user.id).one()
+    assert tx.status == "failed"
+    assert tx.tokens == 0
+
+
+def test_missing_usage_keeps_worst_case_hold(client, make_user, db, monkeypatch):
+    user = make_user(balance=1000)
+    raw_key, _ = _gateway_setup(db, user)
+
+    async def no_usage_route(endpoint_path, routed_user, payload, timeout=120):
+        request = httpx.Request("POST", f"https://gateway.test{endpoint_path}")
+        return httpx.Response(200, json={
+            "id": "req_without_usage",
+            "choices": [{"message": {"role": "assistant", "content": "ok"}}],
+        }, request=request)
+
+    monkeypatch.setattr(gateway, "_route", no_usage_route)
+    response = client.post("/v1/chat/completions", headers=_api_headers(raw_key), json={
+        "model": "provider/primary",
+        "messages": [{"role": "user", "content": "hello"}],
+        "max_tokens": 20,
+    })
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["usage_estimated"] is True
+    assert body["tokens_used"] > 20
+    assert body["balance_remaining"] == 1000 - body["tokens_used"]
+    tx = db.query(Transaction).filter(Transaction.user_id == user.id).one()
+    assert tx.status == "completed"
+    assert tx.tokens == body["tokens_used"]
+
+
+def test_insufficient_worst_case_balance_never_reaches_upstream(
+    client, make_user, db, monkeypatch
+):
+    user = make_user(balance=50)
+    raw_key, _ = _gateway_setup(db, user)
+
+    async def should_not_route(*args, **kwargs):
+        raise AssertionError("unreserved request reached upstream")
+
+    monkeypatch.setattr(gateway, "_route", should_not_route)
+    response = client.post("/v1/chat/completions", headers=_api_headers(raw_key), json={
+        "model": "provider/primary",
+        "messages": [{"role": "user", "content": "hello"}],
+        "max_tokens": 20,
+    })
+
+    assert response.status_code == 402
+    assert db.query(Transaction).filter(Transaction.user_id == user.id).count() == 0
+    db.expire_all()
+    assert db.query(User).filter(User.id == user.id).one().token_balance == 50
+
+
+def test_in_flight_reservation_counts_toward_monthly_budget(
+    client, make_user, db, monkeypatch
+):
+    user = make_user(balance=1000)
+    user.settings = json.dumps({"monthly_token_limit": 250})
+    db.commit()
+    raw_key, key = _gateway_setup(db, user)
+    db.add(Transaction(
+        user_id=user.id,
+        key_id=key.id,
+        type="consumption",
+        tokens=100,
+        model_used="provider/primary",
+        status="reserved",
+    ))
+    db.commit()
+
+    async def should_not_route(*args, **kwargs):
+        raise AssertionError("over-budget request reached upstream")
+
+    monkeypatch.setattr(gateway, "_route", should_not_route)
+    response = client.post("/v1/chat/completions", headers=_api_headers(raw_key), json={
+        "model": "provider/primary",
+        "messages": [{"role": "user", "content": "hello"}],
+        "max_tokens": 20,
+    })
+
+    assert response.status_code == 402
+    assert "budget" in response.json()["detail"].lower()
 
 
 def test_account_budget_blocks_gateway_before_upstream(client, make_user, db, monkeypatch):

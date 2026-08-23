@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from database import ApiKey
 from routes.v1_gateway import _auth_user
-from auth import generate_api_key
+from auth import generate_api_key, hash_api_key
 
 
 class _FakeClient:
@@ -16,9 +16,13 @@ class _FakeRequest:
 
 
 def _make_key(db, user, perms="read_write", active=True):
+    raw = generate_api_key()
     k = ApiKey(
         user_id=user.id,
-        key=generate_api_key(),
+        key=None,
+        key_hash=hash_api_key(raw),
+        key_prefix=raw[:12],
+        key_suffix=raw[-4:],
         name="test key",
         permissions=perms,
         is_active=active,
@@ -26,13 +30,14 @@ def _make_key(db, user, perms="read_write", active=True):
     db.add(k)
     db.commit()
     db.refresh(k)
+    k.raw_for_test = raw
     return k
 
 
 def test_read_write_key_can_write(db, make_user):
     u = make_user()
     k = _make_key(db, u, "read_write")
-    user, api_key = _auth_user(db, k.key, _FakeRequest(), require_write=True)
+    user, api_key = _auth_user(db, k.raw_for_test, _FakeRequest(), require_write=True)
     assert user.id == u.id
     assert api_key.id == k.id
 
@@ -41,7 +46,7 @@ def test_read_only_key_blocked_from_write(db, make_user):
     u = make_user()
     k = _make_key(db, u, "read_only")
     with pytest.raises(HTTPException) as exc:
-        _auth_user(db, k.key, _FakeRequest(), require_write=True)
+        _auth_user(db, k.raw_for_test, _FakeRequest(), require_write=True)
     assert exc.value.status_code == 403
 
 
@@ -49,7 +54,7 @@ def test_read_only_key_allowed_for_read(db, make_user):
     u = make_user()
     k = _make_key(db, u, "read_only")
     # require_write=False (e.g. GET /v1/models) must pass
-    user, api_key = _auth_user(db, k.key, _FakeRequest(), require_write=False)
+    user, api_key = _auth_user(db, k.raw_for_test, _FakeRequest(), require_write=False)
     assert user.id == u.id
 
 
@@ -57,7 +62,7 @@ def test_inactive_key_rejected(db, make_user):
     u = make_user()
     k = _make_key(db, u, "read_write", active=False)
     with pytest.raises(HTTPException) as exc:
-        _auth_user(db, k.key, _FakeRequest(), require_write=False)
+        _auth_user(db, k.raw_for_test, _FakeRequest(), require_write=False)
     assert exc.value.status_code == 401
 
 
@@ -68,7 +73,7 @@ def test_expired_key_rejected(db, make_user):
     k.expires_at = datetime.now(timezone.utc) - timedelta(minutes=1)
     db.commit()
     with pytest.raises(HTTPException) as exc:
-        _auth_user(db, k.key, _FakeRequest(), require_write=False)
+        _auth_user(db, k.raw_for_test, _FakeRequest(), require_write=False)
     assert exc.value.status_code == 403
 
 
@@ -78,7 +83,7 @@ def test_ip_allowlist_enforced(db, make_user):
     k.ip_allowlist = "198.51.100.1"
     db.commit()
     with pytest.raises(HTTPException) as exc:
-        _auth_user(db, k.key, _FakeRequest(), require_write=False)  # client is 203.0.113.7
+        _auth_user(db, k.raw_for_test, _FakeRequest(), require_write=False)  # client is 203.0.113.7
     assert exc.value.status_code == 403
 
 
