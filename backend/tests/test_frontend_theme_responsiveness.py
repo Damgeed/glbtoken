@@ -56,7 +56,8 @@ def test_overview_restores_request_logs_panel_and_account_loader() -> None:
     assert 'id="dashActivity"' not in html[grid:grid_end]
     assert 'id="dashRequestLogTable"' in panel
     assert 'id="dashRequestLogBody"' in panel
-    assert "dashboard-request-logs-scroll" in panel
+    assert "overview-data-table" in panel
+    assert "overview-table-scroll" in panel
     assert 'href="logs.html"' in panel
     assert "View all" in panel
 
@@ -66,23 +67,81 @@ def test_overview_restores_request_logs_panel_and_account_loader() -> None:
     assert "/api/logs?page=1&page_size=5" in source
     assert source.count("loadOverviewRequestLogs()") >= 2
     assert "function fmtOverviewLogTime(iso)" in source
-    assert '<time class="dashboard-log-time"' in source
+    assert '<time class="overview-table-time"' in source
     overview_start = source.index("function fmtOverviewLogTime(iso)")
     overview_end = source.index("// ── Recent Transactions", overview_start)
     overview_loader = source[overview_start:overview_end]
     assert "fmtDTStack" not in overview_loader
 
-    assert "overflow-x: auto;" in css_block(css, ".dashboard-request-logs-scroll")
-    assert "min-width: 100%;" in css_block(css, "#dashRequestLogTable")
-    mobile_table = css[css.index("@media (max-width: 768px)", css.index("#dashRequestLogCount")) :]
-    assert "#dashRequestLogTable" in mobile_table
-    assert "min-width: 540px;" in mobile_table
-    request_cells = css_block(css, "#dashRequestLogTable th,\n#dashRequestLogTable td")
-    assert "white-space: nowrap;" in request_cells
-    assert "word-break: normal;" in request_cells
-    assert "font-variant-numeric: tabular-nums;" in css_block(
-        css, "#dashRequestLogTable .dashboard-log-time"
+    assert "overflow-x: auto;" in css_block(css, ".overview-table-scroll")
+    assert "white-space: nowrap;" in css_block(css, ".overview-data-table th,\n.overview-data-table td")
+    assert "word-break: normal;" in css_block(css, ".overview-data-table th,\n.overview-data-table td")
+    assert "font-variant-numeric: tabular-nums;" in css_block(css, ".overview-table-time")
+
+
+def test_overview_request_logs_and_transactions_share_mobile_table_contract() -> None:
+    html = read("dashboard.html")
+    css = read("dashboard.css")
+    source = read("dashboard.js")
+
+    request_start = html.rfind('<div class="dash-card', 0, html.index('id="dashRequestLogs"'))
+    request_end = html.index('<!-- ═══════ ADMIN:', request_start)
+    request_card = html[request_start:request_end]
+    recent_start = html.index('<!-- ═══════ RECENT TRANSACTIONS')
+    recent_end = html.index('<!-- Playground moved', recent_start)
+    recent_card = html[recent_start:recent_end]
+
+    # Both Overview data cards use the same typography, scroll and icon
+    # primitives. This prevents Request Logs from becoming a one-off design.
+    for card in (request_card, recent_card):
+        assert "overview-data-card" in card
+        assert "overview-data-table" in card
+        assert "overview-table-scroll" in card
+        assert "overview-data-icon" in card
+    assert 'id="dashRequestLogTable"' in request_card
+    assert 'id="dashRecentTxTable"' in recent_card
+
+    icon_rule = css_block(css, ".overview-data-icon")
+    assert "color: var(--primary);" in icon_rule
+    assert "html.light .dashboard-request-logs-icon" not in css
+    request_styles = css[
+        css.index(".overview-data-card {") : css.index("/* Filter button row */")
+    ]
+    assert "#4fc3f7" not in request_styles.lower()
+    assert "#2563eb" not in request_styles.lower()
+
+    # The same compact, single-line formatter is used by both renderers.
+    recent_renderer = source[
+        source.index("async function loadRecentTx()") : source.index(
+            "// ── Developer command center"
+        )
+    ]
+    assert "var iso = t.created_at || '';" in recent_renderer
+    assert "fmtOverviewLogTime(iso)" in recent_renderer
+    assert "fmtDTStack" not in recent_renderer
+    assert source.count('<time class="overview-table-time"') >= 2
+
+    mobile = css[css.index("@media (max-width: 768px)", css.index(".overview-data-table")) :]
+    mobile_table = css_block(mobile, ".overview-data-table")
+    assert "min-width: 470px;" in mobile_table
+    mobile_head = css_block(mobile, ".overview-data-table th")
+    assert "font-size: 0.65rem;" in mobile_head
+    assert "padding: 0.38rem 0.22rem;" in mobile_head
+    mobile_cell = css_block(mobile, ".overview-data-table td")
+    assert "font-size: 0.72rem;" in mobile_cell
+    assert "padding: 0.38rem 0.22rem;" in mobile_cell
+    assert "white-space: nowrap;" in css_block(
+        css, ".overview-data-table th,\n.overview-data-table td"
     )
+
+    # Appearance's compact-cards mode must not re-expand or distort one table.
+    compact_cells = css_block(
+        mobile,
+        "body.compact-cards .overview-data-table th",
+    )
+    assert "padding: 0.38rem 0.22rem;" in compact_cells
+    compact_card = css_block(mobile, "body.compact-cards .overview-data-card.stat-card")
+    assert "padding: 0.75rem;" in compact_card
 
 
 def test_full_request_logs_lead_analytics_and_preserve_mobile_table() -> None:
@@ -116,6 +175,29 @@ def test_full_request_logs_lead_analytics_and_preserve_mobile_table() -> None:
     filters = css_block(css, ".logs-filter-wrap,\n.logs-status-filter")
     assert "flex-wrap: nowrap;" in filters
     assert "white-space: nowrap;" in filters
+
+    # The full Logs card follows Appearance instead of carrying a separate
+    # blue theme or decorative top stripe.
+    assert "--logs-blue" not in css
+    assert "#4fc3f7" not in css.lower()
+    assert "#2563eb" not in css.lower()
+    assert "#dashRequestLogs::before" not in css
+    assert "color: var(--primary);" in css_block(css, ".logs-title-main svg")
+    assert "var(--primary)" in css_block(css, ".request-logs-scroll:focus-visible")
+
+    mobile = css[css.index("@media (max-width: 767px)", css.index("#requestLogTable")) :]
+    mobile_table = css_block(mobile, "#requestLogTable")
+    assert "min-width: 650px;" in mobile_table
+    assert "font-size: 0.72rem;" in mobile_table
+    mobile_head = css_block(mobile, "#requestLogTable th")
+    assert "font-size: 0.65rem;" in mobile_head
+    assert "padding: 0.38rem 0.22rem;" in mobile_head
+    mobile_cell = css_block(mobile, "#requestLogTable td")
+    assert "font-size: 0.72rem;" in mobile_cell
+    assert "padding: 0.38rem 0.22rem;" in mobile_cell
+    mobile_time = css_block(mobile, "#requestLogTable .logs-timestamp")
+    assert "font-size: 0.72rem;" in mobile_time
+    assert "min-width: 9.5rem;" in mobile_time
 
 
 def test_usage_chart_palette_is_visible_and_updates_with_theme() -> None:

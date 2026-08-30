@@ -516,21 +516,23 @@
 .charts-side-grid > .dash-card {
   min-width: 0;
 }
-/* Overview request logs retain the established card/table topology. The table
-   does not collapse into stacked labels; narrow screens swipe horizontally. */
+/* Overview data tables share one typography, spacing and theme-aware icon
+   treatment. Narrow screens keep each row on one line and swipe horizontally. */
+.overview-data-card {
+  min-width: 0;
+}
 #dashRequestLogs {
   min-width: 0;
+}
+.overview-data-icon {
+  vertical-align: middle;
+  flex-shrink: 0;
+  color: var(--primary);
 }
 .dashboard-request-logs-header {
   margin-bottom: 0.45rem;
 }
-.dashboard-request-logs-icon {
-  flex-shrink: 0;
-  color: #4fc3f7;
-}
-html.light .dashboard-request-logs-icon {
-  color: #2563eb;
-}
+.overview-table-scroll,
 .dashboard-request-logs-scroll {
   width: 100%;
   max-width: 100%;
@@ -539,29 +541,36 @@ html.light .dashboard-request-logs-icon {
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable;
 }
+.overview-table-scroll:focus-visible,
 .dashboard-request-logs-scroll:focus-visible {
   outline: 2px solid var(--primary-soft);
   outline-offset: 3px;
 }
+.overview-data-table,
 #dashRequestLogTable {
   min-width: 100%;
   margin: 0;
+  font-family: inherit;
 }
+.overview-data-table th,
+.overview-data-table td,
 #dashRequestLogTable th,
 #dashRequestLogTable td {
   white-space: nowrap;
   word-break: normal;
   overflow-wrap: normal;
 }
-#dashRequestLogTable th:first-child,
-#dashRequestLogTable td:first-child {
-  min-width: 154px;
-}
-#dashRequestLogTable .dashboard-log-time {
+.overview-data-table .overview-table-time {
   color: var(--text-secondary);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.overview-data-table .overview-table-detail {
+  max-width: 165px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #dashRequestLogTable .dashboard-log-model {
   max-width: 165px;
@@ -583,8 +592,65 @@ html.light .dashboard-request-logs-icon {
   white-space: nowrap;
 }
 @media (max-width: 768px) {
-  #dashRequestLogTable {
-    min-width: 540px;
+  .overview-data-card.stat-card {
+    padding: 0.75rem;
+  }
+  body.compact-cards .overview-data-card.stat-card {
+    padding: 0.75rem;
+  }
+  .overview-data-table {
+    min-width: 470px;
+    table-layout: fixed;
+  }
+  .scroll-x.tx-scroll > .overview-data-table {
+    min-width: 470px;
+  }
+  .overview-data-table th {
+    padding: 0.38rem 0.22rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.035em;
+  }
+  .overview-data-table td {
+    padding: 0.38rem 0.22rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body.compact-cards .overview-data-table th,
+body.compact-cards .overview-data-table td {
+    padding: 0.38rem 0.22rem;
+  }
+  .overview-data-table .overview-table-time,
+  .overview-data-table .amount {
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .overview-data-table .status-badge {
+    min-width: 34px;
+    padding: 0.12rem 0.32rem;
+    font-size: 0.65rem;
+    line-height: 1.2;
+  }
+  .overview-data-table th:first-child,
+  .overview-data-table td:first-child {
+    width: 116px;
+    min-width: 116px;
+    max-width: 116px;
+  }
+  .overview-data-table .overview-table-detail,
+  #dashRequestLogTable .dashboard-log-model {
+    width: 132px;
+    max-width: 132px;
+  }
+  #dashRequestLogTable th:nth-child(2),
+  #dashRecentTxTable th:nth-child(3) {
+    width: 132px;
+    max-width: 132px;
   }
 }
 /* Filter button row */
