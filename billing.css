@@ -293,15 +293,96 @@
 }
 .pm-recharge:hover { background: var(--primary-soft); }
 
-/* ── Invoices table: inherits the shared .tx-table card design — same fonts,
-   colors, spacing as Transaction History (usage.html). No fixed layout or
-   custom padding here; keep only the mobile fit rules. ── */
+/* ── Invoices table: shares the Usage history table's compact mobile type,
+   timestamp hierarchy, and content-led column rhythm. ── */
 @media (max-width: 767px) {
-  #invoicesTable { min-width: 0; }
+  #invoicesTable {
+    width: 100%;
+    min-width: 440px;
+    table-layout: fixed;
+  }
+  #invoicesTable .billing-col-date { width: 78px; }
+  #invoicesTable .billing-col-amount { width: 62px; }
+  #invoicesTable .billing-col-method { width: 72px; }
+  #invoicesTable .billing-col-tokens { width: 62px; }
+  #invoicesTable .billing-col-status { width: 86px; }
+  #invoicesTable .billing-col-receipt { width: 80px; }
+  #invoicesTable th {
+    padding: 0.38rem 0.22rem;
+    overflow: hidden;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.035em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #invoicesTable td {
+    padding: 0.38rem 0.22rem;
+    overflow: hidden;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+  body.compact-cards #invoicesTable th,
+  body.compact-cards #invoicesTable td {
+    padding: 0.38rem 0.22rem;
+  }
+  #invoicesTable .td-date {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+  }
+  #invoicesTable .td-date-strong {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+  }
+  #invoicesTable .td-time {
+    margin-top: 0.08rem;
+    overflow: hidden;
+    font-size: 0.7rem;
+    font-weight: 400;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+  }
+  #invoicesTable .amount {
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+  }
+  #invoicesTable .status-badge {
+    max-width: 100%;
+    padding: 0.12rem 0.32rem;
+    overflow: hidden;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #invoicesTable .receipt-link {
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+  #invoicesTable th:nth-child(2),
+  #invoicesTable td:nth-child(2),
+  #invoicesTable th:nth-child(4),
+  #invoicesTable td:nth-child(4) {
+    text-align: right !important;
+  }
+  #invoicesTable th:nth-child(5),
+  #invoicesTable td:nth-child(5) {
+    text-align: center !important;
+  }
 }
-/* Mobile: match Transaction History (usage.html) — 5 columns fit the phone
-   viewport. Receipt/PDF stays available via the "All PDF" button below. */
+/* Mobile: match Transaction History (usage.html) on a compact 360px track.
+   Receipt/PDF stays available through the "All PDF" button below. */
 @media (max-width: 560px) {
+  #invoicesTable { min-width: 360px; }
+  #invoicesTable .billing-col-receipt,
   #invoicesTable th:nth-child(6),
   #invoicesTable td:nth-child(6) { display: none; }
   /* Receipt (col 6) is hidden, so the shared td:last-child right radius
@@ -315,14 +396,8 @@
      ID beats the shared tx-fit white-space:normal, so these stay nowrap. */
   #invoicesTable td.text-nowrap,
   #invoicesTable td.tx-td-right { white-space: nowrap; }
-  /* Amount hugs DATE (left-aligned) instead of right-aligning against METHOD.
-     tx-th-right/tx-td-right use !important, so override with !important too. */
-  #invoicesTable th:nth-child(2),
-  #invoicesTable td:nth-child(2) { text-align: left !important; }
-  /* Match Transaction History width: TH Tokens shows bare "+25,000" (no
-     unit) so it fits the 348px viewport; hiding the " GT" suffix on mobile
-     keeps the Invoices table the same width as TH (no left/right scroll).
-     Desktop keeps "25,000 GT". */
+  /* Match Transaction History's concise token label. The numeric value stays
+     on one line while the desktop table keeps the explicit "GT" unit. */
   #invoicesTable .gt-unit { display: none; }
 }
 .pm-recharge:active { transform: scale(0.96); }

@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1288" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="settings.css?v=1073" />
+<link rel="stylesheet" href="settings.css?v=1074" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -1761,8 +1761,8 @@ function loadNotifications(){
     // users scroll; the .notif-grid container scrolls to reach every item).
     list.innerHTML = visible.map(function(n){
       var unread = n.fresh && read.indexOf(normalizeNotifId(n.id)) === -1;
-      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeHtml(String(n.id))+'">'
-        + '<div class="settings-icon settings-icon-'+escapeAttr(String(n.kind))+'" style="margin-right:1rem">'+(ICONS[n.kind]||'')+'</div>'
+      return '<div class="notif-item dash-card settings-row'+(unread?'':' faded')+'" data-nid="'+escapeAttr(String(n.id))+'">'
+        + '<div class="settings-icon settings-icon-'+escapeAttr(String(n.kind))+'">'+(ICONS[n.kind]||'')+'</div>'
         + '<div class="settings-flex-fill"><div class="settings-item-name">'+escapeHtml(n.title)+'</div><div class="settings-item-desc">'+escapeHtml(n.desc)+'</div></div>'
         + (unread ? '<span class="notif-dot settings-dot"></span>' : '')
         + '<button onclick="dismissNotif(this)" class="settings-delete-btn" title="Dismiss">✕</button>'

@@ -18,11 +18,9 @@
     white-space: normal;
     word-break: break-word;
   }
-  /* Login History = 5 visible columns on mobile/tablet (hide IP) so it fits
-     the viewport like Transaction History (tx-fit) — no horizontal scroll,
-     clean vertical scroll when the device list grows. Desktop keeps all 6
-     columns. Breakpoint matches the shared tx-fit 900px so tablets (820px)
-     get the same stable fit as phones. */
+  /* Login History = 5 visible columns on mobile/tablet (hide IP). The compact
+     phone contract below keeps those columns on one line with only a short
+     horizontal swipe on the smallest screens; desktop keeps all 6 columns. */
   #loginTable th:nth-child(4),
   #loginTable td:nth-child(4) {
     display: none;
@@ -59,6 +57,9 @@
 }
 .usage-chart-wrap {
   position: relative;
+}
+.usage-theme-icon {
+  color: var(--primary);
 }
 .usage-graphs-grid {
   display: grid;
@@ -342,5 +343,133 @@
 @media (max-width: 900px) {
   #loginScrollX {
     max-height: 380px;
+  }
+}
+
+/* Mobile history tables share one compact type and spacing system. Column
+   widths describe the content instead of relying on the browser's auto-table
+   distribution, which previously left short numeric headings stranded far
+   from their neighbours. Only the timestamp intentionally uses two lines. */
+@media (max-width: 768px) {
+  #txDeposits,
+  #loginTable {
+    width: 100%;
+    min-width: 360px;
+    table-layout: fixed;
+  }
+  #txConsumption {
+    width: 100%;
+    min-width: 330px;
+    table-layout: fixed;
+  }
+
+  #txDeposits .usage-col-date { width: 78px; }
+  #txDeposits .usage-col-amount { width: 62px; }
+  #txDeposits .usage-col-method { width: 72px; }
+  #txDeposits .usage-col-tokens { width: 62px; }
+  #txDeposits .usage-col-status { width: 86px; }
+
+  #txConsumption .usage-col-date { width: 78px; }
+  #txConsumption .usage-col-model { width: 128px; }
+  #txConsumption .usage-col-tokens { width: 70px; }
+  #txConsumption .usage-col-type { width: 54px; }
+
+  #loginTable .usage-col-device { width: 80px; }
+  #loginTable .usage-col-browser { width: 64px; }
+  #loginTable .usage-col-location { width: 68px; }
+  #loginTable .usage-col-ip { display: none; }
+  #loginTable .usage-col-login-status { width: 68px; }
+  #loginTable .usage-col-time { width: 80px; }
+
+  .tx-scroll.tx-fit .usage-history-table th {
+    padding: 0.38rem 0.22rem;
+    overflow: hidden;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.035em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tx-scroll.tx-fit .usage-history-table td {
+    padding: 0.38rem 0.22rem;
+    overflow: hidden;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+  body.compact-cards .tx-scroll.tx-fit .usage-history-table th,
+  body.compact-cards .tx-scroll.tx-fit .usage-history-table td {
+    padding: 0.38rem 0.22rem;
+  }
+  .tx-scroll.tx-fit .usage-history-table .td-date {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+  }
+  .tx-scroll.tx-fit .usage-history-table .td-date-strong {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+  }
+  .tx-scroll.tx-fit .usage-history-table .td-time {
+    margin-top: 0.08rem;
+    overflow: hidden;
+    font-size: 0.7rem;
+    font-weight: 400;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+  }
+  .tx-scroll.tx-fit .usage-history-table .amount {
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .tx-scroll.tx-fit .usage-history-table .status-badge,
+  .tx-scroll.tx-fit .usage-history-table .badge-success,
+  .tx-scroll.tx-fit .usage-history-table .badge-failed,
+  .tx-scroll.tx-fit .usage-history-table .td-browser {
+    max-width: 100%;
+    padding: 0.12rem 0.32rem;
+    overflow: hidden;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #loginTable td:nth-child(1),
+  #loginTable td:nth-child(2),
+  #loginTable td:nth-child(3) {
+    white-space: nowrap;
+    word-break: normal;
+  }
+  #loginTable td:nth-child(5) {
+    padding: 0.38rem 0.22rem !important;
+  }
+  #loginTable .device-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 0.25rem;
+    font-size: 0.72rem;
+  }
+
+  /* Restore the semantic numeric/status alignment after the legacy shared
+     nth-child nudge; the fixed columns now keep these values close. */
+  #txDeposits th:nth-child(2),
+  #txDeposits td:nth-child(2),
+  #txDeposits th:nth-child(4),
+  #txDeposits td:nth-child(4),
+  #txConsumption th:nth-child(3),
+  #txConsumption td:nth-child(3) {
+    text-align: right !important;
+  }
+  #txDeposits th:nth-child(5),
+  #txDeposits td:nth-child(5),
+  #loginTable th:nth-child(5),
+  #loginTable td:nth-child(5) {
+    text-align: center !important;
   }
 }

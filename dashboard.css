@@ -25,7 +25,7 @@
 .cursor-pointer { cursor:pointer; }
 .text-title { font-size:16px;line-height:1;font-weight:700; }
 .icon-gold { vertical-align:middle;margin-right:6px;color:var(--primary); }
-.icon-blue { vertical-align:middle;margin-right:6px;color:#4FC3F7; }
+.icon-blue { vertical-align:middle;margin-right:6px;color:var(--primary); }
 .text-semibold { font-weight:600;color:var(--text); }
 .color-dot-blue { width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;background:rgba(79,195,247,0.1);color:#4FC3F7; }
 .card-row { background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;align-items:center;justify-content:space-between; }
@@ -517,7 +517,8 @@
   min-width: 0;
 }
 /* Overview data tables share one typography, spacing and theme-aware icon
-   treatment. Narrow screens keep each row on one line and swipe horizontally. */
+   treatment. Only the established date/time timestamp stacks; every other
+   value stays on one line and narrow screens swipe horizontally. */
 .overview-data-card {
   min-width: 0;
 }
@@ -561,10 +562,21 @@
   overflow-wrap: normal;
 }
 .overview-data-table .overview-table-time {
-  color: var(--text-secondary);
+  color: var(--text);
   font-weight: 500;
+  line-height: 1.25;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+.overview-data-table .overview-table-time .td-date-strong {
+  font-weight: 600;
+}
+.overview-data-table .overview-table-time .td-time {
+  margin-top: 0.08rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.2;
 }
 .overview-data-table .overview-table-detail {
   max-width: 165px;
@@ -599,11 +611,11 @@
     padding: 0.75rem;
   }
   .overview-data-table {
-    min-width: 470px;
+    min-width: 390px;
     table-layout: fixed;
   }
   .scroll-x.tx-scroll > .overview-data-table {
-    min-width: 470px;
+    min-width: 390px;
   }
   .overview-data-table th {
     padding: 0.38rem 0.22rem;
@@ -621,7 +633,7 @@
     text-overflow: ellipsis;
   }
   body.compact-cards .overview-data-table th,
-body.compact-cards .overview-data-table td {
+  body.compact-cards .overview-data-table td {
     padding: 0.38rem 0.22rem;
   }
   .overview-data-table .overview-table-time,
@@ -636,21 +648,19 @@ body.compact-cards .overview-data-table td {
     font-size: 0.65rem;
     line-height: 1.2;
   }
-  .overview-data-table th:first-child,
-  .overview-data-table td:first-child {
-    width: 116px;
-    min-width: 116px;
-    max-width: 116px;
-  }
+  #dashRequestLogTable .overview-col-time { width: 84px; }
+  #dashRequestLogTable .overview-col-model { width: 112px; }
+  #dashRequestLogTable .overview-col-tokens { width: 62px; }
+  #dashRequestLogTable .overview-col-latency { width: 72px; }
+  #dashRequestLogTable .overview-col-request-status { width: 60px; }
+  #dashRecentTxTable .overview-col-time { width: 84px; }
+  #dashRecentTxTable .overview-col-type { width: 58px; }
+  #dashRecentTxTable .overview-col-detail { width: 108px; }
+  #dashRecentTxTable .overview-col-amount { width: 66px; }
+  #dashRecentTxTable .overview-col-transaction-status { width: 74px; }
   .overview-data-table .overview-table-detail,
   #dashRequestLogTable .dashboard-log-model {
-    width: 132px;
-    max-width: 132px;
-  }
-  #dashRequestLogTable th:nth-child(2),
-  #dashRecentTxTable th:nth-child(3) {
-    width: 132px;
-    max-width: 132px;
+    max-width: none;
   }
 }
 /* Filter button row */

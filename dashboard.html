@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1288" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="dashboard.css?v=1065" />
+  <link rel="stylesheet" href="dashboard.css?v=1066" />
   </head>
 <body>
 <script>
@@ -400,6 +400,13 @@ function showDashSection(section) {
           </div>
           <div class="scroll-x overview-table-scroll dashboard-request-logs-scroll" tabindex="0" role="region" aria-label="Latest request logs. Swipe horizontally to see every column.">
             <table class="tx-table overview-data-table" id="dashRequestLogTable">
+              <colgroup aria-hidden="true">
+                <col class="overview-col-time" />
+                <col class="overview-col-model" />
+                <col class="overview-col-tokens" />
+                <col class="overview-col-latency" />
+                <col class="overview-col-request-status" />
+              </colgroup>
               <thead><tr><th>Time</th><th>Model</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Latency</th><th class="tx-th-center">Status</th></tr></thead>
               <tbody id="dashRequestLogBody">
                 <tr><td colspan="5" class="td-empty">Loading request logs…</td></tr>
@@ -461,7 +468,14 @@ function showDashSection(section) {
         </div>
         <div class="scroll-x tx-scroll overview-table-scroll">
           <table class="tx-table overview-data-table" id="dashRecentTxTable">
-            <thead><tr><th>Date</th><th>Type</th><th>Detail</th><th class="tx-th-right">Amount</th><th class="tx-th-center">Status</th></tr></thead>
+            <colgroup aria-hidden="true">
+              <col class="overview-col-time" />
+              <col class="overview-col-type" />
+              <col class="overview-col-detail" />
+              <col class="overview-col-amount" />
+              <col class="overview-col-transaction-status" />
+            </colgroup>
+            <thead><tr><th>Time</th><th>Type</th><th>Detail</th><th class="tx-th-right">Amount</th><th class="tx-th-center">Status</th></tr></thead>
             <tbody id="dashTxBody"><tr><td colspan="5" class="td-empty">No transactions yet</td></tr></tbody>
           </table>
         </div>
@@ -495,7 +509,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1170"></script>
 <script data-cfasync="false" src="ui.js?v=1242"></script>
 <script data-cfasync="false" src="usage-charts.js?v=13"></script>
-<script data-cfasync="false" src="dashboard.js?v=1156"></script>
+<script data-cfasync="false" src="dashboard.js?v=1157"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====
