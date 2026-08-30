@@ -14,6 +14,14 @@ def read(name: str) -> str:
     return (ROOT / name).read_text(encoding="utf-8")
 
 
+def css_block(source: str, selector: str) -> str:
+    """Return a simple CSS rule body without coupling tests to declaration order."""
+
+    rule = source.index(selector)
+    body = source.index("{", rule)
+    return source[body + 1 : source.index("}", body)]
+
+
 def test_gateway_telemetry_is_the_top_right_header_item() -> None:
     html = read("dashboard.html")
     css = read("dashboard.css")
@@ -31,17 +39,83 @@ def test_gateway_telemetry_is_the_top_right_header_item() -> None:
     assert "grid-row: 1;" in css
 
 
-def test_request_logs_preserve_table_width_and_format_timestamps() -> None:
+def test_overview_restores_request_logs_panel_and_account_loader() -> None:
+    html = read("dashboard.html")
+    css = read("dashboard.css")
+    source = read("dashboard.js")
+
+    grid = html.index('class="charts-side-grid"')
+    usage = html.index('id="dailyChart"', grid)
+    request_logs = html.index('id="dashRequestLogs"', usage)
+    grid_end = html.index('<!-- ═══════ ADMIN:', request_logs)
+    panel = html[request_logs:grid_end]
+
+    # Request Logs is a visible Overview card beside Usage, not merely a link
+    # in Gateway Overview or a panel that only exists on the full Logs page.
+    assert grid < usage < request_logs < grid_end
+    assert 'id="dashActivity"' not in html[grid:grid_end]
+    assert 'id="dashRequestLogTable"' in panel
+    assert 'id="dashRequestLogBody"' in panel
+    assert "dashboard-request-logs-scroll" in panel
+    assert 'href="logs.html"' in panel
+    assert "View all" in panel
+
+    # Overview uses the authenticated account-scoped endpoint, loads a compact
+    # five-row preview on boot/refresh, and renders one text-line per timestamp.
+    assert "async function loadOverviewRequestLogs()" in source
+    assert "/api/logs?page=1&page_size=5" in source
+    assert source.count("loadOverviewRequestLogs()") >= 2
+    assert "function fmtOverviewLogTime(iso)" in source
+    assert '<time class="dashboard-log-time"' in source
+    overview_start = source.index("function fmtOverviewLogTime(iso)")
+    overview_end = source.index("// ── Recent Transactions", overview_start)
+    overview_loader = source[overview_start:overview_end]
+    assert "fmtDTStack" not in overview_loader
+
+    assert "overflow-x: auto;" in css_block(css, ".dashboard-request-logs-scroll")
+    assert "min-width: 100%;" in css_block(css, "#dashRequestLogTable")
+    mobile_table = css[css.index("@media (max-width: 768px)", css.index("#dashRequestLogCount")) :]
+    assert "#dashRequestLogTable" in mobile_table
+    assert "min-width: 540px;" in mobile_table
+    request_cells = css_block(css, "#dashRequestLogTable th,\n#dashRequestLogTable td")
+    assert "white-space: nowrap;" in request_cells
+    assert "word-break: normal;" in request_cells
+    assert "font-variant-numeric: tabular-nums;" in css_block(
+        css, "#dashRequestLogTable .dashboard-log-time"
+    )
+
+
+def test_full_request_logs_lead_analytics_and_preserve_mobile_table() -> None:
     html = read("logs.html")
     css = read("logs.css")
 
+    request_logs = html.index('id="dashRequestLogs"')
+    analytics_grid = html.index('class="logs-grid"')
+    renderer_start = html.index("function renderRequestLogRows()")
+    renderer_end = html.index("async function loadRequestLogs", renderer_start)
+    renderer = html[renderer_start:renderer_end]
+
+    # The complete request history is the first substantive Logs card. On
+    # mobile it no longer disappears below a long stack of analytics cards.
+    assert request_logs < analytics_grid
     assert 'class="scroll-x request-logs-scroll"' in html
     assert 'id="requestLogTable"' in html
-    assert "fmtDTStack(time)" in html
+    assert "safeApi('GET','/api/logs?page=" in html
+    assert "formatLogTimestamp(time)" in renderer
+    assert "fmtDTStack" not in renderer
+    assert '<td class="td-date logs-timestamp"' in renderer
     assert "'<td class=\"td-date\">'+escapeHtml(time)" not in html
-    assert "#requestLogTable {\n  min-width: 760px;" in css
-    assert "#requestLogTable th,\n#requestLogTable td {\n  white-space: nowrap;" in css
-    assert "#dashRequestLogs {\n  min-width: 0;" in css
+    assert "overflow-x: auto;" in css_block(css, ".request-logs-scroll")
+    assert "min-width: 760px;" in css_block(css, "#requestLogTable")
+    request_cells = css_block(css, "#requestLogTable th,\n#requestLogTable td")
+    assert "white-space: nowrap;" in request_cells
+    assert "word-break: normal;" in request_cells
+    assert "min-width: 0;" in css_block(css, "#dashRequestLogs")
+    assert "flex-wrap: nowrap;" in css_block(css, ".logs-title-row")
+    assert "white-space: nowrap;" in css_block(css, ".logs-title-main")
+    filters = css_block(css, ".logs-filter-wrap,\n.logs-status-filter")
+    assert "flex-wrap: nowrap;" in filters
+    assert "white-space: nowrap;" in filters
 
 
 def test_usage_chart_palette_is_visible_and_updates_with_theme() -> None:
