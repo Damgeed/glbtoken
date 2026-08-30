@@ -45,27 +45,11 @@
   }
 }
 
-/* Request Logs is the primary gateway activity surface: a full-width card
-   directly beneath the range control, using the shared card palette with a
-   restrained blue accent from the original dashboard topology. */
+/* Request Logs follows the shared dashboard-card topology and inherits the
+   active Appearance accent instead of introducing a page-specific palette. */
 #dashRequestLogs {
   min-width: 0;
-  --logs-blue: #4fc3f7;
-  position: relative;
   overflow: hidden;
-  background: var(--card);
-  border-color: color-mix(in srgb, var(--border) 72%, var(--logs-blue));
-  box-shadow: var(--shadow-card);
-}
-#dashRequestLogs::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 3px;
-  background: var(--logs-blue);
-}
-html.light #dashRequestLogs {
-  --logs-blue: #2563eb;
 }
 .logs-title-row {
   flex-wrap: nowrap;
@@ -78,7 +62,7 @@ html.light #dashRequestLogs {
   gap: 0.4rem;
 }
 .logs-title-main svg {
-  color: var(--logs-blue);
+  color: var(--primary);
 }
 .logs-filter-wrap,
 .logs-status-filter {
@@ -111,7 +95,7 @@ html.light #dashRequestLogs {
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--logs-blue) 60%, var(--border)) transparent;
+  scrollbar-color: color-mix(in srgb, var(--primary) 58%, var(--border)) transparent;
   touch-action: pan-x pan-y;
 }
 .request-logs-scroll::-webkit-scrollbar {
@@ -121,11 +105,11 @@ html.light #dashRequestLogs {
   background: transparent;
 }
 .request-logs-scroll::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--logs-blue) 60%, var(--border));
+  background: color-mix(in srgb, var(--primary) 58%, var(--border));
   border-radius: 999px;
 }
 .request-logs-scroll:focus-visible {
-  outline: 2px solid var(--logs-blue);
+  outline: 2px solid var(--primary);
   outline-offset: -2px;
 }
 #requestLogTable {
@@ -190,6 +174,37 @@ html.light #dashRequestLogs {
   .logs-table-hint {
     margin-top: -0.25rem;
     font-size: 0.68rem;
+  }
+  #requestLogTable {
+    min-width: 650px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  #requestLogTable th {
+    padding: 0.38rem 0.22rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.035em;
+  }
+  #requestLogTable td {
+    padding: 0.38rem 0.22rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  #requestLogTable .logs-timestamp {
+    min-width: 9.5rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  #requestLogTable .td-tokens-sub {
+    margin-left: 0.22rem;
+  }
+  #requestLogTable .status-badge {
+    padding: 0.12rem 0.32rem;
+    font-size: 0.65rem;
   }
 }
 .billing-summary-grid {
