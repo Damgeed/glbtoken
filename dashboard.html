@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1288" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <link rel="stylesheet" href="dashboard.css?v=1063" />
+  <link rel="stylesheet" href="dashboard.css?v=1064" />
   </head>
 <body>
 <script>
@@ -366,7 +366,7 @@ function showDashSection(section) {
         </div>
       </div>
 
-      <!-- ═══════ USAGE CHART + ACTIVITY FEED ═══════ -->
+      <!-- ═══════ USAGE CHART + REQUEST LOGS ═══════ -->
       <div class="charts-side-grid">
         <!-- Usage Chart (Chart.js) -->
         <div class="dash-card stat-card" >
@@ -392,23 +392,23 @@ function showDashSection(section) {
           </div>
         </div>
 
-        <!-- Activity Timeline (upgraded) -->
-        <div class="dash-card stat-card" >
-          <div class="dash-section-title section-header" >
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="icon-gold"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Activity</span>
-            <span class="view-details-link"><span data-i18n="Live" class="live-text">Live</span><span class="live-dot"></span></span>
+        <!-- Compact request-log preview; the complete searchable history remains on logs.html. -->
+        <div class="dash-card stat-card" id="dashRequestLogs">
+          <div class="dash-section-title section-header dashboard-request-logs-header">
+            <span class="dash-title-group"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="dashboard-request-logs-icon" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Request Logs</span>
+            <span class="view-details-link"><span class="live-text">Live</span><span class="live-dot"></span></span>
           </div>
-          <div id="dashActivity" class="dash-activity activity-scroll">
-            <div class="activity-item activity-row" style="opacity:0.6">
-              <div class="flex-grow">
-                <div class="text-desc">Loading activity…</div>
-                <div class="text-micro-top"></div>
-              </div>
-            </div>
+          <div class="scroll-x dashboard-request-logs-scroll" tabindex="0" role="region" aria-label="Latest request logs. Swipe horizontally to see every column.">
+            <table class="tx-table" id="dashRequestLogTable">
+              <thead><tr><th>Time</th><th>Model</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Latency</th><th class="tx-th-center">Status</th></tr></thead>
+              <tbody id="dashRequestLogBody">
+                <tr><td colspan="5" class="td-empty">Loading request logs…</td></tr>
+              </tbody>
+            </table>
           </div>
-          <div class="activity-footer">
-            <span id="activityCount">0 events</span>
-            <a href="usage.html" class="activity-view-all">View all →</a>
+          <div class="activity-footer dashboard-request-logs-footer">
+            <span id="dashRequestLogCount">Latest requests</span>
+            <a href="logs.html" class="activity-view-all">View all →</a>
           </div>
         </div>
       </div>
@@ -495,7 +495,7 @@ function showDashSection(section) {
 <script data-cfasync="false" src="shared.js?v=1170"></script>
 <script data-cfasync="false" src="ui.js?v=1242"></script>
 <script data-cfasync="false" src="usage-charts.js?v=13"></script>
-<script data-cfasync="false" src="dashboard.js?v=1154"></script>
+<script data-cfasync="false" src="dashboard.js?v=1155"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   // ===== Paystack return verification =====

@@ -22,7 +22,7 @@
 /* ══════════════════════════════════════════
    DASHBOARD REAL-DATA WIRING (2026-08)
    Stat cards, API Calls per Model, Spending by Provider,
-   Activity feed, Recent Transactions — real endpoints, 30s live refresh.
+   Request-log preview, Recent Transactions — real endpoints, 30s live refresh.
    Design preserved: generated DOM reuses existing CSS classes.
    ══════════════════════════════════════════ */
 
@@ -276,63 +276,66 @@ async function renderSpendingDonut(days){
   }
 }
 
-// ── Activity feed (real — /api/dashboard recent_activity, keeps demo structure) ──
-function fmtActivityTime(iso){
-  if(!iso) return '<strong>—</strong>';
-  var d = new Date(typeof window.parseUTCDate === 'function' ? window.parseUTCDate(iso) : new Date(iso).getTime());
-  if(isNaN(d.getTime())) return '<strong>'+escapeHtml(String(iso).substring(0,16))+'</strong>';
-  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var dateStr = months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
-  var h = d.getHours()%12||12;
-  var m = ('0'+d.getMinutes()).slice(-2);
-  var ap = d.getHours()>=12?'PM':'AM';
-  return '<strong>'+dateStr+'</strong> '+h+':'+m+' '+ap;
+// ── Overview request logs (real, compact preview of the complete Logs page) ──
+function dashboardLogStatus(log){
+  var code = Number(log && log.status_code);
+  if(Number.isFinite(code) && code > 0) return code;
+  return String((log && log.status)||'').toLowerCase() === 'failed' ? 500 : 200;
 }
-async function loadActivityFeed(){
-  var container = document.getElementById('dashActivity');
-  if(!container) return;
-  var d = await flight('dash', function(){ return safeApi('GET','/api/dashboard',null,null,true); });
-  if(!d) return;
-  var items = d.recent_activity||[];
-  var countEl = document.getElementById('activityCount');
-  var SVGS = {
-    code:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-    money:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
-    key:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/></svg>',
-    alert:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
-  };
-  function itemHtml(type, desc, time, amtHtml){
-    var icon, iconCls;
-    if(type==='topup' || type==='deposit'){ icon=SVGS.money; iconCls='activity-icon activity-icon-teal'; }
-    else if(type==='key_created'||type==='key_deleted'||type==='key_paused'){ icon=SVGS.key; iconCls='activity-icon activity-icon-gold'; }
-    else if(type==='consumption'){ icon=SVGS.alert; iconCls='activity-icon activity-icon-red'; }
-    else { icon=SVGS.code; iconCls='color-dot-blue'; }
-    return '<div class="activity-item activity-row"><div class="'+iconCls+'">'+icon+'</div><div class="flex-grow"><div class="text-desc">'+desc+'</div><div class="text-micro-top">'+time+'</div></div>'+(amtHtml?'<div class="activity-amt">'+amtHtml+'</div>':'')+'</div>';
+
+// Intentionally one line: mobile keeps the readable date and time together
+// while the table scrolls horizontally instead of stacking cell contents.
+function fmtOverviewLogTime(iso){
+  if(!iso) return '—';
+  var stamp = typeof window.parseUTCDate === 'function' ? window.parseUTCDate(iso) : new Date(iso).getTime();
+  var d = new Date(stamp);
+  if(isNaN(d.getTime())) return String(iso).replace('T',' ').slice(0,16) || '—';
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var hour = d.getHours()%12 || 12;
+  var minute = ('0'+d.getMinutes()).slice(-2);
+  var meridiem = d.getHours() >= 12 ? 'PM' : 'AM';
+  return months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()+' · '+hour+':'+minute+' '+meridiem;
+}
+
+async function loadOverviewRequestLogs(){
+  var body = document.getElementById('dashRequestLogBody');
+  if(!body) return;
+  var countEl = document.getElementById('dashRequestLogCount');
+  try{
+    var data = await safeApi('GET','/api/logs?page=1&page_size=5',null,null,true);
+    if(!data){
+      body.innerHTML = '<tr><td colspan="5" class="td-empty">Request logs are temporarily unavailable.</td></tr>';
+      if(countEl) countEl.textContent = 'Unavailable';
+      return;
+    }
+    var items = Array.isArray(data.items) ? data.items.slice(0,5) : [];
+    var total = Number(data.total);
+    if(!Number.isFinite(total)) total = items.length;
+    if(countEl) countEl.textContent = total.toLocaleString()+' request'+(total===1?'':'s');
+    if(!items.length){
+      body.innerHTML = '<tr><td colspan="5" class="td-empty">No request logs yet. Make an API call to see it here.</td></tr>';
+      return;
+    }
+    body.innerHTML = items.map(function(log){
+      var status = dashboardLogStatus(log);
+      var statusClass = status >= 400 ? 'status-err' : (status >= 300 ? 'status-warn' : 'status-ok');
+      var tokens = Number(log.tokens != null ? log.tokens : log.total_tokens);
+      var hasLatency = log.latency_ms != null && log.latency_ms !== '';
+      var latency = hasLatency ? Number(log.latency_ms) : NaN;
+      var model = log.model || log.model_name || log.model_id || 'Unknown';
+      var iso = log.created_at || log.time || '';
+      return '<tr>'
+        + '<td title="'+escapeHtml(String(iso))+'"><time class="dashboard-log-time" datetime="'+escapeHtml(String(iso))+'">'+escapeHtml(fmtOverviewLogTime(iso))+'</time></td>'
+        + '<td class="dashboard-log-model" title="'+escapeHtml(String(model))+'">'+escapeHtml(String(model))+'</td>'
+        + '<td class="tx-td-right">'+(Number.isFinite(tokens)?tokens.toLocaleString():'—')+'</td>'
+        + '<td class="tx-td-right">'+(Number.isFinite(latency)?Math.round(latency).toLocaleString()+' ms':'—')+'</td>'
+        + '<td class="tx-td-center"><span class="status-badge '+statusClass+'">'+escapeHtml(String(status))+'</span></td>'
+        + '</tr>';
+    }).join('');
+  }catch(e){
+    body.innerHTML = '<tr><td colspan="5" class="td-empty">Failed to load request logs.</td></tr>';
+    if(countEl) countEl.textContent = 'Unavailable';
   }
-  if(!items.length){
-    if(countEl) countEl.textContent = '0 events';
-    container.innerHTML = '<div class="activity-item activity-row" style="opacity:0.6"><div class="flex-grow"><div class="text-desc">No activity yet</div><div class="text-micro-top">Buy tokens or make an API request to see activity here</div></div></div>';
-    return;
-  }
-  if(countEl) countEl.textContent = items.length + ' events';
-  var activityCards = items.slice(0,8).map(function(a){
-    var type = a.type||'';
-    var time = fmtActivityTime(a.created_at);
-    var desc;
-    if(type==='deposit'){ desc = (a.tokens||0).toLocaleString()+' tokens added via '+escapeHtml(a.payment_method||'payment'); }
-    else if(type==='consumption'){ desc = escapeHtml(a.model||'AI model')+' call — '+(a.tokens||0).toLocaleString()+' tokens'; }
-    else { desc = escapeHtml(a.model||a.payment_method||a.type||'Activity'); }
-    var amtHtml = '';
-    if(type==='deposit'){ amtHtml = '<span class="amt-pos">+$'+(Number(a.amount)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'; }
-    else if(type==='consumption'){ amtHtml = '<span class="amt-neg">-'+(Number(a.tokens)||0).toLocaleString()+' tk</span>'; }
-    return itemHtml(type, desc, time, amtHtml);
-  });
-  // Render ALL cards — the container's max-height + overflow-y handles
-  // scrolling, so users can always reach every event (no 5-card cutoff, no
-  // Show More/Less button — only vertical hints).
-  container.innerHTML = activityCards.join('');
-  var moreBtn = document.getElementById('activityMoreBtn');
-  if(moreBtn) moreBtn.style.display = 'none';
 }
 
 // ── Recent Transactions (real, 5-col table) ──
@@ -539,7 +542,7 @@ async function refreshDashboard(btn){
     await Promise.all([
       loadDashboardStats(),
       loadDashboardCommandCenter(),
-      loadActivityFeed(),
+      loadOverviewRequestLogs(),
       loadRecentTx(),
       renderApiCallsChart(window._apiModelDays || 7),
       renderSpendingDonut(30)
@@ -661,7 +664,7 @@ function initAnnouncements(){
     initAnnouncements();
     if(!token) return;
     loadDashboardStats();
-    loadActivityFeed();
+    loadOverviewRequestLogs();
     loadRecentTx();
     renderApiCallsChart(window._apiModelDays || 7);
     renderSpendingDonut(30);
@@ -676,7 +679,7 @@ function initAnnouncements(){
     window._dashPoll = setInterval(function(){
       if(!token) return;
       loadDashboardStats();
-      loadActivityFeed();
+      loadOverviewRequestLogs();
       loadRecentTx();
       renderApiCallsChart(window._apiModelDays || 7);
       renderSpendingDonut(30);

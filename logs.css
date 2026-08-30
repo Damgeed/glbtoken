@@ -14,6 +14,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  margin-top: 1.25rem;
 }
 /* Keep the compact cost graph, but anchor it to the bottom of the card so it
    sits on the same baseline as the Error Rate graph beside it. */
@@ -40,26 +41,92 @@
   .logs-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
+    margin-top: 0.75rem;
   }
-
 }
 
-/* Request Logs keeps the established table proportions on small screens.
-   The card stays within the viewport while the seven data columns swipe. */
+/* Request Logs is the primary gateway activity surface: a full-width card
+   directly beneath the range control, using the shared card palette with a
+   restrained blue accent from the original dashboard topology. */
+#dashRequestLogs {
+  min-width: 0;
+  --logs-blue: #4fc3f7;
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--border) 72%, var(--logs-blue));
+  box-shadow: var(--shadow-card);
+}
+#dashRequestLogs::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--logs-blue);
+}
+html.light #dashRequestLogs {
+  --logs-blue: #2563eb;
+}
+.logs-title-row {
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.logs-title-main {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  gap: 0.4rem;
+}
+.logs-title-main svg {
+  color: var(--logs-blue);
+}
+.logs-filter-wrap,
+.logs-status-filter {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.logs-filter-wrap {
+  min-width: 0;
+  justify-content: flex-end;
+}
+.logs-status-filter .sort-btn,
+#dashRequestLogs .keys-icon-btn,
+.logs-pager button,
+.logs-pager-info {
+  white-space: nowrap;
+}
+.logs-table-hint {
+  margin: -0.45rem 0 0.65rem;
+  color: var(--text-muted);
+}
+
+/* The card stays within the viewport while all seven data columns retain
+   their desktop proportions and swipe horizontally on touch screens. */
 .request-logs-scroll {
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior-inline: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--logs-blue) 60%, var(--border)) transparent;
+  touch-action: pan-x pan-y;
 }
-#dashRequestLogs {
-  min-width: 0;
+.request-logs-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.request-logs-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.request-logs-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--logs-blue) 60%, var(--border));
+  border-radius: 999px;
 }
 .request-logs-scroll:focus-visible {
-  outline: 2px solid var(--primary-soft);
-  outline-offset: 3px;
+  outline: 2px solid var(--logs-blue);
+  outline-offset: -2px;
 }
 #requestLogTable {
   min-width: 760px;
@@ -70,21 +137,60 @@
   word-break: normal;
   overflow-wrap: normal;
 }
-#requestLogTable .td-date {
-  min-width: 7rem;
-  line-height: 1.3;
-  font-variant-numeric: tabular-nums;
-}
-#requestLogTable .td-date-strong {
+#requestLogTable .logs-timestamp {
+  min-width: 12rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
-#requestLogTable .td-time {
-  margin-top: 0.1rem;
-  color: var(--text-muted);
-  font-size: 0.69rem;
-  letter-spacing: 0.02em;
+#requestLogTable .td-tokens-sub {
+  display: inline;
+  margin: 0 0 0 0.35rem;
+  white-space: nowrap;
+}
+#requestLogTable .status-badge {
+  border: 1px solid currentColor;
+}
+
+@media (max-width: 767px) {
+  #dashRequestLogs {
+    padding: 0.85rem 0.75rem 0.75rem;
+  }
+  .logs-title-row {
+    gap: 0.4rem;
+    margin-bottom: 0.55rem;
+  }
+  .logs-title-main {
+    font-size: 0.78rem;
+    gap: 0.3rem;
+  }
+  .logs-filter-wrap {
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .logs-filter-wrap::-webkit-scrollbar {
+    display: none;
+  }
+  .logs-status-filter {
+    gap: 0.2rem;
+  }
+  .logs-status-filter .sort-btn {
+    padding: 0.28rem 0.38rem;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    line-height: 1;
+  }
+  #dashRequestLogs .keys-icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+  }
+  .logs-table-hint {
+    margin-top: -0.25rem;
+    font-size: 0.68rem;
+  }
 }
 .billing-summary-grid {
   display: grid;

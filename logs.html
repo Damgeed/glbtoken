@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
   <link rel="stylesheet" href="style.css?v=1288" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="logs.css?v=1032" />
+<link rel="stylesheet" href="logs.css?v=1033" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -163,6 +163,38 @@
         </div>
       </div>
 
+      <!-- ── REQUEST LOGS: primary gateway activity table ── -->
+      <div class="dash-card" id="dashRequestLogs">
+        <div class="dash-section-title logs-title-row">
+          <span class="logs-title-main">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Request Logs
+          </span>
+          <div class="logs-filter-wrap">
+            <div class="logs-status-filter" id="logsStatusBtns" aria-label="Filter request logs by status">
+              <button class="sort-btn badge active" data-status="all" onclick="setLogsStatus('all')">All</button>
+              <button class="sort-btn badge" data-status="success" onclick="setLogsStatus('success')">Success</button>
+              <button class="sort-btn badge" data-status="errors" onclick="setLogsStatus('errors')">Errors</button>
+            </div>
+            <button class="keys-icon-btn has-label" onclick="exportLogsCsv()" title="Export current page as CSV" aria-label="Export current page as CSV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="icon-btn-label">Export</span></button>
+          </div>
+        </div>
+        <div class="logs-table-hint">Click a row for details <span aria-hidden="true">·</span> Swipe horizontally on mobile</div>
+        <div class="scroll-x request-logs-scroll" tabindex="0" role="region" aria-label="Request logs table. Swipe horizontally to see every column.">
+          <table class="tx-table" id="requestLogTable">
+            <thead><tr><th>Time</th><th>Model</th><th>Provider</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Latency</th><th class="tx-th-right">Cost</th><th class="tx-th-center">Status</th></tr></thead>
+            <tbody id="requestLogBody">
+              <tr><td colspan="7" class="td-empty">Loading request logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="logs-pager" id="logsPager" style="display:none">
+          <button class="btn-secondary btn-sm" id="logsPrevBtn" onclick="logsPage(-1)">‹ Prev</button>
+          <span class="logs-pager-info" id="logsPagerInfo">Page 1</span>
+          <button class="btn-secondary btn-sm" id="logsNextBtn" onclick="logsPage(1)">Next ›</button>
+        </div>
+      </div>
+
       <!-- ── ADMIN LOGS: Cost, Errors, Response Time, Speed (2x2 grid) ── -->
       <div class="logs-grid">
 
@@ -232,37 +264,6 @@
               <tr><td colspan="4" class="td-empty">Loading key usage...</td></tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div class="dash-card" id="dashRequestLogs">
-        <div class="dash-section-title logs-title-row">
-          <span class="logs-title-main">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D68F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Request Logs
-          </span>
-          <div class="logs-filter-wrap">
-            <div class="logs-status-filter" id="logsStatusBtns">
-              <button class="sort-btn badge active" data-status="all" onclick="setLogsStatus('all')">All</button>
-              <button class="sort-btn badge" data-status="success" onclick="setLogsStatus('success')">Success</button>
-              <button class="sort-btn badge" data-status="errors" onclick="setLogsStatus('errors')">Errors</button>
-            </div>
-            <button class="keys-icon-btn has-label" onclick="exportLogsCsv()" title="Export current page as CSV" aria-label="Export current page as CSV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="icon-btn-label">Export</span></button>
-          </div>
-        </div>
-        <div class="logs-table-hint">Click a row for details</div>
-        <div class="scroll-x request-logs-scroll" tabindex="0" role="region" aria-label="Request logs table. Swipe horizontally to see every column.">
-          <table class="tx-table" id="requestLogTable">
-            <thead><tr><th>Time</th><th>Model</th><th>Provider</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Latency</th><th class="tx-th-right">Cost</th><th class="tx-th-center">Status</th></tr></thead>
-            <tbody id="requestLogBody">
-              <tr><td colspan="7" class="td-empty">Loading request logs...</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="logs-pager" id="logsPager" style="display:none">
-          <button class="btn-secondary btn-sm" id="logsPrevBtn" onclick="logsPage(-1)">‹ Prev</button>
-          <span class="logs-pager-info" id="logsPagerInfo">Page 1</span>
-          <button class="btn-secondary btn-sm" id="logsNextBtn" onclick="logsPage(1)">Next ›</button>
         </div>
       </div>
 
@@ -678,6 +679,18 @@ function logsStatusMatch(l){
   return true;
 }
 
+// A compact, readable, single-line timestamp keeps log rows scannable and
+// prevents narrow screens from stacking the date above the time.
+function formatLogTimestamp(iso){
+  if(!iso)return '—';
+  var parsed=(typeof parseUTCDate==='function')?parseUTCDate(iso):new Date(iso).getTime();
+  var d=new Date(parsed);
+  if(isNaN(d.getTime()))return '—';
+  function p(n){return (n<10?'0':'')+n;}
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()]+' '+p(d.getDate())+', '+d.getFullYear()+' · '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+
 function setLogsStatus(f){
   logsStatusFilter=f;
   document.querySelectorAll('#logsStatusBtns .sort-btn').forEach(function(b){
@@ -708,13 +721,13 @@ function renderRequestLogRows(){
     var status=logsStatusOf(l);
     var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
     var time=l.created_at||l.time||'';
-    var timeCell=(typeof fmtDTStack==='function')?fmtDTStack(time):'<div class="td-date-strong">—</div>';
+    var timeCell=formatLogTimestamp(time);
     var logId=l.id||'';
     var tkCell='<td class="td-tokens tx-td-right">'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens));
     if(pt||ct){ tkCell+='<span class="td-tokens-sub">in '+Number(pt).toLocaleString()+' · out '+Number(ct).toLocaleString()+'</span>'; }
     tkCell+='</td>';
     return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'" title="Status '+status+' — click for details">'
-      + '<td class="td-date" title="'+escapeHtml(time)+'">'+timeCell+'</td>'
+      + '<td class="td-date logs-timestamp" title="'+escapeHtml(time)+'">'+escapeHtml(timeCell)+'</td>'
       + '<td>'+escapeHtml(model)+'</td>'
       + '<td>'+escapeHtml(provider)+'</td>'
       + tkCell
