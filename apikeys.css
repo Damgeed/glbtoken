@@ -40,10 +40,58 @@
 .doc-table th.t-right { text-align: right !important; }
 .doc-table td { padding: 0.5rem 0.75rem; }
 .doc-table td.t-right { text-align: right !important; }
-/* Mobile: allow horizontal scroll instead of breaking layout */
+/* Mobile tables keep native table layout; the surrounding wrapper owns the
+   single horizontal scroll surface. Fixed tracks prevent content-driven dead
+   gaps while compact type leaves more useful data in view. */
 @media (max-width: 768px) {
-  .doc-table { display: block; width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-  .doc-table tbody { display: table; width: 100%; }
+  .doc-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .doc-table {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.72rem;
+  }
+  .doc-table th {
+    padding: 0.38rem 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-table td {
+    padding: 0.38rem 0.25rem;
+    overflow: hidden;
+    font-size: 0.72rem;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #tokenPricingTable { min-width: 400px; }
+  #tokenPricingTable .doc-col-model { width: 36%; }
+  #tokenPricingTable .doc-col-provider { width: 18%; }
+  #tokenPricingTable .doc-col-input,
+  #tokenPricingTable .doc-col-output { width: 23%; }
+  #tokenPricingTable th:nth-child(-n + 2),
+  #tokenPricingTable td:nth-child(-n + 2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #errorCodesTable { min-width: 0; }
+  #errorCodesTable .doc-col-code { width: 3.75rem; }
+  #errorCodesTable .doc-col-meaning { width: auto; }
+
+  #rateLimitsTable { min-width: 440px; }
+  #rateLimitsTable .doc-col-scope { width: 24%; }
+  #rateLimitsTable .doc-col-control { width: 26%; }
+  #rateLimitsTable .doc-col-behavior { width: 50%; }
 }
 
 .cell-first { color: var(--text); }

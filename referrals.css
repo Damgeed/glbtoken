@@ -26,6 +26,32 @@
   .dash-section-title{font-size:0.85rem}
   .tx-table{font-size:0.75rem}
   .tx-table th,.tx-table td{padding:0.4rem 0.3rem}
+  #refRewardsTable{
+    min-width:330px;
+    table-layout:fixed;
+  }
+  #refRewardsTable th,
+  #refRewardsTable td{
+    padding:0.38rem 0.22rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  #refRewardsTable th{
+    font-size:0.65rem;
+    font-weight:600;
+    line-height:1.3;
+    letter-spacing:0.035em;
+  }
+  #refRewardsTable td{
+    font-size:0.72rem;
+    font-weight:500;
+    line-height:1.3;
+  }
+  #refRewardsTable .refs-reward-col-date{width:82px}
+  #refRewardsTable .refs-reward-col-type{width:92px}
+  #refRewardsTable .refs-reward-col-amount{width:70px}
+  #refRewardsTable .refs-reward-col-status{width:86px}
 }
 
 #section-referral{display:block}
@@ -47,12 +73,52 @@
   #share-socials .btn-secondary{font-size:0.7rem;padding:0.4rem 0.25rem;justify-content:center}
 }
 /* Referrals table = 5 columns (Name, Email, Date Joined, Status, Reward).
-   On phones, the two wide unbreakable email-ish cells (Name/Email) force the
-   table past the viewport even with tx-fit. Hide the least-important column
-   (Date Joined) at ≤560px — same pattern as Login History hiding IP. */
+   On phones, hide the least-important date column, then fix the remaining
+   tracks and ellipsize long identities so real names/emails cannot silently
+   re-expand the table past the viewport. */
 @media(max-width:560px){
+  #refTable{table-layout:fixed}
   #refTable th:nth-child(3),
   #refTable td:nth-child(3){display:none}
+  #refTable th:nth-child(1),
+  #refTable td:nth-child(1){width:20%}
+  #refTable th:nth-child(2),
+  #refTable td:nth-child(2){width:32%}
+  #refTable th:nth-child(4),
+  #refTable td:nth-child(4){width:20%}
+  #refTable th:nth-child(5),
+  #refTable td:nth-child(5){width:28%}
+  #refTable th,
+  #refTable td{
+    padding:0.38rem 0.22rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  #refTable th{
+    font-size:0.65rem;
+    font-weight:600;
+    line-height:1.3;
+    letter-spacing:0.035em;
+  }
+  #refTable td{
+    font-size:0.72rem;
+    font-weight:500;
+    line-height:1.3;
+  }
+  body.compact-cards #refTable th,
+  body.compact-cards #refTable td{
+    padding:0.38rem 0.22rem;
+  }
+  #refTable .refs-status-badge{
+    box-sizing:border-box;
+    max-width:100%;
+    overflow:hidden;
+    padding:0.12rem 0.32rem;
+    font-size:0.65rem;
+    line-height:1.2;
+    text-overflow:ellipsis;
+  }
 }
 
 /* ── Referrals inline style extraction ── */

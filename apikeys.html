@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1285" />
-  <link rel="stylesheet" href="apikeys.css?v=1028" />
+  <link rel="stylesheet" href="apikeys.css?v=1029" />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="GlbTOKEN" />
@@ -159,8 +159,14 @@ console.log(completion.choices[0].message.content);
   <div class="dash-card doc-section">
     <h3 class="section-heading"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heading-icon"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg> Token Pricing</h3>
     <p data-i18n="api-costs" class="desc-text">Each API call consumes GlbTOKENs based on the model used. Prices vary by model capability:</p>
-    <div class="scroll-x">
-      <table class="doc-table">
+    <div class="scroll-x doc-table-scroll" tabindex="0" role="region" aria-label="Token pricing table. Swipe horizontally to see every column.">
+      <table class="doc-table" id="tokenPricingTable">
+        <colgroup>
+          <col class="doc-col-model" />
+          <col class="doc-col-provider" />
+          <col class="doc-col-input" />
+          <col class="doc-col-output" />
+        </colgroup>
         <thead>
           <tr>
             <th>Model</th>
@@ -181,8 +187,12 @@ console.log(completion.choices[0].message.content);
   <!-- Error Codes -->
   <div class="dash-card doc-section">
     <h3 class="section-heading"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heading-icon"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Error Codes</h3>
-    <div class="scroll-x">
-      <table class="doc-table">
+    <div class="scroll-x doc-table-scroll" tabindex="0" role="region" aria-label="API error codes table">
+      <table class="doc-table" id="errorCodesTable">
+        <colgroup>
+          <col class="doc-col-code" />
+          <col class="doc-col-meaning" />
+        </colgroup>
         <thead>
           <tr>
             <th>Code</th>
@@ -228,8 +238,13 @@ console.log(completion.choices[0].message.content);
   <div class="dash-card doc-section">
     <h3 class="section-heading"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heading-icon"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Rate Limits</h3>
     <p class="desc-text">Your effective limit is the most restrictive of the gateway limit, an optional per-key limit, and the selected model provider's current limit.</p>
-    <div class="scroll-x">
-      <table class="doc-table">
+    <div class="scroll-x doc-table-scroll" tabindex="0" role="region" aria-label="API rate limits table. Swipe horizontally to see every column.">
+      <table class="doc-table" id="rateLimitsTable">
+        <colgroup>
+          <col class="doc-col-scope" />
+          <col class="doc-col-control" />
+          <col class="doc-col-behavior" />
+        </colgroup>
         <thead>
           <tr>
             <th>Scope</th>

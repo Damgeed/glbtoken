@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=1288" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="billing.css?v=1045" />
+<link rel="stylesheet" href="billing.css?v=1046" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -200,7 +200,15 @@
         <div class="dash-card" id="invoicesCard">
           <div class="dash-section-title"><span class="dash-title-group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:var(--primary-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-inline-svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Invoices</span><span class="label-muted-sm" id="invoiceCount">0</span></div>
           <div class="scroll-x tx-scroll tx-fit">
-            <table class="tx-table" id="invoicesTable">
+            <table class="tx-table billing-history-table" id="invoicesTable">
+              <colgroup aria-hidden="true">
+                <col class="billing-col-date" />
+                <col class="billing-col-amount" />
+                <col class="billing-col-method" />
+                <col class="billing-col-tokens" />
+                <col class="billing-col-status" />
+                <col class="billing-col-receipt" />
+              </colgroup>
               <thead>
                 <tr>
                   <th>Date</th>
@@ -334,14 +342,11 @@ window._errMsg = _errMsg;
         for(var i=0;i<inv.length;i++){
           var row = '';
           var invItem = inv[i];
-          // Date — split into date + time like the Login Attempts table
+          // Timestamp — use the shared Login History date-over-time contract.
           var dateRaw = invItem.date || invItem.created_at || '';
-          var dateMain = '—', timeMain = '';
-          if(dateRaw){
-            var parts = String(dateRaw).replace('T',' ').replace('Z','').split(' ');
-            dateMain = escapeHtml(parts[0]);
-            timeMain = parts.length > 1 ? escapeHtml(parts[1].substring(0,8)) : '';
-          }
+          var timestampHtml = dateRaw && window.fmtDTStack
+            ? fmtDTStack(dateRaw)
+            : '<div class="td-date-strong">—</div>';
           var amount = '';
           if(invItem.amount){
             var sym = invItem.currency === 'NGN' ? '₦' : '$';
@@ -368,7 +373,7 @@ window._errMsg = _errMsg;
           }
 
           row += '<tr>';
-          row += '<td class="td-date">' + (timeMain ? '<div class="td-date-strong">' + dateMain + '</div><div class="td-time">' + timeMain + '</div>' : '<div class="td-date-strong">' + dateMain + '</div>') + '</td>';
+          row += '<td class="td-date" title="' + escapeAttr(String(dateRaw)) + '">' + timestampHtml + '</td>';
           row += '<td class="amount gold text-nowrap tx-td-right">' + amount + '</td>';
           row += '<td class="td-device">' + method + '</td>';
           row += '<td class="amount gold text-nowrap tx-td-right">' + tokens + '<span class="gt-unit"> GT</span></td>';

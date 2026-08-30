@@ -283,20 +283,6 @@ function dashboardLogStatus(log){
   return String((log && log.status)||'').toLowerCase() === 'failed' ? 500 : 200;
 }
 
-// Shared one-line Overview timestamp: compact enough for mobile while the
-// complete source value remains available through the <time> attributes.
-function fmtOverviewLogTime(iso){
-  if(!iso) return '—';
-  var stamp = typeof window.parseUTCDate === 'function' ? window.parseUTCDate(iso) : new Date(iso).getTime();
-  var d = new Date(stamp);
-  if(isNaN(d.getTime())) return String(iso).replace('T',' ').slice(0,16) || '—';
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var hour = d.getHours()%12 || 12;
-  var minute = ('0'+d.getMinutes()).slice(-2);
-  var meridiem = d.getHours() >= 12 ? 'PM' : 'AM';
-  return months[d.getMonth()]+' '+d.getDate()+' · '+hour+':'+minute+' '+meridiem;
-}
-
 async function loadOverviewRequestLogs(){
   var body = document.getElementById('dashRequestLogBody');
   if(!body) return;
@@ -325,8 +311,8 @@ async function loadOverviewRequestLogs(){
       var model = log.model || log.model_name || log.model_id || 'Unknown';
       var iso = log.created_at || log.time || '';
       return '<tr>'
-        + '<td><time class="overview-table-time" datetime="'+escapeHtml(String(iso))+'" title="'+escapeHtml(String(iso))+'">'+escapeHtml(fmtOverviewLogTime(iso))+'</time></td>'
-        + '<td class="overview-table-detail dashboard-log-model" title="'+escapeHtml(String(model))+'">'+escapeHtml(String(model))+'</td>'
+        + '<td class="td-date overview-table-time" title="'+escapeAttr(String(iso))+'">'+fmtDTStack(iso)+'</td>'
+        + '<td class="overview-table-detail dashboard-log-model" title="'+escapeAttr(String(model))+'">'+escapeHtml(String(model))+'</td>'
         + '<td class="tx-td-right">'+(Number.isFinite(tokens)?tokens.toLocaleString():'—')+'</td>'
         + '<td class="tx-td-right">'+(Number.isFinite(latency)?Math.round(latency).toLocaleString()+' ms':'—')+'</td>'
         + '<td class="tx-td-center"><span class="status-badge '+statusClass+'">'+escapeHtml(String(status))+'</span></td>'
@@ -352,8 +338,10 @@ async function loadRecentTx(){
   if(countEl) countEl.textContent = 'Last ' + d.items.length;
   body.innerHTML = d.items.map(function(t){
     var iso = t.created_at || '';
-    var date = '<time class="overview-table-time" datetime="'+escapeHtml(String(iso))+'" title="'+escapeHtml(String(iso))+'">'+escapeHtml(fmtOverviewLogTime(iso))+'</time>';
-    var type = escapeHtml(t.type||'');
+    var date = fmtDTStack(iso);
+    var rawType = String(t.type||'');
+    var typeLabels = {consumption:'Usage', deposit:'Deposit', topup:'Top-up'};
+    var type = escapeHtml(typeLabels[rawType.toLowerCase()] || rawType || '—');
     var detailRaw = String(t.model_used || t.payment_method || '-');
     var detail = escapeHtml(detailRaw);
     var amtCls = (t.type==='deposit'||t.type==='topup') ? 'gold' : 'red';
@@ -365,7 +353,7 @@ async function loadRecentTx(){
     var stCls = (st==='completed'||st==='success') ? 'status-paid' : 'status-'+st.replace(/[^a-z0-9_-]/gi,'');
     if(st==='success') stLabel = 'Paid';
     var stHtml = '<span class="status-badge '+stCls+'">'+escapeHtml(stLabel)+'</span>';
-    return '<tr><td class="td-date">'+date+'</td><td>'+type+'</td><td class="overview-table-detail" title="'+escapeHtml(detailRaw)+'">'+detail+'</td><td class="amount '+amtCls+'">'+escapeHtml(amt)+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
+    return '<tr><td class="td-date overview-table-time" title="'+escapeAttr(String(iso))+'">'+date+'</td><td title="'+escapeAttr(rawType)+'">'+type+'</td><td class="overview-table-detail" title="'+escapeAttr(detailRaw)+'">'+detail+'</td><td class="amount '+amtCls+'">'+escapeHtml(amt)+'</td><td class="tx-td-center">'+stHtml+'</td></tr>';
   }).join('');
 }
 
