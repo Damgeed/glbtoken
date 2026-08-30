@@ -4,6 +4,43 @@
    (usageDays, usageMode, usageModel,
    safeApi) come from shared.js
    ══════════════════════════════════════════ */
+    function usageChartPalette(kind){
+      var light=document.documentElement.classList.contains('light');
+      if(kind==='cost'){
+        return light
+          ?{fill:'#007A54',border:'#005C3F',hover:'#009A69'}
+          :{fill:'#00D68F',border:'#41E8B0',hover:'#28E2A2'};
+      }
+      var saved='gold';
+      try{saved=localStorage.getItem('gt_accent')||'gold';}catch(e){}
+      var accent=(window.ACCENTS&&window.ACCENTS[saved])||(window.ACCENTS&&window.ACCENTS.gold)||{h:44,s:'96%',l:'52%'};
+      var sourceLight=parseInt(accent.l,10)||52;
+      var fillLight=light?30:Math.max(sourceLight,58);
+      var borderLight=light?Math.max(18,fillLight-8):Math.min(88,fillLight+12);
+      var hoverLight=light?Math.min(42,fillLight+7):Math.min(82,fillLight+7);
+      return {
+        fill:'hsl('+accent.h+' '+accent.s+' '+fillLight+'%)',
+        border:'hsl('+accent.h+' '+accent.s+' '+borderLight+'%)',
+        hover:'hsl('+accent.h+' '+accent.s+' '+hoverLight+'%)'
+      };
+    }
+    function applyUsageChartTheme(chart){
+      if(!chart)return;
+      var palette=usageChartPalette(chart.$usageKind||'tokens');
+      var dataset=chart.data&&chart.data.datasets&&chart.data.datasets[0];
+      if(dataset){
+        dataset.backgroundColor=palette.fill;
+        dataset.borderColor=palette.border;
+        dataset.hoverBackgroundColor=palette.hover;
+        dataset.hoverBorderColor=palette.border;
+      }
+      if(chart.options&&chart.options.scales){
+        chart.options.scales.y.grid.color=cssVar('--chart-grid');
+        chart.options.scales.y.ticks.color=cssVar('--chart-tick');
+        chart.options.scales.x.ticks.color=cssVar('--chart-tick');
+      }
+      chart.update('none');
+    }
     async function loadUsageAnalytics(days,model,mode){
       var canvas=document.getElementById('dailyChart');
       if(!canvas)return;
@@ -27,8 +64,8 @@
         var hasCost=totalCost>0||costValues.some(function(value){return Number(value)>0});
         if(empty)empty.classList.toggle('show',!hasUsage);
         if(costEmpty)costEmpty.classList.toggle('show',!hasCost);
-        canvas.style.opacity=hasUsage?'1':'0.18';
-        if(costCanvas)costCanvas.style.opacity=hasCost?'1':'0.18';
+        canvas.style.opacity=hasUsage?'1':'0.55';
+        if(costCanvas)costCanvas.style.opacity=hasCost?'1':'0.55';
         var requestStat=document.getElementById('usageRequestStat');
         var requestSub=document.getElementById('usageRequestSub');
         var tokenStat=document.getElementById('usageTokenStat');
@@ -45,35 +82,36 @@
         if(costMethod)costMethod.textContent=hasUsage?(data.costs_estimated?'Includes catalog estimates':'Provider-reported cost'):'No billed usage';
         if(topStat)topStat.textContent=top?(top.model||'Unknown'):'—';
         if(topSub)topSub.textContent=top?Number(top.tokens||0).toLocaleString()+' charged tokens':'No model usage yet';
-        function renderBarChart(target,values,label,color,border,isCurrency){
-          return new Chart(target,{
+        function renderBarChart(target,values,label,kind,isCurrency){
+          var palette=usageChartPalette(kind);
+          var chart=new Chart(target,{
             type:'bar',
             data:{
               labels:(data.labels||[]).map(function(l){var p=String(l||'').split('-');return p[1]+'/'+p[2]}),
-              datasets:[{label:label,data:values,backgroundColor:color,borderColor:border,borderWidth:1,borderRadius:4}]
+              datasets:[{label:label,data:values,backgroundColor:palette.fill,borderColor:palette.border,hoverBackgroundColor:palette.hover,hoverBorderColor:palette.border,borderWidth:1.5,borderRadius:4,borderSkipped:false}]
             },
             options:{
               responsive:true,maintainAspectRatio:false,
               plugins:{legend:{display:false}},
               scales:{
-                y:{beginAtZero:true,grid:{color:cssVar('--border-light')},ticks:{color:cssVar('--text-muted'),font:{size:10},callback:isCurrency?function(value){return '$'+Number(value).toLocaleString(undefined,{maximumFractionDigits:4})}:undefined}},
-                x:{grid:{display:false},ticks:{color:cssVar('--text-muted'),font:{size:10}}}
+                y:{beginAtZero:true,grid:{color:cssVar('--chart-grid')},ticks:{color:cssVar('--chart-tick'),font:{size:10},callback:isCurrency?function(value){return '$'+Number(value).toLocaleString(undefined,{maximumFractionDigits:4})}:undefined}},
+                x:{grid:{display:false},ticks:{color:cssVar('--chart-tick'),font:{size:10}}}
               }
             }
           });
+          chart.$usageKind=kind;
+          return chart;
         }
         if(window.dailyChartInst){window.dailyChartInst.destroy()}
         if(costCanvas){
-          window.dailyChartInst=renderBarChart(canvas,tokenValues,'Tokens',cssVar('--primary-soft'),cssVar('--primary-hover'),false);
+          window.dailyChartInst=renderBarChart(canvas,tokenValues,'Tokens','tokens',false);
           if(window.usageCostChartInst){window.usageCostChartInst.destroy()}
-          window.usageCostChartInst=renderBarChart(costCanvas,costValues,'Cost ($)','rgba(0,214,143,0.28)','#00D68F',true);
+          window.usageCostChartInst=renderBarChart(costCanvas,costValues,'Cost ($)','cost',true);
         }else{
           var isCost=mode==='cost';
           var values=isCost?costValues:tokenValues;
           var label=isCost?'Cost ($)':'Tokens';
-          var color=isCost?'rgba(0,214,143,0.28)':cssVar('--primary-soft');
-          var border=isCost?'#00D68F':cssVar('--primary-hover');
-          window.dailyChartInst=renderBarChart(canvas,values,label,color,border,isCost);
+          window.dailyChartInst=renderBarChart(canvas,values,label,isCost?'cost':'tokens',isCost);
         }
         if(summaryTotal)summaryTotal.textContent=totalTokens.toLocaleString();
         if(summaryCost)summaryCost.textContent=fmtUSD(totalCost)+(data.costs_estimated?' est.':'');
@@ -93,6 +131,10 @@
       var modelSelect=document.getElementById('usageModelFilter');
       usageModel=modelSelect?modelSelect.value:'';
       loadUsageAnalytics(usageDays,usageModel,usageMode);
+    }
+    function refreshUsageChartTheme(){
+      applyUsageChartTheme(window.dailyChartInst);
+      applyUsageChartTheme(window.usageCostChartInst);
     }
     async function populateModelFilter(){
       var sel=document.getElementById('usageModelFilter');
@@ -116,3 +158,6 @@
     document.addEventListener('DOMContentLoaded', function(){
       if(typeof refreshUsageChart==='function' && document.getElementById('dailyChart'))refreshUsageChart();
     });
+    if(typeof MutationObserver!=='undefined'){
+      new MutationObserver(refreshUsageChartTheme).observe(document.documentElement,{attributes:true,attributeFilter:['class','style']});
+    }
