@@ -49,7 +49,8 @@ function setDashboardGatewayStatus(connected){
   if(!wrap || !label) return;
   wrap.classList.remove('is-online','is-offline');
   wrap.classList.add(connected ? 'is-online' : 'is-offline');
-  label.textContent = connected ? 'NewAPI telemetry online' : 'Telemetry unavailable';
+  label.textContent = connected ? 'online' : 'unavailable';
+  wrap.setAttribute('aria-label', connected ? 'Telemetry status: online' : 'Telemetry status: unavailable');
 }
 
 function markDashboardUpdated(){

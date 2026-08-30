@@ -60,6 +60,8 @@ html {
   --code-comment: #6272a4;
   --code-operator: #f8f8f2;
   --hr-color: rgba(255, 255, 255, 0.08);
+  --chart-grid: rgba(226, 232, 240, 0.12);
+  --chart-tick: #b8c1ce;
 }
 html.light {
   --bg: hsl(40 20% 98%);
@@ -102,6 +104,8 @@ html.light {
   --code-comment: #64748b;
   --code-operator: #1e293b;
   --hr-color: var(--border);
+  --chart-grid: rgba(15, 23, 42, 0.14);
+  --chart-tick: #475569;
 }
 body {
   font-family: var(--font);

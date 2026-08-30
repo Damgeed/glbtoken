@@ -16,9 +16,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
-  <link rel="stylesheet" href="style.css?v=1287" />
+  <link rel="stylesheet" href="style.css?v=1288" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<link rel="stylesheet" href="logs.css?v=1031" />
+<link rel="stylesheet" href="logs.css?v=1032" />
   </head>
 <body>
 <div class="stars-bg"><div class="star white"></div><div class="star gold"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star white"></div><div class="star blue"></div><div class="star white"></div><div class="star teal"></div><div class="star blue"></div><div class="star trail white"></div><div class="star trail teal"></div><div class="star trail blue"></div><div class="star trail white"></div></div>
@@ -251,7 +251,7 @@
           </div>
         </div>
         <div class="logs-table-hint">Click a row for details</div>
-        <div class="overflow-auto">
+        <div class="scroll-x request-logs-scroll" tabindex="0" role="region" aria-label="Request logs table. Swipe horizontally to see every column.">
           <table class="tx-table" id="requestLogTable">
             <thead><tr><th>Time</th><th>Model</th><th>Provider</th><th class="tx-th-right">Tokens</th><th class="tx-th-right">Latency</th><th class="tx-th-right">Cost</th><th class="tx-th-center">Status</th></tr></thead>
             <tbody id="requestLogBody">
@@ -708,12 +708,13 @@ function renderRequestLogRows(){
     var status=logsStatusOf(l);
     var statusCls=status>=400?'status-err':(status>=300?'status-warn':'status-ok');
     var time=l.created_at||l.time||'';
+    var timeCell=(typeof fmtDTStack==='function')?fmtDTStack(time):'<div class="td-date-strong">—</div>';
     var logId=l.id||'';
     var tkCell='<td class="td-tokens tx-td-right">'+(typeof tokens==='number'?tokens.toLocaleString():escapeHtml(tokens));
     if(pt||ct){ tkCell+='<span class="td-tokens-sub">in '+Number(pt).toLocaleString()+' · out '+Number(ct).toLocaleString()+'</span>'; }
     tkCell+='</td>';
     return '<tr class="log-row" data-logid="'+escapeHtml(String(logId))+'" title="Status '+status+' — click for details">'
-      + '<td class="td-date">'+escapeHtml(time)+'</td>'
+      + '<td class="td-date" title="'+escapeHtml(time)+'">'+timeCell+'</td>'
       + '<td>'+escapeHtml(model)+'</td>'
       + '<td>'+escapeHtml(provider)+'</td>'
       + tkCell
