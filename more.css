@@ -26,7 +26,7 @@
 
 /* ── Cost Projection ── */
 .cp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-top:1rem}
-.cp-stat{padding:1.25rem 1.3rem;background:var(--card);border:1px solid var(--border)}
+.cp-stat{padding:1.25rem 1.3rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm)}
 /* Pro icons only appear in the mobile Billing-Summary-style layout */
 .cp-stat .icon{display:none}
 .cp-stat-label{font-size:0.75rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted)}
@@ -43,8 +43,8 @@
 
 @media (max-width:768px){
   /* Cost Projection stats → Billing Summary look: stacked, centered, icon on top */
-  .cp-stats{grid-template-columns:1fr;gap:0.6rem}
-  .cp-stat{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0.65rem 0.9rem}
+  .cp-stats{grid-template-columns:1fr;gap:0.75rem}
+  .cp-stat{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0.75rem 0.9rem}
   .cp-stat .icon{display:flex;align-items:center;justify-content:center;height:1.5rem;margin-bottom:0.2rem}
   .cp-stat-value{order:1;font-size:1.15rem;font-weight:700;color:var(--primary);margin-top:0}
   .cp-stat-label{order:2;font-size:0.72rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--text-muted);margin-top:0.15rem}
@@ -53,5 +53,9 @@
 }
 @media (min-width:480px) and (max-width:768px){
   /* Mirror Billing Summary: 3-up once there is room */
-  .cp-stats{grid-template-columns:repeat(3,1fr);gap:0.5rem}
+  .cp-stats{grid-template-columns:repeat(3,1fr);gap:0.75rem}
+}
+@media (min-width:769px) and (max-width:1000px){
+  .cp-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cp-stats .cp-stat:last-child{grid-column:1 / -1}
 }
