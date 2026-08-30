@@ -52,13 +52,18 @@
 }
 @media (max-width: 768px) {
   .settings-card {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 }
 /* Compact cards mode — global rules live in style.css (body.compact-cards …)
    so the toggle works on every page. Settings-specific card kept here. */
 body.compact-cards .settings-card {
   padding: 0.9rem 1.1rem;
+}
+@media (max-width: 768px) {
+  body.compact-cards .settings-card {
+    padding: 0.65rem 0.7rem;
+  }
 }
 
 /* ── Settings inline style extraction ── */
@@ -159,16 +164,35 @@ button.settings-save-btn:hover {
 /* Mobile button sizing */
 @media (max-width: 768px) {
   button.settings-save-btn {
+    min-height: 44px;
     padding: 0.65rem 1rem;
     font-size: 0.85rem;
   }
   .settings-btn-full {
+    min-height: 44px;
     padding: 0.65rem 1rem;
     font-size: 0.85rem;
   }
   .settings-center-mt .btn-secondary {
+    min-height: 44px;
     padding: 0.65rem 1rem;
     font-size: 0.85rem;
+  }
+  .settings-btn-right,
+  .settings-delete-btn,
+  .notif-mark-read-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+@media (max-width: 1024px) {
+  button.settings-save-btn,
+  .settings-btn-full,
+  .settings-center-mt .btn-secondary,
+  .settings-btn-right,
+  .settings-delete-btn,
+  .notif-mark-read-btn {
+    min-height: 44px;
   }
 }
 /* Action button right-aligned */
@@ -210,6 +234,8 @@ button.settings-save-btn:hover {
 }
 @media (max-width: 767px) {
   .uid-copy-btn {
+    min-width: 44px;
+    min-height: 44px;
     padding: 0.45rem 0.65rem;
   }
   .uid-copy-symbol {
@@ -303,6 +329,9 @@ button.settings-save-btn:hover {
   background: var(--bg-alt);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
+}
+.settings-badge-card > div {
+  min-width: 0;
 }
 /* Flex fill */
 .settings-flex-fill {
@@ -405,11 +434,13 @@ button.settings-save-btn:hover {
 /* ── 2x grid for Data & Privacy + Danger Zone (desktop) ── */
 .settings-grid-2 {
   display: grid;
+  min-width: 0;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top: 1rem;
 }
 .settings-grid-2 > .settings-card {
+  min-width: 0;
   margin-top: 0;
 }
 @media (max-width: 900px) {
@@ -417,15 +448,23 @@ button.settings-save-btn:hover {
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 768px) {
+  .settings-grid-2 {
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+}
 
 /* ── Webhooks + Recent Notifications (2-col desktop grid, notifications wider) ── */
 .settings-grid-notif {
   display: grid;
+  min-width: 0;
   grid-template-columns: 2fr 3fr; /* Notifications slightly wider than Webhooks */
   gap: 1rem;
   margin-top: 1rem;
 }
 .settings-grid-notif > .settings-card {
+  min-width: 0;
   margin-top: 0;
 }
 /* Notification cards: 2x2 grid inside the notifications column (desktop) */
@@ -438,6 +477,12 @@ button.settings-save-btn:hover {
   }
   .settings-grid-notif .notif-grid {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .settings-grid-notif {
+    gap: 0.75rem;
+    margin-top: 0.75rem;
   }
 }
 
@@ -535,6 +580,7 @@ button.settings-save-btn:hover {
   align-items: flex-start;
   gap: 0.2rem;
   min-width: 0;
+  flex: 1 1 0;
 }
 .settings-avatar-name-line {
   display: flex;
@@ -563,6 +609,8 @@ button.settings-save-btn:hover {
   gap: 0.4rem;
   min-width: 0;
   margin-top: 0.05rem;
+  width: 100%;
+  max-width: 100%;
 }
 .settings-avatar-email {
   font-size: 0.82rem;
@@ -571,6 +619,8 @@ button.settings-save-btn:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 .settings-avatar-verified {
   display: inline-flex;
@@ -608,6 +658,7 @@ button.settings-save-btn:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  width: 100%;
 }
 .settings-avatar-tokens-num {
   font-weight: 700;
@@ -632,5 +683,44 @@ button.settings-save-btn:hover {
 @media (max-width: 480px) {
   .settings-avatar-row {
     align-items: flex-start;
+  }
+  .webhook-actions {
+    flex-wrap: wrap;
+  }
+  .webhook-actions .webhook-btn {
+    min-height: 44px;
+    flex: 1 1 120px;
+  }
+}
+@media (max-width: 340px) {
+  .settings-avatar-row {
+    gap: 0.65rem;
+  }
+  .settings-avatar-preview {
+    width: 54px;
+    height: 54px;
+  }
+  .settings-avatar-email-line {
+    width: 100%;
+  }
+  .settings-avatar-verified {
+    padding-inline: 0.35rem;
+    font-size: 0.62rem;
+  }
+  .settings-avatar-meta {
+    flex-wrap: wrap;
+    row-gap: 0.1rem;
+    white-space: normal;
+  }
+}
+@media (max-width: 360px) {
+  .settings-grid-notif .dash-section-title {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .settings-grid-notif .notif-mark-read-btn {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
   }
 }

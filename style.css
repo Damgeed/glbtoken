@@ -6077,6 +6077,9 @@ body {
   .billing-grid > .dash-card + .dash-card,
   .mini-chart-grid > .dash-card + .dash-card,
   .charts-side-grid > .dash-card + .dash-card,
+  .usage-graphs-grid > .dash-card + .dash-card,
+  .usage-history-grid > .dash-card + .dash-card,
+  .cp-stats > .dash-card + .dash-card,
   .notif-grid > .dash-card + .dash-card,
   .notif-grid > .notif-item + .notif-item {
     margin-top: 0;
@@ -6084,6 +6087,12 @@ body {
   /* Stacking margin for dash-cards NOT inside a grid (e.g. apikeys.html) */
   .dash-card + .dash-card {
     margin-top: 0.75rem;
+  }
+  body.compact-cards .dash-card {
+    padding: 0.65rem 0.7rem;
+  }
+  body.compact-cards .dash-stat-card {
+    padding: 0.45rem 0.35rem;
   }
   .blog-grid {
     grid-template-columns: 1fr;
@@ -6420,7 +6429,7 @@ body {
   .blog-article-page .blog-article {
     max-width: 100%;
   }
-  section:not(.dash-page):not(.hero) {
+  section:not(.dash-page):not(.hero):not(.dash-card):not(.pg-config-section):not(.pg-model-card):not(.pg-code-drawer) {
     padding: 0.75rem 0 !important;
   }
   section.hero {

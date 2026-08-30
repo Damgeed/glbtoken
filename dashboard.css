@@ -845,7 +845,18 @@
   min-width: 0;
   padding: 1.1rem;
 }
-.developer-card-header { margin-bottom: 0.85rem; }
+.developer-card-header {
+  margin-bottom: 0.9rem;
+  font-size: 1rem;
+}
+.developer-card-header .dash-title-group {
+  gap: 0.1rem;
+}
+.developer-card-header .compatibility-badge {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+}
 .developer-field-row,
 .developer-endpoint-row {
   display: grid;
@@ -857,19 +868,20 @@
 .developer-field-row label,
 .developer-endpoint-row > span {
   color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 .developer-model-select {
   width: 100%;
   min-width: 0;
-  height: 34px;
-  padding: 0 2rem 0 0.65rem;
+  height: 40px;
+  padding: 0 2.25rem 0 0.75rem;
   color: var(--text);
   background: var(--bg-alt);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
+  font-family: inherit;
 }
 .developer-model-select:focus-visible {
   outline: 2px solid var(--primary-soft);
@@ -879,9 +891,15 @@
   min-width: 0;
   overflow: hidden;
   color: var(--text-secondary);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.developer-endpoint-row {
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
 }
 .developer-code-tabs {
   display: flex;
@@ -889,19 +907,20 @@
   gap: 0.25rem;
   margin-top: 0.8rem;
   padding: 0.25rem;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   border-bottom: 0;
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 .developer-code-tab,
 .developer-copy-btn {
-  padding: 0.32rem 0.58rem;
+  min-height: 34px;
+  padding: 0.42rem 0.68rem;
   color: var(--text-muted);
   background: transparent;
   border: 0;
   border-radius: 5px;
-  font-size: 0.65rem;
+  font-size: 0.74rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -923,14 +942,14 @@
   margin: 0;
   padding: 0.8rem;
   overflow: auto;
-  color: var(--text);
-  background: var(--card);
-  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   border-left: 3px solid var(--primary);
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.64rem;
-  line-height: 1.55;
+  font-size: 0.75rem;
+  line-height: 1.6;
   white-space: pre;
 }
 .developer-quickstart {
@@ -941,8 +960,8 @@
    Keep this executable example legible and aligned as one contained surface. */
 .developer-quickstart .developer-code {
   display: block;
-  background: var(--card) !important;
-  border-color: var(--border);
+  background: var(--bg-alt) !important;
+  border-color: var(--border-light);
   border-left-color: var(--primary);
 }
 .developer-quickstart .developer-code code {
@@ -965,10 +984,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
-  padding: 0.45rem 0.75rem;
+  min-height: 40px;
+  padding: 0.55rem 0.85rem;
   border-radius: var(--radius-sm);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
 }
@@ -980,7 +999,12 @@
 .gateway-metric-grid .dash-stat-card {
   min-width: 0;
   font-family: inherit;
+  padding: 0.9rem;
+  background: var(--bg-alt);
+  border-color: var(--border-light);
 }
+.gateway-metric-grid .dash-stat-card .num { font-size: 1.2rem; }
+.gateway-metric-grid .dash-stat-card .lbl { font-size: 0.75rem; }
 .gateway-metric-grid .dash-stat-card .num {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -990,12 +1014,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.72rem;
 }
 .dashboard-data-note {
   margin-top: 0.7rem;
   color: var(--text-muted);
-  font-size: 0.6rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  line-height: 1.55;
 }
 
 /* Keep the added gateway tools inside the dashboard's established two-card topology. */
@@ -1018,15 +1043,25 @@
   gap: 0.65rem;
 }
 .dashboard-card-actions .sort-btn {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.68rem;
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.75rem;
+}
+.dashboard-toolbar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  white-space: nowrap;
 }
 .gateway-status-inline {
   width: auto;
-  min-height: 32px;
+  min-height: 36px;
   margin: 0;
-  padding: 0.3rem 0.55rem;
+  padding: 0.4rem 0.65rem;
   border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+  border-color: var(--border-light);
 }
 .gateway-card-header {
   align-items: center;
@@ -1035,10 +1070,10 @@
   min-width: 0;
 }
 .gateway-card-header .gateway-status strong {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
 }
 .gateway-card-header .gateway-status small {
-  font-size: 0.58rem;
+  font-size: 0.72rem;
 }
 @media (max-width: 1050px) {
   .developer-command-grid,
@@ -1051,33 +1086,72 @@
   .dash-header-btn { min-height: 32px; padding: 0.42rem 0.62rem; font-size: 0.66rem; }
   .developer-command-grid,
   .dashboard-tools-grid { gap: 0.75rem; }
-  .developer-command-grid > .dash-card,
-  .dashboard-tools-grid > .dash-card { padding: 0.85rem; }
+  .developer-card-header {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+  }
+  .developer-model-select { height: 44px; font-size: 0.85rem; }
+  .developer-code-tab,
+  .developer-copy-btn { min-height: 40px; font-size: 0.78rem; }
+  .developer-code { min-height: 150px; font-size: 0.75rem; }
+  .developer-card-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .developer-card-actions a { min-height: 44px; font-size: 0.82rem; }
   .gateway-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gateway-card-header {
-    align-items: flex-start;
-    gap: 0.55rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 0.65rem;
   }
   .gateway-card-header .dashboard-card-actions {
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  .gateway-card-header .gateway-status {
+    min-width: 0;
+  }
+  .gateway-card-header .gateway-status > span:last-child {
+    min-width: 0;
+  }
+  .gateway-card-header .gateway-status strong,
+  .gateway-card-header .gateway-status small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gateway-metric-grid .dash-stat-card { padding: 0.5rem 0.4rem; }
+  .gateway-metric-grid .dash-stat-card .num { font-size: 0.95rem; }
+  .gateway-metric-grid .dash-stat-card .lbl { font-size: 0.62rem; }
+  .gateway-metric-grid .gateway-metric-meta { font-size: 0.6rem; }
+  .dashboard-data-note { font-size: 0.75rem; }
+  .dashboard-card-actions .sort-btn { min-height: 40px; font-size: 0.78rem; }
+  .gateway-status-inline { min-height: 40px; }
+}
+@media (max-width: 520px) {
+  .developer-field-row,
+  .developer-endpoint-row { grid-template-columns: 1fr; gap: 0.35rem; }
+  .developer-code { font-size: 0.75rem; }
+  .gateway-card-header .dashboard-card-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .gateway-card-header .gateway-status {
+    grid-column: 1 / -1;
+  }
+  .gateway-card-header .dashboard-card-actions > a,
+  .gateway-card-header .dashboard-card-actions > button {
+    justify-content: center;
   }
 }
 @media (max-width: 460px) {
   .dash-header { flex-direction: column; }
   .dash-header-actions { width: 100%; max-width: none; justify-content: flex-start; }
   .dash-header-actions .gateway-status { order: 0; width: auto; margin-right: auto; }
-  .developer-field-row,
-  .developer-endpoint-row { grid-template-columns: 1fr; gap: 0.25rem; }
-  .developer-code { font-size: 0.58rem; }
-  .developer-card-actions { flex-direction: column; }
   .dashboard-card-actions { gap: 0.4rem; }
-  .gateway-card-header {
-    flex-direction: column;
-  }
-  .gateway-card-header .dashboard-card-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
   .gateway-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

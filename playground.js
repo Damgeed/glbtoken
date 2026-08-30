@@ -12,6 +12,9 @@
     error: '',
     codeTab: 'python'
   };
+  var CONFIG_OVERLAY_BREAKPOINT = 1260;
+  var lastCodeFocus = null;
+  var lastConfigFocus = null;
 
   function byId(id) { return document.getElementById(id); }
   function value(id) { var el = byId(id); return el ? el.value : ''; }
@@ -20,6 +23,70 @@
     return Number.isFinite(n) ? n : fallback;
   }
   function setText(id, text) { var el = byId(id); if (el) el.textContent = text; }
+
+  function setPanelInert(panel, inert) {
+    if (!panel) return;
+    panel.toggleAttribute('inert', !!inert);
+  }
+
+  function syncModalBackground() {
+    document.querySelectorAll('[data-pg-modal-background]').forEach(function (element) {
+      if (element.dataset.pgPreviousInert !== 'true') element.removeAttribute('inert');
+      if (element.dataset.pgPreviousAriaHidden === '__missing__') element.removeAttribute('aria-hidden');
+      else element.setAttribute('aria-hidden', element.dataset.pgPreviousAriaHidden);
+      delete element.dataset.pgModalBackground;
+      delete element.dataset.pgPreviousInert;
+      delete element.dataset.pgPreviousAriaHidden;
+    });
+
+    var code = byId('pgCodeDrawer');
+    var config = byId('pgConfigPanel');
+    var activePanel = code.classList.contains('open') ? code :
+      (window.innerWidth <= CONFIG_OVERLAY_BREAKPOINT && config.classList.contains('open') ? config : null);
+    document.body.classList.toggle('pg-modal-open', !!activePanel);
+    if (!activePanel) return;
+
+    document.querySelectorAll('#nav-container, #dashSidebarToggle, #dashSidebar, .dash-sidebar-backdrop, .pg-header, .pg-history, .pg-stage, .pg-config, .pg-code-drawer').forEach(function (element) {
+      if (element === activePanel) return;
+      element.dataset.pgModalBackground = 'true';
+      element.dataset.pgPreviousInert = element.hasAttribute('inert') ? 'true' : 'false';
+      element.dataset.pgPreviousAriaHidden = element.hasAttribute('aria-hidden') ? element.getAttribute('aria-hidden') : '__missing__';
+      element.setAttribute('inert', '');
+      element.setAttribute('aria-hidden', 'true');
+    });
+  }
+
+  function syncViewportHeight() {
+    var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    if (viewportHeight) document.documentElement.style.setProperty('--pg-viewport-height', viewportHeight + 'px');
+  }
+
+  function focusPanel(panel, preferred) {
+    requestAnimationFrame(function () {
+      var target = preferred || panel.querySelector('button, select, textarea, input, [tabindex]:not([tabindex="-1"])');
+      if (target) target.focus();
+    });
+  }
+
+  function trapPanelFocus(event, panel) {
+    if (event.key !== 'Tab' || !panel || panel.getAttribute('aria-hidden') === 'true') return;
+    var focusable = Array.prototype.slice.call(
+      panel.querySelectorAll('button:not([disabled]), select:not([disabled]), textarea:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')
+    );
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (!panel.contains(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 
   function cleanMessage(message) {
     return {
@@ -230,7 +297,7 @@
     button.appendChild(strong);
     button.appendChild(span);
     button.addEventListener('click', function () {
-      var input = byId('chatInput');
+      var input = byId('pgChatInput');
       input.value = prompt;
       resizeInput();
       updateWorkbench();
@@ -349,7 +416,8 @@
       error.textContent = state.error;
       chat.appendChild(error);
     }
-    requestAnimationFrame(function () { chat.scrollTop = chat.scrollHeight; });
+    var hasConversationContent = state.messages.length || state.processing || state.error;
+    requestAnimationFrame(function () { chat.scrollTop = hasConversationContent ? chat.scrollHeight : 0; });
   }
 
   function buildMessages(includeDraft) {
@@ -357,7 +425,7 @@
     var system = value('pgSystemPrompt').trim();
     if (system) messages.push({ role: 'system', content: system });
     state.messages.forEach(function (message) { messages.push(cleanMessage(message)); });
-    var draft = value('chatInput').trim();
+    var draft = value('pgChatInput').trim();
     if (includeDraft && draft) messages.push({ role: 'user', content: draft });
     return messages;
   }
@@ -387,7 +455,7 @@
   }
 
   async function sendMessage() {
-    var input = byId('chatInput');
+    var input = byId('pgChatInput');
     var prompt = input.value.trim();
     if (!prompt || state.processing || !selectedModel()) return;
     state.messages.push({ role: 'user', content: prompt });
@@ -528,12 +596,12 @@
     state.messages = [];
     state.error = '';
     state.dirty = false;
-    byId('chatInput').value = '';
+    byId('pgChatInput').value = '';
     renderConversationList();
     renderChat();
     resizeInput();
     updateWorkbench();
-    byId('chatInput').focus();
+    byId('pgChatInput').focus();
   }
 
   function clearMessages() {
@@ -675,7 +743,7 @@
     setText('pgTemperatureValue', numberValue('pgTemperature', 0.7).toFixed(1));
     setText('pgTopPValue', numberValue('pgTopP', 1).toFixed(2));
     setText('pgSystemCount', value('pgSystemPrompt').length.toLocaleString());
-    byId('sendBtn').disabled = state.processing || !value('chatInput').trim() || !selectedModel();
+    byId('sendBtn').disabled = state.processing || !value('pgChatInput').trim() || !selectedModel();
     byId('pgSaveButton').textContent = state.dirty ? 'Save run' : (state.currentId ? 'Saved' : 'Save run');
     updateRoute();
     updateEstimates();
@@ -724,43 +792,101 @@
       'print(response.choices[0].message.content)';
   }
 
+  function selectCodeTab(button, focus) {
+    if (!button) return;
+    state.codeTab = button.dataset.tab;
+    byId('pgCodeTabs').querySelectorAll('button[data-tab]').forEach(function (candidate) {
+      var selected = candidate === button;
+      candidate.classList.toggle('active', selected);
+      candidate.setAttribute('aria-selected', selected ? 'true' : 'false');
+      candidate.tabIndex = selected ? 0 : -1;
+    });
+    byId('pgCodeOutput').setAttribute('aria-labelledby', button.id);
+    renderCode();
+    if (focus) button.focus();
+  }
+
   function toggleCode(open) {
     var drawer = byId('pgCodeDrawer');
+    var backdrop = byId('pgCodeBackdrop');
+    var wasOpen = drawer.classList.contains('open');
     var next = typeof open === 'boolean' ? open : !drawer.classList.contains('open');
+    if (next && window.innerWidth <= CONFIG_OVERLAY_BREAKPOINT) toggleConfig(false);
+    if (next && !wasOpen) lastCodeFocus = document.activeElement;
     drawer.classList.toggle('open', next);
+    backdrop.classList.toggle('open', next);
+    setPanelInert(drawer, !next);
     drawer.setAttribute('aria-hidden', next ? 'false' : 'true');
     byId('pgCodeButton').setAttribute('aria-expanded', next ? 'true' : 'false');
+    syncModalBackground();
     renderCode();
+    if (next) {
+      focusPanel(drawer, byId('pgCodeClose'));
+    } else if (wasOpen && lastCodeFocus && document.contains(lastCodeFocus)) {
+      lastCodeFocus.focus();
+    }
   }
 
   function toggleConfig(open) {
     var panel = byId('pgConfigPanel');
     var backdrop = byId('pgConfigBackdrop');
-    if (window.innerWidth > 1180) {
+    var wasOpen = panel.classList.contains('open');
+    var focusWasInside = panel.contains(document.activeElement);
+    if (window.innerWidth > CONFIG_OVERLAY_BREAKPOINT) {
       panel.classList.remove('open');
       backdrop.classList.remove('open');
+      setPanelInert(panel, false);
+      panel.setAttribute('role', 'region');
+      panel.removeAttribute('aria-modal');
       panel.setAttribute('aria-hidden', 'false');
       byId('pgConfigToggle').setAttribute('aria-expanded', 'false');
+      syncModalBackground();
+      if ((wasOpen || focusWasInside) && document.contains(byId('pgConfigToggle'))) byId('pgConfigToggle').focus();
       return;
     }
     var next = typeof open === 'boolean' ? open : !panel.classList.contains('open');
+    if (next) {
+      toggleCode(false);
+      if (!wasOpen) lastConfigFocus = document.activeElement;
+    }
     panel.classList.toggle('open', next);
     backdrop.classList.toggle('open', next);
+    setPanelInert(panel, !next);
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-hidden', next ? 'false' : 'true');
     byId('pgConfigToggle').setAttribute('aria-expanded', next ? 'true' : 'false');
+    syncModalBackground();
+    if (next) {
+      focusPanel(panel, byId('pgConfigClose'));
+    } else if (wasOpen && lastConfigFocus && document.contains(lastConfigFocus)) {
+      lastConfigFocus.focus();
+    }
   }
 
   function syncResponsivePanels() {
     var panel = byId('pgConfigPanel');
     var backdrop = byId('pgConfigBackdrop');
-    if (window.innerWidth > 1180) {
+    var wasOpen = panel.classList.contains('open');
+    var focusWasInside = panel.contains(document.activeElement);
+    if (window.innerWidth > CONFIG_OVERLAY_BREAKPOINT) {
       panel.classList.remove('open');
       backdrop.classList.remove('open');
+      setPanelInert(panel, false);
+      panel.setAttribute('role', 'region');
+      panel.removeAttribute('aria-modal');
       panel.setAttribute('aria-hidden', 'false');
       byId('pgConfigToggle').setAttribute('aria-expanded', 'false');
+      if ((wasOpen || focusWasInside) && document.contains(byId('pgConfigToggle'))) byId('pgConfigToggle').focus();
     } else {
-      panel.setAttribute('aria-hidden', panel.classList.contains('open') ? 'false' : 'true');
+      var isOpen = panel.classList.contains('open');
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', 'true');
+      panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      setPanelInert(panel, !isOpen);
+      if (!isOpen && focusWasInside && document.contains(byId('pgConfigToggle'))) byId('pgConfigToggle').focus();
     }
+    syncModalBackground();
   }
 
   function copyText(text, button) {
@@ -788,19 +914,19 @@
   }
 
   function resizeInput() {
-    var input = byId('chatInput');
+    var input = byId('pgChatInput');
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 150) + 'px';
   }
 
   function bindEvents() {
     byId('sendBtn').addEventListener('click', sendMessage);
-    byId('chatInput').addEventListener('input', function () {
+    byId('pgChatInput').addEventListener('input', function () {
       if (this.value.trim()) state.dirty = true;
       resizeInput();
       updateWorkbench();
     });
-    byId('chatInput').addEventListener('keydown', function (event) {
+    byId('pgChatInput').addEventListener('keydown', function (event) {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         sendMessage();
@@ -812,36 +938,57 @@
       updateWorkbench();
     });
     ['pgTemperature', 'pgTopP', 'pgMaxTokens', 'pgSystemPrompt'].forEach(function (id) {
-      byId(id).addEventListener('input', function () { updateWorkbench(); });
+      byId(id).addEventListener('input', function () { state.dirty = true; updateWorkbench(); });
     });
-    byId('pgFallbackOne').addEventListener('change', function () { normalizeFallbacks(this); });
-    byId('pgFallbackTwo').addEventListener('change', function () { normalizeFallbacks(this); });
+    byId('pgFallbackOne').addEventListener('change', function () { state.dirty = true; normalizeFallbacks(this); });
+    byId('pgFallbackTwo').addEventListener('change', function () { state.dirty = true; normalizeFallbacks(this); });
     byId('pgNewButton').addEventListener('click', function () { resetConversation(true); });
     byId('pgNewIcon').addEventListener('click', function () { resetConversation(true); });
     byId('pgSaveButton').addEventListener('click', function () { saveConversation(false); });
     byId('pgClearButton').addEventListener('click', clearMessages);
     byId('pgCodeButton').addEventListener('click', function () { toggleCode(true); });
     byId('pgCodeClose').addEventListener('click', function () { toggleCode(false); });
+    byId('pgCodeBackdrop').addEventListener('click', function () { toggleCode(false); });
     byId('pgCopyCode').addEventListener('click', function () { copyText(byId('pgCodeOutput').textContent, this); });
     byId('pgCodeTabs').addEventListener('click', function (event) {
       var button = event.target.closest('button[data-tab]');
       if (!button) return;
-      state.codeTab = button.dataset.tab;
-      this.querySelectorAll('button').forEach(function (candidate) { candidate.classList.toggle('active', candidate === button); });
-      renderCode();
+      selectCodeTab(button, false);
+    });
+    byId('pgCodeTabs').addEventListener('keydown', function (event) {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return;
+      var tabs = Array.prototype.slice.call(this.querySelectorAll('button[data-tab]'));
+      var current = Math.max(0, tabs.indexOf(document.activeElement));
+      var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 :
+        (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      event.preventDefault();
+      selectCodeTab(tabs[next], true);
     });
     byId('pgApplyPreset').addEventListener('click', function () { applyPreset(value('pgPresetSelect'), true); });
     byId('pgSavePreset').addEventListener('click', savePreset);
     byId('pgConfigToggle').addEventListener('click', function () { toggleConfig(true); });
     byId('pgConfigClose').addEventListener('click', function () { toggleConfig(false); });
     byId('pgConfigBackdrop').addEventListener('click', function () { toggleConfig(false); });
-    window.addEventListener('resize', syncResponsivePanels);
+    window.addEventListener('resize', function () {
+      syncViewportHeight();
+      syncResponsivePanels();
+    });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', syncViewportHeight);
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') { toggleConfig(false); toggleCode(false); }
+      var codeOpen = byId('pgCodeDrawer').classList.contains('open');
+      var configOpen = byId('pgConfigPanel').classList.contains('open') && window.innerWidth <= CONFIG_OVERLAY_BREAKPOINT;
+      if (event.key === 'Escape') {
+        if (codeOpen) toggleCode(false);
+        else if (configOpen) toggleConfig(false);
+        return;
+      }
+      if (codeOpen) trapPanelFocus(event, byId('pgCodeDrawer'));
+      else if (configOpen) trapPanelFocus(event, byId('pgConfigPanel'));
     });
   }
 
   async function init() {
+    syncViewportHeight();
     bindEvents();
     syncResponsivePanels();
     renderChat();

@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=1285" />
-  <link rel="stylesheet" href="dashboard.css?v=1058" />
-  <link rel="stylesheet" href="playground.css?v=1032" />
+  <link rel="stylesheet" href="style.css?v=1287" />
+  <link rel="stylesheet" href="dashboard.css?v=1062" />
+  <link rel="stylesheet" href="playground.css?v=1033" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 
 <meta property="og:type" content="website" />
@@ -151,7 +151,7 @@
       <p>Prototype prompts against the live model catalog, then copy the exact API request.</p>
     </div>
     <div class="pg-header-actions">
-      <span class="pg-status" id="pgCatalogStatus">Loading catalog…</span>
+      <span class="pg-status" id="pgCatalogStatus" role="status" aria-live="polite">Loading catalog…</span>
       <button type="button" class="pg-button pg-button-ghost" id="pgConfigToggle" aria-controls="pgConfigPanel" aria-expanded="false">Configure</button>
       <button type="button" class="pg-button pg-button-ghost" id="pgSaveButton">Save run</button>
       <button type="button" class="pg-button pg-button-primary" id="pgNewButton">New run</button>
@@ -187,7 +187,7 @@
 
       <div class="pg-composer-wrap">
         <div class="pg-composer">
-          <textarea id="chatInput" rows="1" placeholder="Ask a question or test a prompt…" aria-label="Prompt"></textarea>
+          <textarea id="pgChatInput" rows="1" placeholder="Ask a question or test a prompt…" aria-label="Prompt"></textarea>
           <button type="button" class="pg-send" id="sendBtn" disabled aria-label="Run prompt">
             <span>Run</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
@@ -201,9 +201,9 @@
       </div>
     </main>
 
-    <aside class="pg-config" id="pgConfigPanel" aria-label="Run configuration" aria-hidden="false">
+    <aside class="pg-config" id="pgConfigPanel" role="region" aria-labelledby="pgConfigTitle" aria-hidden="false">
       <div class="pg-panel-heading">
-        <div><span class="pg-panel-kicker">Parameters</span><strong>Run configuration</strong></div>
+        <div><span class="pg-panel-kicker">Parameters</span><strong id="pgConfigTitle">Run configuration</strong></div>
         <button type="button" class="pg-icon-button pg-config-close" id="pgConfigClose" title="Close configuration" aria-label="Close configuration">×</button>
       </div>
 
@@ -230,8 +230,8 @@
 
         <section class="pg-config-section">
           <div class="pg-field-label"><span>Fallback route</span><span>Transient errors only</span></div>
-          <label class="pg-fallback-field" for="pgFallbackOne"><span>01</span><select id="pgFallbackOne"><option value="">No fallback</option></select></label>
-          <label class="pg-fallback-field" for="pgFallbackTwo"><span>02</span><select id="pgFallbackTwo"><option value="">No second fallback</option></select></label>
+          <label class="pg-fallback-field" for="pgFallbackOne"><span aria-hidden="true">01</span><select id="pgFallbackOne" aria-label="First fallback model"><option value="">No fallback</option></select></label>
+          <label class="pg-fallback-field" for="pgFallbackTwo"><span aria-hidden="true">02</span><select id="pgFallbackTwo" aria-label="Second fallback model"><option value="">No second fallback</option></select></label>
           <div class="pg-route-map" id="pgRouteMap"></div>
           <p class="pg-field-help">GlbTOKEN tries these models in order only for timeouts, rate limits, or upstream 5xx errors. Provider priority inside each model remains managed by NewAPI.</p>
         </section>
@@ -250,21 +250,22 @@
     </aside>
   </div>
 
-  <section class="pg-code-drawer" id="pgCodeDrawer" aria-label="API request code" aria-hidden="true">
+  <section class="pg-code-drawer" id="pgCodeDrawer" role="dialog" aria-modal="true" aria-labelledby="pgCodeTitle" aria-hidden="true" inert>
     <div class="pg-code-head">
-      <div><span class="pg-panel-kicker">Portable request</span><strong>Use this configuration in your app</strong></div>
+      <div><span class="pg-panel-kicker">Portable request</span><strong id="pgCodeTitle">Use this configuration in your app</strong></div>
       <div class="pg-code-actions">
-        <div class="pg-code-tabs" id="pgCodeTabs">
-          <button type="button" class="active" data-tab="python">Python</button>
-          <button type="button" data-tab="curl">cURL</button>
-          <button type="button" data-tab="json">JSON</button>
+        <div class="pg-code-tabs" id="pgCodeTabs" role="tablist" aria-label="Code language">
+          <button type="button" class="active" id="pgCodeTabPython" data-tab="python" role="tab" aria-selected="true" aria-controls="pgCodeOutput" tabindex="0">Python</button>
+          <button type="button" id="pgCodeTabCurl" data-tab="curl" role="tab" aria-selected="false" aria-controls="pgCodeOutput" tabindex="-1">cURL</button>
+          <button type="button" id="pgCodeTabJson" data-tab="json" role="tab" aria-selected="false" aria-controls="pgCodeOutput" tabindex="-1">JSON</button>
         </div>
         <button type="button" class="pg-button pg-button-ghost" id="pgCopyCode">Copy</button>
         <button type="button" class="pg-icon-button" id="pgCodeClose" aria-label="Close code">×</button>
       </div>
     </div>
-    <pre id="pgCodeOutput"></pre>
+    <pre id="pgCodeOutput" role="tabpanel" aria-labelledby="pgCodeTabPython" tabindex="0"></pre>
   </section>
+  <div class="pg-code-backdrop" id="pgCodeBackdrop"></div>
   <div class="pg-config-backdrop" id="pgConfigBackdrop"></div>
 </div>
 
@@ -274,7 +275,7 @@
 <script>requireAuth()</script>
 <script data-cfasync="false" src="ui.js?v=1242"></script>
 
-<script data-cfasync="false" src="playground.js?v=3"></script>
+<script data-cfasync="false" src="playground.js?v=4"></script>
 
   </div>
 </div>
