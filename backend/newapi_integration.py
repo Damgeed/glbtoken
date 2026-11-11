@@ -158,21 +158,19 @@ async def create_newapi_user(email: str, name: str, quota: int = 25000) -> dict:
         return {"id": 0, "email": email, "name": name, "quota": quota}
 
     import secrets
-    auto_password = "Gt" + secrets.token_hex(6)
+    # Provision accounts via the authenticated administrator endpoint. The gateway's
+    # public self-registration can and should remain disabled.
+    auto_password = "Gt" + secrets.token_urlsafe(24)
     username = (email.split("@")[0] + "_" + secrets.token_hex(4))[:32]
 
-    try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            reg = await client.post(
-                f"{NEW_API_BASE}/api/user/register",
-                json={"username": username, "password": auto_password,
-                      "display_name": name, "email": email},
-            )
-            if reg.status_code >= 400:
-                return {"error": "New API register failed", "status": reg.status_code}
-    except Exception as e:
-        print(f"⚠️ New API register error: {e}")
-        return {"error": str(e)}
+    created = await _admin_request(
+        "POST", "/api/user/",
+        {"username": username, "password": auto_password,
+         "display_name": name, "role": 1},
+    )
+    if not isinstance(created, dict) or created.get("error") or not created.get("success"):
+        reason = (created.get("error") or created.get("message")) if isinstance(created, dict) else None
+        return {"error": reason or "New API administrator user creation failed"}
 
     # Find the new user id via admin user list (session auth).
     users_resp = await _admin_request("GET", "/api/user/?page=1&page_size=200")
